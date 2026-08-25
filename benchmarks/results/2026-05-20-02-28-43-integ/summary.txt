@@ -1,0 +1,3 @@
+emb alpha=1.0 hot=0.1: skew/il=+15.0% hint-vs-manual=0.8%
+emb alpha=1.5 hot=0.1: skew/il=+14.0% hint-vs-manual=0.6%
+bwbench under aggressor: allcxl=16.8 hint=69.2 GiB/s  recovery=+313%

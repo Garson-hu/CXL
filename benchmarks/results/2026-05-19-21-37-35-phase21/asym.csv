@@ -1,0 +1,7 @@
+node,victim,aggressor,victim_metric,baseline_value,loaded_value,slowdown,aggressor_bw_gib_s
+0,latency,latency,victim_latency_ns,184.9250,182.2320,0.985,2.595
+0,latency,random-read,victim_latency_ns,184.9250,181.1350,0.980,19.041
+0,latency,stream-read,victim_latency_ns,184.9250,183.1450,0.990,69.258
+0,random-read,latency,total_bandwidth_gib_s,2.2310,2.1810,1.023,2.590
+0,random-read,random-read,total_bandwidth_gib_s,2.2310,2.1380,1.043,18.903
+0,random-read,stream-read,total_bandwidth_gib_s,2.2310,2.2480,0.992,69.260

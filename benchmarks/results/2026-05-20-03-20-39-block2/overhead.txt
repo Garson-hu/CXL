@@ -1,0 +1,6 @@
+obj_create        : 10.794 us/op  (N=2000)
+obj_rebalance     : 522.9 us for 2000 objects (0.261 us/obj)
+metadata/object   : 104 bytes  (registry live=2000)
+metadata for 10k  : 0.99 MiB
+steady-state bw   : objplace=32.00 manual=32.60 GiB/s  overhead=1.83%
+CSV,create_us,10.7935,rebalance_us_total,522.90,rec_bytes,104,access_overhead_pct,1.826

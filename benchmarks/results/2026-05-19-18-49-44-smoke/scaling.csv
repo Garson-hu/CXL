@@ -1,0 +1,9 @@
+tag,node,mode,threads,size_per_thread_bytes,read_pct,duration_sec,total_bytes,bandwidth_gib_s,avg_latency_ns
+streamr-n0-t1,0,stream-read,1,268435456,50,3.005,97173635072,30.115,0.000
+streamr-n0-t4,0,stream-read,4,268435456,50,3.008,223606734848,69.237,0.000
+streamr-n0-t16,0,stream-read,16,268435456,50,3.031,224948912128,69.125,0.000
+streamr-n0-t32,0,stream-read,32,268435456,50,3.048,309506080768,94.568,0.000
+streamr-n1-t1,1,stream-read,1,268435456,50,3.012,63350767616,19.588,0.000
+streamr-n1-t4,1,stream-read,4,268435456,50,3.003,114890375168,35.627,0.000
+streamr-n1-t16,1,stream-read,16,268435456,50,3.051,116500987904,35.568,0.000
+streamr-n1-t32,1,stream-read,32,268435456,50,3.158,120259084288,35.461,0.000

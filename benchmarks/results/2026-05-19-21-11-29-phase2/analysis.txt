@@ -1,0 +1,31 @@
+
+===== node 0 (DRAM) — victim slowdown vs idle =====
+victim           stream-read  stream-write   random-read         mixed
+latency                 2.87          3.17          2.51          2.52
+random-read             2.50          2.60          2.01          2.10
+stream-read             7.19          9.23          2.23          2.22
+mixed                   2.51          2.61          2.03          2.12
+
+===== node 1 (CXL) — victim slowdown vs idle =====
+victim           stream-read  stream-write   random-read         mixed
+latency                 3.10          3.52          2.44          2.47
+random-read             2.87          3.39          2.18          2.27
+stream-read             7.16          8.75          2.08          2.15
+mixed                   2.74          3.22          2.10          2.14
+
+===== asymmetry (modes that are both victim & aggressor) =====
+pair                          node   sd(X|Y)   sd(Y|X)   asymmetry
+stream-read vs random-read    DRAM      2.23      2.50        1.12
+stream-read vs mixed          DRAM      2.22      2.51        1.13
+random-read vs mixed          DRAM      2.10      2.03        1.03
+stream-read vs random-read     CXL      2.08      2.87        1.38
+stream-read vs mixed           CXL      2.15      2.74        1.28
+random-read vs mixed           CXL      2.27      2.10        1.08
+
+Max-asymmetry CXL pair: stream-read vs random-read  asymmetry=1.38
+  any CXL pair > 1.5x asymmetry? no
+  same pair on DRAM asymmetry=1.12 (weaker on DRAM)
+
+===== worst single slowdown per node =====
+DRAM: victim=stream-read aggressor=stream-write slowdown=9.23x
+CXL: victim=stream-read aggressor=stream-write slowdown=8.75x

@@ -1,0 +1,4 @@
+Pressure@agg8: objplace 31.0 vs hotness 14.4 GiB/s (+116%), vs interleave +101%
+Budget@40%: objplace 22.0 vs hotness 18.1 (+22%), manual 22.0
+GNN uniform: objplace vs interleave +-16%, vs manual -5.4%
+GNN skewed: objplace vs interleave +-12%, vs manual -0.7%

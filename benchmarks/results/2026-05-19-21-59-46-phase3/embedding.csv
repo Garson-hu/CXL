@@ -1,0 +1,5 @@
+workload,place,solo_metric,loaded_metric,loaded_slowdown
+embedding,dram,50.011,47.557,0.951
+embedding,cxl,49.288,49.714,1.009
+embedding,interleave,48.379,48.631,1.005
+embedding,skew,42.006,42.502,1.012

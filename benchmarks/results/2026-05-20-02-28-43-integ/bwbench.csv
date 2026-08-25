@@ -1,0 +1,4 @@
+policy,solo_gib_s,loaded_gib_s,slowdown
+allcxl,35.647,16.753,2.128
+interleave,60.863,32.809,1.855
+hint,68.840,69.182,0.995

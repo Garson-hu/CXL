@@ -1,0 +1,7 @@
+T1 emb  objplace vs manual : +0.2%  (target ~0)
+T1 gnn  objplace vs manual : -0.1%  (target ~0)
+T2 emb  objplace vs interleave : +14.3%  (target ~15%)
+   gnn  objplace vs interleave : +1.3%
+T3 bwbench recovery objplace vs allcxl (loaded) : +315%
+T4 sensbench objplace vs hotness-only : +118%
+T5 overhead (=T1 emb objplace vs manual) : 0.2%

@@ -1,0 +1,9 @@
+tag,node,mode,threads,size_per_thread_bytes,read_pct,duration_sec,total_bytes,bandwidth_gib_s,avg_latency_ns
+latency-node0,0,latency,1,536870912,50,3.256,1006632960,0.288,184.902
+stream-read-node0,0,stream-read,1,536870912,50,3.010,104152956928,32.221,0.000
+stream-write-node0,0,stream-write,1,536870912,50,3.002,100394860544,31.145,0.000
+random-read-node0,0,random-read,1,536870912,50,3.001,7398752256,2.296,0.000
+latency-node1,1,latency,1,536870912,50,3.372,671088640,0.185,276.480
+stream-read-node1,1,stream-read,1,536870912,50,3.002,62813896704,19.487,0.000
+stream-write-node1,1,stream-write,1,536870912,50,3.002,59592671232,18.489,0.000
+random-read-node1,1,random-read,1,536870912,50,3.001,5104467968,1.584,0.000

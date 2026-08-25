@@ -1,0 +1,41 @@
+# Post-reboot status check — 2026-08-14
+# Context: admin BIOS change + reboot (~2026-08-12, famfs FUSE uptime 2d01h).
+# Email from admin: "NUMA works now, but devdax still sees 3 regions while
+# cxl* shows 4 ... still interleaved within each NUMA node."
+
+## numactl --hardware (was: 2 nodes — node0 all 256 CPUs + 773 GB, node1 CXL 508 GiB)
+# NOW 5 nodes: BIOS switched NPS1 -> NPS4 (socket split into 4 quadrants).
+# node 0: cpus 0-31+128-159,  193092 MB DRAM
+# node 1: cpus 32-63+160-191, 193513 MB DRAM
+# node 2: cpus 64-95+192-223, 193468 MB DRAM
+# node 3: cpus 96-127+224-255,193438 MB DRAM
+# node 4: no cpus, 520192 MB = CXL Pair A (dax0.0 + dax1.0, system-ram)
+# distances: intra-quadrant 10, cross-quadrant 12, any->CXL 18 (uniform)
+
+## CXL: UNCHANGED by the BIOS visit
+# decoder0.0 size 242.5 GiB ways=2 gran=256   (Pair A window 1 -> dax0.0)
+# decoder0.1 size 269.5 GiB ways=2 gran=256   (Pair A window 2 -> dax1.0)
+# decoder0.2 size 512.0 GiB ways=2 gran=256   (Pair B -> dax2.0, famfs FUSE, root)
+# All CXL is still 2-way interleaved at 256 B. No per-card region exists.
+# "3 vs 4 mismatch" = 4 cards -> 2 firmware pairs -> 3 address windows
+# (Pair A carved into two windows, Pair B one). Not a kernel flaw; same as
+# pre-reboot (see 2026-08-11 log context).
+
+## NEW: per-card quadrant affinity now visible (sysfs numa_node per memdev)
+# mem0 (e1:00.0) numa_node=3   \ Pair A spans TWO quadrants (0 and 3)
+# mem1 (c1:00.0) numa_node=0   /
+# mem2 (01:00.0) numa_node=1   \ Pair B both cards in quadrant 1
+# mem3 (02:00.0) numa_node=1   /
+# => CONFIRMS the E4 topology hypothesis (2026-08-11): Pair A "farther but
+# wider" (two I/O paths -> 47.7 GiB/s ceiling), Pair B single-quadrant
+# (shared path -> 35.5 flat).
+
+## Quick speed check (membench, threads pinned to node-0 CPUs)
+cxl  node4 ptr-chase latency   287.34 ns    # Aug-11 Pair A: 295.9; May Pair B: 276.5
+dram node0 ptr-chase latency   174.75 ns    # Aug-11: 205.5 (NPS1); May: 184.9
+cxl  node4 stream-read 8T      45.37 GiB/s  # Aug-11 Pair A cxlprobe 8T: 47.5
+dram node0 stream-read 8T      68.87 GiB/s  # single quadrant (1/4 of controllers)
+# Admin's prediction confirmed: CXL speed unchanged (still pair-interleaved).
+# DRAM latency IMPROVED under NPS4 (node-local quadrant, no cross-die hops).
+# NOTE: all future DRAM baselines are per-quadrant now — old NPS1 DRAM numbers
+# (94.6 GiB/s @32T etc.) are not comparable.

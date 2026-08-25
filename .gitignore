@@ -1,0 +1,17 @@
+# compiled binaries / build artifacts
+*.o
+*.so
+benchmarks/memory/membench
+benchmarks/memory/cxlprobe
+system/placement/bwbench
+system/placement/gnnbench
+system/placement/sensbench
+system/placement/mixbench
+system/placement/obench
+system/placement/test_objplace
+__pycache__/
+*.pyc
+
+# local tool state (Claude Code settings/skills stay machine-local)
+/.claude/
+.clangd

@@ -1,0 +1,1500 @@
+membench config:
+  mode=latency
+  node=0
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-write
+  node=0
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=random-read
+  node=0
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=latency
+  node=1
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-write
+  node=1
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=random-read
+  node=1
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=2
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=8
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=16
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=64
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+  thread 32 cpu 32
+  thread 33 cpu 33
+  thread 34 cpu 34
+  thread 35 cpu 35
+  thread 36 cpu 36
+  thread 37 cpu 37
+  thread 38 cpu 38
+  thread 39 cpu 39
+  thread 40 cpu 40
+  thread 41 cpu 41
+  thread 42 cpu 42
+  thread 43 cpu 43
+  thread 44 cpu 44
+  thread 45 cpu 45
+  thread 46 cpu 46
+  thread 47 cpu 47
+  thread 48 cpu 48
+  thread 49 cpu 49
+  thread 50 cpu 50
+  thread 51 cpu 51
+  thread 52 cpu 52
+  thread 53 cpu 53
+  thread 54 cpu 54
+  thread 55 cpu 55
+  thread 56 cpu 56
+  thread 57 cpu 57
+  thread 58 cpu 58
+  thread 59 cpu 59
+  thread 60 cpu 60
+  thread 61 cpu 61
+  thread 62 cpu 62
+  thread 63 cpu 63
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=32): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=33): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=34): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=35): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=36): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=37): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=38): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=39): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=40): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=41): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=42): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=43): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=44): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=45): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=46): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=47): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=48): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=49): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=50): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=51): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=52): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=53): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=54): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=55): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=56): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=57): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=58): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=59): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=60): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=61): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=62): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=63): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=0
+  threads=128
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+  thread 32 cpu 32
+  thread 33 cpu 33
+  thread 34 cpu 34
+  thread 35 cpu 35
+  thread 36 cpu 36
+  thread 37 cpu 37
+  thread 38 cpu 38
+  thread 39 cpu 39
+  thread 40 cpu 40
+  thread 41 cpu 41
+  thread 42 cpu 42
+  thread 43 cpu 43
+  thread 44 cpu 44
+  thread 45 cpu 45
+  thread 46 cpu 46
+  thread 47 cpu 47
+  thread 48 cpu 48
+  thread 49 cpu 49
+  thread 50 cpu 50
+  thread 51 cpu 51
+  thread 52 cpu 52
+  thread 53 cpu 53
+  thread 54 cpu 54
+  thread 55 cpu 55
+  thread 56 cpu 56
+  thread 57 cpu 57
+  thread 58 cpu 58
+  thread 59 cpu 59
+  thread 60 cpu 60
+  thread 61 cpu 61
+  thread 62 cpu 62
+  thread 63 cpu 63
+  thread 64 cpu 64
+  thread 65 cpu 65
+  thread 66 cpu 66
+  thread 67 cpu 67
+  thread 68 cpu 68
+  thread 69 cpu 69
+  thread 70 cpu 70
+  thread 71 cpu 71
+  thread 72 cpu 72
+  thread 73 cpu 73
+  thread 74 cpu 74
+  thread 75 cpu 75
+  thread 76 cpu 76
+  thread 77 cpu 77
+  thread 78 cpu 78
+  thread 79 cpu 79
+  thread 80 cpu 80
+  thread 81 cpu 81
+  thread 82 cpu 82
+  thread 83 cpu 83
+  thread 84 cpu 84
+  thread 85 cpu 85
+  thread 86 cpu 86
+  thread 87 cpu 87
+  thread 88 cpu 88
+  thread 89 cpu 89
+  thread 90 cpu 90
+  thread 91 cpu 91
+  thread 92 cpu 92
+  thread 93 cpu 93
+  thread 94 cpu 94
+  thread 95 cpu 95
+  thread 96 cpu 96
+  thread 97 cpu 97
+  thread 98 cpu 98
+  thread 99 cpu 99
+  thread 100 cpu 100
+  thread 101 cpu 101
+  thread 102 cpu 102
+  thread 103 cpu 103
+  thread 104 cpu 104
+  thread 105 cpu 105
+  thread 106 cpu 106
+  thread 107 cpu 107
+  thread 108 cpu 108
+  thread 109 cpu 109
+  thread 110 cpu 110
+  thread 111 cpu 111
+  thread 112 cpu 112
+  thread 113 cpu 113
+  thread 114 cpu 114
+  thread 115 cpu 115
+  thread 116 cpu 116
+  thread 117 cpu 117
+  thread 118 cpu 118
+  thread 119 cpu 119
+  thread 120 cpu 120
+  thread 121 cpu 121
+  thread 122 cpu 122
+  thread 123 cpu 123
+  thread 124 cpu 124
+  thread 125 cpu 125
+  thread 126 cpu 126
+  thread 127 cpu 127
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=32): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=33): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=34): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=35): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=36): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=37): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=38): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=39): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=40): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=41): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=42): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=43): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=44): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=45): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=46): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=47): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=48): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=49): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=50): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=51): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=52): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=53): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=54): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=55): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=56): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=57): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=58): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=59): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=60): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=61): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=62): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=63): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=64): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=65): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=66): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=67): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=68): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=69): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=70): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=71): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=72): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=73): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=74): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=75): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=76): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=77): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=78): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=79): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=80): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=81): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=82): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=83): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=84): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=85): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=86): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=87): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=88): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=89): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=90): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=91): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=92): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=93): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=94): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=95): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=96): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=97): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=98): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=99): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=100): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=101): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=102): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=103): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=104): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=105): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=106): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=107): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=108): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=109): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=110): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=111): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=112): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=113): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=114): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=115): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=116): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=117): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=118): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=119): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=120): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=121): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=122): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=123): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=124): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=125): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=126): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=127): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=1
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=2
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=4
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=8
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=16
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=32
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=64
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+  thread 32 cpu 32
+  thread 33 cpu 33
+  thread 34 cpu 34
+  thread 35 cpu 35
+  thread 36 cpu 36
+  thread 37 cpu 37
+  thread 38 cpu 38
+  thread 39 cpu 39
+  thread 40 cpu 40
+  thread 41 cpu 41
+  thread 42 cpu 42
+  thread 43 cpu 43
+  thread 44 cpu 44
+  thread 45 cpu 45
+  thread 46 cpu 46
+  thread 47 cpu 47
+  thread 48 cpu 48
+  thread 49 cpu 49
+  thread 50 cpu 50
+  thread 51 cpu 51
+  thread 52 cpu 52
+  thread 53 cpu 53
+  thread 54 cpu 54
+  thread 55 cpu 55
+  thread 56 cpu 56
+  thread 57 cpu 57
+  thread 58 cpu 58
+  thread 59 cpu 59
+  thread 60 cpu 60
+  thread 61 cpu 61
+  thread 62 cpu 62
+  thread 63 cpu 63
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=32): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=33): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=34): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=35): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=36): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=37): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=38): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=39): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=40): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=41): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=42): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=43): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=44): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=45): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=46): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=47): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=48): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=49): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=50): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=51): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=52): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=53): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=54): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=55): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=56): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=57): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=58): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=59): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=60): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=61): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=62): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=63): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=stream-read
+  node=1
+  threads=128
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+  thread 32 cpu 32
+  thread 33 cpu 33
+  thread 34 cpu 34
+  thread 35 cpu 35
+  thread 36 cpu 36
+  thread 37 cpu 37
+  thread 38 cpu 38
+  thread 39 cpu 39
+  thread 40 cpu 40
+  thread 41 cpu 41
+  thread 42 cpu 42
+  thread 43 cpu 43
+  thread 44 cpu 44
+  thread 45 cpu 45
+  thread 46 cpu 46
+  thread 47 cpu 47
+  thread 48 cpu 48
+  thread 49 cpu 49
+  thread 50 cpu 50
+  thread 51 cpu 51
+  thread 52 cpu 52
+  thread 53 cpu 53
+  thread 54 cpu 54
+  thread 55 cpu 55
+  thread 56 cpu 56
+  thread 57 cpu 57
+  thread 58 cpu 58
+  thread 59 cpu 59
+  thread 60 cpu 60
+  thread 61 cpu 61
+  thread 62 cpu 62
+  thread 63 cpu 63
+  thread 64 cpu 64
+  thread 65 cpu 65
+  thread 66 cpu 66
+  thread 67 cpu 67
+  thread 68 cpu 68
+  thread 69 cpu 69
+  thread 70 cpu 70
+  thread 71 cpu 71
+  thread 72 cpu 72
+  thread 73 cpu 73
+  thread 74 cpu 74
+  thread 75 cpu 75
+  thread 76 cpu 76
+  thread 77 cpu 77
+  thread 78 cpu 78
+  thread 79 cpu 79
+  thread 80 cpu 80
+  thread 81 cpu 81
+  thread 82 cpu 82
+  thread 83 cpu 83
+  thread 84 cpu 84
+  thread 85 cpu 85
+  thread 86 cpu 86
+  thread 87 cpu 87
+  thread 88 cpu 88
+  thread 89 cpu 89
+  thread 90 cpu 90
+  thread 91 cpu 91
+  thread 92 cpu 92
+  thread 93 cpu 93
+  thread 94 cpu 94
+  thread 95 cpu 95
+  thread 96 cpu 96
+  thread 97 cpu 97
+  thread 98 cpu 98
+  thread 99 cpu 99
+  thread 100 cpu 100
+  thread 101 cpu 101
+  thread 102 cpu 102
+  thread 103 cpu 103
+  thread 104 cpu 104
+  thread 105 cpu 105
+  thread 106 cpu 106
+  thread 107 cpu 107
+  thread 108 cpu 108
+  thread 109 cpu 109
+  thread 110 cpu 110
+  thread 111 cpu 111
+  thread 112 cpu 112
+  thread 113 cpu 113
+  thread 114 cpu 114
+  thread 115 cpu 115
+  thread 116 cpu 116
+  thread 117 cpu 117
+  thread 118 cpu 118
+  thread 119 cpu 119
+  thread 120 cpu 120
+  thread 121 cpu 121
+  thread 122 cpu 122
+  thread 123 cpu 123
+  thread 124 cpu 124
+  thread 125 cpu 125
+  thread 126 cpu 126
+  thread 127 cpu 127
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=32): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=33): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=34): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=35): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=36): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=37): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=38): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=39): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=40): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=41): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=42): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=43): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=44): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=45): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=46): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=47): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=48): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=49): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=50): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=51): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=52): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=53): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=54): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=55): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=56): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=57): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=58): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=59): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=60): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=61): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=62): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=63): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=64): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=65): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=66): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=67): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=68): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=69): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=70): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=71): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=72): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=73): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=74): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=75): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=76): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=77): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=78): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=79): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=80): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=81): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=82): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=83): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=84): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=85): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=86): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=87): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=88): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=89): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=90): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=91): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=92): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=93): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=94): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=95): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=96): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=97): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=98): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=99): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=100): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=101): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=102): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=103): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=104): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=105): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=106): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=107): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=108): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=109): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=110): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=111): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=112): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=113): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=114): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=115): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=116): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=117): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=118): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=119): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=120): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=121): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=122): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=123): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=124): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=125): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=126): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=127): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=0
+  threads=8
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=0
+  threads=16
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=0
+  threads=32
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+placement check (tid=0): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=0 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=0 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=1
+  threads=8
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=1
+  threads=16
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+membench config:
+  mode=loaded-latency
+  node=1
+  threads=32
+  bytes_per_thread=536870912
+  duration_sec=5.000
+  verify_placement=1
+  strict_placement=1
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+placement check (tid=0): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=1): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=2): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=3): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=4): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=5): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=6): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=7): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=8): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=9): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=10): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=11): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=12): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=13): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=14): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=15): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=16): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=17): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=18): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=19): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=20): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=21): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=22): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=23): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=24): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=25): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=26): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=27): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=28): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=29): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=30): expected_node=1 sampled=1024 correct=1024 wrong=0
+placement check (tid=31): expected_node=1 sampled=1024 correct=1024 wrong=0

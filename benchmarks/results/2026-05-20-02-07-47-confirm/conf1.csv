@@ -1,0 +1,5 @@
+node,victim_threads,baseline_bw,loaded_victim_bw,slowdown,aggressor_bw,total_bw
+0,2,61.863,62.275,0.993,nan,nan
+0,4,69.291,68.888,1.006,nan,nan
+1,2,33.947,16.879,2.011,nan,nan
+1,4,35.609,16.738,2.127,nan,nan

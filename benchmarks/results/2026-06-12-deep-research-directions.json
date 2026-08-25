@@ -1,0 +1,293 @@
+{
+  "summary": "Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report.",
+  "agentCount": 103,
+  "logs": [
+    "Q: Research question: What is a strong, novel research direction using REAL CXL mem…",
+    "Decomposed into 5 angles: state-of-art / recent acceptances, FAST/storage-systems angle, multi-device / interference on real hardware, skeptical / evaluation-gap angle, industry / production pain points",
+    "skeptical / evaluation-gap angle: 6 results",
+    "state-of-art / recent acceptances: 6 results",
+    "multi-device / interference on real hardware: 6 results",
+    "multi-device / interference on real hardware: 3 novel (3 filtered)",
+    "industry / production pain points: 6 results",
+    "industry / production pain points: 3 novel (3 filtered)",
+    "FAST/storage-systems angle: 6 results",
+    "FAST/storage-systems angle: 3 novel (3 filtered)",
+    "Fetched 21 sources → 104 claims → verifying top 25",
+    "\"EuroSys 2026 accepted a multi-tenant memory-bandwi…\": 3-0 ✓",
+    "\"No paper in the EuroSys 2026 accepted-papers list …\": 0-3 ✗",
+    "\"The FAST '26 spring accepted-papers batch (13 pape…\": 0-3 ✗",
+    "\"At SOSP 2025 (76 accepted papers), exactly one pap…\": 1-2 ✗",
+    "\"The only CXL paper at SOSP'25 (Oasis) is a Microso…\": 2-1 ✓",
+    "\"Famfs is explicitly NOT a storage tool and provide…\": 3-0 ✓",
+    "\"Famfs is still immature and in architectural trans…\": 3-0 ✓",
+    "\"The CXL standard's Global Persistent Flush (GPF) —…\": 3-0 ✓",
+    "\"This is an explicitly positional paper with no imp…\": 3-0 ✓",
+    "\"The paper's evaluation used an FPGA-based CXL 1.1 …\": 3-0 ✓",
+    "\"GPF Phase 1 can fail due to insufficient energy or…\": 3-0 ✓",
+    "\"The authors explicitly leave open as future work: …\": 3-0 ✓",
+    "\"The paper studies only single-CXL-device setups (o…\": 3-0 ✓",
+    "\"A three-tier buffer manager (local DRAM / CXL devi…\": 3-0 ✓",
+    "\"A DAC 2025 paper (Tsinghua/Alibaba) already claims…\": 3-0 ✓",
+    "\"CXL-Interplay (Tsinghua/ICT-CAS/Alibaba) claims to…\": 1-2 ✗",
+    "\"The common practice of emulating CXL memory with a…\": 3-0 ✓",
+    "\"CXL-Interplay's real-hardware testbeds each contai…\": 3-0 ✓",
+    "\"On real hardware, static software weighted interle…\": 0-3 ✗",
+    "\"True CXL memory measurably differs from NUMA-emula…\": 3-0 ✓",
+    "\"Micron/Intel claim this is the first real-hardware…\": 3-0 ✓",
+    "\"Commodity CXL devices are heterogeneous: different…\": 3-0 ✓",
+    "\"DRAM and CXL have opposite bandwidth responses to …\": 3-0 ✓",
+    "\"Real CXL devices from different vendors are highly…\": 3-0 ✓",
+    "\"Tail latency on CXL is an unsolved root-cause and …\": 3-0 ✓",
+    "Verify done: 25 claims → 20 confirmed, 5 killed"
+  ],
+  "result": {
+    "question": "Research question: What is a strong, novel research direction using REAL CXL memory hardware that could lead to a top-tier systems conference paper (FAST, ASPLOS, OSDI, SOSP, EuroSys) in a ~10-month timeline?\n\nResearcher context (weave into scoping; do not re-discover):\n- Hardware (NCSU ARC cluster, node c28 — https://arcb.csc.ncsu.edu/~mueller/cluster/arc/): AMD EPYC 9745 (128 cores), 773 GB DDR5 DRAM, 4x Micron CZ120 256GB CXL 2.0 Type 3 devices (real commodity CXL — this is the key strength; most academic groups only have emulation/simulation). One CZ120 is online as system-ram NUMA node 1 (~512 GB, measured 35.5 GiB/s bandwidth ceiling, latency 1.5x DRAM); two others are mounted as FAMFS (fabric-attached memory file system). Single host, NO CXL switch, no GPU-direct CXL, only a small RTX 4060 Ti 8GB GPU locally (H100/A100 on other nodes without CXL).\n- Already measured on this hardware: bandwidth-bound victims suffer 2.0-2.13x slowdown under CXL co-tenant contention (DRAM shows none; latency-bound victims only ~1.2x); skew-aware object placement beats interleave ~15%. A userspace object-placement runtime (ObjPlace: sensitivity/skew/phase/pressure-driven placement) is already built and evaluated with microbenchmarks.\n- Known-crowded areas to avoid or differentiate against (from a prior literature scan): KV-cache-on-CXL (Beluga, TraCT, ByteDance), MoE offload on CXL, object-level sensitivity-aware tiering (SoarAlto OSDI'25, X-Mem), page tiering (TPP, MEMTIS, Colloid, Nomad), multi-tenant VM-level CXL isolation (Memstrata OSDI'24), skew-aware embedding placement (RecShard, Bandana, CARINA), CXL switch pooling (no switch available anyway), near-data-processing CXL (no custom silicon available).\n\nWhat to research (search angles should cover):\n1. Recent (2025-2026) publications and preprints on CXL systems — what new sub-areas just opened or closed; what did FAST'25/FAST'26, OSDI'25, SOSP'25, ASPLOS'25/'26, EuroSys'25/'26 accept on CXL?\n2. FAST-specific angle: storage/file-system/persistence uses of CXL memory — FAMFS status and research gaps, CXL for caching/buffer pools/databases/LSM trees/file system journals/metadata, crash consistency on volatile CXL, CXL as a storage-cache tier between DRAM and SSD. (We have FAMFS deployed on real hardware — rare.)\n3. Multi-device CXL on one host (we have 4 devices): bandwidth aggregation, device-level interference, heterogeneous device tiers — what is published, what is open?\n4. What do recent top-tier CXL papers use for evaluation (real hardware vs emulation), and what evaluation gaps do reviewers complain about — i.e., where does real-CXL access create an unfair advantage?\n5. Industry/production signals 2025-2026: what are Microsoft/Meta/Samsung/Micron/MemVerge shipping or publishing on CXL memory use cases — which production pain points lack academic solutions?\n\nDeliverable: a ranked shortlist (3-5) of concrete paper-sized research ideas that (a) require/benefit from real commodity CXL hardware, (b) are not already taken by the crowded areas above, (c) fit a single-host 4-device no-switch setup and a 10-month timeline, with for each: the thesis, why it's open, closest competitors, and what FAST/OSDI reviewers would likely object to.",
+    "summary": "The strongest 10-month direction for the c28 testbed is a single-host, multi-device CXL system paper: every published real-hardware interference study (CXL-Interplay DAC'25, the Micron/Intel 8-device whitepaper) either uses one CXL device or fuses all devices into a single NUMA node, so device-level interference, per-device placement, and tail-latency-aware QoS across 4 commodity CZ120s is verifiably unclaimed — and Melody (ASPLOS'25) explicitly calls for, but does not build, a tail-latency mitigation system. Ranked shortlist: (1) device-granular placement/QoS runtime exploiting CXL-to-CXL interference and microsecond tail instability (extends the existing ObjPlace runtime; OSDI/ASPLOS/EuroSys); (2) a FAST-angle three-tier (DRAM/CXL/SSD) storage or buffer-pool system on real ASIC CXL + famfs, where the only prior validation is a workshop paper on a 557ns/9.4GB/s FPGA prototype whose authors explicitly leave device-characteristics and scalability open, and famfs itself disclaims all storage semantics; (3) dynamic read/write-mix-aware DRAM:CXL bandwidth steering, since DRAM and CXL respond oppositely to write ratio and static kernel interleave weights cannot track it. The real-hardware requirement is defensible: MICRO'23 and Melody quantify that NUMA emulation misleads (up to 26% latency / 3-66% bandwidth error, and emulation misses microsecond tails entirely), and top-tier CXL papers remain dominated by hyperscaler-affiliated groups. Crash consistency / GPF recovery is a genuine spec-level gap but should be avoided: the CZ120s are volatile and cannot exercise it end-to-end. Key competitor to differentiate against in all framings: MTTM (EuroSys'26, KAIST), which partitions the DRAM tier for multi-tenant bandwidth — adjacent to, but not occupying, device-side CXL contention.",
+    "findings": [
+      {
+        "claim": "IDEA 1 (top-ranked): A device-granular, interference- and tail-latency-aware CXL placement/QoS system across 4 commodity devices on one host is verifiably open. Thesis: treat each CXL device as a schedulable resource (not a pooled NUMA node), characterize CXL-to-CXL cross-device interference and per-device tail behavior, and drive object/page placement and tenant isolation from it — extending the existing ObjPlace runtime and the measured 2.0-2.13x co-tenant contention. Why open: CXL-Interplay (DAC'25, Tsinghua/Alibaba) claims first real-hardware CXL interference characterization but both its testbeds have exactly ONE CXL device (Montage ASIC 64GB; Intel Agilex FPGA 32GB) and it only studies CXL-vs-DRAM/SSD interference, never CXL-to-CXL; the Micron/Intel flagship 8-device CZ122 study fuses all devices into a single unified NUMA node with no per-device placement or interference analysis; Melody (ASPLOS'25) states 'no tools exist to pinpoint tail latencies' and explicitly punts mitigation to system designers. Closest competitors: CXL-Interplay, Melody, MTTM (EuroSys'26), Memstrata (OSDI'24), Colloid (SOSP'24). Likely reviewer objections: (a) 4 identical CZ120s are homogeneous, so vendor-heterogeneity arguments don't apply — must demonstrate load-induced per-device asymmetry/tails empirically first; (b) must differentiate from Colloid-style average-latency balancing and from MTTM's DRAM-tier partitioning; (c) characterization alone won't clear OSDI — a built system with end-to-end workloads is required.",
+        "confidence": "high",
+        "sources": [
+          "https://dl.acm.org/doi/10.1109/DAC63849.2025.11132607",
+          "https://arxiv.org/abs/2411.18308",
+          "https://arxiv.org/pdf/2412.12491",
+          "https://people.cs.vt.edu/jinshu/docs/papers/Melody_ASPLOS.pdf"
+        ],
+        "evidence": "CXL-Interplay abstract: 'To the best of our knowledge, we are the first to characterize CXL interference on real CXL hardware' — yet Table II lists one CXL device per testbed and verifiers confirmed no multi-CXL-device experiment exists in the paper or its arXiv precursor (only v1 exists). Micron/Intel whitepaper: 'all the Micron's CXL modules (8 in total) are brought up as separate NUMA node 1' — only DRAM:CXL interleave ratios studied, no device-level breakdown. Melody: 'Currently, no tools exist to pinpoint tail latencies... System designers need to account for tail latency impact.' All three underlying claims verified 3-0 against primary PDFs.",
+        "vote": "merged from claims [10],[11],[12],[13],[19] — all 3-0"
+      },
+      {
+        "claim": "IDEA 2 (FAST angle): A three-tier DRAM/CXL/SSD storage system (buffer pool, cache tier, or storage semantics layered over famfs) on real commodity ASIC CXL is open at full-venue level. Thesis: build and evaluate a CXL-as-middle-tier storage/caching system on production CXL silicon, the first beyond an FPGA prototype. Why open: the only real-hardware validation of CXL-as-middle-tier for buffer pools is a HardBD&Active'24 workshop paper using a single Seagate FPGA CXL 1.1 prototype with 557ns latency and 9.4 GB/s (vs CZ120's ~1.5x DRAM latency, 35.5 GiB/s); its authors explicitly flag results as prototype-bound and name as future work exactly what c28 enables: scalability, three-tier hierarchy comparison, and how different CXL device characteristics affect design. Separately, famfs explicitly disclaims storage: no rm/truncate/append, no write-back metadata — 'it is not a data storage tool... a data sharing tool' — so storage-tier semantics over famfs are deliberately unclaimed, and a working real-hardware famfs deployment is rare (kernel patches unmerged as of April 2026, standalone version being deprecated for FUSE). Closest competitors: Riekenbrauck et al. workshop paper; vmcache^n (arXiv 2603.03271, NUMA/chiplet, no CXL experiments); SIGMOD'24 tiered buffer management (NUMA emulation). Likely reviewer objections: (a) CZ120s are volatile — no persistence story, so crash consistency must be scoped out or handled via SSD logging; (b) famfs is mid-architectural-transition (standalone→FUSE, possible BPF redesign), so building on it risks obsolescence; (c) FAST reviewers will ask why CXL-as-cache beats simply buying more DRAM — needs a cost/capacity argument.",
+        "confidence": "high",
+        "sources": [
+          "https://hardbd-active.github.io/2024/papers/HardBDActive24-RiekenbrauckWLR.pdf",
+          "https://github.com/cxl-micron-reskit/famfs"
+        ],
+        "evidence": "Workshop paper conclusion (verified verbatim via pdftotext): 'a buffer manager with local memory and additional CXL device memory... maintains a higher throughput compared to a traditional two-tier hierarchy'; 'Current results are bound to the CXL device prototype characteristics... future work needs to evaluate how different throughput and latency characteristics of CXL Type 3 devices influence the quality of three-tier buffer manager designs.' Famfs README (fetched 2026-06): 'Famfs is not a general purpose file system... it is not a data storage tool'; 'As of May 2025 we support both the standalone and fuse versions... but we will be deprecating the standalone file system'; LWN/Phoronix confirm famfs still unmerged as of April 2026.",
+        "vote": "merged from claims [2],[3],[7],[8],[9] — all 3-0"
+      },
+      {
+        "claim": "IDEA 3: Dynamic, workload-aware DRAM:CXL bandwidth steering that tracks read/write mix. Thesis: DRAM and CXL have opposite bandwidth responses to write ratio (DRAM loses 20% at 1R:1W; CXL improves, 214 vs 205 GB/s, due to the bidirectional PCIe link), so the optimal DRAM:CXL split is workload-dependent (3:1 read-only vs 5:2 mixed) and Linux 6.9+ static weighted interleave cannot track it — an online controller that adapts interleave/placement to phase-level R/W mix is unbuilt. Why open: the Micron/Intel paper itself concedes 'we may need to adjust the interleaving weights based on the read-to-write ratio'; Melody independently corroborates the mechanism (DDR5 bus-turnaround penalties vs full-duplex CXL links improving 55-61% at balanced ratios). Best used as a mechanism inside Idea 1 rather than a standalone paper. Reviewer objections: (a) CXL-side gain in the cited example is modest (~4%) — the win comes from avoiding DRAM's 20% loss, which must be shown end-to-end; (b) exact ratios are Intel Xeon 6 + CZ122 numbers and must be re-measured on AMD Turin + CZ120; (c) risks being seen as an incremental kernel-policy tweak unless coupled with placement/QoS.",
+        "confidence": "high",
+        "sources": [
+          "https://arxiv.org/pdf/2412.12491",
+          "https://people.cs.vt.edu/jinshu/docs/papers/Melody_ASPLOS.pdf"
+        ],
+        "evidence": "Verified verbatim from the Micron/Intel preprint: 'in a workload with a 1:1 read to write ratio, DRAM's performance drops by 20%... Conversely, CXL memory demonstrates the opposite trend due to the bidirectional nature of the PCIe interface'; table shows DRAM 556→446 GB/s and CXL 205→214 GB/s at 1R:1W; '3:1 ratio was identified as optimal... for a read-only workload' vs 5:2 for mixed. Independently corroborated by Melody's DDR5 turnaround vs full-duplex CXL findings.",
+        "vote": "merged from claim [14] — 3-0"
+      },
+      {
+        "claim": "AVOID (ranked last): Crash consistency on CXL persistent memory — specifically GPF Phase 1 failure recovery — is a real, unclaimed spec-level gap (GPF gives much weaker guarantees than Intel eADR; Phase 1 can fail from insufficient energy or host-device communication errors; the CXL standard logs failures but does not describe recovery; the only work in the space is an April 2025 position paper with zero implementation). However, it is infeasible on c28: the Micron CZ120s are volatile Type 3 devices without GPF/persistence support, so the gap cannot be exercised end-to-end on the available hardware. Pursue only if persistent CXL devices become available; otherwise note it in related work.",
+        "confidence": "high",
+        "sources": [
+          "https://arxiv.org/abs/2504.17554"
+        ],
+        "evidence": "Verified verbatim from arXiv 2504.17554 (INESC-ID position paper): 'GPF's guarantees are much weaker than eADR's, with GPF only ensuring persistence in a limited set of scenarios'; 'GPF's Phase 1 may fail... This can be detected and logged... although this recovery process is not described in the standard.' Corroborated by CXL 3.x spec dirty-shutdown semantics, Intel's Andy Rudoff on the pmem list, and arXiv 2509.19459. Verifier explicitly flagged: CZ120s are volatile, so this is a feasibility risk, not an open lane for this testbed.",
+        "vote": "merged from claims [4],[5],[6] — all 3-0"
+      },
+      {
+        "claim": "CORE LEVERAGE: Real commodity CXL hardware is a documented, quantified evaluation advantage that reviewers recognize. NUMA-node emulation — the dominant academic practice — yields misleading characterizations (true CXL: up to 26% lower latency and 3-66% higher bandwidth efficiency than emulated, instruction- and device-dependent, per MICRO'23) and misses device-level effects entirely: real CXL devices show unstable microsecond-level tail latencies (p99.999 up to 1µs) that local DRAM and NUMA memory never exhibit (Melody, ASPLOS'25). Commodity devices are also heterogeneous across vendors/controllers in latency, bandwidth, and latency stability. Any of the shortlisted ideas should lead with measurements emulation cannot reproduce (tails, link-level bandwidth asymmetry, cross-device contention).",
+        "confidence": "high",
+        "sources": [
+          "https://arxiv.org/pdf/2303.15375",
+          "https://people.cs.vt.edu/jinshu/docs/papers/Melody_ASPLOS.pdf"
+        ],
+        "evidence": "MICRO'23 'Demystifying CXL Memory' (verified verbatim): 'the common emulation-based practice of using a remote NUMA node... may give us misleading performance characterization results and/or lead to suboptimal design decisions'; 'up to 26% lower latency and 3-66% higher bandwidth efficiency.' Melody Finding #1 (verified via pdftotext): 'CXL devices exhibit unstable and higher tail latency compared to local/NUMA memory'; NUMA p99.9-p50 gaps only 45-61ns while CXL devices hit ~1µs. Corroborated by Equilibria (arXiv 2602.08800) and CXL-DMSim. Caveat: heterogeneity findings are cross-vendor; c28's 4x CZ120 are identical, so the heterogeneity argument must rest on load-induced asymmetry, not vendor diversity.",
+        "vote": "merged from claims [15],[16],[17],[18] — all 3-0"
+      },
+      {
+        "claim": "CORE LEVERAGE (secondary): Top-tier CXL systems papers remain dominated by groups with hyperscaler hardware access — the only CXL paper at SOSP'25 (Oasis) is a Microsoft Azure/Research collaboration (with Columbia/UIUC/MIT), continuing the Memstrata (OSDI'24, same Berger/Azure group) pattern; meanwhile academic-only CXL papers at the same venues (Colloid SOSP'24, Demeter SOSP'25) resorted to NUMA/Optane emulation for lack of real hardware. An academic group with 4 real ASIC devices plus a famfs deployment occupies a genuinely rare position.",
+        "confidence": "medium",
+        "sources": [
+          "https://sigops.org/s/conferences/sosp/2025/accepted.html"
+        ],
+        "evidence": "SOSP'25 accepted list confirms Oasis authorship (Columbia, Microsoft Azure, Microsoft Research, UIUC, MIT CSAIL); verifier confirmed Demeter (SOSP'25) evaluated on Optane NUMA emulation and Colloid (SOSP'24) explicitly emulated tiered memory for lack of real CXL. Survived 2-1 (one dissent on the 'dominated' generalization — some academic groups do obtain vendor-donated hardware), hence medium confidence.",
+        "vote": "claim [0] — 2-1"
+      },
+      {
+        "claim": "COMPETITIVE LANDSCAPE: MTTM (EuroSys'26, KAIST — 'Dynamic Fast Memory Partitioning with Bandwidth Optimization for Multi-tenant Cloud', DOI 10.1145/3767295.3769371) is the closest published competitor to any proposal built on the measured 2.0-2.13x CXL co-tenant bandwidth contention. Critically, MTTM partitions the FAST (DRAM) tier among tenants based on DRAM sensitivity; it does not manage CXL-device-side bandwidth contention or per-device isolation. Any of the shortlisted ideas must cite it and position device-side contention management as the complementary, unoccupied half of the problem.",
+        "confidence": "high",
+        "sources": [
+          "https://2026.eurosys.org/papers.html",
+          "https://dl.acm.org/doi/10.1145/3767295.3769371"
+        ],
+        "evidence": "Confirmed 3-0 against two primary sources (EuroSys'26 accepted list and ACM DL, acceptance rate 16.9%). Verifier nuance preserved: 'MTTM's mechanism partitions the fast (DRAM) tier rather than the CXL device's bandwidth itself, so a proposal focused specifically on CXL-device-side contention/isolation would be adjacent rather than identical.'",
+        "vote": "claim [1] — 3-0"
+      }
+    ],
+    "caveats": "(1) Venue-saturation claims were the weakest area: assertions that CXL was absent from FAST'26 spring, EuroSys'26, and most of SOSP'25 were all REFUTED in verification, so do not assume the space is uncrowded at any venue — only the specific gaps named above (multi-device interference, tail-latency mitigation, ASIC-hardware buffer pools, famfs storage semantics) were verified open as of June 2026. (2) Several load-bearing sources are not peer-reviewed: the Micron/Intel 8-device study is a vendor whitepaper/preprint, and the GPF crash-consistency source is a position paper; their factual content was verified but ratios/numbers are platform-specific (Intel Xeon 6 + CZ122) and must be re-measured on AMD Turin + CZ120. (3) The heterogeneity/tail-latency literature is cross-vendor; c28's four identical CZ120s may not reproduce inter-device heterogeneity — Idea 1's empirical premise (cross-device interference and tail asymmetry among identical devices) must be validated in week-one measurements before committing. (4) Famfs is in active architectural transition (standalone deprecated, FUSE port pending upstream, possible BPF redesign per LWN April 2026) — any famfs-coupled system risks API churn within the 10-month window. (5) This is a fast-moving area: a 2026 follow-up (vmcache^n, arXiv 2603.03271) partially adjacent to Idea 2 exists and should be re-checked, and verification reflects the literature only through approximately June 2026; OSDI'26/EuroSys'26 camera-readies and FAST'27 submissions could close gaps before submission (~Dec 2026 for OSDI'27/ASPLOS'27). (6) The 'hyperscaler dominance' framing survived only 2-1 and is a generalization, not a guarantee that real-hardware access alone clears the novelty bar.",
+    "openQuestions": [
+      "Do four identical CZ120s on one AMD Turin host actually exhibit measurable cross-device interference, load-induced asymmetry, or microsecond tail latencies (Melody-style)? This is the empirical go/no-go for Idea 1 and is measurable on c28 this week without sudo (node 1 is already online).",
+      "Does the EPYC 9745's CXL root-complex topology share bandwidth across the 4 devices' links (common bottleneck) or provide independent paths? This determines whether device-granular placement can yield aggregation wins beyond Linux weighted interleave, and no published work characterizes it.",
+      "What exactly do MTTM (EuroSys'26) and the vmcache^n preprint (arXiv 2603.03271) cover mechanically — do their camera-ready versions add CXL-device-side bandwidth management or real-CXL buffer-pool experiments that would narrow Ideas 1 and 2?",
+      "Can famfs's deliberate non-storage scope be turned into a contribution (e.g., a crash-recoverable allocation/metadata layer over volatile CXL backed by SSD journaling), or does the volatile CZ120 + unmerged-kernel status make any FAST persistence story unconvincing to reviewers?"
+    ],
+    "refuted": [
+      {
+        "claim": "At SOSP 2025 (76 accepted papers), exactly one paper title mentions CXL — 'Oasis', which is about pooling PCIe devices over CXL, not about CXL memory tiering, multi-device CXL memory interference, or storage/persistence uses of CXL memory. This indicates that single-host multi-device CXL-memory characterization and FAMFS-style storage uses of CXL were not taken at SOSP'25.",
+        "vote": "1-2",
+        "source": "https://sigops.org/s/conferences/sosp/2025/accepted.html"
+      },
+      {
+        "claim": "The FAST '26 spring accepted-papers batch (13 papers) contains zero papers on CXL memory, persistent memory, far memory, or FAMFS — the CXL-for-storage space was not occupied in this acceptance round, so a real-hardware CXL storage/FAMFS paper would not collide with any FAST '26 spring acceptance.",
+        "vote": "0-3",
+        "source": "https://www.usenix.org/conference/fast26/spring-accepted-papers"
+      },
+      {
+        "claim": "No paper in the EuroSys 2026 accepted-papers list (193 papers) contains 'CXL' in its title, indicating CXL-branded systems work was absent from this venue's 2026 program and the sub-area is not saturated at EuroSys — relevant to gauging which venues recently accepted CXL work.",
+        "vote": "0-3",
+        "source": "https://2026.eurosys.org/papers.html"
+      },
+      {
+        "claim": "CXL-Interplay (Tsinghua/ICT-CAS/Alibaba) claims to be the first characterization of CXL interference on real CXL hardware, meaning interference between CXL memory and co-existing memory/storage systems was previously unstudied on real silicon — directly relevant since the researcher's measured CXL co-tenant contention results overlap with and must differentiate from this work.",
+        "vote": "1-2",
+        "source": "https://arxiv.org/abs/2411.18308"
+      },
+      {
+        "claim": "On real hardware, static software weighted interleaving (Linux kernel 6.9+ weighted NUMA interleave, contributed largely by Micron) between DRAM and CXL yields 24% higher read-only bandwidth and up to 39% higher mixed read/write bandwidth versus DRAM-only, with a 24% geometric-mean speedup across HPC/AI workloads — establishing the production baseline any new placement/tiering system must beat.",
+        "vote": "0-3",
+        "source": "https://arxiv.org/pdf/2412.12491"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://sigops.org/s/conferences/sosp/2025/accepted.html",
+        "quality": "primary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://papers.cool/venue/OSDI.2025",
+        "quality": "secondary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.usenix.org/conference/fast26/spring-accepted-papers",
+        "quality": "primary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.phoronix.com/news/FamFS-2026-Upstream-Hopes",
+        "quality": "secondary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://2026.eurosys.org/papers.html",
+        "quality": "primary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/dmemsys/awesome-disaggregated-memory",
+        "quality": "secondary",
+        "angle": "state-of-art / recent acceptances",
+        "claimCount": 5
+      },
+      {
+        "url": "https://github.com/cxl-micron-reskit/famfs",
+        "quality": "primary",
+        "angle": "FAST/storage-systems angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/abs/2504.17554",
+        "quality": "primary",
+        "angle": "FAST/storage-systems angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://hardbd-active.github.io/2024/papers/HardBDActive24-RiekenbrauckWLR.pdf",
+        "quality": "primary",
+        "angle": "FAST/storage-systems angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/abs/2411.18308",
+        "quality": "primary",
+        "angle": "multi-device / interference on real hardware",
+        "claimCount": 5
+      },
+      {
+        "url": "https://dl.acm.org/doi/10.1109/DAC63849.2025.11132607",
+        "quality": "primary",
+        "angle": "multi-device / interference on real hardware",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2412.12491",
+        "quality": "primary",
+        "angle": "multi-device / interference on real hardware",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2303.15375",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://people.cs.vt.edu/jinshu/docs/papers/Melody_ASPLOS.pdf",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2405.14209",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/html/2411.02282v5",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/html/2502.19233v3",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://arxiv.org/pdf/2602.08800",
+        "quality": "primary",
+        "angle": "skeptical / evaluation-gap angle",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.asteralabs.com/news/astera-labs-leo-cxl-smart-memory-controllers-on-microsoft-azure-m-series-virtual-machines-overcome-the-memory-wall/",
+        "quality": "primary",
+        "angle": "industry / production pain points",
+        "claimCount": 4
+      },
+      {
+        "url": "https://arxiv.org/html/2602.08800v1",
+        "quality": "primary",
+        "angle": "industry / production pain points",
+        "claimCount": 5
+      },
+      {
+        "url": "https://lwn.net/Articles/983105/",
+        "quality": "secondary",
+        "angle": "industry / production pain points",
+        "claimCount": 5
+      }
+    ],
+    "stats": {
+      "angles": 5,
+      "sourcesFetched": 21,
+      "claimsExtracted": 104,
+      "claimsVerified": 25,
+      "confirmed": 20,
+      "killed": 5,
+      "afterSynthesis": 7,
+      "urlDupes": 1,
+      "budgetDropped": 8,
+      "agentCalls": 103
+    }
+  }
+}

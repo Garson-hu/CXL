@@ -1,0 +1,9 @@
+alpha,hot_frac,place,per_step_ms
+1.0,0.1,cxl,43.432
+1.0,0.1,interleave,43.030
+1.0,0.1,skew,36.575
+1.0,0.1,skew-hint,36.880
+1.5,0.1,cxl,39.929
+1.5,0.1,interleave,40.153
+1.5,0.1,skew,34.521
+1.5,0.1,skew-hint,34.727

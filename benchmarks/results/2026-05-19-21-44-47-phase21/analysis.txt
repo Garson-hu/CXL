@@ -1,0 +1,51 @@
+dir: /home/ghu4/CXL/benchmarks/results/2026-05-19-21-44-47-phase21 
+
+===== SATURATION SWEEP (slowdown vs idle, disjoint cores) =====
+
+-- node 0 (DRAM) --
+victim        agg_t=1  agg_t=2  agg_t=4  agg_t=8   (agg_bw@8)
+latency          0.98     0.97     0.96     0.97     69.1
+random-read      0.96     0.97     0.93     0.99     69.1
+kvcache          1.00     0.78     0.67     1.00     69.2
+embedding        0.67     0.67     0.67     0.67     69.1
+
+-- node 1 (CXL) --
+victim        agg_t=1  agg_t=2  agg_t=4  agg_t=8   (agg_bw@8)
+latency          1.01     1.08     1.10     1.12     35.1
+random-read      1.03     1.13     1.11     1.17     34.6
+kvcache          1.00     0.69     0.68     1.01     35.4
+embedding        0.67     0.67     0.67     0.67     34.7
+
+
+===== ASYMMETRY MATRIX (8-thread aggressor) =====
+
+-- node 0 (DRAM) slowdown[victim][aggressor] --
+victim\agg            latency   random-read   stream-read
+latency                 0.98          0.96          0.98
+random-read             1.02          1.05          1.06
+stream-read             1.06          1.09          1.04
+
+-- node 1 (CXL) slowdown[victim][aggressor] --
+victim\agg            latency   random-read   stream-read
+latency                 1.00          1.01          1.13
+random-read             1.02          1.02          1.22
+stream-read             1.00          1.05          1.41
+
+-- pairwise asymmetry = max(sd(X|Y)/sd(Y|X), inv) --
+pair                          node  sd(X|Y)  sd(Y|X)    asym
+latency vs random-read        DRAM     0.96     1.02    1.07
+latency vs stream-read        DRAM     0.98     1.06    1.09
+random-read vs stream-read    DRAM     1.06     1.09    1.03
+latency vs random-read         CXL     1.01     1.02    1.01
+latency vs stream-read         CXL     1.13     1.00    1.14
+random-read vs stream-read     CXL     1.22     1.05    1.16
+
+DRAM: max pairwise asym = 1.09 (('latency', 'stream-read'))
+CXL: max pairwise asym = 1.16 (('random-read', 'stream-read'))
+
+Any CXL pair > 1.5x asymmetry? NO
+
+-- aggressor-type effect on CXL (stream agg vs latency agg) --
+  victim=latency      stream-agg=1.13x  latency-agg=1.00x  ratio=1.13x
+  victim=random-read  stream-agg=1.22x  latency-agg=1.02x  ratio=1.20x
+  victim=stream-read  stream-agg=1.41x  latency-agg=1.00x  ratio=1.41x

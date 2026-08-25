@@ -1,0 +1,7 @@
+tag,node,mode,threads,size_per_thread_bytes,read_pct,duration_sec,total_bytes,bandwidth_gib_s,avg_latency_ns,victim_latency_ns,aggressor_bandwidth_gib_s,total_bandwidth_gib_s
+header:loadlat-node0-t8,0,loaded-latency,8,536870912,50,5.360,370910691328,64.448,303.558,303.558,68.477,68.663
+loadlat-node0-t16,0,loaded-latency,16,536870912,50,5.618,373058174976,61.848,305.853,305.853,68.598,68.784
+loadlat-node0-t32,0,loaded-latency,32,536870912,50,5.638,514255224832,84.945,301.952,301.952,93.967,94.151
+loadlat-node1-t8,1,loaded-latency,8,536870912,50,5.554,192334004224,32.249,445.934,445.934,35.281,35.405
+loadlat-node1-t16,1,loaded-latency,16,536870912,50,5.695,193944616960,31.719,435.302,435.302,35.284,35.407
+loadlat-node1-t32,1,loaded-latency,32,536870912,50,6.246,200387067904,29.879,440.743,440.743,35.278,35.397

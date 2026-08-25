@@ -1,0 +1,11 @@
+node,victim,agg_threads,victim_metric,victim_value,slowdown,aggressor_bw_gib_s
+0,latency,0,victim_latency_ns,186.0760,1.000,0.000
+0,latency,1,victim_latency_ns,180.4760,0.970,32.019
+0,latency,2,victim_latency_ns,180.7600,0.971,62.145
+0,latency,4,victim_latency_ns,177.6690,0.955,69.259
+0,latency,8,victim_latency_ns,181.7340,0.977,69.348
+0,random-read,0,total_bandwidth_gib_s,2.1710,1.000,0.000
+0,random-read,1,total_bandwidth_gib_s,2.2760,0.954,32.803
+0,random-read,2,total_bandwidth_gib_s,2.3450,0.926,61.392
+0,random-read,4,total_bandwidth_gib_s,2.3430,0.927,69.348
+0,random-read,8,total_bandwidth_gib_s,2.2600,0.961,69.328

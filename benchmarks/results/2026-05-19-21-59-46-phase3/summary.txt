@@ -1,0 +1,3 @@
+embedding skew-vs-interleave improvement: +12.6%
+kvcache split-vs-interleave improvement: -5.7%
+both >= 15%: False

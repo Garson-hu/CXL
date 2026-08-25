@@ -1,0 +1,11 @@
+access,policy,per_step_ms
+uniform,cxl,1.234
+uniform,interleave,1.108
+uniform,hotness,1.174
+uniform,objplace,1.236
+uniform,manual(skew),1.206
+skewed,cxl,0.432
+skewed,interleave,0.399
+skewed,hotness,0.375
+skewed,objplace,0.366
+skewed,manual(skew),0.372

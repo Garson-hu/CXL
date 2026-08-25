@@ -1,0 +1,5 @@
+workload,place,solo_metric,loaded_metric,loaded_slowdown
+kvcache,dram,12.687,11.997,0.946
+kvcache,cxl,13.127,9.283,0.707
+kvcache,interleave,12.618,8.500,0.674
+kvcache,split,12.726,8.982,0.706

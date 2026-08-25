@@ -1,0 +1,9 @@
+tag,node,mode,threads,size_per_thread_bytes,read_pct,duration_sec,total_bytes,bandwidth_gib_s,avg_latency_ns,victim_latency_ns,aggressor_bandwidth_gib_s,total_bandwidth_gib_s
+header:latency-node0-t1,0,latency,1,536870912,50,5.324,1744830464,0.305,182.327,182.327,0.000,0.327
+stream-read-node0-t1,0,stream-read,1,536870912,50,5.006,173946175488,32.361,0.000,0.000,0.000,32.363
+stream-write-node0-t1,0,stream-write,1,536870912,50,5.014,165893111808,30.813,0.000,0.000,0.000,30.814
+random-read-node0-t1,0,random-read,1,536870912,50,5.002,12645826560,2.355,0.000,0.000,0.000,2.355
+latency-node1-t1,1,latency,1,536870912,50,5.447,1140850688,0.195,278.749,278.749,0.000,0.214
+stream-read-node1-t1,1,stream-read,1,536870912,50,5.019,105226698752,19.526,0.000,0.000,0.000,19.527
+stream-write-node1-t1,1,stream-write,1,536870912,50,5.014,100394860544,18.648,0.000,0.000,0.000,18.649
+random-read-node1-t1,1,random-read,1,536870912,50,5.002,8220835840,1.531,0.000,0.000,0.000,1.531

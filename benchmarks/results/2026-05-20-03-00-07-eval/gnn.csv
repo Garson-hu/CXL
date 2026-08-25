@@ -1,0 +1,6 @@
+policy,per_step_ms
+dram,3.099
+cxl,3.649
+interleave,3.391
+skew,3.348
+objplace,3.346

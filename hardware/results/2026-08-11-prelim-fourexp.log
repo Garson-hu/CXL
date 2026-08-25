@@ -1,0 +1,59 @@
+# Preliminary four-experiment run — 2026-08-11
+# Context: node 1 = Pair A (mem0 e1:00.0 + mem1 c1:00.0, 2-way interleaved @256B,
+#   two firmware windows dax0.0+dax1.0, ~508 GiB). Pair B (mem2 01:00.0 + mem3
+#   02:00.0, decoder0.2, 512 GiB) = devdax dax2.0, held by root famfs FUSE server
+#   since 2026-06-18. Tools: benchmarks/memory/cxlprobe.c (new, this date) and
+#   benchmarks/memory/membench (same binary/params as 2026-05-19 smoke).
+# CPUs: chase/victim pinned cpu 0+, aggressors cpu 16+ (all node-0 cores).
+
+## E1 — stripe-trick validation (can software target one card of a pair?)
+# Method: 2-way 256B interleave => stride=512,chunk=256,offset={0,256} should
+# isolate one card if way = PA bit 8 (bit 8 is page-offset-controlled even at 4K).
+full-seq  stream  node=1 threads=8  bw=47.49 GiB/s
+classA    stride  node=1 threads=8 offset=0    bw=37.80 GiB/s   # > single-card max
+classB    stride  node=1 threads=8 offset=256  bw=36.66 GiB/s   # > single-card max
+co-run A+A (6T+6T, disjoint cores): 18.36 + 22.57 = 40.9 GiB/s total
+co-run A+B (6T+6T, disjoint cores): 19.53 + 23.92 = 43.4 GiB/s total
+# THP: never engaged (AnonHugePages=0; MADV_COLLAPSE rc=-1; thp=madvise mode).
+# VERDICT: NEGATIVE. Both offset classes exceed one card's x8 ceiling and A+A
+# co-run reaches ~full pair bandwidth => way-selection is NOT plain PA bit 8;
+# AMD decoder hashes higher (page-dependent) address bits. Software CANNOT
+# target an individual card inside a firmware-interleaved pair on Turin.
+# Implication: BIOS de-interleave is the only path to per-card control.
+
+## E2 — cross-pair interference (node 1 vs dax2.0) — BLOCKED
+# /dev/dax2.0 opens and mmaps (2M-aligned) but first read => SIGBUS: the famfs
+# FUSE server (root, pid 1689569, up since Jun 18) holds the device; famfs mount
+# is empty and file creation unsupported for non-root (famfs CLI needed).
+# Tooling ready (cxlprobe daxstream/daxchase). Needs: a world-readable famfs
+# file OR temporary unmount. Read-only access is data-safe either way.
+
+## E3 — tail-latency percentiles (chase, 4G region, 2M samples, ns)
+# config            mean   p50  p90  p99  p99.9  p99.99  max
+cxl-idle            291.4  279  299  559  679    3449    84009
+cxl-load4T          351.6  320  460  690  840    2950    150650
+cxl-load12T         345.5  319  419  689  799    2359    21749
+dram-idle           178.8  169  229  329  439    1769    17539
+dram-load12T        179.7  169  229  329  429    1969    17319
+# Findings: (1) No Melody-style microsecond p99.9 tails on CZ120 Pair A — p99.9
+# stays sub-us at all loads. (2) p99.99+ spikes appear on BOTH nodes (system/
+# interrupt noise dominates the extreme tail; CXL's are ~2x DRAM's). (3) Real
+# load asymmetry: CXL median inflates +15% under own 12T load (279->319ns) and
+# p90 +40-54%; DRAM is completely flat under the same load. (4) Tail-aware
+# routing (Idea 4 signal) looks WEAK on this hardware at these loads.
+
+## E4 — twins: Pair A (today, membench, May params) vs Pair B (2026-05-19 WORKLOG)
+# metric              PairB(May)   PairA(today)   delta
+ptr-chase latency     276.5 ns     295.9 ns       +7.0%
+seq read  1T          19.5 GiB/s   16.65          -14.6%
+seq write 1T          18.5         15.65          -15.4%
+random read 1T        1.58         1.48           -6.4%
+stream-read 4T        35.6         31.26          -12.2%
+stream-read 32T       35.5         47.72          +34.4%   <-- headline
+# DRAM drift control (node 0): latency 184.9->205.5 (+11%), seq read 1T
+# 32.2->31.0 (-3.7%). System state drifted since May, so small deltas are
+# inconclusive — but the 32T ceiling difference (35.5 flat vs 47.7 still
+# scaling; ~19 vs ~25.6 GB/s/card) far exceeds drift. Nominally identical
+# CZ120 pairs plausibly differ ~34% in saturated bandwidth. Needs same-day
+# back-to-back confirmation once Pair B is accessible.
+# Note: cxlprobe cross-check on Pair A: 21.0 GiB/s @1T, 47.5 @8T (consistent).

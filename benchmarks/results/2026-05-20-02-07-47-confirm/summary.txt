@@ -1,0 +1,6 @@
+conf1 CXL slowdowns: [2.01, 2.13] (all>=1.5: True)
+conf1 DRAM slowdowns: [0.99, 1.01] (all<=1.15: True)
+conf1 HOLD: True
+conf2 settings >=15% skew/il: 2 of 6
+conf2 HOLD: True
+BOTH HOLD: True

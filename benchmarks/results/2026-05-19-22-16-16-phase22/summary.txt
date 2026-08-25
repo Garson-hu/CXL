@@ -1,0 +1,2 @@
+Part B best skew-vs-interleave: +37.9% at alpha=1.5 hot_frac=0.05
+any setting >= 15%: True
