@@ -4,7 +4,8 @@
 Machine state at the time: NPS1 (node 0 = all 256 CPUs + 773 GB DRAM), node 1 =
 CXL 2-card pair (then Pair B, dax2.0-era mapping), kernel 6.14.11+. All numbers
 below predate the 2026-08-12 NPS4 reboot — DRAM figures not comparable to later
-files. Raw CSVs: `benchmarks/results/2026-05-19-*` … `2026-05-20-*`.
+files. Raw CSVs: `experimental_results/2026-05-19-baseline-objplace/`
+(13 timestamped run dirs; migrated from `benchmarks/results/` 2026-08-25).
 
 ## 1. Hardware characterization (phase1)
 | Metric | DRAM (node 0) | CXL (node 1) | Ratio |

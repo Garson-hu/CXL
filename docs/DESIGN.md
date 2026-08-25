@@ -115,3 +115,9 @@ Python: ctypes bridge, `ObjAttr` mirrors `obj_attr_t`
   NT staging API, LLM extension points as interfaces only. Build gated on
   `experiments/2026-08-25-direction-gates.md`. §3 marked v1-limited. Docs
   reorganized (this file created from `DESIGN_OBJPLACE.md`).
+- **2026-08-25 (later)** — gates PASSED; §7 unblocked. Measured constants for
+  the extension: DRAM {read 68.6, NT-write 54.9, plain-write ×2}; CXL pair
+  {read 45.8, NT-write 43.8, joint frontier peaking 59.4 @12:4, co-location
+  penalties −41% bw / 2.2× chase}. New design input: thread/CCD placement of
+  write streams is part of the mechanism (fabric-port sharing). Build awaits
+  user approval (W3).

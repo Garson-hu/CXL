@@ -1,0 +1,1350 @@
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=4
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=4
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=0
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=4
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=8
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=12
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+membench config:
+  mode=duplex
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  write_threads=16
+  write_node=0
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15

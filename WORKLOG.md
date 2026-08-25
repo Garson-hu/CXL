@@ -47,20 +47,25 @@ orchestrators (`phase21/22`, `confirm`, `integ`, `eval_objplace`, `eval_block2`)
 embedding), +315% bandwidth recovery, +118% vs hotness-only, pressure-aware
 (+67%→+116%), overhead ~0%. GNN skewed +8.3% / uniform −11.6%.
 
-**Open issues / honest gaps.** Gates 1–2 not yet passed (duplex could die on
-device-internal serialization). Novelty double-check pending (Clove, VLDB'25 line).
+**GATES PASSED (2026-08-25).** G1 duplex: CXL joint 59.4 GiB/s vs 45.8 single
+(+30%); DRAM pinned/degrading — write direction is real added capacity. G2b
+(CCD-separated): write stream moved DRAM→CXL costs the DRAM reader NOTHING
+(68.6 GiB/s = idle; 10.9 under DRAM writers = 6.3× collapse), latency idle-equal,
+writers keep 80%. CXL co-located readers pay (−41% bw; chase 2.2×). Bonus: same-CCD
+victim/aggressor threads share a fabric port that dominates cross-node interference
+— now a methodology invariant. Full tables:
+`docs/experiments/2026-08-25-direction-gates.md`.
+
+**Open issues / honest gaps.** Novelty double-check pending (Clove, VLDB'25 line).
 Multi-tenant evidence still synthetic. No established-baseline comparison yet
 (TPP/MEMTIS/Colloid/Nomad). NPS4 invalidated all NPS1 DRAM baselines. Old parked
 gaps unchanged (INTERLEAVE candidate, per-card access, KV claim).
 
-**Next step (critical path).** Run the two GATES (specs:
-`docs/experiments/2026-08-25-direction-gates.md`):
-(1) duplex matrix — extend `membench` with NT-store writes + `duplex` co-run mode,
-sweep R:W on node 4 vs DRAM control; (2) cross-interference asymmetry — victim
-chase/stream on DRAM and CXL under NT-write aggressors targeting each node. Pass →
-W3 per-direction planner + `obj_stage_out/in` API, then W4 VeloC checkpoint-staging
-demo, then W5 LLM trace sanity. Fail → rethink before building anything.
-**Every step past the docs reorg needs explicit user approval first.**
+**Next step (critical path).** W3: per-direction planner in ObjPlace (`dir` attr,
+two budgets per tier + measured CXL joint frontier, DRAM write ×2, co-location
+penalties) + `obj_stage_out/in` NT staging API; then W4 VeloC checkpoint-staging
+demo; then W5 LLM trace sanity. **Each step needs explicit user approval first —
+W3 not yet approved.**
 
 **Doc Map (reorganized 2026-08-25 — rules in `docs/README.md`).**
 - `WORKLOG.md` (this file) — status + history. **Start here.**
@@ -102,8 +107,14 @@ DESIGN_OBJPLACE.md dissolved into the new files (originals preserved in
 `docs/archive/`); rules in `docs/README.md`; CLAUDE.md policy updated. User
 feedback captured: present multi-step plans and get explicit agreement BEFORE
 executing (memory: feedback_confirm_before_do). Gate specs + eventual results:
-`docs/experiments/2026-08-25-direction-gates.md`. membench extension left
-mid-edit (inert stubs only) pending approval of next step.
+`docs/experiments/2026-08-25-direction-gates.md`. **Later same day (user-approved):**
+data migrated to `experimental_results/<md-name>/` layout (user's convention;
+user renamed old `experiments/` → `experimental_results/` themselves); repo pushed
+to private GitHub `Garson-hu/CXL` (main, SSH); membench extended (NT-write kernel,
+`duplex` mode, cross-node write aggressors — ~130 lines) and BOTH GATES RUN AND
+PASSED (results above + in the gates file). Gate-2 v1 same-CCD confound caught and
+fixed with the CCD-separated re-run (both datasets kept). Tools:
+`hardware/scripts/duplex-gates.sh` + `duplex-gate2b.sh`.
 
 ### 2026-08-14 (session 13) — Post-reboot: NPS4 discovered; E4 hypothesis CONFIRMED
 **What happened:** admin BIOS visit + reboot (~08-12) after the Thursday meeting.

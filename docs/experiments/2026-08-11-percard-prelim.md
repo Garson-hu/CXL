@@ -4,7 +4,9 @@
 `INDEX.md`.** Machine at run time: node 1 = Pair A (mem0 e1:00.0 + mem1
 c1:00.0), dax2.0 = Pair B under famfs FUSE (root, since 2026-06-18). Tools:
 `benchmarks/memory/cxlprobe.c` (written for this campaign) + `membench` (May
-parameters). Raw log: `hardware/results/2026-08-11-prelim-fourexp.log`.
+parameters). Raw logs:
+`experimental_results/2026-08-11-percard-prelim/` (both campaign logs; migrated
+from `hardware/results/` 2026-08-25).
 
 ## E1 — stripe-trick: can software address one card of a 2-way pair? **NO**
 256 B / 2-way interleave ⇒ reading every other 256 B slice should isolate one
@@ -60,7 +62,7 @@ affinity: **mem0→node 3, mem1→node 0 (Pair A spans quadrants 0+3); mem2,
 mem3→node 1 (Pair B in one quadrant)** — independent confirmation of the
 farther-but-wider hypothesis. Speeds re-verified: CXL 287 ns / 45.4 GiB/s @8T;
 DRAM node 0 improved to 174.8 ns (quadrant-local). Log:
-`hardware/results/2026-08-14-post-reboot-nps4-check.log`.
+`experimental_results/2026-08-11-percard-prelim/2026-08-14-post-reboot-nps4-check.log`.
 
 ## Why parked
 Per-card control still needs the BIOS CXL-interleave change (advisor lukewarm;

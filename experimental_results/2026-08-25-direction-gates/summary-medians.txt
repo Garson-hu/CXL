@@ -1,0 +1,27 @@
+== GATE 1 (median of 5 reps) ==
+tag                 read   write   total  GiB/s
+g1-n0-r16-w0        69.4     0.0    69.4
+g1-n0-r12-w4        34.9    34.9    69.8
+g1-n0-r8-w8         16.0    47.0    63.0
+g1-n0-r4-w12        10.2    49.5    59.7
+g1-n0-r0-w16         0.0    53.3    53.3
+g1-n4-r16-w0        45.8     0.0    45.8
+g1-n4-r12-w4        26.0    33.4    59.4
+g1-n4-r8-w8         16.5    37.7    54.2
+g1-n4-r4-w12        12.2    40.4    52.6
+g1-n4-r0-w16         0.0    43.8    43.8
+
+== GATE 2 (median of 5 reps) ==
+g2-bw-v0-idle      victim read bw =   68.4 GiB/s (writers   0.0)
+g2-bw-v0-wr0       victim read bw =   14.5 GiB/s (writers  48.2)
+g2-bw-v0-wr4       victim read bw =   21.5 GiB/s (writers  43.1)
+g2-bw-v4-idle      victim read bw =   45.6 GiB/s (writers   0.0)
+g2-bw-v4-wr0       victim read bw =   14.7 GiB/s (writers  48.1)
+g2-bw-v4-wr4       victim read bw =   16.5 GiB/s (writers  37.3)
+g2-lat-v0-idle     victim latency =    176.5 ns
+g2-lat-v0-wr0      victim latency =    272.0 ns
+g2-lat-v0-wr4      victim latency =    253.0 ns
+g2-lat-v4-idle     victim latency =    280.8 ns
+g2-lat-v4-wr0      victim latency =    371.5 ns
+g2-lat-v4-wr4      victim latency =    377.2 ns
+

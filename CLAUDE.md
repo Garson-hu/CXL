@@ -7,9 +7,8 @@ CXL + LLM systems research project. Target: top systems venue (OSDI, ASPLOS, SOS
 
 ## Layout
 - `hardware/scripts/` — measurement scripts for c28 (bash). Run as `./script.sh` on the node after `salloc`.
-- `hardware/results/` — raw measurement output, **append-only**, dated filenames (`YYYY-MM-DD-<what>.log`). Never edit past results.
-- `experiments/baselines/` — KV-cache placement comparisons (DRAM / CXL-pinned / interleaved).
-- `experiments/system/` — experiment harnesses for the built system (empty until direction is locked).
+- `hardware/results/` — machine inspections not tied to one experiment (append-only, dated). Never edit past results.
+- `experimental_results/<experiment-name>/` — RAW artifacts (logs/CSVs/outputs) of each experiment, one subdirectory per `docs/experiments/` md file, SAME basename (convention 2026-08-25). Append-only once written; the md file is the summary. (Old empty `baselines/`/`system/` subdirs are leftovers of the pre-rename `experiments/` tree.)
 - `system/` — the built system source (empty until direction is locked).
 - `workloads/` — trace configs (LMSys-Chat-1M, ShareGPT, BurstGPT, Azure LLM Inference Traces).
 - `scripts/` — generic utility scripts.

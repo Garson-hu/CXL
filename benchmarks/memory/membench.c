@@ -319,6 +319,37 @@ static void run_stream_write(struct thread_ctx *c) {
     c->seconds = (t1 - t0) / 1e9;
 }
 
+/* Non-temporal (streaming) stores: MOVNTI bypasses the cache, so each written
+ * line costs ONLY a host->device transfer — no RFO read, no writeback. This is
+ * the kernel that isolates the write direction of the link. */
+static void run_stream_write_nt(struct thread_ctx *c) {
+    uint64_t *p = (uint64_t *)c->buf;
+    size_t n = c->buf_bytes / sizeof(uint64_t);
+    uint64_t deadline = now_ns() + c->duration_ns;
+    uint64_t bytes = 0;
+    long long v = 0x5ca1ab1e0ddba11LL;
+    uint64_t t0 = now_ns();
+    while (now_ns() < deadline) {
+        for (size_t i = 0; i + 8 <= n; i += 8) {
+            _mm_stream_si64((long long *)&p[i + 0], v);
+            _mm_stream_si64((long long *)&p[i + 1], v);
+            _mm_stream_si64((long long *)&p[i + 2], v);
+            _mm_stream_si64((long long *)&p[i + 3], v);
+            _mm_stream_si64((long long *)&p[i + 4], v);
+            _mm_stream_si64((long long *)&p[i + 5], v);
+            _mm_stream_si64((long long *)&p[i + 6], v);
+            _mm_stream_si64((long long *)&p[i + 7], v);
+        }
+        _mm_sfence();
+        bytes += c->buf_bytes;
+        v++;
+    }
+    uint64_t t1 = now_ns();
+    c->bytes = bytes;
+    c->ops = bytes / CACHELINE;
+    c->seconds = (t1 - t0) / 1e9;
+}
+
 static void run_random_read(struct thread_ctx *c) {
     volatile uint64_t *p = (uint64_t *)c->buf;
     size_t lines = c->buf_bytes / CACHELINE;
@@ -389,8 +420,14 @@ static void *thread_main(void *arg) {
     case MODE_RANDOM_READ:   run_random_read(c); break;
     case MODE_MIXED:         run_mixed(c); break;
     case MODE_LOADED_LATENCY:
-        if (c->tid == 0) run_latency(c);
-        else             run_stream_read(c);
+        if (c->tid == 0)        run_latency(c);
+        else if (c->is_writer)  run_stream_write_nt(c);
+        else                    run_stream_read(c);
+        break;
+    case MODE_STREAM_WRITE_NT: run_stream_write_nt(c); break;
+    case MODE_DUPLEX:
+        if (c->is_writer) run_stream_write_nt(c);
+        else              run_stream_read(c);
         break;
     }
     return NULL;
@@ -453,7 +490,15 @@ static void usage(const char *argv0) {
 "usage: %s --node=N --mode=MODE [--size=BYTES[K|M|G|T]] [--threads=T]\n"
 "          [--rw=R:W] [--duration=SEC] [--tag=NAME] [--csv]\n"
 "          [--verify-placement] [--strict-placement] [--cpu-offset=N]\n"
+"          [--write-threads=W] [--write-node=N]\n"
+"          [--aggressor-kind=read|write-nt] [--aggressor-node=N]\n"
 "  modes: latency stream-read stream-write random-read mixed loaded-latency\n"
+"         stream-write-nt duplex\n"
+"  duplex: (threads - W) stream-readers on --node + W NT-writers on\n"
+"          --write-node (default --node); CSV: write side in the\n"
+"          aggressor_bandwidth column, read side = total - write\n"
+"  loaded-latency: victim chase on --node; aggressors read or NT-write\n"
+"          (--aggressor-kind) on --aggressor-node (default --node)\n"
 "  --size default 1G (per thread); --threads default 1; --rw default 50:50\n"
 "  --duration default 3 seconds; --csv prints one CSV row per run\n",
         argv0);
@@ -473,6 +518,10 @@ int main(int argc, char **argv) {
         .strict_placement = 0,
         .cpu_offset = 0,
         .tag = "run",
+        .write_threads = 0,
+        .write_node = -1,
+        .aggressor_write = 0,
+        .aggressor_node = -1,
     };
     int has_mode = 0;
     for (int i = 1; i < argc; i++) {
@@ -486,6 +535,15 @@ int main(int argc, char **argv) {
         else if (!strncmp(a, "--tag=", 6))         o.tag = a + 6;
         else if (!strcmp(a, "--csv"))              o.csv = 1;
         else if (!strncmp(a, "--cpu-offset=", 13)) o.cpu_offset = atoi(a + 13);
+        else if (!strncmp(a, "--write-threads=", 16)) o.write_threads = atoi(a + 16);
+        else if (!strncmp(a, "--write-node=", 13))    o.write_node = atoi(a + 13);
+        else if (!strncmp(a, "--aggressor-node=", 17)) o.aggressor_node = atoi(a + 17);
+        else if (!strncmp(a, "--aggressor-kind=", 17)) {
+            const char *k = a + 17;
+            if (!strcmp(k, "read"))          o.aggressor_write = 0;
+            else if (!strcmp(k, "write-nt")) o.aggressor_write = 1;
+            else { fprintf(stderr, "membench: --aggressor-kind must be read|write-nt\n"); exit(2); }
+        }
         else if (!strcmp(a, "--verify-placement")) o.verify_placement = 1;
         else if (!strcmp(a, "--strict-placement")) { o.verify_placement = 1; o.strict_placement = 1; }
         else if (!strcmp(a, "--help") || !strcmp(a, "-h")) usage(argv[0]);
@@ -493,6 +551,14 @@ int main(int argc, char **argv) {
     }
     if (o.node < 0 || !has_mode) usage(argv[0]);
     check_node_or_die(o.node);
+    if (o.write_node < 0) o.write_node = o.node;
+    if (o.aggressor_node < 0) o.aggressor_node = o.node;
+    if (o.mode == MODE_DUPLEX) {
+        if (o.write_threads < 0 || o.write_threads > o.threads)
+            die("--write-threads must be within 0..--threads for duplex");
+        check_node_or_die(o.write_node);
+    }
+    if (o.mode == MODE_LOADED_LATENCY) check_node_or_die(o.aggressor_node);
 
     /* Choose CPUs from the CPU-bearing node (node 0 on c28). */
     struct bitmask *cpus_node0 = numa_allocate_cpumask();
@@ -513,11 +579,20 @@ int main(int argc, char **argv) {
         ctx[i].tid = i;
         ctx[i].cpu = cpu_list[(o.cpu_offset + i) % cpu_count];
         ctx[i].buf_bytes = o.size_bytes;
-        ctx[i].buf = alloc_on_node(o.node, ctx[i].buf_bytes);
         ctx[i].mode = o.mode;
         ctx[i].read_pct = o.read_pct;
         ctx[i].duration_ns = o.duration_ns;
         ctx[i].is_aggressor = (o.mode == MODE_LOADED_LATENCY && i != 0);
+        ctx[i].is_writer =
+            (o.mode == MODE_DUPLEX && i >= o.threads - o.write_threads) ||
+            (o.mode == MODE_LOADED_LATENCY && i != 0 && o.aggressor_write) ||
+            (o.mode == MODE_STREAM_WRITE || o.mode == MODE_STREAM_WRITE_NT);
+        ctx[i].mem_node = o.node;
+        if (o.mode == MODE_DUPLEX && ctx[i].is_writer)
+            ctx[i].mem_node = o.write_node;
+        if (o.mode == MODE_LOADED_LATENCY && i != 0)
+            ctx[i].mem_node = o.aggressor_node;
+        ctx[i].buf = alloc_on_node(ctx[i].mem_node, ctx[i].buf_bytes);
     }
 
     /* Config dump (always to stderr; quiet enough to live alongside CSV stdout). */
@@ -529,6 +604,12 @@ int main(int argc, char **argv) {
             o.duration_ns / 1e9);
     if (o.mode == MODE_MIXED)
         fprintf(stderr, "  read_pct=%d\n", o.read_pct);
+    if (o.mode == MODE_DUPLEX)
+        fprintf(stderr, "  write_threads=%d\n  write_node=%d\n",
+                o.write_threads, o.write_node);
+    if (o.mode == MODE_LOADED_LATENCY)
+        fprintf(stderr, "  aggressor_kind=%s\n  aggressor_node=%d\n",
+                o.aggressor_write ? "write-nt" : "read", o.aggressor_node);
     fprintf(stderr,
             "  verify_placement=%d\n  strict_placement=%d\n  cpu_offset=%d\n",
             o.verify_placement, o.strict_placement, o.cpu_offset);
@@ -540,7 +621,7 @@ int main(int argc, char **argv) {
         int total_wrong = 0;
         for (int i = 0; i < o.threads; i++) {
             int wrong = verify_buffer_placement(ctx[i].buf, ctx[i].buf_bytes,
-                                                o.node, i);
+                                                ctx[i].mem_node, i);
             if (wrong < 0) {
                 fprintf(stderr,
                         "membench: placement verification syscall failed\n");
@@ -581,10 +662,15 @@ int main(int argc, char **argv) {
     uint64_t agg_bytes = 0;
     double max_kernel_sec = 0;       /* common elapsed time for BW reporting */
     double victim_latency_ns = 0;
+    uint64_t read_bytes = 0, write_bytes = 0;   /* duplex split */
     for (int i = 0; i < o.threads; i++) {
         total_bytes += ctx[i].bytes;
         total_ops += ctx[i].ops;
         if (ctx[i].seconds > max_kernel_sec) max_kernel_sec = ctx[i].seconds;
+        if (o.mode == MODE_DUPLEX) {
+            if (ctx[i].is_writer) write_bytes += ctx[i].bytes;
+            else                  read_bytes  += ctx[i].bytes;
+        }
         if (ctx[i].mode == MODE_LATENCY ||
             (ctx[i].mode == MODE_LOADED_LATENCY && ctx[i].tid == 0)) {
             sum_latency += ctx[i].avg_latency_ns;
@@ -622,6 +708,14 @@ int main(int argc, char **argv) {
         total_bw_gbps = (max_kernel_sec > 0)
             ? (total_bytes / max_kernel_sec) / (1ULL << 30) : 0.0;
     }
+    /* Duplex split: read/write sides on the common time base; the write side
+     * is exported in the aggressor_bandwidth CSV column. */
+    double read_bw_gbps = 0.0, write_bw_gbps = 0.0;
+    if (o.mode == MODE_DUPLEX && max_kernel_sec > 0) {
+        read_bw_gbps  = (read_bytes  / max_kernel_sec) / (1ULL << 30);
+        write_bw_gbps = (write_bytes / max_kernel_sec) / (1ULL << 30);
+        agg_bw_gbps = write_bw_gbps;
+    }
 
     if (o.csv) {
         if (!strncmp(o.tag, "header:", 7)) {
@@ -644,6 +738,14 @@ int main(int argc, char **argv) {
         if (latency_threads)
             printf("  avg_latency    = %.2f ns (avg of %d thread(s))\n",
                    avg_lat, latency_threads);
+        if (o.mode == MODE_DUPLEX) {
+            printf("  read_bw        = %.3f GiB/s (%d reader thread(s))\n",
+                   read_bw_gbps, o.threads - o.write_threads);
+            printf("  write_bw       = %.3f GiB/s (%d NT-writer thread(s) -> node %d)\n",
+                   write_bw_gbps, o.write_threads, o.write_node);
+            printf("  duplex_total   = %.3f GiB/s (same denominator)\n",
+                   total_bw_gbps);
+        }
         if (o.mode == MODE_LOADED_LATENCY) {
             printf("  victim_latency = %.2f ns (thread 0 only)\n",
                    victim_latency_ns);

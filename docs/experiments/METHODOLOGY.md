@@ -16,7 +16,15 @@ invariants with a date; never delete (mark superseded instead).*
   about plain-store RFO behavior (added 2026-08-25: plain stores put an RFO
   read on the read direction and contaminate direction-split measurements).
 - **Machine state header** in every raw log: node map, decoder state, famfs
-  status, date. Raw logs are append-only dated files in `hardware/results/`.
+  status, date. Raw artifacts live in `experimental_results/<experiment-name>/`
+  (same basename as the summary md; convention adopted 2026-08-25 — earlier
+  paths migrated). Files there are append-only once written.
 - **CPU pool = node 0** (NPS4: 64 logical CPUs) for membench/cxlprobe unless
   the experiment is about quadrant affinity.
+- **Victim and aggressors on separate CCDs** (added 2026-08-25, gate-2 v1
+  lesson): same-CCD threads share one CCD→IO-die fabric port, which dominates
+  cross-node interference measurements — victims were hurt regardless of the
+  aggressor's memory target. Use two processes with `--cpu-offset` ≥16 apart
+  (node-0 quadrant = cpus 0–15 CCD0, 16–31 CCD1). Within-node co-run modes
+  (duplex on ONE node) may stay single-process.
 - Planner pressure default = saturated (conservative) for ObjPlace runs.

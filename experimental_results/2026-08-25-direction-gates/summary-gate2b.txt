@@ -1,0 +1,15 @@
+== GATE 2b, CCD-separated (median of 5 reps) ==
+g2b-bw-v0-idle     victim read bw  =   68.6 GiB/s
+g2b-bw-v0-wr0      victim read bw  =   10.9 GiB/s
+g2b-bw-v0-wr4      victim read bw  =   68.6 GiB/s
+g2b-bw-v4-idle     victim read bw  =   45.7 GiB/s
+g2b-bw-v4-wr0      victim read bw  =   45.6 GiB/s
+g2b-bw-v4-wr4      victim read bw  =   27.0 GiB/s
+g2b-lat-v0-idle    victim latency  =    178.5 ns
+g2b-lat-v0-wr0     victim latency  =    297.3 ns
+g2b-lat-v0-wr4     victim latency  =    177.8 ns
+g2b-lat-v4-idle    victim latency  =    284.0 ns
+g2b-lat-v4-wr0     victim latency  =    280.9 ns
+g2b-lat-v4-wr4     victim latency  =    614.4 ns
+bg-w0              aggressor write =   54.9 GiB/s (20 runs)
+bg-w4              aggressor write =   43.7 GiB/s (20 runs)

@@ -60,12 +60,19 @@ measurements run on node 4 as-is (no BIOS change, no famfs favors).
   plain-write 27.9 app-level; DRAM 68.8 / 34.3 per NPS4 node.
 - **D2 (measured).** DRAM writes pay exactly 2× (34.3 × 2 = 68.6 ≈ 68.8); CXL
   writes beat the shared-pipe model by +22% — the tiers differ *in kind*.
-- **D3 (GATE 1 — pending).** Duplex co-run: reads + NT-writes together clear
-  well above the single-direction ceiling on CXL while DRAM stays pinned at its
-  one-pipe total.
-- **D4 (GATE 2 — pending).** Cross-interference asymmetry: a write stream added
-  to DRAM visibly hurts DRAM readers; the same stream on CXL leaves CXL (and
-  DRAM) readers ~unharmed. This is the system's core action measured in isolation.
+- **D3 (measured 2026-08-25 — Gate 1 PASS).** Duplex co-run on CXL: 59.4 GiB/s
+  joint (26.0 read + 33.4 NT-write at 12:4) = **+30% over the best single
+  direction (45.8)**; DRAM never exceeds its one-pipe ceiling and degrades as
+  writes mix in (69.8→53.3). Partial duplex: shared internal media, frontier
+  measured.
+- **D4 (measured 2026-08-25 — Gate 2b PASS, CCD-separated).** The 8-thread
+  write stream that collapses a DRAM reader 6.3× (68.6→10.9 GiB/s) costs that
+  reader NOTHING when redirected to CXL (68.6, latency 177.8 ns = idle);
+  writers keep 80% (54.9→43.7). Corollary: CXL co-located readers DO pay
+  (−41% bw; chase 2.2×) ⇒ separate write streams from hot reads across
+  tiers/devices. Bonus finding: same-CCD victim/aggressor threads share a
+  fabric port that dominates everything — thread placement is part of the
+  system design.
 - **D5 (design).** A planner with per-direction budgets beats hotness-only and
   single-budget placement whenever write streams are present.
 - **D6 (use case).** Checkpoint staging on CXL (VeloC pattern): app slowdown
@@ -133,3 +140,7 @@ Cross-pair E2 still blocked on famfs access. Details:
   (BIOS-gated, advisor lukewarm). LLM support scoped to reserved interfaces.
   C-claims kept as Foundation; D-claims added, D3/D4 gated on
   `experiments/2026-08-25-direction-gates.md`.
+- **2026-08-25 (later)** — BOTH GATES PASSED same day: D3 = +30% duplex joint
+  capacity; D4 = total DRAM-reader relief (idle-equal) at 80% writer
+  throughput, with the CXL co-location penalty and the CCD fabric-port finding
+  added. D5 planner design unblocked; W3 next pending user sign-off.

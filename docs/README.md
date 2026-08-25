@@ -16,8 +16,12 @@
 | `slides/` | Presentation decks (dated filenames) | Add new; never edit past decks |
 | `archive/` | Superseded docs, kept verbatim for reference | Never edited |
 
-Raw data stays outside docs: `../hardware/results/` (dated append-only logs) and
-`../benchmarks/results/` (per-run CSV dirs). Literature: `../Related.md` +
+Raw data stays outside docs (rule added 2026-08-25):
+**`../experimental_results/<experiment-name>/`** — one subdirectory per
+experiment, SAME basename as its md file, holding that experiment's original
+logs/CSVs/outputs; the md in `experiments/` is the summary. Machine inspections
+(not tied to one experiment) stay in `../hardware/results/`; literature data in
+`../benchmarks/results/`. Literature docs: `../Related.md` +
 `../DEEP_RESEARCH_2026-07-08-cxl-landscape.html`.
 
 ## Rules
@@ -29,7 +33,8 @@ Raw data stays outside docs: `../hardware/results/` (dated append-only logs) and
    corrections go in a new dated file that references the old one.
 3. **Naming:** `YYYY-MM-DD-<content>.md`, date = when the experiment started.
 4. **Precision.** Every number carries units, thread count, node, and date;
-   every claim links the raw log or CSV it came from. Machine-state changes
-   (BIOS, reboot, remap) are recorded in the experiment file they affect.
+   every claim links its raw file in `../experimental_results/<name>/`.
+   Machine-state changes (BIOS, reboot, remap) are recorded in the experiment
+   file they affect.
 5. **No new top-level docs.** New material is either an experiment file, a
    Change-History-tracked edit to PAPER/DESIGN, or it goes to WORKLOG.
