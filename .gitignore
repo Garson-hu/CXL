@@ -12,6 +12,9 @@ system/placement/test_objplace
 __pycache__/
 *.pyc
 
+# presentation decks stay local
+/docs/slides/
+
 # local tool state (Claude Code settings/skills stay machine-local)
 /.claude/
 .clangd
