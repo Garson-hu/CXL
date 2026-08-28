@@ -1,0 +1,48 @@
+# Post-reboot inspection — 2026-08-28 (reboot ~2026-08-27 18:30, uptime 20h18 at check)
+# Context: third config change of Aug 2026. Previous state (08-12..08-27): NPS4,
+# node 4 = Pair A system-ram, dax2.0 = Pair B devdax + famfs.
+
+## numactl --hardware — NPS reverted to NPS1, ALL CXL FUSED INTO ONE NODE
+# node 0: all 256 CPUs + 773129 MB DRAM
+# node 1: no cpus, 1042432 MB (~1018 GiB) = ALL FOUR CZ120s (dax0+dax1+dax2)
+# distances: 0->1 = 18 (uniform); 2 nodes total.
+
+## daxctl: dax0.0 (242.5 GiB), dax1.0 (269.5), dax2.0 (512) — ALL system-ram,
+# all target_node 1. famfs GONE: no mount, no FUSE process. DeepTier off the box.
+
+## Decoders — PARTIAL DE-INTERLEAVE HAPPENED
+# decoder0.0  242.5 GiB  ways=2  gran=256   (Pair A window 1 — still striped)
+# decoder0.1  269.5 GiB  ways=2  gran=256   (Pair A window 2 — still striped)
+# decoder0.2  512.0 GiB  ways=1  gran=256   (Pair B — NOW 1-WAY; was ways=2)
+# => Pair B is no longer 256B-striped across its two cards (linear/concatenated
+# layout implied; exact child mapping unreadable unprivileged). Pair A unchanged.
+# mem0-3 numa_node all = 0 (NPS1 — single CPU node, non-informative).
+
+## Quick speeds (membench, threads on node-0 CPUs; buffers = node 1 wherever
+## the allocator placed them — PAIR NOT CONTROLLABLE from userspace anymore)
+cxl node1 ptr-chase latency   238.4 / 239.6 ns   (two runs)
+cxl node1 stream-read 8T      46.93 / 46.96 GiB/s
+cxl node1 stream-read 32T     48.73 GiB/s
+dram node0 ptr-chase latency  151.9 ns
+# Notes:
+# - DRAM 151.9 ns is FASTER than every prior config (May NPS1: 184.9; Aug-11:
+#   205.5; NPS4 quadrant: 174.8) => the BIOS visit changed more than NPS/CXL
+#   (memory tuning unknown). All prior DRAM baselines stale AGAIN.
+# - CXL 46.9-48.7 GiB/s matches Pair A's striped ceiling (45.8-47.7) => test
+#   buffers likely landed on Pair A windows. Whole-node numbers now mix two
+#   differently-configured pairs; per-pair attribution needs physical-address
+#   inspection (root) or region-selective onlining (root).
+# - CXL latency 238.6 ns is lower than any prior CXL figure (276.5-295.9);
+#   cannot yet attribute (de-interleaved path vs systemic BIOS tuning — DRAM
+#   also improved).
+
+## Consequences
+# 1. famfs constraint GONE; full ~1 TiB CXL usable, nothing else on the box.
+# 2. BUT pair-level targeting LOST to userspace: everything is one NUMA node
+#    (the old node4-vs-dax2.0 split was better for cross-pair experiments).
+# 3. decoder0.2 ways=1 proves the CXL interleave BIOS knob EXISTS and was
+#    touched — ask admin: apply to Pair A too + one PXM/window => per-card or
+#    per-pair NUMA nodes become real.
+# 4. Gate results (2026-08-25, measured on NPS4 Pair-A-only node 4) remain
+#    valid device physics, but W3 evaluation baselines must be re-measured on
+#    this config; DRAM control changed a lot (151.9 ns).
