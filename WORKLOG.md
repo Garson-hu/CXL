@@ -26,14 +26,18 @@ de-interleave remains gated; twins +34% and quadrant affinity become supporting
 characterization. First evidence for v2: DRAM writes pay exactly the 2× RFO tax
 (34.3 = 68.8/2); CXL plain-writes beat the shared-pipe model by +22%.
 
-**Hardware (post-reboot ~2026-08-12, verified 2026-08-14).** AMD EPYC 9745
-Turin, **NPS4**: nodes 0–3 = CPU quadrants (64 CPUs + ~193 GB DRAM each; DRAM
-per-quadrant: 174.8 ns, read 68.8 GiB/s @8T), **node 4 = CXL Pair A** (508 GiB,
-287 ns, read 45.6 / plain-write 27.9 GiB/s). CXL still 2-way pair-interleaved
-(decoders unchanged by the reboot). Pair B = dax2.0 + famfs (blocked, root FUSE).
-Per-card affinity visible under NPS4: Pair A spans quadrants 0+3, Pair B in
-quadrant 1 — confirms the E4 "farther but wider" hypothesis. GPU 1× RTX 4060 Ti
-8 GB. No MLC — custom `membench` + `cxlprobe`.
+**Hardware (REBOOT #3 ~2026-08-27, verified 2026-08-28 — log
+`hardware/results/2026-08-28-post-reboot-fused-node.log`).** AMD EPYC 9745
+Turin, back to **NPS1** (node 0 = all 256 CPUs + 773 GB DRAM, now 151.9 ns —
+faster than every prior config, older DRAM baselines stale). **ALL CXL fused
+into node 1 (~1018 GiB, all three dax regions system-ram): 238.6 ns, 46.9 @8T /
+48.7 @32T GiB/s** (matches Pair-A striped ceiling — allocator placement across
+pairs not controllable from userspace). **famfs GONE** (DeepTier off the box —
+constraint lifted). **Partial de-interleave: Pair B decoder0.2 now ways=1**
+(the BIOS knob exists and was used); Pair A still 2-way. Userspace pair
+targeting LOST (one fused node). Gate results (08-25, NPS4 node 4 = Pair A
+alone) remain valid device physics; W3 baselines must be re-measured. GPU 1×
+RTX 4060 Ti 8 GB. No MLC — custom `membench` + `cxlprobe`.
 
 **What is built.** `system/placement/`: ObjPlace runtime (`objplace.{h,c}`,
 `libobjplace.so`), benchmarks `bwbench` / `gnnbench` / `sensbench` / `mixbench`,
