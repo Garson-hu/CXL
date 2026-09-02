@@ -33,9 +33,10 @@ faster than every prior config, older DRAM baselines stale). **ALL CXL fused
 into node 1 (~1018 GiB, all three dax regions system-ram): 238.6 ns, 46.9 @8T /
 48.7 @32T GiB/s** (matches Pair-A striped ceiling — allocator placement across
 pairs not controllable from userspace). **famfs GONE** (DeepTier off the box —
-constraint lifted). **Partial de-interleave: Pair B decoder0.2 now ways=1**
-(the BIOS knob exists and was used); Pair A still 2-way. Userspace pair
-targeting LOST (one fused node). Gate results (08-25, NPS4 node 4 = Pair A
+constraint lifted). **2026-09-01: dax2.0 = DEVDAX, root:kmem 0660, mmap-able by ghu4; node 1 = Pair A only
+(508 GiB). Pair B = plain 256 B stripe, card=(off>>8)&1 — PER-CARD TARGETING WORKS via
+dax offsets** (`docs/experiments/2026-09-01-pairb-address-map.md`). Pair A still 2-way
+root-hashed (unsplittable). Gate results (08-25, NPS4 node 4 = Pair A
 alone) remain valid device physics; W3 baselines must be re-measured. GPU 1×
 RTX 4060 Ti 8 GB. No MLC — custom `membench` + `cxlprobe`.
 
@@ -88,6 +89,22 @@ W3 not yet approved.**
 ---
 
 ## Session Log
+
+### 2026-09-01 (session 15) — dax2.0 is ours; Pair B card map PROVEN (plain 256 B stripe)
+**Machine:** admin switched dax2.0 to devdax (17:45, no reboot) and granted group kmem
+(0660, ghu4 in kmem ~20:00); node 1 = Pair A only (508 GiB). open+mmap verified across
+the device (devdax enforces bounds at fault time — never touch past 512 GiB).
+**Experiment** `docs/experiments/2026-09-01-pairb-address-map.md`: P1 halves identical
+(46.0 GiB/s, 219 ns) → not concatenated; P2 every co-run 24+24 → one shared pair;
+P3 256-B classes: each alone 23.9 (one card), even+odd 44.3, even+even 24.3 → **plain
+modulo stripe `card=(off>>8)&1`**; P3b parity uniform across the whole window. My
+Aug-28 "linear layout" hypothesis refuted; E1's Pair-A hash stands (root-level XOR),
+Pair B's host-bridge-level interleave uses plain bits. **First single-CZ120 number:
+23.9 GiB/s read @8T per card.** Tools: `cxlprobe --mode=daxstride` (new),
+`hardware/scripts/pairb-address-map.sh`. **Consequence:** per-card experiments
+(card-vs-card interference, per-card write streams) are possible NOW via dax offsets,
+no further admin change. Label assignment (which class = 01:00.0 vs 02:00.0) still an
+assumption from decoder3.0 target order.
 
 ### 2026-08-25 (session 14) — Direction pivot: write-preferred CXL + gate experiments
 **Context:** advisor lukewarm on the interleaving/per-card ask (system changes are

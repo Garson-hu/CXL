@@ -1,0 +1,12 @@
+p1-chase-128G daxchase node=1 samples=1000000 mean=227.0ns p50=219 p90=219 p99=529 p99.9=619 p99.99=1499 max=39659
+p1-stream-128G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s
+p1-chase-384G daxchase node=1 samples=1000000 mean=226.5ns p50=219 p90=229 p99=519 p99.9=609 p99.99=1309 max=166809
+p1-stream-384G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s
+p1-chase-128G daxchase node=1 samples=1000000 mean=211.4ns p50=219 p90=229 p99=519 p99.9=609 p99.99=1249 max=144949
+p1-stream-128G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s
+p1-chase-384G daxchase node=1 samples=1000000 mean=226.2ns p50=219 p90=219 p99=509 p99.9=609 p99.99=1339 max=164839
+p1-stream-384G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s
+p1-chase-128G daxchase node=1 samples=1000000 mean=222.4ns p50=219 p90=229 p99=479 p99.9=579 p99.99=1269 max=151109
+p1-stream-128G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s
+p1-chase-384G daxchase node=1 samples=1000000 mean=227.0ns p50=219 p90=219 p99=529 p99.9=619 p99.99=1269 max=11959
+p1-stream-384G daxstream node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=46.00 GiB/s

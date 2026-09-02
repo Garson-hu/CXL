@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
         else { fprintf(stderr, "unknown arg %s\n", a); return 1; }
     }
     if (!o.mode) {
-        fprintf(stderr, "usage: cxlprobe --mode=stream|stride|chase|daxstream|daxchase\n"
+        fprintf(stderr, "usage: cxlprobe --mode=stream|stride|chase|daxstream|daxchase|daxstride\n"
             "  [--node=N] [--threads=T] [--secs=S] [--size=BYTES]\n"
             "  [--stride=B --chunk=B --offset=B]   (stride mode)\n"
             "  [--dax=/dev/daxX.Y --dax-offset=B]  (dax modes)\n"
@@ -295,7 +295,8 @@ int main(int argc, char **argv) {
         !strcmp(o.mode, "stride")    ? w_stride    :
         !strcmp(o.mode, "chase")     ? w_chase     :
         !strcmp(o.mode, "daxstream") ? w_daxstream :
-        !strcmp(o.mode, "daxchase")  ? w_daxchase  : NULL;
+        !strcmp(o.mode, "daxchase")  ? w_daxchase  :
+        !strcmp(o.mode, "daxstride") ? w_stride    : NULL;
     if (!fn) { fprintf(stderr, "bad mode\n"); return 1; }
 
     uint64_t t_start = now_ns();
