@@ -26,3 +26,6 @@ dax2.0  512.0 GiB  devdax      driver=device_dax  (Pair B: mem1 01:00.0 + mem3 0
 open(O_RDWR) OK; mmap(MAP_SHARED, 2 MiB) OK at offsets 0/128/256/384/511 GiB
 (reads zeros); offset 512 GiB correctly rejected. /dev/dax2.0 is USABLE.
 Note: no udev rule in /etc/udev/rules.d — perms will reset on any rebind/reboot.
+# CORRECTION (same session): mmap at offset 512 GiB (past end) actually SUCCEEDED
+# at mmap() time — device_dax validates bounds at page-fault time, not at mmap;
+# touching such a mapping would SIGBUS. Never dereference beyond 512 GiB.
