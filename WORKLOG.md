@@ -66,6 +66,11 @@ Multi-tenant evidence still synthetic. No established-baseline comparison yet
 (TPP/MEMTIS/Colloid/Nomad). NPS4 invalidated all NPS1 DRAM baselines. Old parked
 gaps unchanged (INTERLEAVE candidate, per-card access, KV claim).
 
+**Per-card unlocked (2026-09-02).** Pair B addressable per card via /dev/dax2.0 offsets; cards
+measured as isolation domains (`docs/experiments/2026-09-02-pairb-card-interference.md`).
+The parked per-card direction is no longer blocked — it merges into the direction-aware
+thesis as "place write streams on their own card".
+
 **Next step (critical path).** W3: per-direction planner in ObjPlace (`dir` attr,
 two budgets per tier + measured CXL joint frontier, DRAM write ×2, co-location
 penalties) + `obj_stage_out/in` NT staging API; then W4 VeloC checkpoint-staging
@@ -89,6 +94,19 @@ W3 not yet approved.**
 ---
 
 ## Session Log
+
+### 2026-09-02 (session 16) — Card-vs-card interference: cards ARE isolation domains
+**Experiment** `docs/experiments/2026-09-02-pairb-card-interference.md` (cxlprobe gained
+`--class` for chase + `daxstridewr` NT-write mode). Victim on card A (even class) vs 8T
+aggressors on card B (odd) or card A, separate CCDs, 3 reps. **Cross-card: latency
+victim unchanged (225→225 ns mean, p50 219 under reads AND NT writes); bandwidth victim
+−6% under reads, 0% under writes. Same-card: latency 1.93× (reads) / 2.06× (writes);
+bandwidth −51% (read+read fair share) but only −5% under writes (card-level duplex ≈
++55% joint).** Symmetric arm (victim on B, writes on A): +2%. Cross-card asymmetry: readers
+protected, NT writers yield ~30% (overlap-estimated). **Meaning:** "writer gets its own
+card" gives Gate-2b-grade isolation inside the CXL tier; planner can treat cards as
+independent budgets (read ~23.9, write ~21.9, joint ~37; co-located-write latency ×2).
+First real-hardware CXL-to-CXL card-granularity interference measurement.
 
 ### 2026-09-01 (session 15) — dax2.0 is ours; Pair B card map PROVEN (plain 256 B stripe)
 **Machine:** admin switched dax2.0 to devdax (17:45, no reboot) and granted group kmem

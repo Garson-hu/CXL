@@ -52,6 +52,8 @@ struct opts {
     const char *mode, *tag, *daxpath;
     int node, threads, secs, cpu_offset, csv;
     size_t size, stride, chunk, offset, dax_offset, samples;
+    int cls;   /* daxchase: -1 = any chunk, 0 = even 256B chunks, 1 = odd */
+    int wr;    /* map dax writable (set automatically for write modes) */
 };
 
 struct tctx {
@@ -92,10 +94,10 @@ static uint8_t *alloc_node(size_t size, int node) {
     }
     return p;
 }
-static uint8_t *map_dax(const char *path, size_t off, size_t size) {
-    int fd = open(path, O_RDONLY);
+static uint8_t *map_dax(const char *path, size_t off, size_t size, int wr) {
+    int fd = open(path, wr ? O_RDWR : O_RDONLY);
     if (fd < 0) { perror("open dax"); exit(1); }
-    uint8_t *p = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, off);
+    uint8_t *p = mmap(NULL, size, wr ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, fd, off);
     if (p == MAP_FAILED) { perror("mmap dax"); exit(1); }
     return p;
 }
@@ -130,6 +132,25 @@ static void *w_stride(void *a) {
         }
     }
     c->bytes = bytes; c->sink = s; return NULL;
+}
+
+static void *w_stridewr(void *a) {               /* NT stores, one 256B class */
+    struct tctx *c = a; pin(c->o->cpu_offset + c->tid);
+    size_t stride = c->o->stride, chunk = c->o->chunk, off0 = c->o->offset;
+    uint64_t bytes = 0; long long v = 0x5ca1ab1e0ddba11LL;
+    while (!*c->stop) {
+        for (uint8_t *pg = c->base; pg < c->base + c->len; pg += PG2M) {
+            for (size_t off = off0; off + chunk <= PG2M; off += stride) {
+                long long *q = (long long *)(pg + off);
+                for (size_t l = 0; l < chunk; l += 8) _mm_stream_si64(q + l / 8, v);
+                bytes += chunk;
+            }
+            _mm_sfence();
+            if (*c->stop) break;
+        }
+        v++;
+    }
+    c->bytes = bytes; c->sink = (uint64_t)v; return NULL;
 }
 
 /* build a random cyclic pointer chain over cache lines (Sattolo) */
@@ -209,6 +230,7 @@ static void *w_daxchase(void *a) {                 /* read-only dependent loads 
     for (int i = 0; i < 100000; i++) {             /* warm + establish chain */
         v = *(volatile uint64_t *)(c->base + idx);
         idx = ((idx + v + 0x9E3779B97F4A7C15ull) * 2654435761u) & mask;
+        if (c->o->cls >= 0) idx = (idx & ~(uint64_t)0x100) | ((uint64_t)c->o->cls << 8);
     }
     uint64_t ovh_min = UINT64_MAX;
     for (int i = 0; i < 10000; i++) {              /* overhead: L1-hot load */
@@ -226,6 +248,7 @@ static void *w_daxchase(void *a) {                 /* read-only dependent loads 
             _mm_lfence();
             uint64_t t1 = rdtscp_ser();
             idx = ((idx + v + 0x9E3779B97F4A7C15ull) * 2654435761u) & mask;
+            if (c->o->cls >= 0) idx = (idx & ~(uint64_t)0x100) | ((uint64_t)c->o->cls << 8);
             uint64_t d = (t1 - t0 > ovh_min) ? t1 - t0 - ovh_min : 0;
             out[got++] = (uint32_t)((double)d * g_ns_per_tsc);
         }
@@ -245,7 +268,7 @@ int main(int argc, char **argv) {
     struct opts o = { .mode = NULL, .tag = "run", .daxpath = NULL,
         .node = 1, .threads = 1, .secs = 3, .cpu_offset = 0, .csv = 0,
         .size = 4UL << 30, .stride = 512, .chunk = 256, .offset = 0,
-        .dax_offset = 0, .samples = 1000000 };
+        .dax_offset = 0, .samples = 1000000, .cls = -1, .wr = 0 };
     for (int i = 1; i < argc; i++) {
         char *a = argv[i];
         if      (!strncmp(a, "--mode=", 7))       o.mode = a + 7;
@@ -262,10 +285,11 @@ int main(int argc, char **argv) {
         else if (!strncmp(a, "--cpu-offset=", 13)) o.cpu_offset = atoi(a + 13);
         else if (!strncmp(a, "--tag=", 6))        o.tag = a + 6;
         else if (!strcmp(a, "--csv"))             o.csv = 1;
+        else if (!strncmp(a, "--class=", 8))      o.cls = atoi(a + 8);
         else { fprintf(stderr, "unknown arg %s\n", a); return 1; }
     }
     if (!o.mode) {
-        fprintf(stderr, "usage: cxlprobe --mode=stream|stride|chase|daxstream|daxchase|daxstride\n"
+        fprintf(stderr, "usage: cxlprobe --mode=stream|stride|chase|daxstream|daxchase|daxstride|daxstridewr\n"
             "  [--node=N] [--threads=T] [--secs=S] [--size=BYTES]\n"
             "  [--stride=B --chunk=B --offset=B]   (stride mode)\n"
             "  [--dax=/dev/daxX.Y --dax-offset=B]  (dax modes)\n"
@@ -279,7 +303,8 @@ int main(int argc, char **argv) {
     if (is_lat) o.threads = 1;
 
     uint8_t *base;
-    if (is_dax) base = map_dax(o.daxpath, o.dax_offset, o.size);
+    if (!strcmp(o.mode, "daxstridewr")) o.wr = 1;
+    if (is_dax) base = map_dax(o.daxpath, o.dax_offset, o.size, o.wr);
     else        base = alloc_node(o.size, o.node);
     if (!strcmp(o.mode, "chase")) build_chain(base, o.size);
 
@@ -296,7 +321,8 @@ int main(int argc, char **argv) {
         !strcmp(o.mode, "chase")     ? w_chase     :
         !strcmp(o.mode, "daxstream") ? w_daxstream :
         !strcmp(o.mode, "daxchase")  ? w_daxchase  :
-        !strcmp(o.mode, "daxstride") ? w_stride    : NULL;
+        !strcmp(o.mode, "daxstride") ? w_stride    :
+        !strcmp(o.mode, "daxstridewr") ? w_stridewr : NULL;
     if (!fn) { fprintf(stderr, "bad mode\n"); return 1; }
 
     uint64_t t_start = now_ns();

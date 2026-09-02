@@ -1,0 +1,63 @@
+v-chase-A-idle daxchase node=1 samples=1000000 mean=225.0ns p50=219 p90=219 p99=469 p99.9=489 p99.99=2409 max=115689
+v-stream-A-idle daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=23.80 GiB/s
+v-chase-A-under-readB daxchase node=1 samples=1000000 mean=225.0ns p50=219 p90=229 p99=399 p99.9=539 p99.99=1499 max=13379
+agg-readB-for-chase daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.60 GiB/s
+v-stream-A-under-readB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.28 GiB/s
+agg-readB-for-stream daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.29 GiB/s
+v-chase-A-under-writeB daxchase node=1 samples=1000000 mean=224.8ns p50=219 p90=229 p99=409 p99.9=499 p99.99=1469 max=11199
+agg-writeB-for-chase daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=21.92 GiB/s
+v-stream-A-under-writeB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=24.11 GiB/s
+agg-writeB-for-stream daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=19.10 GiB/s
+v-chase-A-under-readA daxchase node=1 samples=1000000 mean=435.7ns p50=419 p90=609 p99=849 p99.9=989 p99.99=2569 max=16409
+agg-readA-for-chase daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=24.00 GiB/s
+v-stream-A-under-readA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=11.73 GiB/s
+agg-readA-for-stream daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=19.50 GiB/s
+v-chase-A-under-writeA daxchase node=1 samples=1000000 mean=469.5ns p50=469 p90=619 p99=819 p99.9=979 p99.99=2039 max=16159
+agg-writeA-for-chase daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.86 GiB/s
+v-stream-A-under-writeA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.61 GiB/s
+agg-writeA-for-stream daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=18.82 GiB/s
+v-chase-B-under-writeA daxchase node=1 samples=1000000 mean=234.1ns p50=219 p90=229 p99=559 p99.9=619 p99.99=1549 max=12959
+agg-writeA-for-chaseB daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.87 GiB/s
+v-chase-B-idle daxchase node=1 samples=1000000 mean=229.6ns p50=219 p90=229 p99=369 p99.9=619 p99.99=2059 max=1988433
+v-chase-A-idle daxchase node=1 samples=1000000 mean=226.1ns p50=219 p90=219 p99=479 p99.9=499 p99.99=2129 max=34039
+v-stream-A-idle daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=23.77 GiB/s
+v-chase-A-under-readB daxchase node=1 samples=1000000 mean=225.4ns p50=219 p90=229 p99=389 p99.9=559 p99.99=1459 max=12309
+agg-readB-for-chase daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.69 GiB/s
+v-stream-A-under-readB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.21 GiB/s
+agg-readB-for-stream daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.28 GiB/s
+v-chase-A-under-writeB daxchase node=1 samples=1000000 mean=225.2ns p50=219 p90=229 p99=389 p99.9=519 p99.99=1539 max=12519
+agg-writeB-for-chase daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=21.91 GiB/s
+v-stream-A-under-writeB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=24.12 GiB/s
+agg-writeB-for-stream daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=19.09 GiB/s
+v-chase-A-under-readA daxchase node=1 samples=1000000 mean=474.3ns p50=499 p90=619 p99=859 p99.9=979 p99.99=2759 max=15929
+agg-readA-for-chase daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=23.93 GiB/s
+v-stream-A-under-readA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=11.87 GiB/s
+agg-readA-for-stream daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=19.43 GiB/s
+v-chase-A-under-writeA daxchase node=1 samples=1000000 mean=464.9ns p50=459 p90=619 p99=819 p99.9=979 p99.99=2059 max=12619
+agg-writeA-for-chase daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.86 GiB/s
+v-stream-A-under-writeA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.59 GiB/s
+agg-writeA-for-stream daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=18.84 GiB/s
+v-chase-B-under-writeA daxchase node=1 samples=1000000 mean=233.4ns p50=219 p90=229 p99=559 p99.9=619 p99.99=1519 max=17119
+agg-writeA-for-chaseB daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.87 GiB/s
+v-chase-B-idle daxchase node=1 samples=1000000 mean=229.6ns p50=219 p90=229 p99=539 p99.9=619 p99.99=2239 max=162509
+v-chase-A-idle daxchase node=1 samples=1000000 mean=225.6ns p50=219 p90=219 p99=469 p99.9=489 p99.99=2379 max=155509
+v-stream-A-idle daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=23.91 GiB/s
+v-chase-A-under-readB daxchase node=1 samples=1000000 mean=224.9ns p50=219 p90=229 p99=409 p99.9=529 p99.99=1569 max=9619
+agg-readB-for-chase daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.56 GiB/s
+v-stream-A-under-readB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.30 GiB/s
+agg-readB-for-stream daxstride node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=23.18 GiB/s
+v-chase-A-under-writeB daxchase node=1 samples=1000000 mean=224.7ns p50=219 p90=229 p99=409 p99.9=519 p99.99=1519 max=12999
+agg-writeB-for-chase daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=21.91 GiB/s
+v-stream-A-under-writeB daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=24.14 GiB/s
+agg-writeB-for-stream daxstridewr node=1 threads=8 stride=512 offset=256 elapsed=10.00s bw=19.07 GiB/s
+v-chase-A-under-readA daxchase node=1 samples=1000000 mean=367.9ns p50=309 p90=589 p99=789 p99.9=1009 p99.99=1949 max=15189
+agg-readA-for-chase daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=23.87 GiB/s
+v-stream-A-under-readA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=11.74 GiB/s
+agg-readA-for-stream daxstride node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=19.48 GiB/s
+v-chase-A-under-writeA daxchase node=1 samples=1000000 mean=461.2ns p50=449 p90=619 p99=809 p99.9=979 p99.99=2119 max=12829
+agg-writeA-for-chase daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.86 GiB/s
+v-stream-A-under-writeA daxstride node=1 threads=8 stride=512 offset=0 elapsed=4.00s bw=22.62 GiB/s
+agg-writeA-for-stream daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=18.81 GiB/s
+v-chase-B-under-writeA daxchase node=1 samples=1000000 mean=235.1ns p50=220 p90=230 p99=550 p99.9=620 p99.99=1510 max=12320
+agg-writeA-for-chaseB daxstridewr node=1 threads=8 stride=512 offset=0 elapsed=10.00s bw=21.86 GiB/s
+v-chase-B-idle daxchase node=1 samples=1000000 mean=228.7ns p50=220 p90=230 p99=390 p99.9=530 p99.99=2140 max=148680

@@ -78,6 +78,13 @@ measurements run on node 4 as-is (no BIOS change, no famfs favors).
 - **D6 (use case).** Checkpoint staging on CXL (VeloC pattern): app slowdown
   during checkpoint shrinks vs DRAM staging, at equal or better checkpoint time.
 
+- **D7 (measured 2026-09-02 — card-vs-card, Pair B via dax offsets).** Two CXL
+  cards behind one host bridge are isolation domains: neighbor-card reads or
+  saturating NT writes leave a latency victim at 0% change (225 ns), cost a
+  bandwidth victim ≤6% (reads) / 0% (writes); same-card costs 1.9–2.1× latency,
+  −51% bw. Card-level duplex ≈ +55% joint. First real-HW card-granularity CXL
+  interference data. Enables "write streams get their own card".
+
 **Do NOT claim:** CXL write bandwidth > read bandwidth (false on CZ120: 27.9 vs
 45.6); "first LLM-on-CXL"; any active-decode KV-on-CXL benefit (read-latency
 trap); per-card results (hardware still pair-interleaved).
@@ -121,6 +128,9 @@ trap); the LLM story rides eviction/insertion/optimizer streams.
   VLDB'25 line before writing intro — flagged in
   `experiments/2026-08-25-direction-gates.md`.)
 
+## Change history addendum pointer
+(see bottom)
+
 ## Parked (revive only if an app demands or hardware unlocks)
 Per-card placement / interleave adaptation (Ideas 1–3 original form): BIOS
 de-interleave still gated (NPS4 reboot did not change CXL decoders); twins gap
@@ -144,3 +154,8 @@ Cross-pair E2 still blocked on famfs access. Details:
   capacity; D4 = total DRAM-reader relief (idle-equal) at 80% writer
   throughput, with the CXL co-location penalty and the CCD fabric-port finding
   added. D5 planner design unblocked; W3 next pending user sign-off.
+- **2026-09-02** — Per-card capability arrived without per-card NUMA: Pair B
+  addressable per card via /dev/dax2.0 offsets (plain 256 B stripe proven
+  2026-09-01); card-vs-card interference measured (D7): cards are isolation
+  domains. The parked per-card direction un-parks as a mechanism INSIDE Thesis
+  v2 (write streams to their own card), not a separate thesis.
