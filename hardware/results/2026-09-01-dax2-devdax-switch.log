@@ -20,3 +20,9 @@ dax2.0  512.0 GiB  devdax      driver=device_dax  (Pair B: mem1 01:00.0 + mem3 0
 # Persistent: /etc/udev/rules.d/91-dax-kmem.rules ->
 #   SUBSYSTEM=="dax", KERNEL=="dax2.0", GROUP="kmem", MODE="0660"
 # Live device confirmed: /sys/dev/char/252:2 -> platform/hmem.2/dax2.0, align 2 MiB.
+
+## UPDATE 2026-09-01 ~20:00 — permissions fixed by admin
+/dev/dax2.0  crw-rw---- root:kmem (0660); ghu4 in kmem.
+open(O_RDWR) OK; mmap(MAP_SHARED, 2 MiB) OK at offsets 0/128/256/384/511 GiB
+(reads zeros); offset 512 GiB correctly rejected. /dev/dax2.0 is USABLE.
+Note: no udev rule in /etc/udev/rules.d — perms will reset on any rebind/reboot.
