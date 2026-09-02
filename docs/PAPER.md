@@ -52,7 +52,8 @@ measurements run on node 4 as-is (no BIOS change, no famfs favors).
 6. **Evaluation** — microbench matrix; write-heavy use cases: **checkpoint staging
    (VeloC)** as the real-app anchor; synthetic multi-tenant mixes; overhead.
    LLM workloads: later, via reserved extension points (below).
-7. **Discussion** — pair granularity (BIOS-gated per-card parked), single host.
+7. **Discussion** — per-card via dax offsets (Pair B) vs pair granularity
+   (Pair A); single host.
 8. **Related work** / **Conclusion.**
 
 ## Main claims (v2 — D-series; gates pending)
@@ -87,7 +88,8 @@ measurements run on node 4 as-is (no BIOS change, no famfs favors).
 
 **Do NOT claim:** CXL write bandwidth > read bandwidth (false on CZ120: 27.9 vs
 45.6); "first LLM-on-CXL"; any active-decode KV-on-CXL benefit (read-latency
-trap); per-card results (hardware still pair-interleaved).
+trap); per-card results on Pair A (root-hashed, unsplittable) — per-card
+claims are Pair-B-only (dax offsets) until per-card NUMA exists.
 
 ## Foundation (May 2026, all survived — feeds §3–§4)
 C1 bandwidth is the binding constraint (latency 1.5×, BW 35.5/pair). C2 CXL
@@ -127,9 +129,6 @@ trap); the LLM story rides eviction/insertion/optimizer streams.
   placement signal, validated on real CXL silicon.** (Verify against Clove +
   VLDB'25 line before writing intro — flagged in
   `experiments/2026-08-25-direction-gates.md`.)
-
-## Change history addendum pointer
-(see bottom)
 
 ## Parked (revive only if an app demands or hardware unlocks)
 Per-card placement / interleave adaptation (Ideas 1–3 original form): BIOS
