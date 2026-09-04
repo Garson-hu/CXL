@@ -1,0 +1,36 @@
+# Status check 2026-09-04 15:25 — did the advisor's BIOS change land? NO.
+# Question: has CXL interleaving been disabled since 2026-09-02?
+
+## Evidence 1 — no reboot (a BIOS change cannot take effect without one)
+uptime -s = 2026-08-27 18:31:44  (up 7d 20:53). Same boot as the Aug-28 inspection.
+
+## Evidence 2 — decoders unchanged
+decoder0.0  ways=2 gran=256 target_list=7,6   (Pair A, root/CFMWS, across 2 host bridges)
+decoder0.1  ways=2 gran=256 target_list=7,6   (Pair A, second window)
+decoder0.2  ways=1 gran=256 target_list=0     (Pair B root window — already 1-way since 08-27)
+decoder3.0  ways=2 gran=256 target_list=0,1 locked=1   <-- STILL STRIPING Pair B
+            (host-bridge port3: dport0=00:01.1->mem1, dport1=00:01.2->mem3)
+decoder5.0 / 6.0  ways=1, 256 GiB each (endpoints)
+
+## Evidence 3 — functional test (definitive, not just sysfs)
+even-class + even-class co-run  : 12.24 + 12.10 = 24.3 GiB/s  -> both hit ONE card
+even-class + odd-class  co-run  : 22.25 + 22.53 = 44.8 GiB/s  -> two cards
+Identical to 2026-09-01. The 256 B stripe across mem1/mem3 is fully active.
+
+## Interpretation
+What WAS done (on/before 2026-08-27): root-level (CFMWS) interleave for the Pair B
+window turned off — decoder0.2 ways 2 -> 1. That is "disabling CXL interleaving" at
+the host-bridge-selection level, and is probably what the advisor remembers doing.
+What is STILL ON: the interleave INSIDE host bridge pci0000:00, i.e. decoder3.0
+striping 256 B across its two downstream root ports (01:00.0 and 02:00.0).
+That decoder is firmware-committed (locked=1); Linux cannot change it.
+
+## What to ask for (target state, verifiable)
+decoder3.0 interleave_ways = 1, so each card gets its own address window ->
+two dax devices (or two NUMA nodes) of 256 GiB each instead of one 512 GiB device.
+Verify after reboot with:
+  cat /sys/bus/cxl/devices/decoder3.0/interleave_ways      # want: 1
+  daxctl list -u                                            # want: 4 dax devices
+  # functional: even+even co-run should then reach ~2x24 GiB/s, not 24
+Unchanged/unrelated: Pair A (decoders 0.0/0.1) interleaves across two host bridges
+with a hashed way-selection (E1, 2026-08-11) — not addressable by this change.
