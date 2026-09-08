@@ -71,11 +71,13 @@ measured as isolation domains (`docs/experiments/2026-09-02-pairb-card-interfere
 The parked per-card direction is no longer blocked — it merges into the direction-aware
 thesis as "place write streams on their own card".
 
-**Next step (critical path).** W3: per-direction planner in ObjPlace (`dir` attr,
-two budgets per tier + measured CXL joint frontier, DRAM write ×2, co-location
-penalties) + `obj_stage_out/in` NT staging API; then W4 VeloC checkpoint-staging
-demo; then W5 LLM trace sanity. **Each step needs explicit user approval first —
-W3 not yet approved.**
+**Next step (critical path) — CAMPAIGN PLAN 2026-09-08:** the four-phase plan +
+PolyStore integration lives in `docs/experiments/2026-09-08-write-tier-campaign.md`
+(ACTIVE umbrella; per-phase TODO with statuses — READ IT FIRST). Order: 1a mechanism
+write-up → 2b CXL 1/2/4-card scaling → 3a/3b stencil (all DRAM-independent) →
+[BIOS: Memory Interleaving back to Auto] → 1b DRAM write-drain matrix → 3c → 4 LULESH/
+VeloC → 5 PolyStore. Blockers: DRAM interleave disabled (2026-09-08 log); PolyStore PDF;
+LULESH version. Each step needs explicit user approval before execution.
 
 **Doc Map (reorganized 2026-08-25 — rules in `docs/README.md`).**
 - `WORKLOG.md` (this file) — status + history. **Start here.**
