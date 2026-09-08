@@ -329,3 +329,35 @@ This collides head-on with SoarAlto (OSDI'25) and Liu/Wang/Liaw&Chen. A reviewer
 - Confirm whether Memstrata's slowdown estimator uses bandwidth as an explicit feature.
 - Confirm venues for: CXL-Interference, Cosmos, FaTRQ; and full author lists for Beluga, HeMem, MEMTIS, Bandana, IKS, RecNMP arXiv id.
 - Confirm bkmalloc (TACO'25) is hint- vs profile-driven.
+
+## PolyStore (FAST'25) — read in full 2026-09-08 (docs/PolyStore_FAST25.pdf, local only)
+Ren, Domingo, Zhang, John (Rutgers), Pitchumani (Samsung), Kashyap (EPFL), Kannan (Rutgers).
+**Claim:** storage media are now "non-hierarchical" (PM, NVMe, SATA overlap in capability);
+the philosophy of hierarchy (caching/tiering/app-directed) leaves cumulative bandwidth
+unused. PolyStore = horizontally structured HSD architecture: userspace runtime
+intercepting POSIX + thin VFS component (PolyOS) atop device-optimized FSes (NOVA/ext4/F2FS).
+**Mechanisms:** Poly-inode (logical file → several physical files), Poly-index (range tree,
+2 MB nodes, per-range RW locks), Poly-placement (Alg. 1: epoch-based 200 ms thread
+remapping low↔high device with STABLE state; Alg. 2: bandwidth-aware BW_Move of hot blocks
+to the faster device only when it is not saturated + capacity-aware CAP_Move at 90%),
+Poly-cache (userspace DRAM cache, device-specific admission: bypass cache for PM reads,
+dynamic cache ratio for SSDs, concurrent evictions across devices), Poly-persist
+(coordinated atomicity/durability across FSes, journal on the fast device).
+**Numbers (Config I: 256 GB Optane PM + 1 TB NVMe; PM 4.6/13.2 GB/s W/R, NVMe 1.2/1.2):**
+seq write 2.16× vs PM-only, 3.25× vs NVMe-only, 4.23× vs Orthus; dynamic placement reaches
+92.3% of combined; random-write latency −6.38×; reads +1.11× over PM-only; three devices
+91.7% of combined; RocksDB YCSB A/F 1.52–2.02×; multi-app 1.96× vs P2CACHE.
+**Three hierarchy pitfalls they name (§3):** writes forced to the top device → contention as
+threads grow; eager migration/eviction steals bandwidth; DRAM caching static, not
+heterogeneity-aware.
+**What it does NOT cover — our openings:** (1) memory tier / byte-addressable CXL (they stop
+at file/block, 2 MB ranges); (2) host-side traffic DIRECTION as a placement axis (RFO tax,
+duplex link, async stores) — they model devices by measured R/W bandwidth only; (3)
+inter-device interference/isolation is assumed away (they monitor saturation, never
+cross-device disturbance); (4) PM is treated as *read-preferred* (bypass cache for PM
+reads) — CXL is the mirror image (write-preferred), a clean contrast for the intro;
+(5) no memory→storage staging path (our DRAM→CXL→NVMe checkpoint shape).
+**Reusable ideas:** epoch-based thread/device remapping with saturation guard (Alg. 1)
+maps onto per-direction budgets; "migrate only if target not saturated" (Alg. 2) is our
+promote-on-hit rule; POSIX-intercept + thin kernel shim answers "apps can't allocate
+this way" for the memory tier (malloc/mmap interposition).

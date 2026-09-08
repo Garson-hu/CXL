@@ -18,3 +18,6 @@ __pycache__/
 # local tool state (Claude Code settings/skills stay machine-local)
 /.claude/
 .clangd
+
+# papers (local only)
+/docs/*.pdf

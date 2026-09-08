@@ -114,16 +114,16 @@ designing experiments) and Phase 4 checkpoint numbers.
 | # | item | status |
 |---|---|---|
 | 0 | Admin: Memory/Chipselect Interleaving → Auto; keep CXL Memory Attribute = Enabled; CAP_PERFMON or paranoid=1; udev rule for dax perms | ⏳ user emails |
-| 1a | Phase 1 mechanism write-up (6 questions) | 🟢 |
+| 1a | Phase 1 mechanism write-up (6 questions) — `2026-09-08-dram-write-drain.md` Part A | ✅ 2026-09-08 |
 | 1b | Phase 1 read/write matrix × writers × store type (+UMC counters) | 🔴 |
 | 2a | Phase 2 five-answers section in the phase file | 🟢 |
-| 2b | CXL 1/2/4-card scaling: read / NT-write / mixes; bottleneck location | 🟢 |
+| 2b | CXL 1/2/4-card scaling: read / NT-write / mixes; bottleneck location — `hardware/scripts/cxl-card-scaling.py` | 🟡 running 2026-09-08 |
 | 3a | Stencil code (3 buffers, placement/threads/store knobs, 5 rotation strategies, BW+timing) | 🟢 |
 | 3b | Stencil CXL-side strategy comparison (relative) | 🟡 |
 | 3c | Stencil Case A vs Case B, healthy DRAM | 🔴 |
 | 4a | LULESH object R/W analysis + instrumentation plan; VeloC object analysis | 🟡 ⏳ version |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🔴 |
-| 5 | PolyStore full read → gap list → DRAM→CXL→NVMe experiment design | ⏳ PDF |
+| 5 | PolyStore full read ✅ 2026-09-08 (gap list in `Related.md`) → DRAM→CXL→NVMe experiment design | 🟡 design pending Phase 4 numbers |
 
 **Agreed order:** 1a → 2a/2b → 3a/3b (all CXL-side, DRAM-independent) →
 [BIOS revert] → 1b → 3c → 4 → 5. Every step is presented before execution.
@@ -131,3 +131,5 @@ designing experiments) and Phase 4 checkpoint numbers.
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
   machine facts, blockers, and file naming fixed.
+- 2026-09-08 (later) — 1a written; PolyStore read in full, gap list appended to
+  `Related.md`; 2b launched; PDF kept local (`/docs/*.pdf` gitignored).
