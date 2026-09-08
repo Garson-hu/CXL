@@ -1,0 +1,38 @@
+# Machine inspection 2026-09-08 — DRAM BANDWIDTH REGRESSION (found incidentally)
+# Boot: 2026-09-05 10:48. NPS1 (node 0 = 256 CPUs + 773 GB DRAM; node 1 = dax1.0).
+# BIOS screenshots supplied by the advisor the same day show, under
+# Advanced -> North Bridge -> Memory Configuration:
+#     Memory Interleaving     [Disabled]
+#     Chipselect Interleaving [Disabled]
+# Both are AMD DRAM-channel knobs. They do NOT affect CXL interleaving.
+
+## membench, node 0, identical tool/params across dates
+date        config   stream-read            ptr-chase latency
+2026-05-19  NPS1     94.6 GiB/s @32T        184.9 ns
+2026-08-25  NPS4     68.8 GiB/s @8T (quad)  174.8 ns
+2026-08-28  NPS1     (not measured @32T)    151.9 ns
+2026-09-08  NPS1     25.3 / 41.1 / 41.5 / 40.9 GiB/s @32T (4 runs)   145.8 ns
+                     25.7 @8T · 50.1 @64T · 55.6 @128T
+                     stream-write 18.0 @32T · random-read 38.2 @32T
+
+## Reading
+Latency is the LOWEST ever recorded (145.8 ns) while bandwidth is ~2.3-3.7x DOWN
+from the May NPS1 baseline, with large run-to-run variance (25 -> 41 GiB/s at the
+same thread count). Low latency + low, unstable bandwidth is the signature of
+DRAM channel interleaving being OFF: fewer hops per access, but a contiguous
+buffer maps to few channels, and which channels depends on where the allocator
+happened to land.
+
+## Consequence
+CXL is now FASTER than DRAM on this machine: CXL node 1 = 46.2 GiB/s @8T /
+239.1 ns vs DRAM 25.7 GiB/s @8T / 145.8 ns. That inverts the premise of the
+direction-aware thesis (DRAM = the fast, contended tier). All Gate-1/Gate-2
+numbers (2026-08-25) were taken with healthy DRAM and CANNOT be reproduced in
+this configuration.
+
+## Recommended fix (one BIOS change, unrelated to CXL)
+Advanced -> North Bridge -> Memory Configuration:
+    Memory Interleaving     -> Auto (Enabled)
+    Chipselect Interleaving -> Auto (Enabled)
+Verify after reboot:  benchmarks/memory/membench --mode=stream-read --node=0 \
+    --threads=32   # expect ~95 GiB/s, stable across runs

@@ -1,0 +1,37 @@
+# Transcribed from the live session 2026-09-08 (cxlprobe daxstride, 8 threads, 3 s,
+# 4 GiB region; co-runs 4 s on separate CCDs). Reproduce: hardware/scripts/bitprobe.sh
+# Machine: booted 2026-09-05 10:48; dax0.0 + dax2.0 devdax root:kmem 0660; dax1.0 = node 1.
+
+## Single-bit class sweep — PAIR A /dev/dax0.0 (decoder0.0 ways=2 gran=256 targets e0,c0)
+full window, all chunks,  8T : 45.37 GiB/s   (earlier run 45.09)
+full window, daxstream,  16T : 45.32 GiB/s
+bit  8 (chunk    256 B): class0=34.07  class1=33.33
+bit  9 (chunk    512 B): class0=43.76  class1=38.69
+bit 10 (chunk   1024 B): class0=44.98  class1=43.97
+bit 11 (chunk   2048 B): class0=45.05  class1=44.34
+bit 12 (chunk   4096 B): class0=44.61  class1=44.51
+bit 14 (chunk  16384 B): class0=39.29  class1=39.73
+bit 16 (chunk  65536 B): class0=42.00  class1=41.53
+
+## Single-bit class sweep — PAIR B /dev/dax2.0 (CONTROL: proven plain 256 B stripe)
+full window, all chunks,  8T : 44.99 GiB/s
+full window, daxstream,  16T : 45.32 GiB/s
+bit  8 (chunk    256 B): class0=23.90  class1=23.88   <-- exactly half = one card
+bit  9 (chunk    512 B): class0=43.37  class1=42.25
+bit 10 (chunk   1024 B): class0=44.02  class1=44.64
+bit 11 (chunk   2048 B): class0=44.51  class1=44.62
+bit 12 (chunk   4096 B): class0=44.10  class1=44.39
+bit 14 (chunk  16384 B): class0=39.50  class1=38.80
+bit 16 (chunk  65536 B): class0=41.96  class1=40.48
+
+## Concurrent co-runs (two processes, CCD0 + CCD1, bit-8 classes)
+PairB  even + even : 12.2 + 12.2 = 24.4 GiB/s   (share ONE card)
+PairB  even + odd  : 21.8 + 21.9 = 43.7 GiB/s   (two cards)
+PairA  even + even : 21.4 + 20.2 = 41.6 GiB/s
+PairA  even + odd  : 21.4 + 20.4 = 41.7 GiB/s   (identical -> no partition)
+
+## XOR(bit8,bit9) hypothesis — PairA, stride 1024, chunk 256
+off0 + off256 (XOR predicts different card) : 16.3 + 16.2 = 32.4
+off0 + off512 (XOR predicts different card) : 16.2 + 16.2 = 32.5
+off0 + off768 (XOR predicts SAME card)      : 16.2 + 16.1 = 32.3
+-> all identical; XOR(8,9) does not select a card either.
