@@ -97,6 +97,23 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-09-08 (session 17) — Pair A hash confirmed; DRAM interleave regression; campaign plan
+**Advisor's request answered experimentally:** `/dev/dax0.0` (Pair A) is interleaved and
+HASHED — bit sweep 8–16 and XOR(8,9) all negative, same-class co-run 41.6 = different-
+class 41.7; Pair B control finds its stripe at bit 8 (23.9). Per-card stays Pair-B-only.
+(`docs/experiments/2026-09-08-paira-interleave-hash.md`, tool `hardware/scripts/bitprobe.sh`.)
+**BIOS screenshots decoded:** no CXL-interleave knob exists on this Supermicro/AMI BIOS;
+`CXL Memory Attribute=Enabled` is what makes CXL Soft-Reserved/dax (must stay);
+`Memory Interleaving=Disabled` + `Chipselect Interleaving=Disabled` are DRAM knobs —
+**DRAM regression found:** 25–41 GiB/s @32T (May: 94.6), lowest-ever latency 145.8 ns,
+CXL now faster than DRAM (`hardware/results/2026-09-08-dram-interleave-regression.log`).
+Recommendation: revert both to Auto; drop the Supermicro ask (two independent pairs +
+Pair-B card instrument already cover the thesis). **Campaign plan** (user's 4 phases +
+PolyStore FAST'25) recorded as ACTIVE umbrella `docs/experiments/2026-09-08-write-tier-
+campaign.md` with TODO statuses; cluster facts: PM only on c35/c36 (Optane, `-p cascade`),
+c28 NVMe 3.84 TB at /mnt/local (world-writable). Awaiting: approval to start 1a+2b,
+PolyStore PDF, LULESH version, BIOS revert email.
+
 ### 2026-09-02 (session 16) — Card-vs-card interference: cards ARE isolation domains
 **Experiment** `docs/experiments/2026-09-02-pairb-card-interference.md` (cxlprobe gained
 `--class` for chase + `daxstridewr` NT-write mode). Victim on card A (even class) vs 8T
