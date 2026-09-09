@@ -148,6 +148,20 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 **Needs from user:** approval; trace files or permission to download ShareGPT/Mooncake
 (LMSys needs an HF token); whether a built VeloC already exists.
 
+### Phase 4 TODO (approved 2026-09-09 — execute one item at a time, in order)
+| # | item | status |
+|---|---|---|
+| A1.1 | LULESH 2.0 OpenMP built (`~/apps/lulesh`, SERCXX); baseline `-s 160 -i 30`: 1.07 s/step @16T, 0.87 s/step @32T (crippled DRAM) | ✅ 2026-09-09 |
+| A1.2 | Use the user's VeloC-instrumented LULESH (`~/checkpoint/LULESH`, built with MPI) + prebuilt VeloC (`~/checkpoint/veloc_lib`): read integration, build, run 1 rank with posix cfg | 🟡 |
+| A1.3 | Scratch placement mechanisms: `/dev/shm` (DRAM); node-1 tmpfs via `numactl --membind=1` (test) or root mount; `/dev/dax2.0` direct NT copy | 🟡 testing |
+| A1.4 | Checkpoint experiment: step time during/between checkpoints × scratch placement × with/without DRAM aggressor; persistent on `/mnt/local` | 🔴 comparison needs healthy DRAM (CXL side runnable) |
+| A2.1 | Optimizer-snapshot emulator (torch CPU): fp32 params + Adam m/v, RMW step, `torch.save` every K steps to scratch {DRAM, CXL} | ⬜ |
+| B1.1 | Download ShareGPT + Mooncake traces to `workloads/` (LMSys: skipped for now — needs HF token; noted) | ⬜ |
+| B1.2 | Trace analysis → KV eviction/insertion GiB/s, reuse-distance distribution, written-never-read fraction (Llama-3.1-8B KV sizing) | ⬜ |
+| B2 | KV-pool microbenchmark (NT writes to {DRAM, dax2.0, dax0.0}, trace-driven, DRAM-reader victim) | ⬜ |
+| B3 | Real serving (vLLM+LMCache on 4060 Ti) — only if B1/B2 justify | ⬜ decision after B2 |
+| C | Optimizer-state RMW on CXL vs DRAM (optional probe) | ⬜ after A+B |
+
 ## TODO (update statuses here; ✅ done · 🟢 runnable · 🟡 partial · 🔴 blocked on BIOS · ⏳ needs user)
 | # | item | status |
 |---|---|---|
