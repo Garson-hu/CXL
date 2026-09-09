@@ -21,3 +21,7 @@ __pycache__/
 
 # papers (local only)
 /docs/*.pdf
+
+# traces (large, re-downloadable; see workloads/README in campaign file)
+/workloads/*.json
+/workloads/*.jsonl
