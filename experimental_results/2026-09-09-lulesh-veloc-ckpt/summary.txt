@@ -1,0 +1,6 @@
+config                 step median (s)                   per-rep  ckpt call (s) #ckpt  elapsed 40 steps (s)
+nockpt                           0.767['0.762', '0.767', '0.776']          0.000     0                  31.0   (+0.0% vs no-ckpt)
+dram scratch, ckpt/10            0.804['0.812', '0.803', '0.804']          0.079     4                  32.0   (+4.8% vs no-ckpt)
+cxl scratch, ckpt/10             0.789['0.784', '0.789', '0.800']          0.072     4                  32.0   (+2.9% vs no-ckpt)
+dram scratch, ckpt/5             0.836['0.834', '0.847', '0.836']          0.079     8                  34.0   (+9.0% vs no-ckpt)
+cxl scratch, ckpt/5              0.814['0.799', '0.814', '0.817']          0.072     8                  33.0   (+6.2% vs no-ckpt)

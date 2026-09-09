@@ -153,8 +153,8 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 |---|---|---|
 | A1.1 | LULESH 2.0 OpenMP built (`~/apps/lulesh`, SERCXX); baseline `-s 160 -i 30`: 1.07 s/step @16T, 0.87 s/step @32T (crippled DRAM) | ✅ 2026-09-09 |
 | A1.2 | User's VeloC-instrumented LULESH built at `~/apps/lulesh-veloc` (`-DWITH_VELOC`, MPI 1 rank, `mpirun --bind-to none`; client auto-launches `veloc-backend` from PATH); 11 protected arrays = 348 MB at s=160; ckpt call 0.07–0.08 s | ✅ 2026-09-09 |
-| A1.3 | Scratch placement: `LULESH_CKPT_NODE=1` hook (set_mempolicy around VELOC_Checkpoint) puts tmpfs checkpoint pages on CXL node 1 with NO root (verified: node-1 free −700 MB = scratch size); DRAM = default. dax2.0 NT path still to do. Open: async drain to NVMe fails (posix_transfer_file), every 2nd ckpt skipped | 🟡 |
-| A1.4 | Checkpoint experiment: step time during/between checkpoints × scratch placement × with/without DRAM aggressor; persistent on `/mnt/local` | 🔴 comparison needs healthy DRAM (CXL side runnable) |
+| A1.3 | Scratch placement without root via `LULESH_CKPT_NODE=1` (verified); VeloC rebuilt at `~/apps/veloc-inst` with EXDEV fallback → drain to NVMe works, no skipped ckpts. dax2.0 NT path pending | ✅ 2026-09-09 (dax2.0 path ⬜) |
+| A1.4 | Checkpoint experiment — `2026-09-09-lulesh-veloc-ckpt.md`: 3 reps, penalty +4.8→+2.9% / +9.0→+6.2% with CXL scratch. Scale-up (bigger state, multi-rank, ckpt/2–5) + aggressor variant pending | 🟡 CXL side ✅ · scale-up ⬜ · healthy-DRAM 🔴 |
 | A2.1 | Optimizer-snapshot emulator (torch CPU): fp32 params + Adam m/v, RMW step, `torch.save` every K steps to scratch {DRAM, CXL} | ⬜ |
 | B1.1 | ShareGPT + Mooncake ×3 traces in `workloads/` (gitignored; LMSys skipped — needs HF token) | ✅ 2026-09-09 |
 | B1.2 | Trace analysis — `2026-09-09-kv-trace-analysis.md`: 58–78% never-read, 3–8 GiB/s writes, gaps p50 ≤2 min | ✅ 2026-09-09 (first pass) |

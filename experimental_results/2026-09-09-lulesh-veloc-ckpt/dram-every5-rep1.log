@@ -1,0 +1,49 @@
+[STEP] cycle=1 dt=0.7508 s
+[STEP] cycle=2 dt=0.7525 s
+[STEP] cycle=3 dt=0.7566 s
+[STEP] cycle=4 dt=0.7578 s
+[STEP] cycle=5 dt=0.7569 s
+[LULESH+VELOC] ckpt v0 node=-1 took 0.078 s
+[STEP] cycle=6 dt=0.7845 s
+[STEP] cycle=7 dt=0.8004 s
+[STEP] cycle=8 dt=0.7872 s
+[STEP] cycle=9 dt=0.7909 s
+[STEP] cycle=10 dt=0.8072 s
+[LULESH+VELOC] ckpt v1 node=-1 took 0.078 s
+[STEP] cycle=11 dt=0.8139 s
+[STEP] cycle=12 dt=0.8262 s
+[STEP] cycle=13 dt=0.8364 s
+[STEP] cycle=14 dt=0.8286 s
+[STEP] cycle=15 dt=0.8300 s
+[LULESH+VELOC] ckpt v2 node=-1 took 0.077 s
+[STEP] cycle=16 dt=0.8404 s
+[STEP] cycle=17 dt=0.8399 s
+[STEP] cycle=18 dt=0.8304 s
+[STEP] cycle=19 dt=0.8231 s
+[STEP] cycle=20 dt=0.8167 s
+[LULESH+VELOC] ckpt v3 node=-1 took 0.079 s
+[STEP] cycle=21 dt=0.8540 s
+[STEP] cycle=22 dt=0.8432 s
+[STEP] cycle=23 dt=0.8365 s
+[STEP] cycle=24 dt=0.8352 s
+[STEP] cycle=25 dt=0.8440 s
+[LULESH+VELOC] ckpt v4 node=-1 took 0.080 s
+[STEP] cycle=26 dt=0.8489 s
+[STEP] cycle=27 dt=0.8357 s
+[STEP] cycle=28 dt=0.8291 s
+[STEP] cycle=29 dt=0.8273 s
+[STEP] cycle=30 dt=0.8329 s
+[LULESH+VELOC] ckpt v5 node=-1 took 0.078 s
+[STEP] cycle=31 dt=0.8464 s
+[STEP] cycle=32 dt=0.8340 s
+[STEP] cycle=33 dt=0.8306 s
+[STEP] cycle=34 dt=0.8310 s
+[STEP] cycle=35 dt=0.8314 s
+[LULESH+VELOC] ckpt v6 node=-1 took 0.079 s
+[STEP] cycle=36 dt=0.8489 s
+[STEP] cycle=37 dt=0.8426 s
+[STEP] cycle=38 dt=0.8410 s
+[STEP] cycle=39 dt=0.8382 s
+[STEP] cycle=40 dt=0.8311 s
+[LULESH+VELOC] ckpt v7 node=-1 took 0.080 s
+Elapsed time         =         33 (s)

@@ -97,6 +97,18 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-09-09 (session 19) — Phase 4 started: LULESH+VeloC checkpointing on CXL; KV-trace analysis
+**A1:** user's VeloC-instrumented LULESH built (`~/apps/lulesh-veloc`, `-DWITH_VELOC`), VeloC rebuilt
+(`~/apps/veloc-inst`) with a pread/pwrite fallback for cross-fs drains (stock build lost every
+drain, EXDEV). **No-root CXL scratch placement**: tmpfs pages follow the writer's mempolicy →
+`LULESH_CKPT_NODE=1` hook. 3 reps at `-s 160`: compute penalty +4.8%→+2.9% (ckpt/10) and
++9.0%→+6.2% (ckpt/5) when scratch moves DRAM→CXL; ckpt call 0.079→0.072 s per 348 MB
+(`2026-09-09-lulesh-veloc-ckpt.md`). Small stream — scale-up next. **B1:** Mooncake ×3 +
+ShareGPT traces downloaded (gitignored); 58–78% of written KV blocks are never read again,
+reuse gaps p50 ≤2 min, 3–8 GiB/s KV writes at 3–7 req/s → anchor B justified
+(`2026-09-09-kv-trace-analysis.md`). LULESH 2.0 upstream also built (`~/apps/lulesh`).
+Tools: `hardware/scripts/`-style run scripts live with the apps (`run-a1.sh`).
+
 ### 2026-09-08 (session 18) — Campaign phases 1a/2/3b executed
 **1a** mechanism write-up (`2026-09-08-dram-write-drain.md`). **2** closed: five per-card answers
 + 1/2/4-card scaling (read 24→46→90, NT-write 22→44→85 GiB/s, HB −6%, cross-pair −1%,
