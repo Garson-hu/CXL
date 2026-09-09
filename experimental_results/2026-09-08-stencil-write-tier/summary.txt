@@ -1,0 +1,23 @@
+run                        steady step (s)    min    max    DRAM rd+wr GiB/step   CXL rd / wr GiB/step  note
+A-alldram-rotate-normal              1.119  0.856  1.146                 24 + 0                  0 / 0  
+B-rotate-normal                      0.555  0.420  0.838        mixed (rotates)        mixed (rotates)  
+B-copyback-normal                    0.762  0.616  0.768     16 rd + 8 wr(copy)      8 rd(copy) / 8 wr  
+B-migrate-normal                     0.803  0.751  0.819   16 rd + 8 wr(copy, overlapped)      8 rd(copy) / 8 wr  
+B-pingpong-normal                    0.565  0.492  0.573      8 rd + 8 wr(copy) 16 rd (cur+copy) / 8 wr, two devices  
+
+A-alldram-rotate-nt                  0.784  0.744  0.792                 24 + 0                  0 / 0  
+B-rotate-nt                          0.442  0.423  0.472        mixed (rotates)        mixed (rotates)  
+B-copyback-nt                        0.768  0.623  0.769     16 rd + 8 wr(copy)      8 rd(copy) / 8 wr  
+B-migrate-nt                         0.774  0.735  0.784   16 rd + 8 wr(copy, overlapped)      8 rd(copy) / 8 wr  
+B-pingpong-nt                        0.458  0.456  0.484      8 rd + 8 wr(copy) 16 rd (cur+copy) / 8 wr, two devices  
+
+B-rotate-normal per-step (placement of cur = what is READ this step):
+  step 0: cur=daxB  new=dram  0.432s
+  step 1: cur=dram  new=dram  0.556s
+  step 2: cur=dram  new=daxB  0.837s
+  step 3: cur=daxB  new=dram  0.420s
+  step 4: cur=dram  new=dram  0.555s
+  step 5: cur=dram  new=daxB  0.837s
+  step 6: cur=daxB  new=dram  0.421s
+  step 7: cur=dram  new=dram  0.555s
+  step 8: cur=dram  new=daxB  0.837s

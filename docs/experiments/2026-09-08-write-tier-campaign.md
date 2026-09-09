@@ -119,7 +119,7 @@ designing experiments) and Phase 4 checkpoint numbers.
 | 2a | Phase 2 five-answers section — `2026-09-08-cxl-card-scaling.md` Part 1 | ✅ 2026-09-08 |
 | 2b | CXL 1/2/4-card scaling — `2026-09-08-cxl-card-scaling.md` Part 2: linear scaling, HB −6%, cross-pair −1%, duplex at every scale | ✅ 2026-09-08 |
 | 3a | Stencil code `benchmarks/stencil/pond.c` (3 buffers + DRAM staging, placement/threads/NT knobs, policies rotate/copyback[--alt]/migrate, per-step BW+timing) | ✅ built 2026-09-08 (smoke-tested 1 GiB) |
-| 3b | Stencil CXL-side strategy comparison (relative) | 🟡 awaiting user go |
+| 3b | Stencil CXL-side strategy comparison — `2026-09-08-stencil-write-tier.md` (pingpong policy added; ranking inverted by crippled DRAM) | ✅ 2026-09-08 |
 | 3c | Stencil Case A vs Case B, healthy DRAM | 🔴 |
 | 4a | LULESH object R/W analysis + instrumentation plan; VeloC object analysis | 🟡 ⏳ version |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🔴 |
@@ -135,3 +135,5 @@ designing experiments) and Phase 4 checkpoint numbers.
   `Related.md`; 2b launched; PDF kept local (`/docs/*.pdf` gitignored).
 - 2026-09-08 (evening) — 2b done (3 reps; first run killed by a session restart,
   reps 2–3 re-run); Phase 2 file closed; pond.c built. Next: 3b needs approval.
+- 2026-09-08 (night) — 3b done: all policies work; results are a high-DRAM-pressure
+  preview (DRAM crippled), 3c required for the real ranking. Next: 4a (LULESH).

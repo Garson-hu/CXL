@@ -79,8 +79,8 @@ static void *copier(void *arg){
 }
 
 int main(int argc,char**argv){
-    size_t gib=8; int steps=10; enum place pl[3]={P_DRAM,P_DRAM,P_DRAM}; const char *policy="rotate";
-    int alt=0; size_t daxoff[3]={0,0,0}; T=8; copyT=8; cpu0=0; cpu_copy=64; use_nt=0; const char *tag="run";
+    size_t gib=8; int steps=10; enum place pl[4]={P_DRAM,P_DRAM,P_DRAM,P_DAXA}; const char *policy="rotate";
+    int alt=0; size_t daxoff[4]={0,0,0,0}; T=8; copyT=8; cpu0=0; cpu_copy=64; use_nt=0; const char *tag="run";
     for(int i=1;i<argc;i++){
         char*a=argv[i];
         if(!strncmp(a,"--gib=",6))gib=atol(a+6);
@@ -89,24 +89,28 @@ int main(int argc,char**argv){
         else if(!strncmp(a,"--copy-threads=",15))copyT=atoi(a+15);
         else if(!strncmp(a,"--cpu0=",7))cpu0=atoi(a+7);
         else if(!strncmp(a,"--cpu-copy=",11))cpu_copy=atoi(a+11);
-        else if(!strncmp(a,"--place=",8)){char*s=strdup(a+8);char*t=strtok(s,",");for(int k=0;k<3&&t;k++,t=strtok(NULL,","))pl[k]=parse_place(t);}
-        else if(!strncmp(a,"--daxoff=",9)){char*s=strdup(a+9);char*t=strtok(s,",");for(int k=0;k<3&&t;k++,t=strtok(NULL,","))daxoff[k]=(size_t)atof(t)*(1ULL<<30);}
+        else if(!strncmp(a,"--place=",8)){char*s=strdup(a+8);char*t=strtok(s,",");for(int k=0;k<4&&t;k++,t=strtok(NULL,","))pl[k]=parse_place(t);}
+        else if(!strncmp(a,"--daxoff=",9)){char*s=strdup(a+9);char*t=strtok(s,",");for(int k=0;k<4&&t;k++,t=strtok(NULL,","))daxoff[k]=(size_t)atof(t)*(1ULL<<30);}
         else if(!strncmp(a,"--policy=",9))policy=a+9;
         else if(!strcmp(a,"--alt"))alt=1;
         else if(!strcmp(a,"--nt"))use_nt=1;
         else if(!strncmp(a,"--tag=",6))tag=a+6;
         else {fprintf(stderr,"usage: pond --gib=G --steps=S --threads=T --place=p0,p1,p2 (dram|node1|daxA|daxB)\n"
-             "  --daxoff=g0,g1,g2 (GiB offsets for dax buffers) --policy=rotate|copyback|migrate [--alt] [--nt]\n"
+             "  --daxoff=g0,g1,g2,g3 (GiB offsets) --policy=rotate|copyback|migrate|pingpong [--nt]\n"
+             "  pingpong: place=old(dram),stage(dram),devX,devY — cur read from the device written last step,\n"
+             "            new written to the other device, old lag-copied CXL->DRAM during compute\n"
              "  --copy-threads=N --cpu0=C --cpu-copy=C --tag=NAME\n");return 2;}
     }
     N=(gib<<30)/sizeof(double); size_t bytes=N*sizeof(double);
-    int is_mig=!strcmp(policy,"migrate");
-    double *B[4]; for(int k=0;k<3;k++) B[k]=alloc_buf(pl[k],bytes,daxoff[k],use_nt);
+    int is_mig=!strcmp(policy,"migrate"), is_pp=!strcmp(policy,"pingpong");
+    double *B[4]={0,0,0,0}; for(int k=0;k<3;k++) B[k]=alloc_buf(pl[k],bytes,daxoff[k],use_nt);
+    if(is_pp) B[3]=alloc_buf(pl[3],bytes,daxoff[3],use_nt);
     double *stage=NULL; if(is_mig){ stage=alloc_buf(P_DRAM,bytes,0,0); }   /* migrate: 4th buffer, DRAM staging */
     /* init: a bump in the middle */
     #pragma omp parallel for num_threads(T)
-    for(size_t i=0;i<N;i++){double x=(double)i/N; B[0][i]=B[1][i]=(x>0.49&&x<0.51)?1.0:0.0;}
-    double *old=B[0],*cur=B[1],*nw=B[2]; int nw_idx=2, cur_idx=1, old_idx=0;
+    for(size_t i=0;i<N;i++){double x=(double)i/N; double v=(x>0.49&&x<0.51)?1.0:0.0; B[0][i]=v; if(is_pp) B[2][i]=v; else B[1][i]=v;}
+    double *old=B[0],*cur=is_pp?B[2]:B[1],*nw=is_pp?B[3]:B[2]; int nw_idx=is_pp?3:2, cur_idx=is_pp?2:1, old_idx=0;
+    double *pp_stage=is_pp?B[1]:NULL; int pp_stage_idx=1;
     NCHUNK=(size_t)T*8; size_t per=N/NCHUNK;
     printf("tag,step,policy,place_old,place_cur,place_new,threads,nt,step_s,read_gib,write_gib,copy_gib,eff_read_gibs,eff_write_gibs\n");
     for(int s=0;s<steps;s++){
@@ -116,6 +120,8 @@ int main(int argc,char**argv){
         if(!strcmp(policy,"copyback")){ for(int k=0;k<3;k++) if(k!=nw_idx&&k!=cur_idx) dst_idx=k; dst=B[dst_idx]; }
         if(do_mig){ mig_src=nw; mig_dst=stage; cth=calloc(copyT,sizeof*cth);
             for(long i=0;i<copyT;i++) pthread_create(&cth[i],NULL,copier,(void*)i); }
+        if(is_pp){ mig_src=cur; mig_dst=pp_stage; chunks_done=NCHUNK; /* cur is complete: copier needs no trailing */
+            cth=calloc(copyT,sizeof*cth); for(long i=0;i<copyT;i++) pthread_create(&cth[i],NULL,copier,(void*)i); }
         #pragma omp parallel num_threads(T)
         {
             int tid=omp_get_thread_num(); pin(cpu0+tid);
@@ -140,6 +146,12 @@ int main(int argc,char**argv){
             /* old <- cur, cur <- staged DRAM copy of new, old's DRAM buffer becomes next staging; new stays on its device */
             double *freed=old; old=cur; cur=stage; stage=freed;
             old_idx=cur_idx; cur_idx=0;   /* staged copy lives in DRAM (reported as placement of B[0]) */
+        } else if(is_pp){
+            for(int i=0;i<copyT;i++) pthread_join(cth[i],NULL); free(cth); cth=NULL;
+            copy_gib=(double)bytes/(1<<30);
+            /* old <- DRAM copy of cur; freed old buffer becomes next stage; cur <- new device; new <- old cur device */
+            double *freed=old; int fi=old_idx; old=pp_stage; old_idx=pp_stage_idx; pp_stage=freed; pp_stage_idx=fi;
+            double *t=cur; int ti=cur_idx; cur=nw; cur_idx=nw_idx; nw=t; nw_idx=ti;
         } else { /* rotate */
             double *tmp=old; old=cur; cur=nw; nw=tmp; int ti=old_idx; old_idx=cur_idx; cur_idx=nw_idx; nw_idx=ti;
         }

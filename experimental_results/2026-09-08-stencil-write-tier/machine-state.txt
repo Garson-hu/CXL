@@ -1,0 +1,5 @@
+Tue Sep  8 20:59:28 EDT 2026
+node 0 size: 773129 MB
+node 1 size: 274432 MB
+crw-rw---- 1 root kmem 252, 0 Sep  5 11:25 /dev/dax0.0
+crw-rw---- 1 root kmem 252, 2 Sep  5 11:23 /dev/dax2.0

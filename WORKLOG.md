@@ -97,6 +97,16 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-09-08 (session 18) — Campaign phases 1a/2/3b executed
+**1a** mechanism write-up (`2026-09-08-dram-write-drain.md`). **2** closed: five per-card answers
++ 1/2/4-card scaling (read 24→46→90, NT-write 22→44→85 GiB/s, HB −6%, cross-pair −1%,
+duplex +53/+36/+42%, four cards 128 GiB/s) — `2026-09-08-cxl-card-scaling.md`; first run was
+killed by a session restart (background jobs die with the process), reps 2–3 re-run. **3a/3b**:
+`benchmarks/stencil/pond.c` (rotate/copyback/migrate/pingpong) built and run on crippled
+DRAM: every CXL policy ~2× faster than all-DRAM, NT stores −30% — a high-DRAM-pressure
+preview, real ranking needs 3c after the BIOS revert (`2026-09-08-stencil-write-tier.md`).
+**PolyStore** (FAST'25) read in full; gap list in `Related.md`. PDF kept local. Next: 4a.
+
 ### 2026-09-08 (session 17) — Pair A hash confirmed; DRAM interleave regression; campaign plan
 **Advisor's request answered experimentally:** `/dev/dax0.0` (Pair A) is interleaved and
 HASHED — bit sweep 8–16 and XOR(8,9) all negative, same-class co-run 41.6 = different-
