@@ -110,6 +110,44 @@ Testbeds: c28 (DRAM/CXL/NVMe) primary; c35/c36 (DRAM/Optane PM) for a
 PM-vs-CXL tier comparison if useful. ⏳ needs the PDF (read full text before
 designing experiments) and Phase 4 checkpoint numbers.
 
+
+## Phase 4 plan v2 — PROPOSED 2026-09-09 (user chose anchors A + B; C = optional probe)
+**A. Checkpointing (rank 1)**
+- A1 LULESH + VeloC: build LULESH 2.0 OpenMP (`SERCXX`, no MPI); baseline `-s 160 -i 100`
+  (3.9 GB) at 16/32 threads with a per-step timer patch; protect the state arrays with
+  `VELOC_Mem_protect`, checkpoint every 10 steps. VeloC: try the user's branch (deps: Boost,
+  OpenSSL, MPI, er, axl, cereal — 1-day cap); fallback = a VeloC-shaped emulator (regions →
+  scratch via pwrite/memcpy + async drain thread, same data path). Scratch placements:
+  DRAM (`/dev/shm`), CXL node 1 (tmpfs `mpol=bind:1` if mountable; else test whether a
+  `numactl --membind=1` writer lands tmpfs pages on node 1), `/dev/dax2.0` direct NT copy
+  (= `obj_stage_out`). Persistent = `/mnt/local` NVMe. Metrics: step time during vs
+  between checkpoints, checkpoint + drain time, with/without a DRAM-pressure aggressor.
+  Comparison numbers need healthy DRAM (🔴 until then; CXL-side + build now).
+- A2 `torch.save`-shaped optimizer snapshot: CPU emulation of a training loop — fp32
+  params + Adam m/v (1–2 B params → 12–24 GB), each step = RMW update (DRAM-bound), every
+  K steps serialize state to scratch {DRAM, CXL}. Same experiment shape, ML flavor; sets up
+  (C) if wanted. torch 2.5.1 (dpu_torch env) available.
+**B. KV-cache eviction / prefix insertion (rank 2)**
+- B1 trace-driven KV traffic model (1–2 days): from ShareGPT / Mooncake (/ LMSys if token)
+  traces derive per-session prefill sizes, turn gaps, reuse distances; convert to KV bytes
+  for Llama-3.1-8B (≈128 KB/token fp16) → eviction + insertion GiB/s at target concurrency,
+  and the "written-never-read" fraction. Decides headline vs extension.
+- B2 KV-pool microbenchmark (no model): vLLM/LMCache-shaped CPU KV pool — prefill writes
+  KV blocks (NT) to {DRAM, dax2.0, dax0.0}, later turns read them back into DRAM staging;
+  driven by trace arrivals; plus a "decode" DRAM reader victim (Gate-2b shape). Metrics: pool
+  write/read throughput, read-back latency, victim slowdown.
+- B3 real serving only if B1/B2 justify: vLLM + LMCache (or SGLang) with the CPU pool on
+  our placement, Llama-3.2-3B on the 4060 Ti, multi-turn replay; TTFT/TBT/throughput/
+  sessions-before-collapse, pool on DRAM vs CXL.
+**C (optional)** optimizer-state RMW stream on CXL with NT stores vs DRAM — tests the
+published "pin optimizer to DRAM" conclusion.
+**Schedule:** wk1 (09-09→15) A1 build+integration+baseline, B1; wk2 (→22) A1 comparison
+(if DRAM healthy), A2, B2; wk3 (→29) B3 decision, start W3 planner against A/B; then
+Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-veloc-ckpt.md`,
+`…-optimizer-snapshot.md`, `…-kv-trace-analysis.md`, `…-kv-pool-bench.md`.
+**Needs from user:** approval; trace files or permission to download ShareGPT/Mooncake
+(LMSys needs an HF token); whether a built VeloC already exists.
+
 ## TODO (update statuses here; ✅ done · 🟢 runnable · 🟡 partial · 🔴 blocked on BIOS · ⏳ needs user)
 | # | item | status |
 |---|---|---|
@@ -145,3 +183,4 @@ designing experiments) and Phase 4 checkpoint numbers.
 | Pair B | two cards at PCI 01:00.0 + 02:00.0 behind host bridge pci0000:00, one window `/dev/dax2.0` (512 GiB); plain 256 B stripe, `card = (offset>>8)&1` | `dax2.0`; single cards "卡 01" / "卡 02" |
 - 2026-09-08 (late) — 4a static analysis done: the write-tier object in LULESH is the
   checkpoint, not any solver array; VeloC scratch is the natural CXL tier; 4b designed.
+- 2026-09-09 — Phase 4 plan v2 proposed (A checkpointing + B KV-cache; C optional).
