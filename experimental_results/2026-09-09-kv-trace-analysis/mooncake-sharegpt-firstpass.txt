@@ -1,0 +1,23 @@
+
+## conversation: 12031 req, 0.98 h, 3.40 req/s, input p50 6909 p90 27367
+  blocks written(new) 182790  read-back(reused) 105710  reuse ratio 0.37  |  unique 182790, written-never-read 76%
+  reuse gap p50 114s p90 519s p99 1578s
+  Llama-3.1-8B  : KV write 3.23 GiB/s avg, read-back 1.87 GiB/s; write-set 11.2 TiB/trace, never-read 8.5 TiB
+  Llama-3.1-70B : KV write 8.07 GiB/s avg, read-back 4.67 GiB/s; write-set 27.9 TiB/trace, never-read 21.2 TiB
+  Qwen2.5-7B    : KV write 1.41 GiB/s avg, read-back 0.82 GiB/s; write-set 4.9 TiB/trace, never-read 3.7 TiB
+
+## toolagent: 23608 req, 0.98 h, 6.67 req/s, input p50 6346 p90 16810
+  blocks written(new) 183300  read-back(reused) 226316  reuse ratio 0.55  |  unique 183300, written-never-read 78%
+  reuse gap p50 0s p90 243s p99 609s
+  Llama-3.1-8B  : KV write 3.24 GiB/s avg, read-back 4.00 GiB/s; write-set 11.2 TiB/trace, never-read 8.8 TiB
+  Llama-3.1-70B : KV write 8.10 GiB/s avg, read-back 10.00 GiB/s; write-set 28.0 TiB/trace, never-read 21.9 TiB
+  Qwen2.5-7B    : KV write 1.42 GiB/s avg, read-back 1.75 GiB/s; write-set 4.9 TiB/trace, never-read 3.8 TiB
+
+## synthetic: 3993 req, 0.28 h, 3.91 req/s, input p50 11587 p90 38615
+  blocks written(new) 43924  read-back(reused) 77953  reuse ratio 0.64  |  unique 43924, written-never-read 58%
+  reuse gap p50 59s p90 282s p99 583s
+  Llama-3.1-8B  : KV write 2.69 GiB/s avg, read-back 4.77 GiB/s; write-set 2.7 TiB/trace, never-read 1.6 TiB
+  Llama-3.1-70B : KV write 6.72 GiB/s avg, read-back 11.92 GiB/s; write-set 6.7 TiB/trace, never-read 3.9 TiB
+  Qwen2.5-7B    : KV write 1.18 GiB/s avg, read-back 2.09 GiB/s; write-set 1.2 TiB/trace, never-read 0.7 TiB
+
+NOTE: rates scale linearly with request rate; Mooncake traces are ~3-7 req/s samples of one serving cluster.

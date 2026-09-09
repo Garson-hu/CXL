@@ -156,8 +156,8 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 | A1.3 | Scratch placement mechanisms: `/dev/shm` (DRAM); node-1 tmpfs via `numactl --membind=1` (test) or root mount; `/dev/dax2.0` direct NT copy | 🟡 testing |
 | A1.4 | Checkpoint experiment: step time during/between checkpoints × scratch placement × with/without DRAM aggressor; persistent on `/mnt/local` | 🔴 comparison needs healthy DRAM (CXL side runnable) |
 | A2.1 | Optimizer-snapshot emulator (torch CPU): fp32 params + Adam m/v, RMW step, `torch.save` every K steps to scratch {DRAM, CXL} | ⬜ |
-| B1.1 | Download ShareGPT + Mooncake traces to `workloads/` (LMSys: skipped for now — needs HF token; noted) | ⬜ |
-| B1.2 | Trace analysis → KV eviction/insertion GiB/s, reuse-distance distribution, written-never-read fraction (Llama-3.1-8B KV sizing) | ⬜ |
+| B1.1 | ShareGPT + Mooncake ×3 traces in `workloads/` (gitignored; LMSys skipped — needs HF token) | ✅ 2026-09-09 |
+| B1.2 | Trace analysis — `2026-09-09-kv-trace-analysis.md`: 58–78% never-read, 3–8 GiB/s writes, gaps p50 ≤2 min | ✅ 2026-09-09 (first pass) |
 | B2 | KV-pool microbenchmark (NT writes to {DRAM, dax2.0, dax0.0}, trace-driven, DRAM-reader victim) | ⬜ |
 | B3 | Real serving (vLLM+LMCache on 4060 Ti) — only if B1/B2 justify | ⬜ decision after B2 |
 | C | Optimizer-state RMW on CXL vs DRAM (optional probe) | ⬜ after A+B |
