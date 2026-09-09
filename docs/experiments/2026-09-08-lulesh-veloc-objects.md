@@ -63,3 +63,28 @@ steps while the pwrite stream drains. Secondary (optional): group-B temporaries 
 CXL with NT stores under pressure (needs an allocator hook in `Allocate<>()`).
 Policy extraction then reads directly off the table: E → CXL always; B → CXL only under
 pressure and only if duplex covers the read-back; A, C, D → DRAM.
+
+## Addendum 2026-09-08 — candidate applications from the literature (broad scan)
+Sources: the 97-paper review JSON (`benchmarks/results/2026-07-08-cxl-lit-review.json`),
+PolyStore (FAST'25), and general systems knowledge. Fit criteria: (1) a large object
+written far more than it is read; (2) reads come later (next phase / on hit / on
+failure), not within the same phase; (3) written while the app is DRAM-bandwidth-bound;
+(4) runnable on c28 (CPU-side, 8 GB GPU, single node).
+
+| rank | application / object | write-then-read distance | literature evidence (CXL) | fit | c28 feasibility |
+|---|---|---|---|---|---|
+| 1 | **Checkpoint / snapshot staging** — VeloC/SCR (HPC), `torch.save` model+optimizer state (ML), MicroVM snapshots | read only on failure/restore (hours) or once by a drain | Aquifer (snapshots restored from CXL pool, 2.2× invocation); SAP HANA fast restart from CXL (EDBT); CXL-Powered DB "dual checkpoint" (ICDE, conceptual) | ★★★ exact shape of Gate 2b | ✅ VeloC in workspace; LULESH cloned; NVMe `/mnt/local` for persistent |
+| 2 | **LLM KV-cache eviction / prefix-cache insertion** (multi-turn serving) | read on reuse next turn (seconds–minutes) or never; active-decode KV is the anti-case | Beluga SIGMOD'26 (real ASIC, 7.35× vs RDMA path), TraCT, ITME (+35.7% over CPU offload), "Exploring CXL KV Cache Storage" (+30% batch under TTFT SLO), Mooncake FAST'25 (KVCache store on DRAM/SSD); all direction-blind | ★★★ largest paper appeal; write volume O(GB) per prefill | 🟡 CPU-side KV pool + small model on 8 GB GPU or CPU inference; traces in `workloads/` |
+| 3 | **Optimizer state / gradient RMW streams** (ZeRO-Offload-style CPU Adam, activation offload) | 1:1 read-modify-write per step; activations: written forward, read backward | Long-context fine-tuning paper (real ASIC): naive CXL placement made CPU optimizer STEP ~4× slower → they pin optimizer to DRAM. **Directly testable counter-hypothesis:** with NT stores + streaming reads (duplex) the RMW stream may be CXL-friendly | ★★☆ the duplex sweet spot; contradicts a published conclusion | ✅ emulate CPU-Adam over multi-GB fp32 tensors, no big GPU needed |
+| 4 | **LSM KV store write path** — RocksDB WAL (append, read on recovery), memtable flush → SST, compaction outputs | WAL: on recovery; flush/compaction outputs: read later by queries (minutes) | PolyStore RocksDB YCSB A/F 1.52–2.02×; Samsung CMM-H db_bench; Nomad Redis YCSB 50/50 | ★★☆ WAL/flush buffers fit; the memtable (random RMW skiplist) does NOT | ✅ RocksDB builds on c28; needs allocator/placement hooks for WAL and flush buffers |
+| 5 | **Redis RDB snapshot / AOF rewrite** | snapshot: read never (until restore) | PolyStore evaluated Redis AOF; Nomad Redis | ★★☆ | ✅ easy |
+| 6 | **Out-of-core / edge-centric graph processing** (X-Stream, GraphChi, GridGraph update streams; GraphWalker walk logs) | scatter writes update stream → gather reads it next phase (the stencil rotation problem, sequential) | PolyStore GraphWalker (writes walk info; 1.84×); many CXL papers use PageRank but vertex-array RMW is random → poor | ★★☆ two-device ping-pong applies | ✅ |
+| 7 | **DB spill / external sort / hash-join partitions / shuffle** (DuckDB, Spark, HANA temp tables) | written once, read once by the next operator | SAP HANA temp tables on CXL only 4–13% slower (VLDB'24) — temporaries tolerate CXL; in-memory data processing paper (VLDB'25) | ★★☆ write-once-read-once sequential | 🟡 DuckDB out-of-core TPC-H on c28 |
+| 8 | **DB WAL / redo log, dirty-page writeback** | log: on recovery; pages: read by later queries | CXL-Powered DB (ICDE): dirty-page sync, force commit with CXL+PMEM | ★★☆ excellent shape, modest volume | 🟡 PostgreSQL/MySQL |
+| 9 | **In-situ HPC I/O staging / burst buffers** (ADIOS2, DataSpaces) | simulation writes every N steps, analysis reads later | thin CXL evidence; classic HPC pattern | ★★☆ same shape as checkpoint with a consumer | 🟡 ADIOS2 install |
+| 10 | **Append-only logs / telemetry / message queues** | read once by lagging consumers | 3 weak CXL mentions | ★★☆ structurally ideal, no CXL literature | ✅ synthetic |
+| ✗ | active-decode KV cache; HANA HEX heap (random); embedding tables (read gathers); PageRank vertex arrays; TPC-C OLTP (lock-bound); ANN/vector search | read-heavy or random | SAP: HEX on CXL −78%; long-context paper: optimizer pinned to DRAM | poor | — |
+
+**Cross-cutting evidence for the write-tier premise:** Micron/Intel Xeon 6 white paper — DRAM loses 20% at 1:1 R:W while CXL-only *gains* on mixed R/W (214 vs 205 GB/s), best DRAM+CXL 2W:1R +34%; Samsung CMM-H — NT stores ~7× faster than temporal stores on the device; VLDB'25 (FPGA devices) — writes scale 2×/3×/3.7× with 2/3/4 devices but those devices write at 13.5–18 vs read 38–40 GB/s — **device-dependent asymmetry** (our CZ120: write 22 ≈ read 24 per card) — worth a sentence in the paper.
+
+**Recommendation:** two anchors + one probe. (A) Checkpointing (rank 1) — LULESH+VeloC, plus a `torch.save`-shaped snapshot of optimizer state; deployable, advisor-aligned. (B) KV-cache eviction/prefix insertion (rank 2) — paper appeal, evidence-rich, direction-blind prior work. (C) Optimizer-state RMW stream (rank 3) as a focused experiment that tests a published "pin to DRAM" conclusion against duplex. RocksDB/Redis (4–5) as secondary breadth if time allows.
