@@ -116,10 +116,10 @@ designing experiments) and Phase 4 checkpoint numbers.
 | 0 | Admin: Memory/Chipselect Interleaving → Auto; keep CXL Memory Attribute = Enabled; CAP_PERFMON or paranoid=1; udev rule for dax perms | ⏳ user emails |
 | 1a | Phase 1 mechanism write-up (6 questions) — `2026-09-08-dram-write-drain.md` Part A | ✅ 2026-09-08 |
 | 1b | Phase 1 read/write matrix × writers × store type (+UMC counters) | 🔴 |
-| 2a | Phase 2 five-answers section in the phase file | 🟢 |
-| 2b | CXL 1/2/4-card scaling: read / NT-write / mixes; bottleneck location — `hardware/scripts/cxl-card-scaling.py` | 🟡 running 2026-09-08 |
-| 3a | Stencil code (3 buffers, placement/threads/store knobs, 5 rotation strategies, BW+timing) | 🟢 |
-| 3b | Stencil CXL-side strategy comparison (relative) | 🟡 |
+| 2a | Phase 2 five-answers section — `2026-09-08-cxl-card-scaling.md` Part 1 | ✅ 2026-09-08 |
+| 2b | CXL 1/2/4-card scaling — `2026-09-08-cxl-card-scaling.md` Part 2: linear scaling, HB −6%, cross-pair −1%, duplex at every scale | ✅ 2026-09-08 |
+| 3a | Stencil code `benchmarks/stencil/pond.c` (3 buffers + DRAM staging, placement/threads/NT knobs, policies rotate/copyback[--alt]/migrate, per-step BW+timing) | ✅ built 2026-09-08 (smoke-tested 1 GiB) |
+| 3b | Stencil CXL-side strategy comparison (relative) | 🟡 awaiting user go |
 | 3c | Stencil Case A vs Case B, healthy DRAM | 🔴 |
 | 4a | LULESH object R/W analysis + instrumentation plan; VeloC object analysis | 🟡 ⏳ version |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🔴 |
@@ -133,3 +133,5 @@ designing experiments) and Phase 4 checkpoint numbers.
   machine facts, blockers, and file naming fixed.
 - 2026-09-08 (later) — 1a written; PolyStore read in full, gap list appended to
   `Related.md`; 2b launched; PDF kept local (`/docs/*.pdf` gitignored).
+- 2026-09-08 (evening) — 2b done (3 reps; first run killed by a session restart,
+  reps 2–3 re-run); Phase 2 file closed; pond.c built. Next: 3b needs approval.

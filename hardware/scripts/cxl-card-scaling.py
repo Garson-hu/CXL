@@ -7,6 +7,7 @@ import subprocess, re, csv, sys, statistics, time, os
 CP = "benchmarks/memory/cxlprobe"
 OUT = "experimental_results/2026-09-08-cxl-card-scaling"; os.makedirs(OUT, exist_ok=True)
 SECS = 4; REPS = int(sys.argv[1]) if len(sys.argv) > 1 else 3
+CSV = sys.argv[2] if len(sys.argv) > 2 else "scaling.csv"; REP0 = int(sys.argv[3]) if len(sys.argv) > 3 else 1
 MODES = {"read": 1.0, "write": 0.0, "mix31": 0.75, "mix11": 0.5, "mix13": 0.25}
 # (dax, reader-region, writer-region, stride, chunk) per device config; class offset 0
 CFG = {1: [("/dev/dax2.0", "32G", "160G", 512, 256)],
@@ -21,9 +22,9 @@ def launch(dax, region, kind, stride, chunk, threads, cpu_off, tag):
     return tag, threads, subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
 rows = []
-with open(f"{OUT}/scaling.csv", "w", newline="") as f:
+with open(f"{OUT}/{CSV}", "w", newline="") as f:
     w = csv.writer(f); w.writerow(["rep", "devices", "mode", "T", "proc", "threads", "bw_gib_s"])
-    for rep in range(1, REPS + 1):
+    for rep in range(REP0, REP0 + REPS):
         for devices, cfg in CFG.items():
             for T in (4, 8, 16, 32):
                 for mode, rfrac in MODES.items():
@@ -46,9 +47,9 @@ agg = {}
 for rep, d, m, T, tag, th, bw in rows: agg.setdefault((d, m, T, rep), 0.0); agg[(d, m, T, rep)] += bw
 med = {}
 for (d, m, T, rep), v in agg.items(): med.setdefault((d, m, T), []).append(v)
-with open(f"{OUT}/summary.txt", "w") as s:
+with open(f"{OUT}/summary-{CSV}.txt", "w") as s:
     s.write("aggregate GiB/s (median of reps)\ndevices mode    T=4    T=8   T=16   T=32\n")
     for d in (1, 2, 4):
         for m in MODES:
             s.write(f"{d:7d} {m:6s} " + " ".join(f"{statistics.median(med[(d,m,T)]):6.1f}" for T in (4,8,16,32)) + "\n")
-print(open(f"{OUT}/summary.txt").read())
+print(open(f"{OUT}/summary-{CSV}.txt").read())
