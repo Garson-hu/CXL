@@ -137,3 +137,9 @@ designing experiments) and Phase 4 checkpoint numbers.
   reps 2–3 re-run); Phase 2 file closed; pond.c built. Next: 3b needs approval.
 - 2026-09-08 (night) — 3b done: all policies work; results are a high-DRAM-pressure
   preview (DRAM crippled), 3c required for the real ranking. Next: 4a (LULESH).
+
+## Naming (rule 2026-09-08 — do not use "Pair A"/"Pair B" in new text)
+| historical label | what it is | use instead |
+|---|---|---|
+| Pair A | two cards at PCI c1:00.0 + e1:00.0, exposed as two firmware windows `/dev/dax0.0` (242.5 GiB) and `dax1.0` (= NUMA node 1, 269.5 GiB); root-level hashed interleave, not splittable | `dax0.0` / `node 1` (same two cards) |
+| Pair B | two cards at PCI 01:00.0 + 02:00.0 behind host bridge pci0000:00, one window `/dev/dax2.0` (512 GiB); plain 256 B stripe, `card = (offset>>8)&1` | `dax2.0`; single cards "卡 01" / "卡 02" |
