@@ -121,7 +121,7 @@ designing experiments) and Phase 4 checkpoint numbers.
 | 3a | Stencil code `benchmarks/stencil/pond.c` (3 buffers + DRAM staging, placement/threads/NT knobs, policies rotate/copyback[--alt]/migrate, per-step BW+timing) | ✅ built 2026-09-08 (smoke-tested 1 GiB) |
 | 3b | Stencil CXL-side strategy comparison — `2026-09-08-stencil-write-tier.md` (pingpong policy added; ranking inverted by crippled DRAM) | ✅ 2026-09-08 |
 | 3c | Stencil Case A vs Case B, healthy DRAM | 🔴 |
-| 4a | LULESH object R/W analysis + instrumentation plan; VeloC object analysis | 🟡 ⏳ version |
+| 4a | LULESH + VeloC object analysis — `2026-09-08-lulesh-veloc-objects.md` (static; LULESH cloned to ~/apps/lulesh) | ✅ analysis 2026-09-08 · measurement pending approval |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🔴 |
 | 5 | PolyStore full read ✅ 2026-09-08 (gap list in `Related.md`) → DRAM→CXL→NVMe experiment design | 🟡 design pending Phase 4 numbers |
 
@@ -143,3 +143,5 @@ designing experiments) and Phase 4 checkpoint numbers.
 |---|---|---|
 | Pair A | two cards at PCI c1:00.0 + e1:00.0, exposed as two firmware windows `/dev/dax0.0` (242.5 GiB) and `dax1.0` (= NUMA node 1, 269.5 GiB); root-level hashed interleave, not splittable | `dax0.0` / `node 1` (same two cards) |
 | Pair B | two cards at PCI 01:00.0 + 02:00.0 behind host bridge pci0000:00, one window `/dev/dax2.0` (512 GiB); plain 256 B stripe, `card = (offset>>8)&1` | `dax2.0`; single cards "卡 01" / "卡 02" |
+- 2026-09-08 (late) — 4a static analysis done: the write-tier object in LULESH is the
+  checkpoint, not any solver array; VeloC scratch is the natural CXL tier; 4b designed.
