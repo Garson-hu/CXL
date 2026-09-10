@@ -1,0 +1,19 @@
+# Inspection 2026-09-10 13:35 — reboot 2026-09-09 12:46 (advisor's environment change)
+## DRAM: RESTORED (interleaving back) — better than any earlier config
+membench node 0: stream-read 8T 99.4 GiB/s, 32T 141.3, 64T 282.1, 128T 309.0
+                 NT-write 8T 79.0, plain-write 8T 66.1, ptr-chase latency 152.4 ns
+# May 2026 (NPS1): 94.6 @32T, 184.9 ns  -> now 141 @32T, 152 ns. All DRAM-dependent
+# phases (1b, 3c, A1 scale-up, 4b) are UNBLOCKED. New DRAM baselines start here.
+## NUMA: ONE node only (node 0, 773 GB). No CXL system-ram node any more.
+## dax: ALL THREE in devdax mode now
+/dev/dax0.0  242.5 GiB  root:kmem 0660  mmap OK   (cards c1:00.0 + e1:00.0, window 1; hashed 2-way)
+/dev/dax1.0  269.5 GiB  root:kmem 0660  mmap OK   (same two cards, window 2)
+/dev/dax2.0  512.0 GiB  root:root 0600  DENIED    (cards 01:00.0 + 02:00.0; plain 256 B stripe)
+# No udev rule exists; perms were set by hand for dax0.0/dax1.0 and not for dax2.0.
+# Consequences: (a) membench --node=1 / pond node1 / LULESH_CKPT_NODE=1 (tmpfs-on-CXL)
+# paths are DEAD — CXL is reachable only through devdax mmap (cxlprobe dax modes,
+# pond daxA/daxB, a VeloC flush_mem-style direct path); (b) only ONE physical pair
+# (c1/e1 via dax0.0 or dax1.0) is usable until dax2.0 gets group kmem again;
+# per-card instrument (dax2.0 256 B classes) and cross-pair tests are on hold.
+## decoders unchanged: 0.0/0.1 ways=2 (7,6); 0.2 ways=1 -> port3 decoder3.0 ways=2
+## CXL speeds unchanged: dax0.0 48.0 GiB/s @8T, 219 ns; dax1.0 45.3 GiB/s, 221 ns

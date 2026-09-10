@@ -97,6 +97,13 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-09-10 (session 20) — Environment changed: DRAM restored, CXL is devdax-only
+Reboot 2026-09-09 12:46. DRAM back and better: 141 GiB/s @32T (May 94.6), 309 @128T, 152 ns.
+No CXL NUMA node any more — dax0.0/dax1.0 (cards c1+e1) devdax + mmap-able (root:kmem),
+dax2.0 (cards 01+02) devdax but root-only 0600 (no udev rule). 1b/3c/4b unblocked; the
+tmpfs-on-CXL checkpoint trick and every `--node=1` path are gone — CXL only through devdax
+mmap from now on. Log: `hardware/results/2026-09-10-post-reboot-dram-restored.log`.
+
 ### 2026-09-09 (session 19) — Phase 4 started: LULESH+VeloC checkpointing on CXL; KV-trace analysis
 **A1:** user's VeloC-instrumented LULESH built (`~/apps/lulesh-veloc`, `-DWITH_VELOC`), VeloC rebuilt
 (`~/apps/veloc-inst`) with a pread/pwrite fallback for cross-fs drains (stock build lost every
