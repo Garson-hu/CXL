@@ -1,0 +1,81 @@
+=== idle-A-alldram-rotate-normal-r1 17:28:24 ===
+idle-A-alldram-rotate-normal-r1,19,rotate,dram,dram,dram,16,0,0.2616,16.0,8.0,0.0,61.2,30.6
+=== idle-B-rotate-normal-r1 17:28:35 ===
+idle-B-rotate-normal-r1,19,rotate,daxB,dram,dram,16,0,0.3105,16.0,8.0,0.0,51.5,25.8
+=== idle-B-copyback-normal-r1 17:28:46 ===
+idle-B-copyback-normal-r1,19,copyback,dram,dram,daxB,16,0,0.5505,16.0,8.0,8.0,44.5,22.2
+=== idle-B-migrate-normal-r1 17:29:01 ===
+idle-B-migrate-normal-r1,19,migrate,dram,dram,daxB,16,0,0.4718,16.0,8.0,8.0,35.5,17.8
+=== idle-B-pingpong-normal-r1 17:29:16 ===
+idle-B-pingpong-normal-r1,19,pingpong,dram,daxB,daxA,16,0,0.5668,16.0,8.0,8.0,28.2,14.1
+=== idle-A-alldram-rotate-nt-r1 17:29:32 ===
+idle-A-alldram-rotate-nt-r1,19,rotate,dram,dram,dram,16,1,0.2125,16.0,8.0,0.0,75.3,37.6
+=== idle-B-rotate-nt-r1 17:29:42 ===
+idle-B-rotate-nt-r1,19,rotate,daxB,dram,dram,16,1,0.2466,16.0,8.0,0.0,64.9,32.4
+=== idle-B-copyback-nt-r1 17:29:50 ===
+idle-B-copyback-nt-r1,19,copyback,dram,dram,daxB,16,1,0.4043,16.0,8.0,8.0,74.9,37.5
+=== idle-B-migrate-nt-r1 17:30:02 ===
+idle-B-migrate-nt-r1,19,migrate,dram,dram,daxB,16,1,0.3062,16.0,8.0,8.0,69.0,34.5
+=== idle-B-pingpong-nt-r1 17:30:14 ===
+idle-B-pingpong-nt-r1,19,pingpong,dram,daxB,daxA,16,1,0.3690,16.0,8.0,8.0,43.4,21.7
+=== press-A-alldram-rotate-normal-r1 17:30:29 ===
+press-A-alldram-rotate-normal-r1,19,rotate,dram,dram,dram,16,0,0.2633,16.0,8.0,0.0,60.8,30.4
+=== press-B-rotate-normal-r1 17:30:45 ===
+press-B-rotate-normal-r1,19,rotate,daxB,dram,dram,16,0,0.3108,16.0,8.0,0.0,51.5,25.7
+=== press-B-copyback-normal-r1 17:31:00 ===
+press-B-copyback-normal-r1,19,copyback,dram,dram,daxB,16,0,3.0435,16.0,8.0,8.0,5.6,2.8
+=== press-B-migrate-normal-r1 17:31:28 ===
+press-B-migrate-normal-r1,19,migrate,dram,dram,daxB,16,0,2.7271,16.0,8.0,8.0,5.9,3.0
+=== press-B-pingpong-normal-r1 17:31:56 ===
+press-B-pingpong-normal-r1,19,pingpong,dram,daxB,daxA,16,0,2.7137,16.0,8.0,8.0,5.9,2.9
+=== press-A-alldram-rotate-nt-r1 17:32:25 ===
+press-A-alldram-rotate-nt-r1,19,rotate,dram,dram,dram,16,1,0.2132,16.0,8.0,0.0,75.0,37.5
+=== press-B-rotate-nt-r1 17:32:40 ===
+press-B-rotate-nt-r1,19,rotate,daxB,dram,dram,16,1,0.2482,16.0,8.0,0.0,64.5,32.2
+=== press-B-copyback-nt-r1 17:32:53 ===
+press-B-copyback-nt-r1,19,copyback,dram,dram,daxB,16,1,0.4078,16.0,8.0,8.0,73.6,36.8
+=== press-B-migrate-nt-r1 17:33:10 ===
+press-B-migrate-nt-r1,19,migrate,dram,dram,daxB,16,1,0.3133,16.0,8.0,8.0,71.3,35.7
+=== press-B-pingpong-nt-r1 17:33:26 ===
+press-B-pingpong-nt-r1,19,pingpong,dram,daxB,daxA,16,1,0.3700,16.0,8.0,8.0,43.2,21.6
+=== idle-A-alldram-rotate-normal-r2 17:33:40 ===
+idle-A-alldram-rotate-normal-r2,19,rotate,dram,dram,dram,16,0,0.2614,16.0,8.0,0.0,61.2,30.6
+=== idle-B-rotate-normal-r2 17:33:51 ===
+idle-B-rotate-normal-r2,19,rotate,daxB,dram,dram,16,0,0.3102,16.0,8.0,0.0,51.6,25.8
+=== idle-B-copyback-normal-r2 17:34:02 ===
+idle-B-copyback-normal-r2,19,copyback,dram,dram,daxB,16,0,0.5962,16.0,8.0,8.0,39.3,19.7
+=== idle-B-migrate-normal-r2 17:34:18 ===
+idle-B-migrate-normal-r2,19,migrate,dram,dram,daxB,16,0,0.4739,16.0,8.0,8.0,35.3,17.7
+=== idle-B-pingpong-normal-r2 17:34:33 ===
+idle-B-pingpong-normal-r2,19,pingpong,dram,daxB,daxA,16,0,0.5664,16.0,8.0,8.0,28.3,14.1
+=== idle-A-alldram-rotate-nt-r2 17:34:49 ===
+idle-A-alldram-rotate-nt-r2,19,rotate,dram,dram,dram,16,1,0.2130,16.0,8.0,0.0,75.1,37.6
+=== idle-B-rotate-nt-r2 17:35:00 ===
+idle-B-rotate-nt-r2,19,rotate,daxB,dram,dram,16,1,0.2482,16.0,8.0,0.0,64.5,32.2
+=== idle-B-copyback-nt-r2 17:35:09 ===
+idle-B-copyback-nt-r2,19,copyback,dram,dram,daxB,16,1,0.4046,16.0,8.0,8.0,75.1,37.6
+=== idle-B-migrate-nt-r2 17:35:21 ===
+idle-B-migrate-nt-r2,19,migrate,dram,dram,daxB,16,1,0.3140,16.0,8.0,8.0,72.6,36.3
+=== idle-B-pingpong-nt-r2 17:35:34 ===
+idle-B-pingpong-nt-r2,19,pingpong,dram,daxB,daxA,16,1,0.3694,16.0,8.0,8.0,43.3,21.7
+=== press-A-alldram-rotate-normal-r2 17:35:48 ===
+press-A-alldram-rotate-normal-r2,19,rotate,dram,dram,dram,16,0,0.2634,16.0,8.0,0.0,60.7,30.4
+=== press-B-rotate-normal-r2 17:36:04 ===
+press-B-rotate-normal-r2,19,rotate,daxB,dram,dram,16,0,0.3126,16.0,8.0,0.0,51.2,25.6
+=== press-B-copyback-normal-r2 17:36:19 ===
+press-B-copyback-normal-r2,19,copyback,dram,dram,daxB,16,0,2.9447,16.0,8.0,8.0,5.8,2.9
+=== press-B-migrate-normal-r2 17:36:47 ===
+press-B-migrate-normal-r2,19,migrate,dram,dram,daxB,16,0,2.8836,16.0,8.0,8.0,5.6,2.8
+=== press-B-pingpong-normal-r2 17:37:17 ===
+press-B-pingpong-normal-r2,19,pingpong,dram,daxB,daxA,16,0,0.6459,16.0,8.0,8.0,24.8,12.4
+=== press-A-alldram-rotate-nt-r2 17:37:39 ===
+press-A-alldram-rotate-nt-r2,19,rotate,dram,dram,dram,16,1,0.2131,16.0,8.0,0.0,75.1,37.5
+=== press-B-rotate-nt-r2 17:37:53 ===
+press-B-rotate-nt-r2,19,rotate,daxB,dram,dram,16,1,0.2477,16.0,8.0,0.0,64.6,32.3
+=== press-B-copyback-nt-r2 17:38:06 ===
+press-B-copyback-nt-r2,19,copyback,dram,dram,daxB,16,1,0.4081,16.0,8.0,8.0,74.5,37.2
+=== press-B-migrate-nt-r2 17:38:23 ===
+press-B-migrate-nt-r2,19,migrate,dram,dram,daxB,16,1,0.3155,16.0,8.0,8.0,71.0,35.5
+=== press-B-pingpong-nt-r2 17:38:40 ===
+press-B-pingpong-nt-r2,19,pingpong,dram,daxB,daxA,16,1,0.3699,16.0,8.0,8.0,43.3,21.6
+DONE 17:38:53

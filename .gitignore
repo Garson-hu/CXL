@@ -25,3 +25,4 @@ __pycache__/
 # traces (large, re-downloadable; see workloads/README in campaign file)
 /workloads/*.json
 /workloads/*.jsonl
+benchmarks/stencil/pond

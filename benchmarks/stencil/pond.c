@@ -33,7 +33,7 @@ static void pin(int cpu){cpu_set_t s;CPU_ZERO(&s);CPU_SET(cpu,&s);sched_setaffin
 
 enum place { P_DRAM, P_NODE1, P_DAXA, P_DAXB };
 static const char *PN[] = {"dram","node1","daxA","daxB"};
-static const char *DAXPATH[] = {NULL,NULL,"/dev/dax0.0","/dev/dax2.0"};
+static const char *DAXPATH[] = {NULL,NULL,"/dev/dax0.0","/dev/dax2.0"};   /* override: --daxA=PATH --daxB=PATH */
 static int parse_place(const char *s){for(int i=0;i<4;i++)if(!strcmp(s,PN[i]))return i;fprintf(stderr,"bad placement %s\n",s);exit(2);}
 
 static double *alloc_buf(enum place p, size_t bytes, size_t dax_off, int nt_init){
@@ -95,11 +95,13 @@ int main(int argc,char**argv){
         else if(!strcmp(a,"--alt"))alt=1;
         else if(!strcmp(a,"--nt"))use_nt=1;
         else if(!strncmp(a,"--tag=",6))tag=a+6;
+        else if(!strncmp(a,"--daxA=",7))DAXPATH[P_DAXA]=a+7;
+        else if(!strncmp(a,"--daxB=",7))DAXPATH[P_DAXB]=a+7;
         else {fprintf(stderr,"usage: pond --gib=G --steps=S --threads=T --place=p0,p1,p2 (dram|node1|daxA|daxB)\n"
              "  --daxoff=g0,g1,g2,g3 (GiB offsets) --policy=rotate|copyback|migrate|pingpong [--nt]\n"
              "  pingpong: place=old(dram),stage(dram),devX,devY — cur read from the device written last step,\n"
              "            new written to the other device, old lag-copied CXL->DRAM during compute\n"
-             "  --copy-threads=N --cpu0=C --cpu-copy=C --tag=NAME\n");return 2;}
+             "  --copy-threads=N --cpu0=C --cpu-copy=C --tag=NAME --daxA=/dev/daxX --daxB=/dev/daxY\n");return 2;}
     }
     N=(gib<<30)/sizeof(double); size_t bytes=N*sizeof(double);
     int is_mig=!strcmp(policy,"migrate"), is_pp=!strcmp(policy,"pingpong");

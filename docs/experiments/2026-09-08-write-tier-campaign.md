@@ -78,7 +78,7 @@ reads always from DRAM copy), migration (`obj_stage_in`-style async NT copy
 CXL→DRAM overlapped with compute), multiple devices (write to Pair B while
 reading last step from Pair A, alternate pairs — c28-unique).
 Metric: steady-state per-step time over ≥20 steps, each strategy vs Case A.
-Status: 3a code 🟢 · 3b CXL-side relative results 🟡 · 3c Case A vs B 🔴.
+Status: 3a code ✅ · 3b discarded (crippled DRAM) · 3c ✅ DONE 2026-09-14 (see `2026-09-14-stencil-3c.md`).
 File: `2026-09-XX-stencil-write-tier.md`.
 
 ## Phase 4 — Real applications: LULESH + checkpoint (VeloC)
@@ -167,12 +167,12 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 |---|---|---|
 | 0 | Admin: Memory/Chipselect Interleaving → Auto; keep CXL Memory Attribute = Enabled; CAP_PERFMON or paranoid=1; udev rule for dax perms | ⏳ user emails |
 | 1a | Phase 1 mechanism write-up (6 questions) — `2026-09-08-dram-write-drain.md` Part A | ✅ 2026-09-08 |
-| 1b | Phase 1 read/write matrix × writers × store type (+UMC counters if perf allowed) | 🟢 UNBLOCKED 2026-09-10 (DRAM restored) |
+| 1b | Phase 1 read/write matrix × writers × store type (+UMC counters if perf allowed) | ✅ DONE 2026-09-14 — cliff confirmed on healthy NPS1: reader 12× (96→8 GiB/s) once writers on 4 CCDs saturate the ~290 GiB/s pipe; reads/plain writes/mixed 6–12×, NT writes −13–23%; neighbour-CCD −20%. First multi-CCD pass invalid (pre-touch overlap) → redone with epoch stamps. No UMC counters |
 | 2a | Phase 2 five-answers section — `2026-09-08-cxl-card-scaling.md` Part 1 | ✅ 2026-09-08 |
 | 2b | CXL 1/2/4-card scaling — `2026-09-08-cxl-card-scaling.md` Part 2: linear scaling, HB −6%, cross-pair −1%, duplex at every scale | ✅ 2026-09-08 |
 | 3a | Stencil code `benchmarks/stencil/pond.c` (3 buffers + DRAM staging, placement/threads/NT knobs, policies rotate/copyback[--alt]/migrate, per-step BW+timing) | ✅ built 2026-09-08 (smoke-tested 1 GiB) |
 | 3b | Stencil CXL-side strategy comparison — results DISCARDED (crippled DRAM, 2026-09-14); code kept | ⬜ superseded by 3c |
-| 3c | Stencil Case A vs Case B, healthy DRAM (+ pressure aggressor) — CXL via daxA/daxB only (node 1 gone) | 🟢 UNBLOCKED 2026-09-10 |
+| 3c | Stencil Case A vs Case B, healthy DRAM (+ pressure aggressor) — CXL via daxA/daxB only (node 1 gone) | ✅ DONE 2026-09-14 — idle: all-DRAM best, `new`-on-CXL +19%…+2.2×; under 280 GiB/s DRAM write pressure all DRAM-reading variants 10× slower, all-on-CXL immune (0.60 s), aggressor-on-CXL leaves all-DRAM at 95%. Verdict: relocate the write streams, not the victim's buffers (`2026-09-14-stencil-3c.md`) |
 | 4a | LULESH + VeloC object analysis — `2026-09-08-lulesh-veloc-objects.md` (static; LULESH cloned to ~/apps/lulesh) | ✅ analysis 2026-09-08 · measurement pending approval |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🟢 UNBLOCKED (needs a direct dax scratch path: tmpfs-on-CXL trick is gone) |
 | 5 | PolyStore full read ✅ 2026-09-08 (gap list in `Related.md`) → DRAM→CXL→NVMe experiment design | 🟡 design pending Phase 4 numbers |
@@ -202,3 +202,4 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
   dax devdax; dax2.0 currently root-only. 1b/3c/4b unblocked; tooling must use devdax paths.
 - 2026-09-14 — user ruling: all crippled-DRAM measurements (08-27→09-09) are trash;
   3b and A1.4 results discarded, code kept; 1b/3c next.
+- 2026-09-14 (evening) — 1b and 3c run on healthy NPS1 DRAM. 1b: write-drain cliff confirmed at socket scale (reader 12× under 273 GiB/s NT writes from 4 CCDs; NT writers immune, everything else 6–12×); first multi-CCD pass invalidated by aggressor pre-touch overlap → membench now stamps measure_start/end_epoch, summarizer checks overlap. 3c: `new`-on-CXL does not rescue a DRAM-reading app under pressure; all-on-CXL immune; aggressor-on-CXL leaves the app at 95%. Thesis wording to revisit: move the write STREAMS to CXL. Next: real apps (A/B) with this framing.

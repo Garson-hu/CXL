@@ -1,0 +1,4 @@
+tag,node,mode,threads,size_per_thread_bytes,read_pct,duration_sec,total_bytes,bandwidth_gib_s,avg_latency_ns,victim_latency_ns,aggressor_bandwidth_gib_s,total_bandwidth_gib_s,rep
+1b2-rw32-nt-w96,0,stream-write-nt,96,268435456,50,30.091,9431748182016,291.916,0.000,0.000,0.000,291.935,1
+1b2-rw32-nt-w96,0,stream-write-nt,96,268435456,50,30.100,9388530073600,290.492,0.000,0.000,0.000,290.755,2
+1b2-rw32-nt-w96,0,stream-write-nt,96,268435456,50,30.126,9418057973760,291.154,0.000,0.000,0.000,291.421,3

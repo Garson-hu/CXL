@@ -1,0 +1,9 @@
+tag,step,policy,place_old,place_cur,place_new,threads,nt,step_s,read_gib,write_gib,copy_gib,eff_read_gibs,eff_write_gibs
+diag-pond-A4,0,rotate,dram,dram,dram,4,0,2.8125,16.0,8.0,0.0,5.7,2.8
+diag-pond-A4,1,rotate,dram,dram,dram,4,0,2.8138,16.0,8.0,0.0,5.7,2.8
+diag-pond-A4,2,rotate,dram,dram,dram,4,0,2.8074,16.0,8.0,0.0,5.7,2.8
+diag-pond-A4,3,rotate,dram,dram,dram,4,0,2.8240,16.0,8.0,0.0,5.7,2.8
+diag-pond-A4,4,rotate,dram,dram,dram,4,0,2.8004,16.0,8.0,0.0,5.7,2.9
+diag-pond-A4,5,rotate,dram,dram,dram,4,0,1.3478,16.0,8.0,0.0,11.9,5.9
+diag-pond-A4,6,rotate,dram,dram,dram,4,0,0.2684,16.0,8.0,0.0,59.6,29.8
+diag-pond-A4,7,rotate,dram,dram,dram,4,0,0.2680,16.0,8.0,0.0,59.7,29.9

@@ -1,0 +1,2157 @@
+victim 1b2-ro-idle rep=1 start=1789424152.688264248
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424153.551
+measure_end_epoch=1789424157.603
+victim 1b2-ro-idle rep=1 end=1789424157.755445673
+victim 1b2-ro32-idle rep=1 start=1789424157.789019668
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789424164.377
+measure_end_epoch=1789424168.508
+victim 1b2-ro32-idle rep=1 end=1789424169.328535543
+chase 1b2-chase-idle rep=1 start=1789424169.370447503
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-idle rep=1 end=1789424170.528992045
+victim 1b2-wv-plain-idle rep=1 start=1789424170.578651243
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424171.419
+measure_end_epoch=1789424175.504
+victim 1b2-wv-plain-idle rep=1 end=1789424175.652967018
+victim 1b2-wv-nt-idle rep=1 start=1789424175.686157420
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424176.534
+measure_end_epoch=1789424180.607
+victim 1b2-wv-nt-idle rep=1 end=1789424180.774839600
+victim 1b2-mixed16-idle rep=1 start=1789424180.824892899
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789424184.139
+measure_end_epoch=1789424188.175
+victim 1b2-mixed16-idle rep=1 end=1789424188.673524860
+victim 1b2-rw-nt-w32 rep=1 start=1789424200.750572501
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424201.685
+measure_end_epoch=1789424205.744
+victim 1b2-rw-nt-w32 rep=1 end=1789424205.877293873
+chase 1b2-chase-nt-w32 rep=1 start=1789424233.058655825
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w32 rep=1 end=1789424234.239891260
+victim 1b2-rw-nt-w64 rep=1 start=1789424265.311568715
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424266.915
+measure_end_epoch=1789424271.347
+victim 1b2-rw-nt-w64 rep=1 end=1789424271.502823788
+chase 1b2-chase-nt-w64 rep=1 start=1789424299.686523827
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w64 rep=1 end=1789424303.024424650
+victim 1b2-rw-nt-w96 rep=1 start=1789424333.761823212
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424336.567
+measure_end_epoch=1789424340.996
+victim 1b2-rw-nt-w96 rep=1 end=1789424341.191190309
+chase 1b2-chase-nt-w96 rep=1 start=1789424370.179034696
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w96 rep=1 end=1789424375.568878946
+victim 1b2-rw32-nt-w64 rep=1 start=1789424405.888518258
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789424418.265
+measure_end_epoch=1789424422.351
+victim 1b2-rw32-nt-w64 rep=1 end=1789424423.322698452
+victim 1b2-wv-plain-nt-w64 rep=1 start=1789424441.559279773
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424443.199
+measure_end_epoch=1789424447.617
+victim 1b2-wv-plain-nt-w64 rep=1 end=1789424447.851871522
+victim 1b2-wv-nt-nt-w64 rep=1 start=1789424475.608941538
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424477.115
+measure_end_epoch=1789424481.357
+victim 1b2-wv-nt-nt-w64 rep=1 end=1789424481.511085203
+victim 1b2-mixed16-nt-w64 rep=1 start=1789424510.125381123
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789424516.249
+measure_end_epoch=1789424520.319
+victim 1b2-mixed16-nt-w64 rep=1 end=1789424520.870005539
+victim 1b2-rw32-nt-w96 rep=1 start=1789424544.248541281
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789424565.996
+measure_end_epoch=1789424570.083
+victim 1b2-rw32-nt-w96 rep=1 end=1789424570.858190572
+victim 1b2-wv-plain-nt-w96 rep=1 start=1789424582.940299852
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424585.669
+measure_end_epoch=1789424589.718
+victim 1b2-wv-plain-nt-w96 rep=1 end=1789424589.917101477
+victim 1b2-wv-nt-nt-w96 rep=1 start=1789424619.608133766
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424622.367
+measure_end_epoch=1789424626.401
+victim 1b2-wv-nt-nt-w96 rep=1 end=1789424626.604231744
+victim 1b2-mixed16-nt-w96 rep=1 start=1789424656.121064716
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789424667.019
+measure_end_epoch=1789424671.038
+victim 1b2-mixed16-nt-w96 rep=1 end=1789424671.656777075
+victim 1b2-rw-plain-w32 rep=1 start=1789424692.559796362
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424693.504
+measure_end_epoch=1789424697.533
+victim 1b2-rw-plain-w32 rep=1 end=1789424697.653139053
+chase 1b2-chase-plain-w32 rep=1 start=1789424724.808902700
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w32 rep=1 end=1789424726.128253237
+victim 1b2-rw-plain-w64 rep=1 start=1789424756.804936622
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424757.939
+measure_end_epoch=1789424762.118
+victim 1b2-rw-plain-w64 rep=1 end=1789424762.245266006
+chase 1b2-chase-plain-w64 rep=1 start=1789424791.068272970
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w64 rep=1 end=1789424792.597033234
+victim 1b2-rw-plain-w96 rep=1 start=1789424825.300198245
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424826.478
+measure_end_epoch=1789424830.592
+victim 1b2-rw-plain-w96 rep=1 end=1789424830.734768621
+chase 1b2-chase-plain-w96 rep=1 start=1789424861.513393938
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w96 rep=1 end=1789424863.072831699
+victim 1b2-rw32-plain-w64 rep=1 start=1789424897.844955727
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789424906.720
+measure_end_epoch=1789424911.225
+victim 1b2-rw32-plain-w64 rep=1 end=1789424912.052402069
+victim 1b2-wv-plain-plain-w64 rep=1 start=1789424932.105669983
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424933.256
+measure_end_epoch=1789424937.637
+victim 1b2-wv-plain-plain-w64 rep=1 end=1789424937.762318129
+victim 1b2-wv-nt-plain-w64 rep=1 start=1789424966.370616826
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789424967.537
+measure_end_epoch=1789424971.584
+victim 1b2-wv-nt-plain-w64 rep=1 end=1789424971.747763065
+victim 1b2-mixed16-plain-w64 rep=1 start=1789425000.492979116
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789425004.988
+measure_end_epoch=1789425008.993
+victim 1b2-mixed16-plain-w64 rep=1 end=1789425009.492044333
+victim 1b2-rw32-plain-w96 rep=1 start=1789425034.661749920
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789425043.881
+measure_end_epoch=1789425048.608
+victim 1b2-rw32-plain-w96 rep=1 end=1789425049.455529905
+victim 1b2-wv-plain-plain-w96 rep=1 start=1789425070.701838122
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425071.923
+measure_end_epoch=1789425076.345
+victim 1b2-wv-plain-plain-w96 rep=1 end=1789425076.481571584
+victim 1b2-wv-nt-plain-w96 rep=1 start=1789425106.901073385
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425108.115
+measure_end_epoch=1789425112.142
+victim 1b2-wv-nt-plain-w96 rep=1 end=1789425112.289520834
+victim 1b2-mixed16-plain-w96 rep=1 start=1789425142.812429729
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789425147.461
+measure_end_epoch=1789425151.466
+victim 1b2-mixed16-plain-w96 rep=1 end=1789425151.952191437
+victim 1b2-ro-idle rep=2 start=1789425166.798367237
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425167.634
+measure_end_epoch=1789425171.704
+victim 1b2-ro-idle rep=2 end=1789425172.029632884
+victim 1b2-ro32-idle rep=2 start=1789425172.162241576
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789425178.610
+measure_end_epoch=1789425182.746
+victim 1b2-ro32-idle rep=2 end=1789425183.552776428
+chase 1b2-chase-idle rep=2 start=1789425183.576966263
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-idle rep=2 end=1789425184.602158288
+victim 1b2-wv-plain-idle rep=2 start=1789425184.626657196
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425185.468
+measure_end_epoch=1789425189.602
+victim 1b2-wv-plain-idle rep=2 end=1789425189.760514651
+victim 1b2-wv-nt-idle rep=2 start=1789425189.785682350
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425190.645
+measure_end_epoch=1789425194.666
+victim 1b2-wv-nt-idle rep=2 end=1789425194.839788036
+victim 1b2-mixed16-idle rep=2 start=1789425194.873039020
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789425198.103
+measure_end_epoch=1789425202.142
+victim 1b2-mixed16-idle rep=2 end=1789425202.641558261
+victim 1b2-rw-nt-w32 rep=2 start=1789425214.692877674
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425215.607
+measure_end_epoch=1789425219.632
+victim 1b2-rw-nt-w32 rep=2 end=1789425219.769730287
+chase 1b2-chase-nt-w32 rep=2 start=1789425246.708416768
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w32 rep=2 end=1789425247.895009176
+victim 1b2-rw-nt-w64 rep=2 start=1789425278.911908543
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425280.442
+measure_end_epoch=1789425284.971
+victim 1b2-rw-nt-w64 rep=2 end=1789425285.121305213
+chase 1b2-chase-nt-w64 rep=2 start=1789425312.999266212
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w64 rep=2 end=1789425316.395459846
+victim 1b2-rw-nt-w96 rep=2 start=1789425347.417101919
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425350.170
+measure_end_epoch=1789425354.659
+victim 1b2-rw-nt-w96 rep=2 end=1789425354.844196592
+chase 1b2-chase-nt-w96 rep=2 start=1789425383.954829918
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w96 rep=2 end=1789425389.442629401
+victim 1b2-rw32-nt-w64 rep=2 start=1789425420.532138161
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789425432.218
+measure_end_epoch=1789425436.458
+victim 1b2-rw32-nt-w64 rep=2 end=1789425437.419764170
+victim 1b2-wv-plain-nt-w64 rep=2 start=1789425454.854813841
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425456.459
+measure_end_epoch=1789425460.930
+victim 1b2-wv-plain-nt-w64 rep=2 end=1789425461.087724528
+victim 1b2-wv-nt-nt-w64 rep=2 start=1789425488.671131742
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425490.220
+measure_end_epoch=1789425494.253
+victim 1b2-wv-nt-nt-w64 rep=2 end=1789425494.399545030
+victim 1b2-mixed16-nt-w64 rep=2 start=1789425522.921267017
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789425528.996
+measure_end_epoch=1789425533.092
+victim 1b2-mixed16-nt-w64 rep=2 end=1789425533.640062509
+victim 1b2-rw32-nt-w96 rep=2 start=1789425557.008667432
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789425578.603
+measure_end_epoch=1789425582.727
+victim 1b2-rw32-nt-w96 rep=2 end=1789425583.524091748
+victim 1b2-wv-plain-nt-w96 rep=2 start=1789425595.623134993
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425598.380
+measure_end_epoch=1789425602.516
+victim 1b2-wv-plain-nt-w96 rep=2 end=1789425602.709654608
+victim 1b2-wv-nt-nt-w96 rep=2 start=1789425631.859647058
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425634.604
+measure_end_epoch=1789425638.641
+victim 1b2-wv-nt-nt-w96 rep=2 end=1789425638.845745168
+victim 1b2-mixed16-nt-w96 rep=2 start=1789425668.363236276
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789425679.281
+measure_end_epoch=1789425683.368
+victim 1b2-mixed16-nt-w96 rep=2 end=1789425684.012833226
+victim 1b2-rw-plain-w32 rep=2 start=1789425704.967191092
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425705.950
+measure_end_epoch=1789425709.979
+victim 1b2-rw-plain-w32 rep=2 end=1789425710.100592215
+chase 1b2-chase-plain-w32 rep=2 start=1789425737.132471496
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w32 rep=2 end=1789425738.297398449
+victim 1b2-rw-plain-w64 rep=2 start=1789425769.184485635
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425770.317
+measure_end_epoch=1789425774.428
+victim 1b2-rw-plain-w64 rep=2 end=1789425774.569071839
+chase 1b2-chase-plain-w64 rep=2 start=1789425803.258133612
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w64 rep=2 end=1789425804.793719165
+victim 1b2-rw-plain-w96 rep=2 start=1789425837.359946845
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425838.577
+measure_end_epoch=1789425842.694
+victim 1b2-rw-plain-w96 rep=2 end=1789425842.823951081
+chase 1b2-chase-plain-w96 rep=2 start=1789425873.457519515
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w96 rep=2 end=1789425875.073513224
+victim 1b2-rw32-plain-w64 rep=2 start=1789425910.702565870
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789425919.705
+measure_end_epoch=1789425924.165
+victim 1b2-rw32-plain-w64 rep=2 end=1789425925.001344355
+victim 1b2-wv-plain-plain-w64 rep=2 start=1789425945.100295142
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425946.244
+measure_end_epoch=1789425950.603
+victim 1b2-wv-plain-plain-w64 rep=2 end=1789425950.731021642
+victim 1b2-wv-nt-plain-w64 rep=2 start=1789425979.159303169
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789425980.289
+measure_end_epoch=1789425984.416
+victim 1b2-wv-nt-plain-w64 rep=2 end=1789425984.547970983
+victim 1b2-mixed16-plain-w64 rep=2 start=1789426013.705959341
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789426018.140
+measure_end_epoch=1789426022.194
+victim 1b2-mixed16-plain-w64 rep=2 end=1789426022.691048634
+victim 1b2-rw32-plain-w96 rep=2 start=1789426047.957467925
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789426057.232
+measure_end_epoch=1789426061.801
+victim 1b2-rw32-plain-w96 rep=2 end=1789426062.656448451
+victim 1b2-wv-plain-plain-w96 rep=2 start=1789426083.822421340
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426085.003
+measure_end_epoch=1789426089.398
+victim 1b2-wv-plain-plain-w96 rep=2 end=1789426089.532985055
+victim 1b2-wv-nt-plain-w96 rep=2 start=1789426119.657123272
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426120.838
+measure_end_epoch=1789426124.919
+victim 1b2-wv-nt-plain-w96 rep=2 end=1789426125.048337997
+victim 1b2-mixed16-plain-w96 rep=2 start=1789426155.763836818
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789426160.426
+measure_end_epoch=1789426164.431
+victim 1b2-mixed16-plain-w96 rep=2 end=1789426164.928938224
+victim 1b2-ro-idle rep=3 start=1789426179.747070523
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426180.580
+measure_end_epoch=1789426184.637
+victim 1b2-ro-idle rep=3 end=1789426184.797724390
+victim 1b2-ro32-idle rep=3 start=1789426184.814229435
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789426191.361
+measure_end_epoch=1789426195.496
+victim 1b2-ro32-idle rep=3 end=1789426196.318577954
+chase 1b2-chase-idle rep=3 start=1789426196.359643445
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-idle rep=3 end=1789426197.370726683
+victim 1b2-wv-plain-idle rep=3 start=1789426197.420344246
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426198.275
+measure_end_epoch=1789426202.340
+victim 1b2-wv-plain-idle rep=3 end=1789426202.507465543
+victim 1b2-wv-nt-idle rep=3 start=1789426202.548273374
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426203.401
+measure_end_epoch=1789426207.406
+victim 1b2-wv-nt-idle rep=3 end=1789426207.577268995
+victim 1b2-mixed16-idle rep=3 start=1789426207.602439952
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789426210.820
+measure_end_epoch=1789426214.822
+victim 1b2-mixed16-idle rep=3 end=1789426215.320783742
+victim 1b2-rw-nt-w32 rep=3 start=1789426227.390616730
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426228.312
+measure_end_epoch=1789426232.393
+victim 1b2-rw-nt-w32 rep=3 end=1789426232.531289494
+chase 1b2-chase-nt-w32 rep=3 start=1789426259.647433662
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w32 rep=3 end=1789426260.772570987
+victim 1b2-rw-nt-w64 rep=3 start=1789426291.821547735
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426293.315
+measure_end_epoch=1789426297.824
+victim 1b2-rw-nt-w64 rep=3 end=1789426297.973195814
+chase 1b2-chase-nt-w64 rep=3 start=1789426325.907647842
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w64 rep=3 end=1789426329.195994651
+victim 1b2-rw-nt-w96 rep=3 start=1789426360.125554589
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426362.888
+measure_end_epoch=1789426366.955
+victim 1b2-rw-nt-w96 rep=3 end=1789426367.146723808
+chase 1b2-chase-nt-w96 rep=3 start=1789426396.495216503
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-nt-w96 rep=3 end=1789426401.773675019
+victim 1b2-rw32-nt-w64 rep=3 start=1789426433.186523417
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789426444.988
+measure_end_epoch=1789426449.110
+victim 1b2-rw32-nt-w64 rep=3 end=1789426450.057109072
+victim 1b2-wv-plain-nt-w64 rep=3 start=1789426467.343188441
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426468.947
+measure_end_epoch=1789426473.414
+victim 1b2-wv-plain-nt-w64 rep=3 end=1789426473.567607242
+victim 1b2-wv-nt-nt-w64 rep=3 start=1789426501.589964690
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426503.168
+measure_end_epoch=1789426507.203
+victim 1b2-wv-nt-nt-w64 rep=3 end=1789426507.377447712
+victim 1b2-mixed16-nt-w64 rep=3 start=1789426535.934573226
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789426541.809
+measure_end_epoch=1789426545.850
+victim 1b2-mixed16-nt-w64 rep=3 end=1789426546.343259931
+victim 1b2-rw32-nt-w96 rep=3 start=1789426569.858227270
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789426591.792
+measure_end_epoch=1789426595.935
+victim 1b2-rw32-nt-w96 rep=3 end=1789426596.721155908
+victim 1b2-wv-plain-nt-w96 rep=3 start=1789426608.782007302
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426611.492
+measure_end_epoch=1789426615.541
+victim 1b2-wv-plain-nt-w96 rep=3 end=1789426615.727549887
+victim 1b2-wv-nt-nt-w96 rep=3 start=1789426644.777759936
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426647.526
+measure_end_epoch=1789426651.578
+victim 1b2-wv-nt-nt-w96 rep=3 end=1789426651.784896876
+victim 1b2-mixed16-nt-w96 rep=3 start=1789426681.076233662
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789426691.897
+measure_end_epoch=1789426695.916
+victim 1b2-mixed16-nt-w96 rep=3 end=1789426696.539212605
+victim 1b2-rw-plain-w32 rep=3 start=1789426716.892131415
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426717.838
+measure_end_epoch=1789426721.903
+victim 1b2-rw-plain-w32 rep=3 end=1789426722.054084379
+chase 1b2-chase-plain-w32 rep=3 start=1789426748.945497253
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w32 rep=3 end=1789426750.153325943
+victim 1b2-rw-plain-w64 rep=3 start=1789426781.025715528
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426782.189
+measure_end_epoch=1789426786.416
+victim 1b2-rw-plain-w64 rep=3 end=1789426786.560208750
+chase 1b2-chase-plain-w64 rep=3 start=1789426815.418378745
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w64 rep=3 end=1789426816.927550175
+victim 1b2-rw-plain-w96 rep=3 start=1789426849.606610815
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426850.784
+measure_end_epoch=1789426854.813
+victim 1b2-rw-plain-w96 rep=3 end=1789426854.945555437
+chase 1b2-chase-plain-w96 rep=3 start=1789426885.555676125
+# thp: collapse_rc=0 anon_huge=1024 MB (region 1024 MB)
+chase 1b2-chase-plain-w96 rep=3 end=1789426887.193169651
+victim 1b2-rw32-plain-w64 rep=3 start=1789426921.760545582
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789426930.562
+measure_end_epoch=1789426935.074
+victim 1b2-rw32-plain-w64 rep=3 end=1789426935.896638036
+victim 1b2-wv-plain-plain-w64 rep=3 start=1789426955.765639651
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426956.948
+measure_end_epoch=1789426961.327
+victim 1b2-wv-plain-plain-w64 rep=3 end=1789426961.466842380
+victim 1b2-wv-nt-plain-w64 rep=3 start=1789426989.677809047
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789426990.853
+measure_end_epoch=1789426995.013
+victim 1b2-wv-nt-plain-w64 rep=3 end=1789426995.154777141
+victim 1b2-mixed16-plain-w64 rep=3 start=1789427024.016632954
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789427028.505
+measure_end_epoch=1789427032.510
+victim 1b2-mixed16-plain-w64 rep=3 end=1789427032.999528469
+victim 1b2-rw32-plain-w96 rep=3 start=1789427058.043417213
+membench config:
+  mode=stream-read
+  node=0
+  threads=32
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+  thread 16 cpu 16
+  thread 17 cpu 17
+  thread 18 cpu 18
+  thread 19 cpu 19
+  thread 20 cpu 20
+  thread 21 cpu 21
+  thread 22 cpu 22
+  thread 23 cpu 23
+  thread 24 cpu 24
+  thread 25 cpu 25
+  thread 26 cpu 26
+  thread 27 cpu 27
+  thread 28 cpu 28
+  thread 29 cpu 29
+  thread 30 cpu 30
+  thread 31 cpu 31
+measure_start_epoch=1789427067.350
+measure_end_epoch=1789427071.974
+victim 1b2-rw32-plain-w96 rep=3 end=1789427072.824534449
+victim 1b2-wv-plain-plain-w96 rep=3 start=1789427094.532410792
+membench config:
+  mode=stream-write
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427095.763
+measure_end_epoch=1789427100.196
+victim 1b2-wv-plain-plain-w96 rep=3 end=1789427100.323579794
+victim 1b2-wv-nt-plain-w96 rep=3 start=1789427130.248252754
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427131.448
+measure_end_epoch=1789427135.493
+victim 1b2-wv-nt-plain-w96 rep=3 end=1789427135.850306343
+victim 1b2-mixed16-plain-w96 rep=3 start=1789427166.469086819
+membench config:
+  mode=mixed
+  node=0
+  threads=16
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  read_pct=67
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+  thread 4 cpu 4
+  thread 5 cpu 5
+  thread 6 cpu 6
+  thread 7 cpu 7
+  thread 8 cpu 8
+  thread 9 cpu 9
+  thread 10 cpu 10
+  thread 11 cpu 11
+  thread 12 cpu 12
+  thread 13 cpu 13
+  thread 14 cpu 14
+  thread 15 cpu 15
+measure_start_epoch=1789427171.099
+measure_end_epoch=1789427175.136
+victim 1b2-mixed16-plain-w96 rep=3 end=1789427175.581977181
+victim 1b2-rw-nt-w16ccd1 rep=1 start=1789427390.773457728
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427391.653
+measure_end_epoch=1789427395.681
+victim 1b2-rw-nt-w16ccd1 rep=1 end=1789427395.821338998
+victim 1b2-rw-plain-w16ccd1 rep=1 start=1789427421.840747875
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427422.738
+measure_end_epoch=1789427426.753
+victim 1b2-rw-plain-w16ccd1 rep=1 end=1789427426.892705561
+victim 1b2-rw-nt-w16ccd1 rep=2 start=1789427452.879255403
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427453.768
+measure_end_epoch=1789427457.793
+victim 1b2-rw-nt-w16ccd1 rep=2 end=1789427457.931131561
+victim 1b2-rw-plain-w16ccd1 rep=2 start=1789427483.946497692
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427484.844
+measure_end_epoch=1789427488.867
+victim 1b2-rw-plain-w16ccd1 rep=2 end=1789427488.990131241
+victim 1b2-rw-nt-w16ccd1 rep=3 start=1789427515.120404492
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427516.015
+measure_end_epoch=1789427520.040
+victim 1b2-rw-nt-w16ccd1 rep=3 end=1789427520.172883374
+victim 1b2-rw-plain-w16ccd1 rep=3 start=1789427546.203729238
+membench config:
+  mode=stream-read
+  node=0
+  threads=4
+  bytes_per_thread=1073741824
+  duration_sec=4.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=0
+  thread 0 cpu 0
+  thread 1 cpu 1
+  thread 2 cpu 2
+  thread 3 cpu 3
+measure_start_epoch=1789427547.095
+measure_end_epoch=1789427551.105
+victim 1b2-rw-plain-w16ccd1 rep=3 end=1789427551.239257559

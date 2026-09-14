@@ -1,0 +1,534 @@
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=80
+  bytes_per_thread=1073741824
+  duration_sec=400.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=48
+  thread 0 cpu 48
+  thread 1 cpu 49
+  thread 2 cpu 50
+  thread 3 cpu 51
+  thread 4 cpu 52
+  thread 5 cpu 53
+  thread 6 cpu 54
+  thread 7 cpu 55
+  thread 8 cpu 56
+  thread 9 cpu 57
+  thread 10 cpu 58
+  thread 11 cpu 59
+  thread 12 cpu 60
+  thread 13 cpu 61
+  thread 14 cpu 62
+  thread 15 cpu 63
+  thread 16 cpu 64
+  thread 17 cpu 65
+  thread 18 cpu 66
+  thread 19 cpu 67
+  thread 20 cpu 68
+  thread 21 cpu 69
+  thread 22 cpu 70
+  thread 23 cpu 71
+  thread 24 cpu 72
+  thread 25 cpu 73
+  thread 26 cpu 74
+  thread 27 cpu 75
+  thread 28 cpu 76
+  thread 29 cpu 77
+  thread 30 cpu 78
+  thread 31 cpu 79
+  thread 32 cpu 80
+  thread 33 cpu 81
+  thread 34 cpu 82
+  thread 35 cpu 83
+  thread 36 cpu 84
+  thread 37 cpu 85
+  thread 38 cpu 86
+  thread 39 cpu 87
+  thread 40 cpu 88
+  thread 41 cpu 89
+  thread 42 cpu 90
+  thread 43 cpu 91
+  thread 44 cpu 92
+  thread 45 cpu 93
+  thread 46 cpu 94
+  thread 47 cpu 95
+  thread 48 cpu 96
+  thread 49 cpu 97
+  thread 50 cpu 98
+  thread 51 cpu 99
+  thread 52 cpu 100
+  thread 53 cpu 101
+  thread 54 cpu 102
+  thread 55 cpu 103
+  thread 56 cpu 104
+  thread 57 cpu 105
+  thread 58 cpu 106
+  thread 59 cpu 107
+  thread 60 cpu 108
+  thread 61 cpu 109
+  thread 62 cpu 110
+  thread 63 cpu 111
+  thread 64 cpu 112
+  thread 65 cpu 113
+  thread 66 cpu 114
+  thread 67 cpu 115
+  thread 68 cpu 116
+  thread 69 cpu 117
+  thread 70 cpu 118
+  thread 71 cpu 119
+  thread 72 cpu 120
+  thread 73 cpu 121
+  thread 74 cpu 122
+  thread 75 cpu 123
+  thread 76 cpu 124
+  thread 77 cpu 125
+  thread 78 cpu 126
+  thread 79 cpu 127

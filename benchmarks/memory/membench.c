@@ -645,12 +645,16 @@ int main(int argc, char **argv) {
     for (int i = 0; i < o.threads; i++) ctx[i].barrier = &barrier;
 
     uint64_t global_t0 = now_ns();
+    { struct timespec w; clock_gettime(CLOCK_REALTIME, &w);
+      fprintf(stderr, "measure_start_epoch=%ld.%03ld\n", (long)w.tv_sec, w.tv_nsec / 1000000); }
     for (int i = 0; i < o.threads; i++) {
         if (pthread_create(&th[i], NULL, thread_main, &ctx[i]) != 0)
             die("pthread_create failed");
     }
     for (int i = 0; i < o.threads; i++) pthread_join(th[i], NULL);
     uint64_t global_t1 = now_ns();
+    { struct timespec w; clock_gettime(CLOCK_REALTIME, &w);
+      fprintf(stderr, "measure_end_epoch=%ld.%03ld\n", (long)w.tv_sec, w.tv_nsec / 1000000); }
     pthread_barrier_destroy(&barrier);
     double total_sec = (global_t1 - global_t0) / 1e9;
 

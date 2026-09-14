@@ -7,7 +7,13 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ---
 
-## Current Status (2026-08-25)
+## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
+
+**2026-09-14 addendum.** Healthy NPS1 DRAM since the 2026-09-09 reboot; CXL devdax-only
+(dax0.0/dax1.0 usable, dax2.0 root-only). Campaign: 1a/1b/2/3c/4a/B1 done, crippled-DRAM data
+(3b, A1.4) discarded. Key new fact: DRAM write saturation (4 CCDs of NT writers, ~273 GiB/s)
+puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
+immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
 **Project.** CXL + LLM systems research for a top systems venue (OSDI/ASPLOS'27,
 SOSP'27, FAST'28). On `c28` directly.
@@ -96,6 +102,24 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-14 (session 21) — 1b and 3c on healthy DRAM: the write-drain cliff, and CXL as an isolation domain
+Crippled-DRAM results (3b, A1.4) discarded per user ruling. **1b** (`2026-09-08-dram-write-drain.md`,
+CLOSED): on NPS1 the reader collapse is a cliff at the socket's ~290 GiB/s write ceiling — writers on
+≤2 CCDs (≤138 GiB/s NT) cost a CCD0 reader 18–22%, writers on 4 CCDs (273 GiB/s) cost it 12×
+(96→8 GiB/s, chase p50 130→610–1359 ns); sum conserved (~290–300, one pipe). Direction decides the
+victim: reads 11–12×, plain-store writes 8×, mixed 6–7×, NT writes only −13–23%. Neighbour-CCD
+writers −20% (fabric, separate). **Method bug caught and fixed:** the first multi-CCD pass showed
+"no collapse" because the 32–96 GiB aggressor pre-touch overlapped the victim window; membench now
+prints `measure_start/end_epoch`, `summarize-1b2.py` rejects any victim window not inside a live
+aggressor window (3 of 102 rejected). **3c** (`2026-09-14-stencil-3c.md`, CLOSED): idle, all-DRAM
+wins (0.261 s/step; `new` on CXL +19% rotate … 2.2× copyback/pingpong). Under 280 GiB/s DRAM NT-write
+pressure every DRAM-reading variant is 10× slower regardless of where `new` lives; all-on-CXL is
+immune (0.60 = 0.60, 4.3× faster than DRAM in that state); with the aggressor writing to CXL
+(pair-saturated 44 GiB/s) the all-DRAM stencil keeps 95–100%. **Thesis consequence:** the write tier
+must take the *aggressor's* write streams off DRAM (keeps the controller out of drain mode for
+everyone), not the victim's buffers — gate 2b at app scale. Phase 4 to be reframed as co-runner
+protection. `pond` takes `--daxA/--daxB`; drivers `stencil-3c*.sh`, `dram-write-drain-1b*.sh`.
 
 ### 2026-09-10 (session 20) — Environment changed: DRAM restored, CXL is devdax-only
 Reboot 2026-09-09 12:46. DRAM back and better: 141 GiB/s @32T (May 94.6), 309 @128T, 152 ns.

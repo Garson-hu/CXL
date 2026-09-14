@@ -1,0 +1,7410 @@
+aggressor 1b2-rw-nt-w32 rep=1 launch=1789424188.707277162
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789424190.720
+aggressor 1b2-rw-nt-w32 rep=1 alive_after_victim=yes t=1789424205.919842643
+measure_end_epoch=1789424220.781
+aggressor 1b2-ch-nt-w32 rep=1 launch=1789424221.020961771
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789424222.887
+aggressor 1b2-ch-nt-w32 rep=1 alive_after_victim=yes t=1789424234.274160450
+measure_end_epoch=1789424252.962
+aggressor 1b2-rw-nt-w64 rep=1 launch=1789424253.261889585
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424257.100
+aggressor 1b2-rw-nt-w64 rep=1 alive_after_victim=yes t=1789424271.536659328
+measure_end_epoch=1789424287.169
+aggressor 1b2-ch-nt-w64 rep=1 launch=1789424287.626402501
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424291.132
+aggressor 1b2-ch-nt-w64 rep=1 alive_after_victim=yes t=1789424303.060231102
+measure_end_epoch=1789424321.210
+aggressor 1b2-rw-nt-w96 rep=1 launch=1789424321.718446319
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424327.375
+aggressor 1b2-rw-nt-w96 rep=1 alive_after_victim=yes t=1789424341.231823817
+measure_end_epoch=1789424357.455
+aggressor 1b2-ch-nt-w96 rep=1 launch=1789424358.135960731
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424363.055
+aggressor 1b2-ch-nt-w96 rep=1 alive_after_victim=yes t=1789424375.598324346
+measure_end_epoch=1789424393.102
+aggressor 1b2-rw32-nt-w64 rep=1 launch=1789424393.848161709
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424397.763
+aggressor 1b2-rw32-nt-w64 rep=1 alive_after_victim=yes t=1789424423.347791549
+measure_end_epoch=1789424427.828
+aggressor 1b2-wv-plain-nt-w64 rep=1 launch=1789424429.471424930
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424433.065
+aggressor 1b2-wv-plain-nt-w64 rep=1 alive_after_victim=yes t=1789424447.944249200
+measure_end_epoch=1789424463.099
+aggressor 1b2-wv-nt-nt-w64 rep=1 launch=1789424463.557143836
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424467.490
+aggressor 1b2-wv-nt-nt-w64 rep=1 alive_after_victim=yes t=1789424481.542329927
+measure_end_epoch=1789424497.562
+aggressor 1b2-mixed16-nt-w64 rep=1 launch=1789424498.030379256
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424501.632
+aggressor 1b2-mixed16-nt-w64 rep=1 alive_after_victim=yes t=1789424520.901508068
+measure_end_epoch=1789424531.688
+aggressor 1b2-rw32-nt-w96 rep=1 launch=1789424532.197957811
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424536.995
+measure_end_epoch=1789424567.086
+aggressor 1b2-rw32-nt-w96 rep=1 alive_after_victim=NO t=1789424570.882969994
+aggressor 1b2-wv-plain-nt-w96 rep=1 launch=1789424570.906890346
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424576.795
+aggressor 1b2-wv-plain-nt-w96 rep=1 alive_after_victim=yes t=1789424589.961306248
+measure_end_epoch=1789424606.867
+aggressor 1b2-wv-nt-nt-w96 rep=1 launch=1789424607.568736567
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424613.268
+aggressor 1b2-wv-nt-nt-w96 rep=1 alive_after_victim=yes t=1789424626.634792002
+measure_end_epoch=1789424643.368
+aggressor 1b2-mixed16-nt-w96 rep=1 launch=1789424644.072079610
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424649.722
+aggressor 1b2-mixed16-nt-w96 rep=1 alive_after_victim=yes t=1789424671.678495534
+measure_end_epoch=1789424679.814
+aggressor 1b2-rw-plain-w32 rep=1 launch=1789424680.523673158
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789424682.456
+aggressor 1b2-rw-plain-w32 rep=1 alive_after_victim=yes t=1789424697.670458754
+measure_end_epoch=1789424712.538
+aggressor 1b2-ch-plain-w32 rep=1 launch=1789424712.779039305
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789424714.462
+aggressor 1b2-ch-plain-w32 rep=1 alive_after_victim=yes t=1789424726.145440408
+measure_end_epoch=1789424744.516
+aggressor 1b2-rw-plain-w64 rep=1 launch=1789424744.783636357
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424748.507
+aggressor 1b2-rw-plain-w64 rep=1 alive_after_victim=yes t=1789424762.263944774
+measure_end_epoch=1789424778.605
+aggressor 1b2-ch-plain-w64 rep=1 launch=1789424779.024970064
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424782.705
+aggressor 1b2-ch-plain-w64 rep=1 alive_after_victim=yes t=1789424792.639991286
+measure_end_epoch=1789424812.798
+aggressor 1b2-rw-plain-w96 rep=1 launch=1789424813.253016296
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424818.746
+aggressor 1b2-rw-plain-w96 rep=1 alive_after_victim=yes t=1789424830.754925944
+measure_end_epoch=1789424848.856
+aggressor 1b2-ch-plain-w96 rep=1 launch=1789424849.460740726
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789424855.054
+aggressor 1b2-ch-plain-w96 rep=1 alive_after_victim=yes t=1789424863.094884082
+measure_end_epoch=1789424885.162
+aggressor 1b2-rw32-plain-w64 rep=1 launch=1789424885.797853845
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424889.561
+aggressor 1b2-rw32-plain-w64 rep=1 alive_after_victim=yes t=1789424912.075680033
+measure_end_epoch=1789424919.663
+aggressor 1b2-wv-plain-plain-w64 rep=1 launch=1789424920.078417910
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424923.832
+aggressor 1b2-wv-plain-plain-w64 rep=1 alive_after_victim=yes t=1789424937.781994951
+measure_end_epoch=1789424953.911
+aggressor 1b2-wv-nt-plain-w64 rep=1 launch=1789424954.330489657
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424957.940
+aggressor 1b2-wv-nt-plain-w64 rep=1 alive_after_victim=yes t=1789424971.788644629
+measure_end_epoch=1789424988.025
+aggressor 1b2-mixed16-plain-w64 rep=1 launch=1789424988.448940232
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789424992.084
+aggressor 1b2-mixed16-plain-w64 rep=1 alive_after_victim=yes t=1789425009.510742146
+measure_end_epoch=1789425022.180
+aggressor 1b2-rw32-plain-w96 rep=1 launch=1789425022.633173391
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425027.929
+aggressor 1b2-rw32-plain-w96 rep=1 alive_after_victim=yes t=1789425049.488339667
+measure_end_epoch=1789425058.055
+aggressor 1b2-wv-plain-plain-w96 rep=1 launch=1789425058.664106999
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425064.136
+aggressor 1b2-wv-plain-plain-w96 rep=1 alive_after_victim=yes t=1789425076.504821146
+measure_end_epoch=1789425094.259
+aggressor 1b2-wv-nt-plain-w96 rep=1 launch=1789425094.872294758
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425100.044
+aggressor 1b2-wv-nt-plain-w96 rep=1 alive_after_victim=yes t=1789425112.311032096
+measure_end_epoch=1789425130.160
+aggressor 1b2-mixed16-plain-w96 rep=1 launch=1789425130.761975390
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425136.030
+aggressor 1b2-mixed16-plain-w96 rep=1 alive_after_victim=yes t=1789425151.969085127
+measure_end_epoch=1789425166.138
+aggressor 1b2-rw-nt-w32 rep=2 launch=1789425202.666252719
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789425204.362
+aggressor 1b2-rw-nt-w32 rep=2 alive_after_victim=yes t=1789425219.803728842
+measure_end_epoch=1789425234.420
+aggressor 1b2-ch-nt-w32 rep=2 launch=1789425234.678676510
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789425236.480
+aggressor 1b2-ch-nt-w32 rep=2 alive_after_victim=yes t=1789425247.920039614
+measure_end_epoch=1789425266.556
+aggressor 1b2-rw-nt-w64 rep=2 launch=1789425266.871019751
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425270.411
+aggressor 1b2-rw-nt-w64 rep=2 alive_after_victim=yes t=1789425285.162932530
+measure_end_epoch=1789425300.480
+aggressor 1b2-ch-nt-w64 rep=2 launch=1789425300.942518000
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425304.812
+aggressor 1b2-ch-nt-w64 rep=2 alive_after_victim=yes t=1789425316.430758599
+measure_end_epoch=1789425334.879
+aggressor 1b2-rw-nt-w96 rep=2 launch=1789425335.373573257
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425341.149
+aggressor 1b2-rw-nt-w96 rep=2 alive_after_victim=yes t=1789425354.877814894
+measure_end_epoch=1789425371.231
+aggressor 1b2-ch-nt-w96 rep=2 launch=1789425371.907698057
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425377.682
+aggressor 1b2-ch-nt-w96 rep=2 alive_after_victim=yes t=1789425389.483653249
+measure_end_epoch=1789425407.770
+aggressor 1b2-rw32-nt-w64 rep=2 launch=1789425408.491632735
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425412.274
+aggressor 1b2-rw32-nt-w64 rep=2 alive_after_victim=yes t=1789425437.456125777
+measure_end_epoch=1789425442.341
+aggressor 1b2-wv-plain-nt-w64 rep=2 launch=1789425442.804653457
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425446.121
+aggressor 1b2-wv-plain-nt-w64 rep=2 alive_after_victim=yes t=1789425461.120320565
+measure_end_epoch=1789425476.155
+aggressor 1b2-wv-nt-nt-w64 rep=2 launch=1789425476.628234223
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425480.332
+aggressor 1b2-wv-nt-nt-w64 rep=2 alive_after_victim=yes t=1789425494.447981186
+measure_end_epoch=1789425510.414
+aggressor 1b2-mixed16-nt-w64 rep=2 launch=1789425510.879244990
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425514.411
+aggressor 1b2-mixed16-nt-w64 rep=2 alive_after_victim=yes t=1789425533.679656803
+measure_end_epoch=1789425544.465
+aggressor 1b2-rw32-nt-w96 rep=2 launch=1789425544.966325605
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425550.903
+measure_end_epoch=1789425581.003
+aggressor 1b2-rw32-nt-w96 rep=2 alive_after_victim=NO t=1789425583.557229784
+aggressor 1b2-wv-plain-nt-w96 rep=2 launch=1789425583.589553483
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425589.083
+aggressor 1b2-wv-plain-nt-w96 rep=2 alive_after_victim=yes t=1789425602.757090188
+measure_end_epoch=1789425619.135
+aggressor 1b2-wv-nt-nt-w96 rep=2 launch=1789425619.815660771
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425625.552
+aggressor 1b2-wv-nt-nt-w96 rep=2 alive_after_victim=yes t=1789425638.876565238
+measure_end_epoch=1789425655.641
+aggressor 1b2-mixed16-nt-w96 rep=2 launch=1789425656.319479918
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425662.137
+aggressor 1b2-mixed16-nt-w96 rep=2 alive_after_victim=yes t=1789425684.040305254
+measure_end_epoch=1789425692.219
+aggressor 1b2-rw-plain-w32 rep=2 launch=1789425692.927682887
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789425694.793
+aggressor 1b2-rw-plain-w32 rep=2 alive_after_victim=yes t=1789425710.117928510
+measure_end_epoch=1789425724.855
+aggressor 1b2-ch-plain-w32 rep=2 launch=1789425725.089177655
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789425726.820
+aggressor 1b2-ch-plain-w32 rep=2 alive_after_victim=yes t=1789425738.318508354
+measure_end_epoch=1789425756.875
+aggressor 1b2-rw-plain-w64 rep=2 launch=1789425757.155096075
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425760.726
+aggressor 1b2-rw-plain-w64 rep=2 alive_after_victim=yes t=1789425774.614843305
+measure_end_epoch=1789425790.804
+aggressor 1b2-ch-plain-w64 rep=2 launch=1789425791.224625326
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425794.737
+aggressor 1b2-ch-plain-w64 rep=2 alive_after_victim=yes t=1789425804.858529407
+measure_end_epoch=1789425824.822
+aggressor 1b2-rw-plain-w96 rep=2 launch=1789425825.305128870
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425830.639
+aggressor 1b2-rw-plain-w96 rep=2 alive_after_victim=yes t=1789425842.844856176
+measure_end_epoch=1789425860.743
+aggressor 1b2-ch-plain-w96 rep=2 launch=1789425861.351723877
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789425867.899
+aggressor 1b2-ch-plain-w96 rep=2 alive_after_victim=yes t=1789425875.105043227
+measure_end_epoch=1789425898.014
+aggressor 1b2-rw32-plain-w64 rep=2 launch=1789425898.664551243
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425902.547
+aggressor 1b2-rw32-plain-w64 rep=2 alive_after_victim=yes t=1789425925.023535787
+measure_end_epoch=1789425932.637
+aggressor 1b2-wv-plain-plain-w64 rep=2 launch=1789425933.056813552
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425936.464
+aggressor 1b2-wv-plain-plain-w64 rep=2 alive_after_victim=yes t=1789425950.748486052
+measure_end_epoch=1789425966.548
+aggressor 1b2-wv-nt-plain-w64 rep=2 launch=1789425966.972189619
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789425971.167
+aggressor 1b2-wv-nt-plain-w64 rep=2 alive_after_victim=yes t=1789425984.568578278
+measure_end_epoch=1789426001.256
+aggressor 1b2-mixed16-plain-w64 rep=2 launch=1789426001.670244552
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426005.388
+aggressor 1b2-mixed16-plain-w64 rep=2 alive_after_victim=yes t=1789426022.719998575
+measure_end_epoch=1789426035.483
+aggressor 1b2-rw32-plain-w96 rep=2 launch=1789426035.936614702
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426041.068
+aggressor 1b2-rw32-plain-w96 rep=2 alive_after_victim=yes t=1789426062.688963295
+measure_end_epoch=1789426071.185
+aggressor 1b2-wv-plain-plain-w96 rep=2 launch=1789426071.785300395
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426076.940
+aggressor 1b2-wv-plain-plain-w96 rep=2 alive_after_victim=yes t=1789426089.566675270
+measure_end_epoch=1789426107.022
+aggressor 1b2-wv-nt-plain-w96 rep=2 launch=1789426107.626532649
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426112.983
+aggressor 1b2-wv-nt-plain-w96 rep=2 alive_after_victim=yes t=1789426125.089563395
+measure_end_epoch=1789426143.111
+aggressor 1b2-mixed16-plain-w96 rep=2 launch=1789426143.717797178
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426148.983
+aggressor 1b2-mixed16-plain-w96 rep=2 alive_after_victim=yes t=1789426164.945122109
+measure_end_epoch=1789426179.088
+aggressor 1b2-rw-nt-w32 rep=3 launch=1789426215.351302460
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789426217.287
+aggressor 1b2-rw-nt-w32 rep=3 alive_after_victim=yes t=1789426232.566023629
+measure_end_epoch=1789426247.357
+aggressor 1b2-ch-nt-w32 rep=3 launch=1789426247.613917018
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789426249.415
+aggressor 1b2-ch-nt-w32 rep=3 alive_after_victim=yes t=1789426260.806655868
+measure_end_epoch=1789426279.489
+aggressor 1b2-rw-nt-w64 rep=3 launch=1789426279.778749252
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426283.328
+aggressor 1b2-rw-nt-w64 rep=3 alive_after_victim=yes t=1789426298.010714508
+measure_end_epoch=1789426313.391
+aggressor 1b2-ch-nt-w64 rep=3 launch=1789426313.869915961
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426317.487
+aggressor 1b2-ch-nt-w64 rep=3 alive_after_victim=yes t=1789426329.232926263
+measure_end_epoch=1789426347.560
+aggressor 1b2-rw-nt-w96 rep=3 launch=1789426348.065449744
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426353.664
+aggressor 1b2-rw-nt-w96 rep=3 alive_after_victim=yes t=1789426367.179644006
+measure_end_epoch=1789426383.768
+aggressor 1b2-ch-nt-w96 rep=3 launch=1789426384.446364460
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426390.328
+aggressor 1b2-ch-nt-w96 rep=3 alive_after_victim=yes t=1789426401.821642729
+measure_end_epoch=1789426420.440
+aggressor 1b2-rw32-nt-w64 rep=3 launch=1789426421.145467329
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426424.767
+aggressor 1b2-rw32-nt-w64 rep=3 alive_after_victim=yes t=1789426450.099342787
+measure_end_epoch=1789426454.830
+aggressor 1b2-wv-plain-nt-w64 rep=3 launch=1789426455.306158777
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426458.983
+aggressor 1b2-wv-plain-nt-w64 rep=3 alive_after_victim=yes t=1789426473.599347930
+measure_end_epoch=1789426489.064
+aggressor 1b2-wv-nt-nt-w64 rep=3 launch=1789426489.549288103
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426493.332
+aggressor 1b2-wv-nt-nt-w64 rep=3 alive_after_victim=yes t=1789426507.423115784
+measure_end_epoch=1789426523.422
+aggressor 1b2-mixed16-nt-w64 rep=3 launch=1789426523.881544137
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426527.284
+aggressor 1b2-mixed16-nt-w64 rep=3 alive_after_victim=yes t=1789426546.377490921
+measure_end_epoch=1789426557.318
+aggressor 1b2-rw32-nt-w96 rep=3 launch=1789426557.816221942
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426563.090
+measure_end_epoch=1789426593.216
+aggressor 1b2-rw32-nt-w96 rep=3 alive_after_victim=NO t=1789426596.737774326
+aggressor 1b2-wv-plain-nt-w96 rep=3 launch=1789426596.753697105
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426601.985
+aggressor 1b2-wv-plain-nt-w96 rep=3 alive_after_victim=yes t=1789426615.759344615
+measure_end_epoch=1789426632.035
+aggressor 1b2-wv-nt-nt-w96 rep=3 launch=1789426632.726869409
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426638.273
+aggressor 1b2-wv-nt-nt-w96 rep=3 alive_after_victim=yes t=1789426651.816506954
+measure_end_epoch=1789426668.352
+aggressor 1b2-mixed16-nt-w96 rep=3 launch=1789426669.030664058
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426674.105
+aggressor 1b2-mixed16-nt-w96 rep=3 alive_after_victim=yes t=1789426696.570444583
+measure_end_epoch=1789426704.150
+aggressor 1b2-rw-plain-w32 rep=3 launch=1789426704.856132641
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789426706.605
+aggressor 1b2-rw-plain-w32 rep=3 alive_after_victim=yes t=1789426722.087756677
+measure_end_epoch=1789426736.685
+aggressor 1b2-ch-plain-w32 rep=3 launch=1789426736.913353022
+membench config:
+  mode=stream-write
+  node=0
+  threads=32
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+measure_start_epoch=1789426738.637
+aggressor 1b2-ch-plain-w32 rep=3 alive_after_victim=yes t=1789426750.187362580
+measure_end_epoch=1789426768.723
+aggressor 1b2-rw-plain-w64 rep=3 launch=1789426768.988149259
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426772.679
+aggressor 1b2-rw-plain-w64 rep=3 alive_after_victim=yes t=1789426786.593925206
+measure_end_epoch=1789426802.781
+aggressor 1b2-ch-plain-w64 rep=3 launch=1789426803.207819771
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426807.021
+aggressor 1b2-ch-plain-w64 rep=3 alive_after_victim=yes t=1789426816.971696456
+measure_end_epoch=1789426837.110
+aggressor 1b2-rw-plain-w96 rep=3 launch=1789426837.579197500
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426842.820
+aggressor 1b2-rw-plain-w96 rep=3 alive_after_victim=yes t=1789426855.011263968
+measure_end_epoch=1789426872.915
+aggressor 1b2-ch-plain-w96 rep=3 launch=1789426873.527235523
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789426878.957
+aggressor 1b2-ch-plain-w96 rep=3 alive_after_victim=yes t=1789426887.234435402
+measure_end_epoch=1789426909.100
+aggressor 1b2-rw32-plain-w64 rep=3 launch=1789426909.738871323
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426913.246
+aggressor 1b2-rw32-plain-w64 rep=3 alive_after_victim=yes t=1789426935.918849909
+measure_end_epoch=1789426943.320
+aggressor 1b2-wv-plain-plain-w64 rep=3 launch=1789426943.737377386
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426947.133
+aggressor 1b2-wv-plain-plain-w64 rep=3 alive_after_victim=yes t=1789426961.483842990
+measure_end_epoch=1789426977.212
+aggressor 1b2-wv-nt-plain-w64 rep=3 launch=1789426977.631874921
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789426981.459
+aggressor 1b2-wv-nt-plain-w64 rep=3 alive_after_victim=yes t=1789426995.175546394
+measure_end_epoch=1789427011.564
+aggressor 1b2-mixed16-plain-w64 rep=3 launch=1789427011.982404026
+membench config:
+  mode=stream-write
+  node=0
+  threads=64
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+measure_start_epoch=1789427015.473
+aggressor 1b2-mixed16-plain-w64 rep=3 alive_after_victim=yes t=1789427033.033199658
+measure_end_epoch=1789427045.548
+aggressor 1b2-rw32-plain-w96 rep=3 launch=1789427046.004003669
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789427051.769
+aggressor 1b2-rw32-plain-w96 rep=3 alive_after_victim=yes t=1789427072.843883727
+measure_end_epoch=1789427081.895
+aggressor 1b2-wv-plain-plain-w96 rep=3 launch=1789427082.504312280
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789427087.484
+aggressor 1b2-wv-plain-plain-w96 rep=3 alive_after_victim=yes t=1789427100.349323347
+measure_end_epoch=1789427117.572
+aggressor 1b2-wv-nt-plain-w96 rep=3 launch=1789427118.204391762
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789427123.699
+aggressor 1b2-wv-nt-plain-w96 rep=3 alive_after_victim=yes t=1789427135.875403439
+measure_end_epoch=1789427153.806
+aggressor 1b2-mixed16-plain-w96 rep=3 launch=1789427154.430097639
+membench config:
+  mode=stream-write
+  node=0
+  threads=96
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=32
+  thread 0 cpu 32
+  thread 1 cpu 33
+  thread 2 cpu 34
+  thread 3 cpu 35
+  thread 4 cpu 36
+  thread 5 cpu 37
+  thread 6 cpu 38
+  thread 7 cpu 39
+  thread 8 cpu 40
+  thread 9 cpu 41
+  thread 10 cpu 42
+  thread 11 cpu 43
+  thread 12 cpu 44
+  thread 13 cpu 45
+  thread 14 cpu 46
+  thread 15 cpu 47
+  thread 16 cpu 48
+  thread 17 cpu 49
+  thread 18 cpu 50
+  thread 19 cpu 51
+  thread 20 cpu 52
+  thread 21 cpu 53
+  thread 22 cpu 54
+  thread 23 cpu 55
+  thread 24 cpu 56
+  thread 25 cpu 57
+  thread 26 cpu 58
+  thread 27 cpu 59
+  thread 28 cpu 60
+  thread 29 cpu 61
+  thread 30 cpu 62
+  thread 31 cpu 63
+  thread 32 cpu 64
+  thread 33 cpu 65
+  thread 34 cpu 66
+  thread 35 cpu 67
+  thread 36 cpu 68
+  thread 37 cpu 69
+  thread 38 cpu 70
+  thread 39 cpu 71
+  thread 40 cpu 72
+  thread 41 cpu 73
+  thread 42 cpu 74
+  thread 43 cpu 75
+  thread 44 cpu 76
+  thread 45 cpu 77
+  thread 46 cpu 78
+  thread 47 cpu 79
+  thread 48 cpu 80
+  thread 49 cpu 81
+  thread 50 cpu 82
+  thread 51 cpu 83
+  thread 52 cpu 84
+  thread 53 cpu 85
+  thread 54 cpu 86
+  thread 55 cpu 87
+  thread 56 cpu 88
+  thread 57 cpu 89
+  thread 58 cpu 90
+  thread 59 cpu 91
+  thread 60 cpu 92
+  thread 61 cpu 93
+  thread 62 cpu 94
+  thread 63 cpu 95
+  thread 64 cpu 96
+  thread 65 cpu 97
+  thread 66 cpu 98
+  thread 67 cpu 99
+  thread 68 cpu 100
+  thread 69 cpu 101
+  thread 70 cpu 102
+  thread 71 cpu 103
+  thread 72 cpu 104
+  thread 73 cpu 105
+  thread 74 cpu 106
+  thread 75 cpu 107
+  thread 76 cpu 108
+  thread 77 cpu 109
+  thread 78 cpu 110
+  thread 79 cpu 111
+  thread 80 cpu 112
+  thread 81 cpu 113
+  thread 82 cpu 114
+  thread 83 cpu 115
+  thread 84 cpu 116
+  thread 85 cpu 117
+  thread 86 cpu 118
+  thread 87 cpu 119
+  thread 88 cpu 120
+  thread 89 cpu 121
+  thread 90 cpu 122
+  thread 91 cpu 123
+  thread 92 cpu 124
+  thread 93 cpu 125
+  thread 94 cpu 126
+  thread 95 cpu 127
+measure_start_epoch=1789427159.607
+aggressor 1b2-mixed16-plain-w96 rep=3 alive_after_victim=yes t=1789427175.606767907
+measure_end_epoch=1789427189.709
+aggressor 1b2-rw-nt-w16ccd1 rep=1 launch=1789427378.718007463
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427379.587
+aggressor 1b2-rw-nt-w16ccd1 rep=1 alive_after_victim=yes t=1789427395.842787404
+measure_end_epoch=1789427409.647
+aggressor 1b2-rw-plain-w16ccd1 rep=1 launch=1789427409.794001682
+membench config:
+  mode=stream-write
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427410.663
+aggressor 1b2-rw-plain-w16ccd1 rep=1 alive_after_victim=yes t=1789427426.909393811
+measure_end_epoch=1789427440.715
+aggressor 1b2-rw-nt-w16ccd1 rep=2 launch=1789427440.854907397
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427441.733
+aggressor 1b2-rw-nt-w16ccd1 rep=2 alive_after_victim=yes t=1789427458.351586975
+measure_end_epoch=1789427471.775
+aggressor 1b2-rw-plain-w16ccd1 rep=2 launch=1789427471.924475283
+membench config:
+  mode=stream-write
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427472.859
+aggressor 1b2-rw-plain-w16ccd1 rep=2 alive_after_victim=yes t=1789427489.007254461
+measure_end_epoch=1789427502.936
+aggressor 1b2-rw-nt-w16ccd1 rep=3 launch=1789427503.072448731
+membench config:
+  mode=stream-write-nt
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427503.948
+aggressor 1b2-rw-nt-w16ccd1 rep=3 alive_after_victim=yes t=1789427520.229093202
+measure_end_epoch=1789427534.031
+aggressor 1b2-rw-plain-w16ccd1 rep=3 launch=1789427534.177873362
+membench config:
+  mode=stream-write
+  node=0
+  threads=16
+  bytes_per_thread=268435456
+  duration_sec=30.000
+  verify_placement=0
+  strict_placement=0
+  cpu_offset=16
+  thread 0 cpu 16
+  thread 1 cpu 17
+  thread 2 cpu 18
+  thread 3 cpu 19
+  thread 4 cpu 20
+  thread 5 cpu 21
+  thread 6 cpu 22
+  thread 7 cpu 23
+  thread 8 cpu 24
+  thread 9 cpu 25
+  thread 10 cpu 26
+  thread 11 cpu 27
+  thread 12 cpu 28
+  thread 13 cpu 29
+  thread 14 cpu 30
+  thread 15 cpu 31
+measure_start_epoch=1789427535.029
+aggressor 1b2-rw-plain-w16ccd1 rep=3 alive_after_victim=yes t=1789427551.264729821
+measure_end_epoch=1789427565.083

@@ -1,0 +1,21 @@
+=== idle-C-allcxl-rotate-normal-r1 19:06:30 ===
+idle-C-allcxl-rotate-normal-r1,19,rotate,daxB,daxA,daxB,16,0,0.6043,16.0,8.0,0.0,26.5,13.2
+=== press2-C-allcxl-rotate-normal-r1 19:06:55 ===
+press2-C-allcxl-rotate-normal-r1,19,rotate,daxB,daxA,daxB,16,0,0.6013,16.0,8.0,0.0,26.6,13.3
+  aggressor alive at end: yes 19:07:09
+=== idle-C-allcxl-rotate-nt-r1 19:07:09 ===
+idle-C-allcxl-rotate-nt-r1,19,rotate,daxB,daxA,daxB,16,1,0.4115,16.0,8.0,0.0,38.9,19.4
+=== press2-C-allcxl-rotate-nt-r1 19:07:31 ===
+press2-C-allcxl-rotate-nt-r1,19,rotate,daxB,daxA,daxB,16,1,0.4027,16.0,8.0,0.0,39.7,19.9
+  aggressor alive at end: yes 19:07:40
+=== idle-C-allcxl-rotate-normal-r2 19:07:41 ===
+idle-C-allcxl-rotate-normal-r2,19,rotate,daxB,daxA,daxB,16,0,0.5930,16.0,8.0,0.0,27.0,13.5
+=== press2-C-allcxl-rotate-normal-r2 19:08:06 ===
+press2-C-allcxl-rotate-normal-r2,19,rotate,daxB,daxA,daxB,16,0,0.6055,16.0,8.0,0.0,26.4,13.2
+  aggressor alive at end: yes 19:08:19
+=== idle-C-allcxl-rotate-nt-r2 19:08:20 ===
+idle-C-allcxl-rotate-nt-r2,19,rotate,daxB,daxA,daxB,16,1,0.4359,16.0,8.0,0.0,36.7,18.4
+=== press2-C-allcxl-rotate-nt-r2 19:08:41 ===
+press2-C-allcxl-rotate-nt-r2,19,rotate,daxB,daxA,daxB,16,1,0.4020,16.0,8.0,0.0,39.8,19.9
+  aggressor alive at end: yes 19:08:51
+DONE-ALLCXL 19:08:51
