@@ -154,7 +154,7 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 | A1.1 | LULESH 2.0 OpenMP built (`~/apps/lulesh`, SERCXX); baseline `-s 160 -i 30`: 1.07 s/step @16T, 0.87 s/step @32T (crippled DRAM) | ✅ 2026-09-09 |
 | A1.2 | User's VeloC-instrumented LULESH built at `~/apps/lulesh-veloc` (`-DWITH_VELOC`, MPI 1 rank, `mpirun --bind-to none`; client auto-launches `veloc-backend` from PATH); 11 protected arrays = 348 MB at s=160; ckpt call 0.07–0.08 s | ✅ 2026-09-09 |
 | A1.3 | Scratch placement without root via `LULESH_CKPT_NODE=1` (verified); VeloC rebuilt at `~/apps/veloc-inst` with EXDEV fallback → drain to NVMe works, no skipped ckpts. dax2.0 NT path pending | ✅ 2026-09-09 (dax2.0 path ⬜) |
-| A1.4 | Checkpoint experiment — `2026-09-09-lulesh-veloc-ckpt.md` (crippled-DRAM run). Re-run on healthy DRAM needs a devdax scratch path (VeloC flush_mem → dax mmap, NT copy); then scale-up + aggressor | 🟡 needs dax scratch path first |
+| A1.4 | Checkpoint experiment — crippled-DRAM results DISCARDED (2026-09-14). Re-run on healthy DRAM needs a devdax scratch path (VeloC flush_mem → dax mmap, NT copy); then scale-up + aggressor | ⬜ needs dax scratch path first |
 | A2.1 | Optimizer-snapshot emulator (torch CPU): fp32 params + Adam m/v, RMW step, `torch.save` every K steps to scratch {DRAM, CXL} | ⬜ |
 | B1.1 | ShareGPT + Mooncake ×3 traces in `workloads/` (gitignored; LMSys skipped — needs HF token) | ✅ 2026-09-09 |
 | B1.2 | Trace analysis — `2026-09-09-kv-trace-analysis.md`: 58–78% never-read, 3–8 GiB/s writes, gaps p50 ≤2 min | ✅ 2026-09-09 (first pass) |
@@ -171,7 +171,7 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 | 2a | Phase 2 five-answers section — `2026-09-08-cxl-card-scaling.md` Part 1 | ✅ 2026-09-08 |
 | 2b | CXL 1/2/4-card scaling — `2026-09-08-cxl-card-scaling.md` Part 2: linear scaling, HB −6%, cross-pair −1%, duplex at every scale | ✅ 2026-09-08 |
 | 3a | Stencil code `benchmarks/stencil/pond.c` (3 buffers + DRAM staging, placement/threads/NT knobs, policies rotate/copyback[--alt]/migrate, per-step BW+timing) | ✅ built 2026-09-08 (smoke-tested 1 GiB) |
-| 3b | Stencil CXL-side strategy comparison — `2026-09-08-stencil-write-tier.md` (pingpong policy added; ranking inverted by crippled DRAM) | ✅ 2026-09-08 |
+| 3b | Stencil CXL-side strategy comparison — results DISCARDED (crippled DRAM, 2026-09-14); code kept | ⬜ superseded by 3c |
 | 3c | Stencil Case A vs Case B, healthy DRAM (+ pressure aggressor) — CXL via daxA/daxB only (node 1 gone) | 🟢 UNBLOCKED 2026-09-10 |
 | 4a | LULESH + VeloC object analysis — `2026-09-08-lulesh-veloc-objects.md` (static; LULESH cloned to ~/apps/lulesh) | ✅ analysis 2026-09-08 · measurement pending approval |
 | 4b | LULESH all-DRAM vs placement; VeloC staging; policy | 🟢 UNBLOCKED (needs a direct dax scratch path: tmpfs-on-CXL trick is gone) |
@@ -200,3 +200,5 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 - 2026-09-09 — Phase 4 plan v2 proposed (A checkpointing + B KV-cache; C optional).
 - 2026-09-10 — reboot 09-09: DRAM restored (141 GiB/s @32T); CXL NUMA node removed, all
   dax devdax; dax2.0 currently root-only. 1b/3c/4b unblocked; tooling must use devdax paths.
+- 2026-09-14 — user ruling: all crippled-DRAM measurements (08-27→09-09) are trash;
+  3b and A1.4 results discarded, code kept; 1b/3c next.

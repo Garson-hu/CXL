@@ -1,5 +1,11 @@
 # 2026-09-08 — Stencil (pond) with `new` on CXL: rotation strategies
 
+> **DISCARDED 2026-09-14 (user decision):** every number in this file was measured while
+> DRAM channel interleaving was disabled in BIOS (2026-08-27 → 2026-09-09; DRAM 25–41 GiB/s
+> instead of 141). The user classified that data as trash. Keep the file for the method and
+> the tooling only; do not cite its results. Re-run on healthy DRAM under a new dated file.
+
+
 **STATUS: PART 3b DONE 2026-09-08 (CXL-side comparison on crippled DRAM) ·
 PART 3c (Case A vs Case B on healthy DRAM) BLOCKED on the BIOS revert.**
 Campaign Phase 3 of `2026-09-08-write-tier-campaign.md`. Code:

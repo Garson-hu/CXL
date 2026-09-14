@@ -1,5 +1,11 @@
 # 2026-09-09 — A1: LULESH + VeloC checkpointing with scratch on DRAM vs CXL
 
+> **DISCARDED 2026-09-14 (user decision):** every number in this file was measured while
+> DRAM channel interleaving was disabled in BIOS (2026-08-27 → 2026-09-09; DRAM 25–41 GiB/s
+> instead of 141). The user classified that data as trash. Keep the file for the method and
+> the tooling only; do not cite its results. Re-run on healthy DRAM under a new dated file.
+
+
 **STATUS: CXL-SIDE DONE 2026-09-09 (3 reps). Result: putting the checkpoint scratch on
 CXL roughly halves the checkpoint's interference with compute (+4.8% → +2.9% per step at
 one checkpoint per 10 steps; +9.0% → +6.2% at one per 5), and the checkpoint call itself
