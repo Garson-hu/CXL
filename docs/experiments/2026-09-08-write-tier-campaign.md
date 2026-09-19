@@ -211,7 +211,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | V1 ✅ | O_DIRECT write to `/mnt/local` with a devdax mapping as the source buffer | file on NVMe byte-identical; no EFAULT/EINVAL | drain copies through a small reused DRAM buffer (DRAM traffic ≤ NVMe speed, ~3 GiB/s) — note in DESIGN D |
 | V2 ✅ | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
 | V3 ✅ | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
-| V4 | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
+| V4 ✅ | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
 | V5 | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
 | V6 | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
 | **A — segment store (P1)** | | | |
@@ -255,6 +255,14 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   it verified, 3.92 GiB/s = the known direct-write cap) and plain ranges of 1 / 8 / 64 / 200 GiB:
   ~20 ms per GiB (200 GiB = 4.1 s), unregister ~15 ms per GiB, no limit hit. Registering a whole
   buffer set once at start-up is cheap. Tool: `system/cxlpath/checks/v2v3_stitch_register.c`.
+
+- **V4 ✅ 2026-09-19** — PyTorch 2.5.1 `dcp.async_save` takes our staging through the `AsyncStager`
+  protocol on the storage writer: `stage()` returned CPU tensors living inside a CUDA-registered
+  dax0.0 mapping (`torch.frombuffer` over `mmap`), training mutated the model afterwards, and
+  `dcp.load` restored the checkpoint-time values exactly. Open for E2: the storage-writer half —
+  DCP serialises staged tensors into `.distcp` files itself; either feed that stream through the
+  file-style shim (one CXL→CXL copy) or stage directly in the serialised layout. Tool:
+  `system/cxlpath/checks/v4_torch_async_stage.py`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

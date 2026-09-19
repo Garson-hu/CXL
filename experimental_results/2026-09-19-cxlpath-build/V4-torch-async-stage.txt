@@ -1,0 +1,4 @@
+cudaHostRegister on devdax from Python: OK
+staged tensors inside the devdax mapping: True (4 tensors, 128 MiB)
+async_save returned after 411 ms (staging only); files: ['.metadata', '__0_0.distcp']
+restored == values at checkpoint time (not the mutated model): True
