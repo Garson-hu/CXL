@@ -1,0 +1,8 @@
+flag default          D2H cudaMemcpy        3.91 GiB/s
+flag portable         D2H cudaMemcpy        3.91 GiB/s
+flag mapped           D2H cudaMemcpy        3.91 GiB/s
+flag mapped           GPU-side copy to mapped ptr 3.91 GiB/s
+flag portable+mapped  D2H cudaMemcpy        3.92 GiB/s
+flag portable+mapped  GPU-side copy to mapped ptr 3.92 GiB/s
+two concurrent streams (dax0.0 + dax1.0): 3.91 GiB/s total
+concurrent: to CXL 2.97 GiB/s, to pinned DRAM 2.97 GiB/s

@@ -213,7 +213,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | V3 ✅ | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
 | V4 ✅ | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
 | V5 ✅ | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
-| V6 | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
+| V6 ✅ (open) | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
 | **A — segment store (P1)** | | | |
 | A1 | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
 | A2 | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
@@ -283,6 +283,14 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   at ~77 GiB/s). First attempt had a timing bug in the probe loop (read 0.3 ns/load); fixed by a
   non-inlined probe function with integer clock math — reuse THAT code in B2. Tool:
   `system/cxlpath/checks/v5_probe_calib.c`.
+
+- **V6 ✅ (cause still open) 2026-09-19** — The 3.9 GiB/s GPU→CXL write cap does not move with
+  anything visible without root: registration flags default / portable / mapped all 3.91; a GPU-side
+  copy through the mapped device pointer 3.91; two concurrent streams into dax0.0 + dax1.0 = 3.91
+  in TOTAL (same two cards, so this says nothing about per-card). GPU (bus 61) and the CXL cards
+  (c1, e1) sit under different Turin root complexes; IOMMU is present (ivhd0–2). A concurrent
+  CXL + pinned-DRAM test is not informative (GeForce has one D2H copy engine: 2.97 + 2.97). Left
+  open; the design handles both paths (DESIGN §10.4). Tool: `system/cxlpath/checks/v6_gpu_write_cap.c`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
