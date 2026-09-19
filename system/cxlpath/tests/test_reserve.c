@@ -78,19 +78,31 @@ int main(void) {
     puts("A3.3 throughput: reserve/copy_in/commit vs raw NT memcpy (single thread, device 0)");
     size_t chunk = CXLP_SEG_BYTES, tot = bytes < (8ull << 30) ? bytes / 2 : (4ull << 30); int n = (int)(tot / chunk);
     char *src = aligned_alloc(4096, chunk); memset(src, 0x3c, chunk);
-    double best_raw = 0, best_lib = 0;
-    for (int rep = 0; rep < 9; rep++) {                      /* best of 9 each, alternating: single runs at the device limit vary by ~8% */
-        char *raw = cxlp_seg_ptr(0, 0); double t = now();
-        for (int i = 0; i < n; i++) cxlp_copy_in(raw + (size_t)i * chunk, src, chunk);
-        double r1 = tot / (now() - t) / 1073741824.0; if (r1 > best_raw) best_raw = r1;
-        cxlp_hints_t f0 = { 0, 0, 0, 0, 0 }; cxlp_res_t *rs = malloc(n * sizeof *rs); t = now();
-        for (int i = 0; i < n; i++) { if (cxlp_reserve(chunk, &f0, &rs[i])) { puts("  reserve failed"); return 1; } cxlp_copy_in(rs[i].ptr, src, chunk); cxlp_commit(&rs[i]); }
-        double r2 = tot / (now() - t) / 1073741824.0; if (r2 > best_lib) best_lib = r2;
-        for (int i = 0; i < n; i++) cxlp_release(&rs[i]);
-        cxlp_thread_seal(); free(rs);
+    /* Each repetition measures the two variants back to back (order alternating) and yields one
+     * ratio; the gate is the MEDIAN ratio. Best-of-N of separate runs failed twice by noise when
+     * something else touched the machine during one half (runs at the device limit vary by ~8%). */
+    double ratio[9], raw_med[9]; cxlp_res_t *rs = malloc((size_t)n * sizeof *rs); cxlp_hints_t f0 = { 0, 0, 0, 0, 0 };
+    for (int rep = 0; rep < 9; rep++) {
+        double r_raw = 0, r_lib = 0;
+        for (int half = 0; half < 2; half++) {
+            if ((half ^ (rep & 1)) == 0) {
+                char *raw = cxlp_seg_ptr(0, 0); double t = now();
+                for (int i = 0; i < n; i++) cxlp_copy_in(raw + (size_t)i * chunk, src, chunk);
+                r_raw = tot / (now() - t) / 1073741824.0;
+            } else {
+                double t = now();
+                for (int i = 0; i < n; i++) { if (cxlp_reserve(chunk, &f0, &rs[i])) { puts("  reserve failed"); return 1; } cxlp_copy_in(rs[i].ptr, src, chunk); cxlp_commit(&rs[i]); }
+                r_lib = tot / (now() - t) / 1073741824.0;
+                for (int i = 0; i < n; i++) cxlp_release(&rs[i]);
+                cxlp_thread_seal();
+            }
+        }
+        ratio[rep] = r_lib / r_raw; raw_med[rep] = r_raw;
     }
-    printf("  raw NT memcpy %.2f GiB/s, through cxlpath %.2f GiB/s (%.1f%% of raw; gate >= 95%%)\n", best_raw, best_lib, 100 * best_lib / best_raw);
-    CHECK(best_lib >= 0.95 * best_raw, "throughput within 5% of raw");
+    for (int i = 0; i < 9; i++) for (int j = i + 1; j < 9; j++) { if (ratio[j] < ratio[i]) { double t = ratio[i]; ratio[i] = ratio[j]; ratio[j] = t; } if (raw_med[j] < raw_med[i]) { double t = raw_med[i]; raw_med[i] = raw_med[j]; raw_med[j] = t; } }
+    printf("  raw NT memcpy %.2f GiB/s (median of 9); through cxlpath: median ratio %.1f%%, range %.1f%%-%.1f%% (gate: median >= 95%%)\n", raw_med[4], 100 * ratio[4], 100 * ratio[0], 100 * ratio[8]);
+    CHECK(ratio[4] >= 0.95, "throughput within 5% of raw");
+    free(rs);
     cxlp_close(); cxlp_destroy(cfg.name);
     puts(fails ? "FAIL" : "PASS"); return fails != 0;
 }
