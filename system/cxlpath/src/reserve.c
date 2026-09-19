@@ -94,6 +94,16 @@ int cxlp_reserve(size_t len, const cxlp_hints_t *h, cxlp_res_t *out) {
 
 void cxlp_commit(const cxlp_res_t *r) { (void)r; _mm_sfence(); }
 
+void cxlp_shrink(cxlp_res_t *r, uint32_t new_len) {
+    if (new_len >= r->len) return;
+    atomic_fetch_sub(&segp(r->dev, r->seg)->live, r->len - new_len);
+    for (int k = 0; k < CXLP_NKLASS; k++) {                    /* still the tail of this thread's open segment: reuse the space */
+        open_t *o = &tls.o[r->dev][k];
+        if (tls.init && o->seg == r->seg && o->off == r->off + r->len) o->off = r->off + new_len;
+    }
+    r->len = new_len;
+}
+
 static void drop(const cxlp_res_t *r) {
     atomic_fetch_sub(&segp(r->dev, r->seg)->live, r->len);
     cxlp_seg_to_free(r->dev, r->seg, 1);

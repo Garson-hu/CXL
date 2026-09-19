@@ -1,0 +1,193 @@
+diff --git a/src/lib/CMakeLists.txt b/src/lib/CMakeLists.txt
+index a9eac3a..7ef3820 100644
+--- a/src/lib/CMakeLists.txt
++++ b/src/lib/CMakeLists.txt
+@@ -14,6 +14,12 @@ target_include_directories (veloc-client PUBLIC $<BUILD_INTERFACE:${VELOC_SOURCE
+   $<INSTALL_INTERFACE:include>
+ )
+ target_link_libraries (veloc-client PUBLIC veloc::modules ${COMM_QUEUE_LIBRARIES})
++# cxlpath (CXL write-path runtime): checkpoints go straight to CXL, cxlpathd drains them to `persistent`
++if (CXLPATH_DIR)
++  target_compile_definitions (veloc-client PRIVATE WITH_CXLPATH)
++  target_include_directories (veloc-client PRIVATE ${CXLPATH_DIR}/include)
++  target_link_libraries (veloc-client PRIVATE ${CXLPATH_DIR}/build/libcxlpath.a m)
++endif ()
+ set_target_properties (veloc-client PROPERTIES EXPORT_NAME client)
+ 
+ # Install libraries
+diff --git a/src/lib/client.cpp b/src/lib/client.cpp
+index 07b27b9..0b040f2 100644
+--- a/src/lib/client.cpp
++++ b/src/lib/client.cpp
+@@ -16,6 +16,28 @@
+ #define __DEBUG
+ #include "common/debug.hpp"
+ 
++#ifdef WITH_CXLPATH
++// cxlpath integration (enabled at run time by VELOC_CXLPATH_STORE=<store name>):
++//  - checkpoint_mem writes the usual VeloC file image (header + regions) as ONE stream into a cxlpath
++//    object; no scratch file, no DRAM staging copy. The drain target is the file VeloC would have
++//    produced in `persistent`, so stock VeloC can restart from it after a reboot.
++//  - versions of one (name, rank) form a chain: cxlpath reclaims a version once it is on NVMe and a
++//    newer one is committed.
++//  - restart prefers the copy on CXL (any process finds it through the node-owned index).
++#include "cxlpath.h"
++static bool cxlpath_ready() {
++    static int st = -1;
++    if (st < 0) {
++        const char *n = getenv("VELOC_CXLPATH_STORE");
++        st = (n != NULL && cxlp_attach(n) == 0) ? 1 : 0;
++        if (n != NULL && st == 0) ERROR("VELOC_CXLPATH_STORE=" << n << " but the store cannot be attached; using the scratch path");
++    }
++    return st == 1;
++}
++static uint64_t cxlpath_chain(const std::string &name, int rank) { return cxlp_key_of((name + ":" + std::to_string(rank)).c_str()); }
++static uint64_t cxlpath_key(const std::string &name, int rank, int version) { return cxlp_key_of((name + ":" + std::to_string(rank) + ":" + std::to_string(version)).c_str()); }
++#endif
++
+ static inline bool validate_name(const std::string &name) {
+     std::regex e("[a-zA-Z0-9_\\.]+");
+     return std::regex_match(name, e);
+@@ -173,6 +195,32 @@ bool client_impl_t::checkpoint_mem(int mode, const std::set<int> &ids) {
+ 	return false;
+     }
+ 
++#ifdef WITH_CXLPATH
++    if (cxlpath_ready()) {
++        bool all_raw = true;
++        for (auto &e : ckpt_regions)
++            if (e.second.ptr == NULL) { all_raw = false; break; }
++        if (all_raw) {
++            std::string target = current_ckpt.filename(cfg.get("persistent"));
++            cxlp_stream_t *st = cxlp_stream_create(cxlpath_key(current_ckpt.name, rank, current_ckpt.version), 0, 1, 600000,
++                                                   target.c_str(), cxlpath_chain(current_ckpt.name, rank), (uint64_t)current_ckpt.version);
++            if (st != NULL) {
++                size_t regions_size = ckpt_regions.size();
++                int rc = cxlp_stream_write(st, &regions_size, sizeof(size_t));
++                for (auto &e : ckpt_regions) {
++                    rc |= cxlp_stream_write(st, &(e.first), sizeof(int));
++                    rc |= cxlp_stream_write(st, &(e.second.size), sizeof(size_t));
++                }
++                for (auto &e : ckpt_regions)
++                    rc |= cxlp_stream_write(st, e.second.ptr, e.second.size);
++                if (rc == 0 && cxlp_stream_close(st) == 0) { cxlpath_flushed = true; return true; }
++                if (rc != 0) cxlp_stream_abort(st);
++                ERROR("cxlpath: could not write checkpoint " << current_ckpt << ", falling back to the scratch file");
++            }
++        }
++    }
++#endif
++
+     // Direct memory path: bypass scratch file, memcpy into relay ring buffer.
+     // Works for raw-pointer regions in both sync and async mode. In async mode
+     // the storage module submits slots without waiting, so checkpoint_end
+@@ -242,8 +290,9 @@ bool client_impl_t::checkpoint_end(bool /*success*/) {
+     checkpoint_in_progress = false;
+     // If data was already sent via direct memory path, skip backend transfer.
+     // The data is already on the remote host -- no scratch file to flush.
+-    if (direct_mem_flushed) {
+-        direct_mem_flushed = false;
++    // Same for cxlpath: the object is on CXL and cxlpathd drains it to `persistent`.
++    if (direct_mem_flushed || cxlpath_flushed) {
++        direct_mem_flushed = false; cxlpath_flushed = false;
+         auto it = observers.find(VELOC_OBSERVE_CKPT_END);
+         if (it != observers.end())
+             it->second(current_ckpt.name, current_ckpt.version);
+@@ -267,6 +316,14 @@ int client_impl_t::restart_test(const std::string &name, int needed_version, int
+ 	return VELOC_FAILURE;
+     }
+     int version = run_blocking(command_t(check_rank(target_rank), command_t::TEST, needed_version, name.c_str()));
++#ifdef WITH_CXLPATH
++    if (cxlpath_ready()) {   // a newer version may exist only on CXL (not drained yet)
++        uint64_t v = 0;
++        if (cxlp_chain_newest(cxlpath_chain(name, check_rank(target_rank)), NULL, &v) == 0
++            && (needed_version == 0 || (int)v <= needed_version) && (int)v > version)
++            version = (int)v;
++    }
++#endif
+     DBG(name << ": latest version = " << version);
+     if (comm != MPI_COMM_NULL && target_rank < 0) {
+ 	int max_version;
+@@ -304,6 +361,16 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
+     int result, end_result;
+     current_ckpt = command_t(check_rank(target_rank), command_t::RESTART, version, name.c_str());
+ 
++#ifdef WITH_CXLPATH
++    cxlpath_restart = false;
++    if (cxlpath_ready()) {   // the checkpoint is still on CXL: read it in place, no backend restore
++        size_t n = 0;
++        if (cxlp_read(cxlpath_key(name, current_ckpt.unique_id, version), 0, &n, sizeof(size_t)) == (int64_t)sizeof(size_t) && n > 0) {
++            header_size = 0; cxlpath_restart = true;
++            return true;
++        }
++    }
++#endif
+     // Direct memory path: skip backend restore (data will be received in recover_mem)
+     if (cfg.is_sync() && cfg.storage() && cfg.storage()->supports_direct_mem()) {
+         header_size = 0;
+@@ -324,6 +391,21 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
+ }
+ 
+ bool client_impl_t::read_current_header() {
++#ifdef WITH_CXLPATH
++    if (cxlpath_restart) {
++        uint64_t key = cxlpath_key(current_ckpt.name, current_ckpt.unique_id, current_ckpt.version);
++        size_t n = 0; region_info.clear(); header_size = 0;
++        if (cxlp_read(key, 0, &n, sizeof(size_t)) != (int64_t)sizeof(size_t)) return false;
++        uint64_t off = sizeof(size_t);
++        for (size_t i = 0; i < n; i++) {
++            int id; size_t sz;
++            if (cxlp_read(key, off, &id, sizeof(int)) != (int64_t)sizeof(int) || cxlp_read(key, off + sizeof(int), &sz, sizeof(size_t)) != (int64_t)sizeof(size_t)) return false;
++            region_info[id] = sz; off += sizeof(int) + sizeof(size_t);
++        }
++        header_size = off;
++        return header_size != 0;
++    }
++#endif
+     header_size = read_header(current_ckpt.filename(cfg.get("scratch")), region_info);
+     return header_size != 0;
+ }
+@@ -361,6 +443,23 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
+ 	ERROR("cannot recover in memory mode if header unavailable or corrupted");
+ 	return false;
+     }
++#ifdef WITH_CXLPATH
++    if (cxlpath_restart) {   // read every region straight from the CXL object into application memory
++        uint64_t key = cxlpath_key(current_ckpt.name, current_ckpt.unique_id, current_ckpt.version), off = header_size;
++        for (auto &e : region_info) {
++            bool found = ids.find(e.first) != ids.end();
++            if ((mode == VELOC_RECOVER_SOME && !found) || (mode == VELOC_RECOVER_REST && found)) { off += e.second; continue; }
++            auto it = ckpt_regions.find(e.first);
++            if (it == ckpt_regions.end() || it->second.ptr == NULL || it->second.size < e.second) {
++                ERROR("cxlpath restart: region " << e.first << " missing, not raw, or too small");
++                return false;
++            }
++            if (cxlp_read(key, off, it->second.ptr, e.second) != (int64_t)e.second) { ERROR("cxlpath restart: short read of region " << e.first); return false; }
++            off += e.second;
++        }
++        return true;
++    }
++#endif
+     try {
+ 	std::ifstream f;
+ 	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+@@ -401,5 +500,6 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
+ }
+ 
+ bool client_impl_t::restart_end(bool /*success*/) {
++    cxlpath_restart = false;
+     return true;
+ }
+diff --git a/src/lib/client.hpp b/src/lib/client.hpp
+index 89f116c..d2312b6 100644
+--- a/src/lib/client.hpp
++++ b/src/lib/client.hpp
+@@ -34,6 +34,8 @@ class client_impl_t : public veloc::client_t {
+     command_t current_ckpt;
+     bool checkpoint_in_progress = false, aggregated = false;
+     bool direct_mem_flushed = false;  // set when relay direct path was used
++    bool cxlpath_flushed = false;     // checkpoint went to CXL through cxlpath: no scratch file, no backend transfer
++    bool cxlpath_restart = false;     // restart reads the checkpoint object from CXL
+ 
+     std::map<int, size_t> region_info;
+     size_t header_size = 0;

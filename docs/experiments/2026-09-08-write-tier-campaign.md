@@ -234,7 +234,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | D2 ✅ | pacing (yield to writers, full speed under space pressure); reclaim rules for checkpoint versions | writer speed during drain within 10 % of no-drain; free space never reaches 0 in a 10-version loop | — |
 | D3 ✅ | recovery API: newest complete version from CXL, else NVMe | kill the application after commit: restore from CXL verified; after clearing the store: restore from NVMe verified | — |
 | **E — clients** | | | |
-| E1 | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
+| E1 ✅ | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
 | E2 | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
 | E3 | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
 | **F — system complete** | | | |
@@ -411,6 +411,22 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   (reboot: CXL content gone) the object is absent from CXL and the NVMe file is byte-identical.
   Buffer sets: `cxlp_bufset_newest` (A5) gives the newest committed version to a new process.
   **Component D complete.** Raw: `D-live/`.
+
+- **E1 ✅ 2026-09-19** — File-style shim in the library (`cxlp_stream_*`): write() calls of any
+  size are packed back to back into whole 32 MiB extents (the last one is shrunk), so drained files
+  stay 4 KiB-aligned; `cxlp_read` (ranged, pinned), `cxlp_chain_newest`, `cxlp_shrink`. Test: 150 MiB
+  + 4321 B written as random pieces of 1 B–9 MiB = four whole extents + one short; 200 random reads and
+  the drained file byte-exact; the older version reclaimed by the runtime.
+  VeloC: patch `system/cxlpath/clients/veloc/veloc-cxlpath.patch` (193 lines, applied to the project's
+  copy `~/apps/veloc-src`, installed in `~/apps/veloc-cxlpath-inst`; the user's `~/checkpoint/veloc`
+  tree was NOT touched). Enabled at run time by `VELOC_CXLPATH_STORE=<store>`: `checkpoint_mem` writes
+  the normal VeloC file image as one cxlpath stream (no scratch file, no backend transfer), target =
+  the file VeloC would have put in `persistent`, versions form a chain; `restart_test` / `restart`
+  prefer the copy on CXL. Live gate (`tests/live/e1_veloc.sh`): API round trip of 3 versions
+  (80 MiB + 12 MiB + 777 B) — no scratch file, restart in a new process from CXL byte-exact, and after
+  the store is destroyed STOCK VeloC restarts from the drained NVMe file byte-exact; LULESH -s 100:
+  **the 4 checkpoint files drained by cxlpathd are byte-identical to the files stock VeloC writes**,
+  and LULESH restarts from the newest version on CXL (rc=0, 4.9 ms). Raw: `E1-veloc/`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

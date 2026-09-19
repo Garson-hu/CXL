@@ -146,6 +146,21 @@ int  cxlp_bufset_drained(cxlp_key_t client, int which);
 /* One unit of drain work (one extent or one buffer-set segment). Returns bytes written, 0 if there
  * is nothing to do or the drain yields to writers. yield: 1 = obey the pacing rule, 0 = never yield. */
 int64_t cxlp_drain_step(int yield);
+/* --- Clients, file-style shim (E1) ---
+ * A checkpoint library writes a file as a sequence of write() calls of any size. The stream packs
+ * them back to back into whole 32 MiB extents (only the last one is shorter), so every extent starts
+ * at a 4 KiB-aligned file offset and the drain can use O_DIRECT for all but a sub-4 KiB tail. */
+typedef struct cxlp_stream cxlp_stream_t;
+cxlp_stream_t *cxlp_stream_create(cxlp_key_t key, uint32_t klass, uint32_t stream_id, uint32_t wait_ms,
+                                  const char *drain_path, uint64_t chain, uint64_t version);
+int     cxlp_stream_write(cxlp_stream_t *s, const void *buf, size_t n);
+int     cxlp_stream_close(cxlp_stream_t *s);      /* commits the object */
+void    cxlp_stream_abort(cxlp_stream_t *s);
+int64_t cxlp_read(cxlp_key_t key, uint64_t off, void *buf, size_t n);      /* pin the range, copy out, unpin */
+int     cxlp_chain_newest(uint64_t chain, cxlp_key_t *key, uint64_t *version);   /* newest committed version on CXL; -1 if none */
+void    cxlp_shrink(cxlp_res_t *r, uint32_t new_len);                      /* give back the unused end of a reservation */
+cxlp_key_t cxlp_key_of(const char *text);                                  /* FNV-1a, never 0 or UINT64_MAX */
+
 /* Convenience: whole-buffer put/get built on reserve/copy_in/commit/append. */
 int  cxlp_put_drain(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms);
 int  cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len);

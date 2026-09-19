@@ -1,7 +1,7 @@
 # cxlpath — build + tests.  `make test` uses sparse files in /dev/shm as fake devices;
 # `make test-dax` runs the same tests on ranges of /dev/dax0.0 and /dev/dax1.0 that cxlpath OWNS.
 CC      = gcc
-CFLAGS  = -O2 -g -std=gnu11 -Wall -Wextra -mavx2 -pthread -Iinclude
+CFLAGS  = -O2 -g -std=gnu11 -Wall -Wextra -mavx2 -pthread -fPIC -Iinclude
 LDLIBS  = -lm
 SRC     = $(wildcard src/*.c)
 OBJ     = $(SRC:src/%.c=build/%.o)
