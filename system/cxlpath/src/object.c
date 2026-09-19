@@ -28,6 +28,7 @@ int cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle) {
             if (!atomic_compare_exchange_strong(&o->state, &st, OBJ_CREATING)) { probe--; i = (i - 1) & mask; continue; }
             o->owner = cxlp_g.pid; o->klass = klass;
             atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL); atomic_store(&o->bytes, 0);
+            atomic_store(&o->flags, 0); atomic_store(&o->pins, 0); atomic_store(&o->seq, 0);
             atomic_store(&o->key, key);
             *handle = i; return 0;
         }
@@ -40,11 +41,14 @@ int cxlp_obj_append(uint32_t h, const cxlp_res_t *r) {
     uint32_t e = ext_alloc(); if (e == CXLP_NIL) return -1;
     cxlp_ext_t *x = &cxlp_g.ext[e];
     x->dev = (uint32_t)r->dev; x->seg = r->seg; x->off = r->off; x->len = r->len; atomic_store(&x->next, CXLP_NIL);
+    x->obj = h; atomic_store(&x->rd_cur, 0); atomic_store(&x->rd_prev, 0); atomic_store(&x->rd_bucket, 0); atomic_store(&x->queued, 0);
     uint32_t tail = atomic_load(&o->tail);
     if (tail == CXLP_NIL) atomic_store(&o->head, e); else atomic_store(&cxlp_g.ext[tail].next, e);
     atomic_store(&o->tail, e); atomic_fetch_add(&o->bytes, r->len);
     return 0;
 }
+
+int cxlp_obj_set_flags(uint32_t h, uint32_t flags) { atomic_store(&cxlp_g.obj[h].flags, flags); return 0; }
 
 int cxlp_obj_commit(uint32_t h) {
     uint32_t st = OBJ_CREATING;
@@ -84,6 +88,7 @@ static void drop_extents(cxlp_obj_t *o, int fix_live) {
 
 int cxlp_obj_release(cxlp_key_t key) {
     cxlp_obj_t *o = find(key); if (!o) return -1;
+    if (atomic_load(&o->pins)) return -2;                     /* readers still hold pointers: retry later */
     uint32_t st = OBJ_COMMITTED;
     if (!atomic_compare_exchange_strong(&o->state, &st, OBJ_CREATING)) return -1;   /* one releaser wins */
     drop_extents(o, 1);
@@ -109,11 +114,15 @@ fail:
 }
 
 int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap) {
-    cxlp_res_t ext[64]; uint64_t bytes; int n = cxlp_obj_lookup(key, ext, 64, &bytes);
-    if (n < 0 || n > 64 || bytes > cap) return -1;
+    cxlp_res_t ext[64]; uint64_t bytes; int n = cxlp_obj_pin(key, CXLP_CONSUMER_CPU, 0, UINT64_MAX, ext, 64, &bytes);
+    if (n < 0) return -1;
+    if (n > 64 || bytes > cap) { cxlp_obj_unpin(key); return -1; }
     size_t off = 0; for (int i = 0; i < n; i++) { memcpy((char *)buf + off, ext[i].ptr, ext[i].len); off += ext[i].len; }
+    cxlp_obj_unpin(key);
     return (int64_t)bytes;
 }
+
+cxlp_obj_t *cxlp_obj_find(cxlp_key_t key) { return find(key); }
 
 static int dead(uint32_t pid) { return pid && pid != cxlp_g.pid && kill((pid_t)pid, 0) == -1 && errno == ESRCH; }
 

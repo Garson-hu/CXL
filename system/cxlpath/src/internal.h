@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x4358504154483035ull   /* "CXPATH05" */
+#define CXLP_MAGIC   0x4358504154483036ull   /* "CXPATH06" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -32,16 +32,21 @@ typedef struct {
 
 typedef struct {                   /* one extent of an object */
     _Atomic uint32_t used;
-    uint32_t dev, seg, off, len;
+    uint32_t dev, seg, off, len;   /* dev/seg/off change only under the object's seqlock (promotion) */
     _Atomic uint32_t next;
+    uint32_t obj;                  /* owning object slot */
+    _Atomic uint32_t rd_cur, rd_prev, rd_bucket;   /* reads in the current / previous bucket */
+    _Atomic uint32_t queued;       /* waiting in the promotion ring */
 } cxlp_ext_t;
 
 typedef struct {                   /* open-addressing hash slot */
     _Atomic uint64_t key;
     _Atomic uint32_t state;
     uint32_t owner, klass;
-    _Atomic uint32_t head, tail, next_pad;
+    _Atomic uint32_t head, tail, flags;
     _Atomic uint64_t bytes;
+    _Atomic uint32_t pins;         /* readers holding pointers into this object */
+    _Atomic uint32_t seq;          /* seqlock: odd while extents are being relocated */
 } cxlp_obj_t;
 
 #define CXLP_BS_MAXSEG 2048          /* 64 GiB per set */
@@ -74,6 +79,13 @@ typedef struct {
     struct { _Atomic uint64_t bytes; } sled[CXLP_NSTREAM];            /* bytes per stream        */
     struct { _Atomic uint64_t bytes, ns; } gpu_direct, gpu_staged;    /* GPU paths (B5)          */
     _Atomic uint64_t gpu_link_bps;             /* what the GPU source can push (calibrated)    */
+    /* Component C: promotion threshold per consumer type (0 = never), published by the daemon */
+    _Atomic uint32_t k_read[2];                /* [CXLP_CONSUMER_CPU], [CXLP_CONSUMER_GPU]     */
+    _Atomic uint32_t read_bucket_ms;           /* window = two buckets; default 300000 (10 min) */
+    _Atomic uint64_t gpu_rd_cxl_bps, gpu_rd_dram_bps;   /* GPU consumer constants (GPU module) */
+    _Atomic uint64_t promoted_bytes, promoted_extents;
+#define CXLP_PROMO_RING 1024
+    _Atomic uint32_t promo_tail; _Atomic uint32_t promo_ring[CXLP_PROMO_RING];   /* extent index + 1 */
 } cxlp_policy_t;
 
 typedef struct {
@@ -112,6 +124,8 @@ static inline uint64_t cxlp_now_ns(void) { struct timespec t; clock_gettime(CLOC
 /* store.c */
 int  cxlp_seg_to_free(int dev, uint32_t seg, int only_if_sealed_empty);   /* 1 if this caller freed it */
 void cxlp_seg_force_seal(int dev, uint32_t seg, uint64_t live);
+/* object.c */
+cxlp_obj_t *cxlp_obj_find(cxlp_key_t key);
 /* policy.c */
 int  cxlp_policy_daemon_alive(void);
 int  cxlp_policy_pick(uint32_t stream, uint32_t nclaim);

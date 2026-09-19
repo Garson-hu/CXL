@@ -79,7 +79,7 @@ int main(void) {
     size_t chunk = CXLP_SEG_BYTES, tot = bytes < (8ull << 30) ? bytes / 2 : (4ull << 30); int n = (int)(tot / chunk);
     char *src = aligned_alloc(4096, chunk); memset(src, 0x3c, chunk);
     double best_raw = 0, best_lib = 0;
-    for (int rep = 0; rep < 5; rep++) {
+    for (int rep = 0; rep < 9; rep++) {                      /* best of 9 each, alternating: single runs at the device limit vary by ~8% */
         char *raw = cxlp_seg_ptr(0, 0); double t = now();
         for (int i = 0; i < n; i++) cxlp_copy_in(raw + (size_t)i * chunk, src, chunk);
         double r1 = tot / (now() - t) / 1073741824.0; if (r1 > best_raw) best_raw = r1;

@@ -109,6 +109,24 @@ int  cxlp_obj_commit(uint32_t handle);
  * or -1 if the object does not exist or is not committed. */
 int  cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes);
 int  cxlp_obj_release(cxlp_key_t key);
+/* --- Component C, read path (C1/C2) ---
+ * Data is read IN PLACE: a reader pins the object and gets pointers (CXL or DRAM, it must not
+ * care). Every pin counts one read of each extent it returns, inside a window of two buckets
+ * (default 2 x 5 min). An extent whose count reaches the published threshold k is queued for
+ * promotion to the DRAM pool; k comes from the break-even rule
+ *     k = ceil( t_copy x (1 + w x pressure) / (t_cxl - t_dram) )
+ * per consumer type (0 = never: e.g. a GPU that reads CXL as fast as DRAM). Promotion relocates
+ * the extent under the object's seqlock; the old CXL copy is released once nobody pins the object.
+ * cxlp_obj_lookup() above is a peek: no pin, no count (drain, tools). */
+typedef enum { CXLP_CONSUMER_CPU = 0, CXLP_CONSUMER_GPU = 1 } cxlp_consumer_t;
+#define CXLP_OBJ_NOPROMOTE 1u                      /* checkpoints: never promoted */
+int  cxlp_obj_set_flags(uint32_t handle, uint32_t flags);
+int  cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len, cxlp_res_t *ext, int max, uint64_t *bytes);
+int  cxlp_obj_unpin(cxlp_key_t key);
+uint32_t cxlp_k_compute(double t_copy, double t_cxl, double t_dram, double w, double pressure);   /* 0 = never */
+/* Run by the background process (and by tests): relocate queued extents to the DRAM pool while
+ * DRAM is within its bound and the pool has room; finish deferred releases. Returns extents moved. */
+int  cxlp_promote_pending(int dram_ok);
 /* Convenience: whole-buffer put/get built on reserve/copy_in/commit/append. */
 int  cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len);
 int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap);

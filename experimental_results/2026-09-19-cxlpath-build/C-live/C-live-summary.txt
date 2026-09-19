@@ -1,0 +1,8 @@
+published thresholds: k_cpu=5 k_gpu=0 (GPU reads: CXL 12.45 vs DRAM 12.46 GiB/s)
+object of 2 extents: 2 on CXL before, 2 on DRAM after 5 reads; promoted 48 MiB; content byte-exact
+PASS
+    read path, CPU consumer: DRAM 40.76 GiB/s, CXL 23.03 GiB/s (1.77x), copy CXL->DRAM 23.46 GiB/s -> k = 3 when DRAM is calm
+  ok   CPU consumer: a finite k from the calibrated constants
+  ok   GPU consumer on c28: never (reads CXL at link speed)
+  ok   object promoted after k reads under a real daemon, byte-exact, CXL copy released
+PASS

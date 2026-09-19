@@ -227,8 +227,8 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | B4 ✅ | controller: +1/16 per 50 ms epoch, halve on 2 probes over bound, per-stream memory, blocking `reserve` | deterministic tests with injected signals; live: spill rises only when CXL is full and DRAM calm, halves within 50 ms of an injected DRAM aggressor | — |
 | B5 ✅ | GPU source: direct vs staged path per chunk, runtime-owned pinned copy threads | both paths produce verified data; path switches under injected pressure | — |
 | **C — read path (P3)** | | | |
-| C1 | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
-| C2 | promotion of read segments to the DRAM pool under the bound, release of the CXL copy; checkpoints never promoted | object readable before/during/after promotion; no promotion while probe > bound | — |
+| C1 ✅ | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
+| C2 ✅ | promotion of read segments to the DRAM pool under the bound, release of the CXL copy; checkpoints never promoted | object readable before/during/after promotion; no promotion while probe > bound | — |
 | **D — drain and recovery (P4)** | | | |
 | D1 | drain targets on `reserve`; segment-wise O_DIRECT drain (per V1), padding/truncate | drained file byte-identical to the source (checksum), for sizes not multiple of 32 MB | — |
 | D2 | pacing (yield to writers, full speed under space pressure); reclaim rules for checkpoint versions | writer speed during drain within 10 % of no-drain; free space never reaches 0 in a 10-version loop | — |
@@ -364,6 +364,25 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   aggressor (3.7 GiB/s), returns to 1.00 afterwards; every verified copy byte-exact while switching.
   "Path full" for a GPU source = direct path delivers < 80% of the calibrated link speed (sticky).
   **Component B complete.** Raw: `B-live/B5-*`.
+
+- **C1 + C2 ✅ 2026-09-19** — Read path: `cxlp_obj_pin/unpin` (readers get pointers, CXL or DRAM),
+  per-EXTENT read counts in a two-bucket window (default 2 × 5 min; a range pin counts only the
+  extents it touches), threshold k per consumer type published by the daemon from
+  `k = ceil(t_copy × (1 + w × pressure) / (t_cxl − t_dram))`, w = 10, "never" when the CXL penalty is
+  < 5%. Promotion by a daemon thread (off the probe's CCD), only while DRAM is within its bound and the
+  pool has room: NT copy into the DRAM pool, relocation under the object's seqlock, the old CXL copy
+  released once no reader pins the object; `release` is refused while pinned; NOPROMOTE objects
+  (checkpoints) never move. Unit tests on fake and dax devices pass (k = 5 / 10 / 2 / never for the
+  design's example numbers; a reader pinned before the move keeps valid data).
+  **Calibrated on c28 (single-thread streaming, 128 MiB): DRAM 40.8 GiB/s, CXL 23.0 GiB/s (1.77×),
+  copy CXL→DRAM 23.5 GiB/s ⇒ k = 3 when DRAM is calm** (k = 5 was published while the probe sat
+  slightly above its reference); **GPU consumer: CXL 12.45 vs DRAM 12.46 GiB/s ⇒ never.** Live: an
+  object read k times under a real daemon moved to the DRAM pool byte-exactly. Note: the design's
+  k ≈ 5 came from the stencil proxy (1.2×); a single streaming reader sees 1.77×, hence the smaller k.
+  Known limit: if the daemon dies between relocation and the deferred release, the old CXL bytes stay
+  counted as live. **Component C complete.** Raw: `C-live/`.
+- Housekeeping: the A3 throughput gate compares two runs at the device limit, which vary by ~8%;
+  it failed once by noise (raw 43.8 vs library 40.x) and now takes the best of 9 alternating runs.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

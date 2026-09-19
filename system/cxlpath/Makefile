@@ -2,6 +2,7 @@
 # `make test-dax` runs the same tests on ranges of /dev/dax0.0 and /dev/dax1.0 that cxlpath OWNS.
 CC      = gcc
 CFLAGS  = -O2 -g -std=gnu11 -Wall -Wextra -mavx2 -pthread -Iinclude
+LDLIBS  = -lm
 SRC     = $(wildcard src/*.c)
 OBJ     = $(SRC:src/%.c=build/%.o)
 TESTS   = $(patsubst tests/%.c,build/%,$(wildcard tests/test_*.c))
@@ -21,9 +22,9 @@ build/%.o: src/%.c include/cxlpath.h include/cxlpath_daemon.h src/internal.h | b
 build/libcxlpath.a: $(OBJ)
 	ar rcs $@ $^
 build/test_%: tests/test_%.c build/libcxlpath.a
-	$(CC) $(CFLAGS) $< build/libcxlpath.a -o $@
+	$(CC) $(CFLAGS) $< build/libcxlpath.a $(LDLIBS) -o $@
 build/cxlpathd: daemon/cxlpathd.c build/libcxlpath.a
-	$(CC) $(CFLAGS) $< build/libcxlpath.a -o $@
+	$(CC) $(CFLAGS) $< build/libcxlpath.a $(LDLIBS) -o $@
 build/%: tests/tools/%.c build/libcxlpath.a
 	$(CC) $(CFLAGS) -march=native $< build/libcxlpath.a -o $@
 build/gpu.o: src/gpu/gpu.c include/cxlpath_gpu.h src/internal.h | build
@@ -31,7 +32,7 @@ build/gpu.o: src/gpu/gpu.c include/cxlpath_gpu.h src/internal.h | build
 build/libcxlpath_gpu.a: build/gpu.o
 	ar rcs $@ $^
 build/cxlp_gpu_test: tests/tools/cxlp_gpu_test.c build/libcxlpath_gpu.a build/libcxlpath.a
-	$(CC) $(CFLAGS) -I$(CUDA)/include $< build/libcxlpath_gpu.a build/libcxlpath.a -L$(CUDA)/lib64 -Wl,-rpath,$(CUDA)/lib64 -lcudart -o $@
+	$(CC) $(CFLAGS) -I$(CUDA)/include $< build/libcxlpath_gpu.a build/libcxlpath.a -L$(CUDA)/lib64 -Wl,-rpath,$(CUDA)/lib64 -lcudart $(LDLIBS) -o $@
 build:
 	mkdir -p build
 test: all

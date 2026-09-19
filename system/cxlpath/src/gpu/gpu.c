@@ -44,6 +44,28 @@ int cxlp_gpu_init(int copy_threads, int first_cpu) {
     uint64_t t0 = cxlp_now_ns(); for (int r = 0; r < 8; r++) cudaMemcpy(bounce[r % NBOUNCE].buf, d, CXLP_SEG_BYTES, cudaMemcpyDeviceToHost);
     uint64_t dt = cxlp_now_ns() - t0; cudaFree(d);
     if (cxlp_g.meta) atomic_store(&POL->gpu_link_bps, (uint64_t)(8.0 * CXLP_SEG_BYTES * 1e9 / (double)dt));
+    /* Component C, GPU consumer: how fast the GPU reads host memory, DRAM vs a registered CXL segment */
+    if (cxlp_g.meta) {
+        int cd = -1; for (uint32_t dv = 0; dv < cxlp_g.meta->ndev; dv++) if (cxlp_g.meta->dev[dv].kind == CXLP_DEV_CXL && cxlp_dev_free((int)dv)) { cd = (int)dv; break; }
+        uint32_t sg = cd >= 0 ? cxlp_seg_claim(cd, CXLP_SEG_OPEN) : CXLP_NO_SEG; void *dv2;
+        if (sg != CXLP_NO_SEG && cudaMalloc(&dv2, CXLP_SEG_BYTES) == cudaSuccess) {
+            void *cp = cxlp_seg_ptr(cd, sg);
+            if (cudaHostRegister(cp, CXLP_SEG_BYTES, cudaHostRegisterDefault) == cudaSuccess) {
+                uint64_t best_c = ~0ull, best_d = ~0ull;
+                for (int r = 0; r < 4; r++) {
+                    uint64_t a = cxlp_now_ns(); cudaMemcpy(dv2, cp, CXLP_SEG_BYTES, cudaMemcpyHostToDevice); uint64_t b = cxlp_now_ns();
+                    cudaMemcpy(dv2, bounce[0].buf, CXLP_SEG_BYTES, cudaMemcpyHostToDevice); uint64_t c = cxlp_now_ns();
+                    if (b - a < best_c) best_c = b - a;
+                    if (c - b < best_d) best_d = c - b;
+                }
+                atomic_store(&POL->gpu_rd_cxl_bps, (uint64_t)(CXLP_SEG_BYTES * 1e9 / (double)best_c));
+                atomic_store(&POL->gpu_rd_dram_bps, (uint64_t)(CXLP_SEG_BYTES * 1e9 / (double)best_d));
+                cudaHostUnregister(cp);
+            }
+            cudaFree(dv2);
+        }
+        if (sg != CXLP_NO_SEG) cxlp_seg_release(cd, sg);
+    }
     nthreads = copy_threads > 0 ? copy_threads : 1; first_cpu_g = first_cpu; stopping = 0;
     threads = calloc((size_t)nthreads, sizeof *threads);
     for (long i = 0; i < nthreads; i++) pthread_create(&threads[i], NULL, copy_thread, (void *)i);

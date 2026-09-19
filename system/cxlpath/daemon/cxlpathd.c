@@ -16,10 +16,11 @@
 #include <string.h>
 #include <unistd.h>
 
-static volatile sig_atomic_t quit;
-static void on_sig(int s) { (void)s; quit = 1; }
 static const char *opt(int argc, char **argv, const char *k, const char *dflt) { for (int i = 2; i + 1 < argc; i++) if (!strcmp(argv[i], k)) return argv[i + 1]; return dflt; }
 static int flag(int argc, char **argv, const char *k) { for (int i = 2; i < argc; i++) if (!strcmp(argv[i], k)) return 1; return 0; }
+
+static volatile sig_atomic_t quit;
+static void on_sig(int s) { (void)s; quit = 1; }
 
 /* ---- start-up calibration of the CXL write path: solo speed and aggregate capacity ---- */
 typedef struct { void *dst[2]; const char *src; int rounds; uint64_t bytes, ns; pthread_barrier_t *bar; } cal_t;
@@ -45,6 +46,28 @@ static void calibrate(double *solo_bps, double *cap_bps) {
     free(src);
 }
 
+/* ---- start-up calibration of the read path for a CPU consumer (Component C): seconds per byte to
+ * stream-read from DRAM and from CXL, and to copy CXL -> DRAM. 4 segments each (128 MiB > L3). ---- */
+static double stream_read(void *p[4]) { uint64_t t0 = cxlp_now_ns(), s = 0; for (int k = 0; k < 4; k++) { const uint64_t *q = p[k]; for (size_t i = 0; i < CXLP_SEG_BYTES / 8; i++) s += q[i]; } __asm__ volatile("" : : "r"(s)); return (cxlp_now_ns() - t0) / 1e9 / (4.0 * CXLP_SEG_BYTES); }
+static int calibrate_read(double *t_dram, double *t_cxl, double *t_copy) {
+    int cd = -1, dd = -1; for (int d = 0; d < cxlp_ndev(); d++) { if (cxlp_dev_free(d) < 8) continue; if (cxlp_dev_kind(d) == CXLP_DEV_CXL && cd < 0) cd = d; if (cxlp_dev_kind(d) == CXLP_DEV_DRAM && dd < 0) dd = d; }
+    if (cd < 0 || dd < 0) return -1;
+    uint32_t cs[4], ds[4]; void *cp[4], *dp[4];
+    for (int k = 0; k < 4; k++) { cs[k] = cxlp_seg_claim(cd, CXLP_SEG_OPEN); ds[k] = cxlp_seg_claim(dd, CXLP_SEG_OPEN); cp[k] = cxlp_seg_ptr(cd, cs[k]); dp[k] = cxlp_seg_ptr(dd, ds[k]); }
+    char *src = aligned_alloc(4096, CXLP_SEG_BYTES); for (size_t i = 0; i < CXLP_SEG_BYTES; i++) src[i] = (char)(i * 131);
+    for (int k = 0; k < 4; k++) { cxlp_copy_in(cp[k], src, CXLP_SEG_BYTES); cxlp_copy_in(dp[k], src, CXLP_SEG_BYTES); }
+    *t_dram = *t_cxl = *t_copy = 1e9;
+    for (int r = 0; r < 3; r++) {
+        double a = stream_read(dp), b = stream_read(cp); if (a < *t_dram) *t_dram = a; if (b < *t_cxl) *t_cxl = b;
+        uint64_t t0 = cxlp_now_ns(); for (int k = 0; k < 4; k++) cxlp_copy_in(dp[k], cp[k], CXLP_SEG_BYTES); double c = (cxlp_now_ns() - t0) / 1e9 / (4.0 * CXLP_SEG_BYTES); if (c < *t_copy) *t_copy = c;
+    }
+    for (int k = 0; k < 4; k++) { cxlp_seg_release(cd, cs[k]); cxlp_seg_release(dd, ds[k]); }
+    free(src); return 0;
+}
+
+/* ---- promoter thread (Component C): relocates hot extents to the DRAM pool, off the probe's CCD ---- */
+static void *promoter(void *arg) { (void)arg; while (!quit) { cxlp_promote_pending((int)atomic_load(&POL->dram_ok)); usleep(50000); } return NULL; }
+
 int main(int argc, char **argv) {
     if (argc < 2) { fprintf(stderr, "usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound X] [--no-calibrate]\n"); return 2; }
     int cpu = atoi(opt(argc, argv, "--cpu", "16")), ccd = atoi(opt(argc, argv, "--ccd-size", "16")), smt = atoi(opt(argc, argv, "--smt-offset", "128"));
@@ -61,7 +84,9 @@ int main(int argc, char **argv) {
     cpu_set_t rest; CPU_ZERO(&rest);
     for (int i = 0; i < ncpu; i++) { int core = i >= smt ? i - smt : i; if (core < lo || core > hi) CPU_SET(i, &rest); }
     sched_setaffinity(0, sizeof rest, &rest);
-    double solo = 0, cap = 0; if (!flag(argc, argv, "--no-calibrate")) calibrate(&solo, &cap);
+    double solo = 0, cap = 0, t_dram = 0, t_cxl = 0, t_copy = 0, w_press = atof(opt(argc, argv, "--w", "10")); int have_rd = 0;
+    if (!flag(argc, argv, "--no-calibrate")) { calibrate(&solo, &cap); have_rd = calibrate_read(&t_dram, &t_cxl, &t_copy) == 0; }
+    pthread_t prom; pthread_create(&prom, NULL, promoter, NULL);         /* inherits the affinity: not on the probe's CCD */
     cpu_set_t pc; CPU_ZERO(&pc); CPU_SET(cpu, &pc); sched_setaffinity(0, sizeof pc, &pc);   /* main thread = probe thread */
 
     cxlp_probe_t *pr = cxlp_probe_create(256ul << 20);
@@ -71,6 +96,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 25; i++) { ring[i % 5] = cxlp_probe_once(pr, 1000); if (i % 5 == 4) { double m = 0; for (int k = 0; k < 5; k++) m += ring[k]; base = cxlp_ref_feed(&ref_idle, m / 5, cxlp_now_ns() / 1000000ull); } usleep(10000); }
     nring = 5;
     if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.2f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
+              if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
               fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns\n"); fflush(lg); }
 
     atomic_store(&POL->daemon_pid, (uint32_t)getpid());
@@ -145,6 +171,11 @@ int main(int argc, char **argv) {
             if (mask) cxlp_ctl_epoch(&ctl, cxl_full, gpu_full, mean5, room ? base : 0);   /* slow increase */
             atomic_store(&POL->cxl_full, (uint32_t)(cxl_full > 0)); atomic_store(&POL->gpu_full, (uint32_t)gpu_full);
             atomic_store(&POL->probe_x10, (uint32_t)(mean5 * 10)); atomic_store(&POL->base_x10, (uint32_t)(base * 10));
+            /* Component C: promotion thresholds. Pressure makes the copy dearer: k grows with the probe. */
+            double pressure = base > 0 ? mean5 / base - 1.0 : 0;
+            if (have_rd) atomic_store(&POL->k_read[CXLP_CONSUMER_CPU], cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, pressure));
+            uint64_t grc = atomic_load(&POL->gpu_rd_cxl_bps), grd = atomic_load(&POL->gpu_rd_dram_bps);
+            if (grc && grd) atomic_store(&POL->k_read[CXLP_CONSUMER_GPU], cxlp_k_compute(have_rd ? t_copy : 1.0 / (double)grd, 1.0 / (double)grc, 1.0 / (double)grd, w_press, pressure));
             atomic_fetch_add(&POL->epoch, 1);
             if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f\n", (now - t_start) / 1e6, p, mean5, base,
                         forced >= 0 ? (uint32_t)forced : ctl.cpu, ctl.gpu, cxl_full, gpu_full, active, agg / 1073741824.0, db / dt / 1073741824.0, per_writer / 1073741824.0, conc, halved_in_epoch, ref_idle.last, ref_a); if (!active) fflush(lg); }
@@ -171,6 +202,7 @@ int main(int argc, char **argv) {
         if (!active && atomic_load(&POL->reserve_seq) != p_seq) next = cxlp_now_ns();
     }
     atomic_store(&POL->daemon_pid, 0);
+    pthread_join(prom, NULL);
     if (lg) fclose(lg);
     cxlp_probe_destroy(pr); cxlp_close();
     return 0;
