@@ -1,0 +1,32 @@
+dev 0: CXL  512 segments
+dev 1: CXL  512 segments
+dev 2: DRAM 512 segments
+B2 probe
+    WRITERS threads=1 secs=6.0 total_GiBs=35.09 cxl_GiBs=34.80 dram_GiBs=0.29 dram_share=0.008 reserve_timeouts=0
+    daemon CPU while writers are active (10 ms probes, 50 ms epochs): 1.26% of one core
+  ok   probe + policy overhead <= 2% of one core
+    idle 141.5 ns per load; under 80 NT writers (AGGRESSOR threads=80 GiBs=298.5) 1573.9 ns = 11.1x
+  ok   idle value in the range seen in V5 (100-140 ns)
+  ok   saturated DRAM reads >= 4x idle (V5: 6.5x)
+B3 CXL-full signal (spill forced to 0 so CXL stays the only target)
+    calibrated: solo 34.45 GiB/s, capacity 43.88 GiB/s
+    1 writer limited to 20 GiB/s: WRITERS threads=1 secs=5.0 total_GiBs=19.99 cxl_GiBs=19.99 dram_GiBs=0.00 dram_share=0.000 reserve_timeouts=0
+               epochs flagged full: 0% of 80
+    1 writer, unlimited (info): WRITERS threads=1 secs=5.0 total_GiBs=41.35 cxl_GiBs=41.35 dram_GiBs=0.00 dram_share=0.000 reserve_timeouts=0
+               epochs flagged full: 71% of 80  <- one core already pushes ~94% of the pair's write capacity
+    4 writers: WRITERS threads=4 secs=5.0 total_GiBs=43.88 cxl_GiBs=43.88 dram_GiBs=0.00 dram_share=0.000 reserve_timeouts=0
+               epochs flagged full: 100% of 80
+  ok   4 writers: CXL write direction reported full
+  ok   1 writer at 20 GiB/s (half the capacity): not reported full
+B4 controller, live
+    WRITERS threads=4 secs=16.0 total_GiBs=38.95 cxl_GiBs=30.66 dram_GiBs=8.30 dram_share=0.213 reserve_timeouts=0
+    AGGRESSOR threads=64 GiBs=271.9 (from 8875 ms to 12876 ms of the daemon log)
+    before the aggressor: 24 increases, peak spill 6/16, last second: spill 4/16, CXL 38.1 + DRAM 12.5 GiB/s, probe 133.3 vs reference 130.0
+  ok   spill rose while CXL was full and DRAM calm
+  ok   every increase happened in an epoch with CXL full and probe <= 1.05 x reference (30 increases checked)
+    aggressor starts at 8875 ms; first halving at 8892 ms = 16 ms later (probe 726 ns)
+    spill reaches 0 at 8922 ms = 46 ms after the aggressor started
+  ok   first halving within 50 ms of the injected DRAM aggressor
+  ok   no spill while the aggressor runs
+  ok   spill rises again after the aggressor leaves
+PASS

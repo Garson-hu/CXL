@@ -221,10 +221,10 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | A4 ✅ | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
 | A5 ✅ | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
 | **B — placement (P2)** | | | |
-| B1 | background process + shared policy page (published ratio/path, read by `reserve` without IPC) | `reserve` sees a changed ratio within one epoch; no syscalls on the data path (strace) | — |
-| B2 | latency probe thread, idle baseline (60 s minimum), adaptive 10 / 200 ms period | probe overhead ≤ 2 % of one core; values match V5 | — |
-| B3 | ledger + achieved-speed signal with per-path solo calibration | "CXL full" detected when 2 writers exceed the pair's write capacity, not detected with 1 | — |
-| B4 | controller: +1/16 per 50 ms epoch, halve on 2 probes over bound, per-stream memory, blocking `reserve` | deterministic tests with injected signals; live: spill rises only when CXL is full and DRAM calm, halves within 50 ms of an injected DRAM aggressor | — |
+| B1 ✅ | background process + shared policy page (published ratio/path, read by `reserve` without IPC) | `reserve` sees a changed ratio within one epoch; no syscalls on the data path (strace) | — |
+| B2 ✅ | latency probe thread, idle baseline (60 s minimum), adaptive 10 / 200 ms period | probe overhead ≤ 2 % of one core; values match V5 | — |
+| B3 ✅ | ledger + achieved-speed signal with per-path solo calibration | "CXL full" detected when 2 writers exceed the pair's write capacity, not detected with 1 | — |
+| B4 ✅ | controller: +1/16 per 50 ms epoch, halve on 2 probes over bound, per-stream memory, blocking `reserve` | deterministic tests with injected signals; live: spill rises only when CXL is full and DRAM calm, halves within 50 ms of an injected DRAM aggressor | — |
 | B5 | GPU source: direct vs staged path per chunk, runtime-owned pinned copy threads | both paths produce verified data; path switches under injected pressure | — |
 | **C — read path (P3)** | | | |
 | C1 | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
@@ -318,6 +318,42 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   the newer v2 does not help); v3 then overwrites v1's set while v2 stays intact and is reported as
   the newest complete version; a new process recovers v2 byte-exactly through its own mapping.
   Passes on fake devices and on dax0.0 + dax1.0. **Component A complete.** Raw: `A5-test-dax.txt`.
+
+- **B1 ✅ 2026-09-19** — Shared policy page in the store metadata + `cxlpathd` (one background
+  process per node). `reserve()` reads a per-stream "n of every 16 new segments go to DRAM" value;
+  bit-reversed spreading gives exactly 80/40/10 of 160 segments for 8/4/1 of 16. No daemon or a stale
+  heartbeat ⇒ all CXL. CXL out of space ⇒ DRAM only if the daemon says DRAM is within the bound,
+  else `reserve` blocks on a futex in the shared table (woke 300 ms after a 300 ms release). A real
+  daemon published a forced ratio 12–17 ms after the request (gate: one 200 ms idle epoch). strace:
+  **0 system calls between the data-path markers** (320 reservations, new segments on CXL and DRAM,
+  2.5 GiB copied; 256 in the whole run). All ways back to FREE now pass an exclusive FREEING state.
+- **B2 ✅ 2026-09-19** — Probe in the daemon (code shape of V5), pinned to cpu 16, everything else kept
+  off that CCD. Overhead with writers active (10 ms probes, 50 ms epochs): **1.26% of one core**
+  (gate 2%). Idle 130–141 ns per load, 11× under 80 NT writers (298 GiB/s). Found and fixed: log
+  writes to the NFS home stretched 50 ms epochs to 150 ms — the loop now never waits for I/O.
+- **B3 ✅ 2026-09-19** — Ledger (bytes + copy time per device, per stream) fed by `cxlp_copy_to`;
+  start-up calibration of the CXL write path: solo 33–41 GiB/s, capacity 43.9 GiB/s. Signal: full
+  at ≥ 90% of capacity, slack below 70%. Live: 1 writer at 20 GiB/s → full in 0% of epochs;
+  4 writers (43.9 GiB/s) → 100%. **Finding: one unthrottled core already pushes 41 GiB/s = 94% of
+  the card pair's write capacity** (flagged full in 71% of its epochs), so the gate's "1 writer"
+  had to be a rate-limited one.
+- **B4 ✅ 2026-09-19** — Controller (+1/16 per 50 ms epoch, halve on 2 consecutive probes over the
+  bound, per-stream memory). Deterministic tests with injected signals pass. Live (4 writers, 60 GiB/s
+  demand; 64-thread DRAM aggressor injected for 4 s): spill settles at 6/16 = CXL 37 + DRAM 20 GiB/s
+  with probe 131 vs reference 130 and no halving; all 30 increases happened in epochs with CXL full
+  and probe ≤ 1.05× reference; **first halving 16 ms after the aggressor starts, spill 0 after
+  46 ms**, none while it runs, rises again after it leaves. Raw: `B-live/`.
+  **Design changes forced by the live runs (to be folded into DESIGN §10.4 at F2):**
+  (1) the reference is the MEDIAN of epoch means, not the minimum — an idle c28 reads 100–160 ns
+  from probe to probe, a minimum sits 15–25% below typical and made normal readings look like
+  pressure; (2) TWO references: idle (60 s) and active (2 s window, only epochs with writer activity
+  and none of our bytes in DRAM, frozen while we spill, known after 5 epochs) — because the writers'
+  own source reads (50 GiB/s from DRAM) lift the probe ~20% with zero spill; (3) the idle state uses
+  a loose bound (1.5×) because idle readings are too noisy for 10%; (4) headroom guard: reference
+  > 2.0× the lowest idle reference ever seen ⇒ nothing may spill; (5) the per-writer-speed fullness
+  rule over-spilled (11/16 for a 60 GiB/s demand) and was replaced by capacity thresholds; new
+  slack rule: spill shrinks by 1/16 per epoch when CXL runs below 70% — DRAM is only for the excess.
+  Not covered: another tenant writing to the same cards outside cxlpath.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

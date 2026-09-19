@@ -10,6 +10,7 @@
 #include <time.h>
 static double now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return t.tv_sec + t.tv_nsec * 1e-9; }
 static int fails;
+#define SAMESEG(x, y) ((x).dev == (y).dev && (x).seg == (y).seg)   /* a segment is (device, index) */
 #define CHECK(c, msg) do { if (!(c)) { printf("  FAIL: %s\n", msg); fails++; } } while (0)
 
 static void *hammer(void *arg) {
@@ -17,7 +18,7 @@ static void *hammer(void *arg) {
     enum { N = 64 }; cxlp_res_t r[N]; int n = 0;
     for (int it = 0; it < 4000; it++) {
         size_t len = 4096 + rand_r(&seed) % (6u << 20);
-        cxlp_hints_t h = { rand_r(&seed) % CXLP_NKLASS, 0, -1 };
+        cxlp_hints_t h = { rand_r(&seed) % CXLP_NKLASS, 0, -1, 0, 0 };
         if (cxlp_reserve(len, &h, &r[n]) == 0) {
             memset(r[n].ptr, (int)(r[n].off ^ r[n].seg ^ (unsigned)(long)arg), 64);
             ((unsigned char *)r[n].ptr)[len - 1] = 0x5a; cxlp_commit(&r[n]); n++;
@@ -47,9 +48,9 @@ int main(void) {
     cxlp_res_t a, b, c;
     CHECK(cxlp_reserve(CXLP_SEG_BYTES + 1, NULL, &a) == -1, "oversize reservation must fail");
     CHECK(cxlp_reserve(1000, NULL, &a) == 0 && cxlp_reserve(1000, NULL, &b) == 0, "two small reservations");
-    CHECK(a.seg == b.seg && b.off == 1024 && ((uintptr_t)b.ptr & 63) == 0, "append in one segment, 64 B aligned");
-    cxlp_hints_t h4k = { 1, 4096, -1 };
-    CHECK(cxlp_reserve(5000, &h4k, &c) == 0 && c.seg != a.seg && (c.off & 4095) == 0, "other class -> other segment, 4 KiB aligned");
+    CHECK(SAMESEG(a, b) && b.off == 1024 && ((uintptr_t)b.ptr & 63) == 0, "append in one segment, 64 B aligned");
+    cxlp_hints_t h4k = { 1, 4096, -1, 0, 0 };
+    CHECK(cxlp_reserve(5000, &h4k, &c) == 0 && !SAMESEG(c, a) && (c.off & 4095) == 0, "other class -> other segment, 4 KiB aligned");
     cxlp_commit(&a); cxlp_commit(&b); cxlp_commit(&c);
     CHECK(cxlp_seg_live(a.dev, a.seg) == 2000, "live bytes = reserved bytes");
     cxlp_release(&a);
@@ -58,12 +59,12 @@ int main(void) {
     CHECK(cxlp_dev_free(0) + cxlp_dev_free(1) == total, "sealed + empty segments return to the pool");
     cxlp_res_t big[3];                                   /* sealed while data is live, freed on release */
     for (int i = 0; i < 3; i++) { CHECK(cxlp_reserve(20u << 20, NULL, &big[i]) == 0, "20 MiB reservation"); cxlp_commit(&big[i]); }
-    CHECK(big[0].seg != big[1].seg && big[1].seg != big[2].seg, "20 MiB x3 need three segments");
+    CHECK(!SAMESEG(big[0], big[1]) && !SAMESEG(big[1], big[2]) && !SAMESEG(big[0], big[2]), "20 MiB x3 need three segments");
     CHECK(cxlp_dev_free(0) + cxlp_dev_free(1) == total - 3, "three segments in use");
     cxlp_release(&big[0]);
     CHECK(cxlp_dev_free(0) + cxlp_dev_free(1) == total - 2, "sealed segment freed when its last byte dies");
     cxlp_release(&big[1]); cxlp_release(&big[2]); cxlp_thread_seal();
-    cxlp_hints_t force1 = { 0, 0, 1 };
+    cxlp_hints_t force1 = { 0, 0, 1, 0, 0 };
     CHECK(cxlp_reserve(100, &force1, &a) == 0 && a.dev == 1, "forced device"); cxlp_abort(&a); cxlp_thread_seal();
     CHECK(cxlp_dev_free(0) + cxlp_dev_free(1) == total, "abort returns the space");
 
@@ -82,7 +83,7 @@ int main(void) {
         char *raw = cxlp_seg_ptr(0, 0); double t = now();
         for (int i = 0; i < n; i++) cxlp_copy_in(raw + (size_t)i * chunk, src, chunk);
         double r1 = tot / (now() - t) / 1073741824.0; if (r1 > best_raw) best_raw = r1;
-        cxlp_hints_t f0 = { 0, 0, 0 }; cxlp_res_t *rs = malloc(n * sizeof *rs); t = now();
+        cxlp_hints_t f0 = { 0, 0, 0, 0, 0 }; cxlp_res_t *rs = malloc(n * sizeof *rs); t = now();
         for (int i = 0; i < n; i++) { if (cxlp_reserve(chunk, &f0, &rs[i])) { puts("  reserve failed"); return 1; } cxlp_copy_in(rs[i].ptr, src, chunk); cxlp_commit(&rs[i]); }
         double r2 = tot / (now() - t) / 1073741824.0; if (r2 > best_lib) best_lib = r2;
         for (int i = 0; i < n; i++) cxlp_release(&rs[i]);

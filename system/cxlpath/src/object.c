@@ -67,7 +67,7 @@ int cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes) {
     int n = 0;
     for (uint32_t e = atomic_load(&o->head); e != CXLP_NIL; e = atomic_load(&cxlp_g.ext[e].next), n++) {
         if (n < max) { cxlp_ext_t *x = &cxlp_g.ext[e];
-            ext[n] = (cxlp_res_t){ (char *)cxlp_seg_ptr((int)x->dev, x->seg) + x->off, (int)x->dev, x->seg, x->off, x->len }; }
+            ext[n] = (cxlp_res_t){ (char *)cxlp_seg_ptr((int)x->dev, x->seg) + x->off, (int)x->dev, x->seg, x->off, x->len, 0 }; }
     }
     if (bytes) *bytes = atomic_load(&o->bytes);
     return n;
@@ -76,7 +76,7 @@ int cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes) {
 static void drop_extents(cxlp_obj_t *o, int fix_live) {
     for (uint32_t e = atomic_load(&o->head); e != CXLP_NIL;) {
         cxlp_ext_t *x = &cxlp_g.ext[e]; uint32_t nx = atomic_load(&x->next);
-        if (fix_live) { cxlp_res_t r = { NULL, (int)x->dev, x->seg, x->off, x->len }; cxlp_release(&r); }
+        if (fix_live) { cxlp_res_t r = { NULL, (int)x->dev, x->seg, x->off, x->len, 0 }; cxlp_release(&r); }
         atomic_store(&x->used, 0); e = nx;
     }
     atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL);
@@ -93,11 +93,11 @@ int cxlp_obj_release(cxlp_key_t key) {
 
 int cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len) {
     uint32_t h; if (cxlp_obj_begin(key, klass, &h)) return -1;
-    cxlp_hints_t hint = { klass, 0, -1 };
+    cxlp_hints_t hint = { klass, 0, -1, 0, 0 };
     for (size_t done = 0; done < len;) {
         size_t n = len - done < CXLP_SEG_BYTES ? len - done : CXLP_SEG_BYTES; cxlp_res_t r;
         if (cxlp_reserve(n, &hint, &r)) goto fail;
-        cxlp_copy_in(r.ptr, (const char *)buf + done, n); cxlp_commit(&r);
+        cxlp_copy_to(&r, 0, (const char *)buf + done, n); cxlp_commit(&r);
         if (cxlp_obj_append(h, &r)) { cxlp_abort(&r); goto fail; }
         done += n;
     }

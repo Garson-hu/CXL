@@ -10,6 +10,7 @@ extern "C" {
 #define CXLP_SEG_BYTES   (32ul << 20)          /* segment size (user decision 2026-09-18) */
 #define CXLP_MAX_DEVS    4
 #define CXLP_NO_SEG      UINT32_MAX
+#define CXLP_NSTREAM     16
 
 typedef enum { CXLP_DEV_CXL = 0, CXLP_DEV_DRAM = 1 } cxlp_devkind_t;
 
@@ -57,12 +58,15 @@ typedef struct {
     uint32_t klass;        /* lifetime class: data that dies together shares segments (0..3)  */
     uint32_t align;        /* 0 = 64 B; drain-target writes use 4096                            */
     int      dev;          /* -1 = let the placement policy choose (default)                    */
+    uint32_t stream;       /* write stream id 0..15: the policy remembers a ratio per stream    */
+    uint32_t wait_ms;      /* 0 = fail at once when no space; else sleep on the shared table    */
 } cxlp_hints_t;
 
 typedef struct {
     void    *ptr;
     int      dev;
     uint32_t seg, off, len;
+    uint32_t stream;
 } cxlp_res_t;
 
 int  cxlp_reserve(size_t len, const cxlp_hints_t *hints, cxlp_res_t *out);   /* 0, or -1 (no space / too big) */
@@ -70,13 +74,28 @@ void cxlp_commit(const cxlp_res_t *r);
 void cxlp_abort(const cxlp_res_t *r);            /* reserved but never committed              */
 void cxlp_release(const cxlp_res_t *r);          /* committed data is dead                    */
 void cxlp_copy_in(void *dst, const void *src, size_t n);   /* always NT stores                */
+/* Timed copy into a reservation: same NT copy, and it feeds the ledger the placement policy
+ * reads (bytes and time per device). Writers that fill a reservation by other means (GPU DMA)
+ * report with cxlp_account(). Both are plain memory writes: no syscall. */
+void cxlp_copy_to(const cxlp_res_t *r, size_t off, const void *src, size_t n);
+void cxlp_account(int dev, uint32_t stream, uint64_t bytes, uint64_t ns);
 void cxlp_thread_seal(void);                     /* close this thread's open segments         */
 uint64_t cxlp_seg_live(int dev, uint32_t seg);
 
-/* Placement hook: returns the device for the next segment of this thread. Component B installs
- * the real policy; the default takes the first CXL device that has a free segment. */
-typedef int (*cxlp_pick_fn)(uint32_t klass);
-void cxlp_set_pick(cxlp_pick_fn fn);
+/* --- Component B, what the library side sees (B1) ---
+ * The background process (cxlpathd) publishes, per stream, how many of every 16 NEW segments go
+ * to the DRAM pool ("spill"); reserve() reads that number from shared memory. Without a live
+ * daemon the library places everything on CXL and overflows to DRAM only when CXL has no space. */
+typedef struct {
+    int      daemon_alive;
+    uint32_t spill16, staged16, dram_ok, cxl_full, gpu_full;
+    double   probe_ns, base_ns, bound;
+    uint64_t epoch;
+    uint64_t dev_bytes[CXLP_MAX_DEVS];
+} cxlp_policy_view_t;
+void cxlp_policy_view(uint32_t stream, cxlp_policy_view_t *out);
+void cxlp_policy_force(int spill16);              /* admin/test knob; -1 = controller decides   */
+cxlp_devkind_t cxlp_dev_kind(int dev);
 
 /* --- Component A, object index (A4) ---
  * An object is a list of committed extents, kept in the SHARED metadata: it belongs to the
