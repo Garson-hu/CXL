@@ -1,0 +1,12 @@
+V2 stitch: 16 segments mapped at adjacent addresses in 0.035 ms
+V2 data across seams: verified
+V3a register stitched 512 MiB: OK (9.2 ms)
+V3a GPU -> stitched buffer: 3.92 GiB/s, verify match
+V3b register     1 GiB: OK  0.02 s  (18.3 ms/GiB)
+     unregister 0.01 s
+V3b register     8 GiB: OK  0.16 s  (20.1 ms/GiB)
+     unregister 0.11 s
+V3b register    64 GiB: OK  1.32 s  (20.6 ms/GiB)
+     unregister 0.94 s
+V3b register   200 GiB: OK  4.11 s  (20.5 ms/GiB)
+     unregister 2.92 s

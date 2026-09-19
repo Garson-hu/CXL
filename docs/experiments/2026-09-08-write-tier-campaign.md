@@ -209,8 +209,8 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 |---|---|---|---|
 | **V — feasibility checks (small yes/no programs)** | | | |
 | V1 ✅ | O_DIRECT write to `/mnt/local` with a devdax mapping as the source buffer | file on NVMe byte-identical; no EFAULT/EINVAL | drain copies through a small reused DRAM buffer (DRAM traffic ≤ NVMe speed, ~3 GiB/s) — note in DESIGN D |
-| V2 | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
-| V3 | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
+| V2 ✅ | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
+| V3 ✅ | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
 | V4 | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
 | V5 | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
 | V6 | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
@@ -247,6 +247,14 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   the NVMe, not the source, is the limit. Note for D2: a single synchronous writer gets only
   ~0.9 GiB/s from the Solidigm drive — try parallel/queued writes there. Tool:
   `system/cxlpath/checks/v1_odirect_devdax.c`.
+
+- **V2 ✅ 2026-09-19** — 16 scattered, out-of-order 32 MB segments of dax0.0 mapped at adjacent
+  addresses with `MAP_FIXED` (0.035 ms total); data verified through independent linear mappings
+  and with writes straddling every seam. Virtually contiguous buffer sets are feasible.
+- **V3 ✅ 2026-09-19** — `cudaHostRegister` accepts the stitched buffer (512 MiB, 9 ms; GPU copy into
+  it verified, 3.92 GiB/s = the known direct-write cap) and plain ranges of 1 / 8 / 64 / 200 GiB:
+  ~20 ms per GiB (200 GiB = 4.1 s), unregister ~15 ms per GiB, no limit hit. Registering a whole
+  buffer set once at start-up is cheap. Tool: `system/cxlpath/checks/v2v3_stitch_register.c`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
