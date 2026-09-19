@@ -1,1 +1,1 @@
-    KV replays=19 blocks=673610 hits=42471 put_failures=392077 VERIFY_ERRORS=0
+    KV replays=17 blocks=603398 hits=91563 put_failures=0 VERIFY_ERRORS=0

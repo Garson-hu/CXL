@@ -238,8 +238,8 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | E2 ✅ | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
 | E3 ✅ (LMCache ⏳) | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
 | **F — system complete** | | | |
-| F1 | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
-| F2 | DESIGN.md updated to "as built" (§10 status, API reference), WORKLOG summary, list of what changed versus the design | user review ⏳ → then discuss evaluation | — |
+| F1 ✅ | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
+| F2 ✅ (user review ⏳) | DESIGN.md updated to "as built" (§10 status, API reference), WORKLOG summary, list of what changed versus the design | user review ⏳ → then discuss evaluation | — |
 
 ### Phase 5 v2 results log (one entry per finished step; raw: `experimental_results/2026-09-19-cxlpath-build/`)
 - **V1 ✅ 2026-09-19** — O_DIRECT from a devdax mapping WORKS on dax0.0 and dax1.0 (2 GiB, 32 MB
@@ -469,6 +469,31 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   listed on CXL, scratch directory stays empty through checkpoint and restart). E1 rerun with these
   checks: PASS — restart came from CXL, drained files byte-identical to stock VeloC's.
 
+- **F1 ✅ 2026-09-19 (third run; the first two found real defects)** — `tests/live/f1_all.sh`: VeloC
+  round trips, LULESH + VeloC, PyTorch `async_save` loop, KV trace replay, all on ONE store (2 × 16 GiB
+  CXL + 4 GiB DRAM pool) for 600 s, a 64-thread DRAM aggressor for 5 s every minute.
+  Run 1 looked green but was void for VeloC/LULESH (stale static library → silent fall-back to stock
+  VeloC, see the correction above); it did expose **drain starvation** (a KV layer that writes all the
+  time kept the drain yielding forever; PyTorch waited 62 s for a buffer set) → the drain now stops
+  yielding when space is short, a writer is blocked on it, or work is pending > 2 s.
+  Run 2, with VeloC truly on cxlpath, FAILED: **re-written keys piled up** — every rerun writes
+  "version 3" again, `cxlp_obj_begin` did not notice the existing key, 361 objects (32 GiB) filled the
+  store, 392,077 KV stores failed, LULESH sat in back-pressure until its timeout, 89 GiB overflowed
+  into the DRAM pool → a key now names ONE object (supersede rule), pins name the pinned object,
+  regression `tests/test_replace.c`.
+  Run 3 **PASS**: VeloC 3,746 round trips, LULESH 34 runs, PyTorch 219 versions (219 reloads from CXL +
+  217 from NVMe, training blocked 0.13 s on average, never waited for a buffer set), KV 17 replays =
+  603,398 blocks with 91,563 hits checked word by word — **0 errors of any kind, 0 failed stores,
+  3.07 TiB written through CXL, no scratch file ever written, 2 checkpoint objects left (the newest of
+  each chain), and after a sweep every one of the 1,152 segments free.** Policy during the run: 3,758
+  fast decreases around the 10 aggressor bursts, GPU chunks on the staged path in 11,003 epochs.
+  Raw: `F1-all/` (runs 1 and 2 kept in sub-folders).
+- **F2 ✅ 2026-09-19 (ends with the user's review ⏳)** — `DESIGN.md` §10 is "as built" (AS BUILT
+  paragraphs per component, §10.10 code map / API / tests, §10.11 thirteen differences between the
+  agreed design and the built system, each with the evidence that forced it); `PAPER.md` got "Facts
+  from building the system"; `system/cxlpath/README.md`; WORKLOG session 23. **The build plan is
+  complete. Next, with the user: evaluation plan; names; whether to attempt a real LMCache integration.**
+
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
   machine facts, blockers, and file naming fixed.
@@ -481,6 +506,8 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 - 2026-09-19 — Phase 5 v2 build plan PROPOSED (feasibility checks V1–V6 → components A–D →
   clients E → system complete F); evaluation deliberately excluded. Awaiting user approval.
 - 2026-09-19 (later) — Phase 5 v2 APPROVED; name `cxlpath`; branch `cxlpath`, commit per step.
+- 2026-09-19 (end of day) — Phase 5 v2 COMPLETE: V1–V6, A1–A5, B1–B5, C1–C2, D1–D3, E1–E3, F1–F2 all ✅
+  (E3 = trace-driven stand-in; real LMCache ⏳ user; F2 awaits the user's review). Evaluation not started.
 
 ## Naming (rule 2026-09-08 — do not use "Pair A"/"Pair B" in new text)
 | historical label | what it is | use instead |

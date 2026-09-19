@@ -15,6 +15,13 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-19 addendum — SYSTEM BUILT.** The write-path runtime `cxlpath` (Thesis v3) is implemented on
+git branch `cxlpath` (`system/cxlpath/`, README there): every step of the build plan passed its gate,
+including a 10-minute run of all three clients (VeloC/LULESH, PyTorch async checkpoint, KV stand-in).
+Build record: `docs/experiments/2026-09-08-write-tier-campaign.md` "Phase 5 v2"; as-built design and the
+list of changes versus the agreed design: `docs/DESIGN.md` §10.10–10.11. **No evaluation experiment has
+been run; the evaluation plan is the next thing to agree with the user.**
+
 **2026-09-18 addendum — DESIGN PHASE.** Framing agreed with the user: Thesis v3, the
 horizontal write path (PolyStore-inspired; `docs/PAPER.md` top section, `docs/DESIGN.md` §10).
 User ruling: finish the design first; NO experiments until the design is agreed. First
@@ -109,24 +116,43 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
-### 2026-09-19 (session 23) — cxlpath build started: all feasibility checks passed, Component A complete
-- User approved the build plan (campaign file, "Phase 5 v2"): checks V → components A–D → clients E →
-  system complete F; evaluation excluded. Name `cxlpath`, branch `cxlpath`, one commit per step.
-  The plan table is the resume point for every later session.
-- Feasibility checks, all positive: O_DIRECT to NVMe straight from a devdax mapping works (V1);
-  scattered 32 MB segments stitch into one virtually contiguous buffer (V2) that CUDA registers, and
-  registration costs ~20 ms/GiB up to 200 GiB (V3); PyTorch 2.5.1 `async_save` stages into our
-  CUDA-registered devdax buffer through the `AsyncStager` protocol and restores exactly (V4); the
-  DRAM latency probe tracks a reader's slowdown monotonically, 1.18× at −13% … 6.5× at −92%, so the
-  1.10× bound ≈ 7% slowdown (V5); the 3.9 GiB/s GPU→CXL write cap does not react to anything visible
-  without root — cause left open (V6).
-- New facts that matter later: a single synchronous O_DIRECT writer gets only ~0.9 GiB/s from the
-  Solidigm NVMe (drain pacing, D2); one CCD of NT writers tops out at ~77 GiB/s.
-- Component A built and tested in `system/cxlpath/` (fake devices + first 8 GiB of dax0.0/dax1.0):
-  shared CAS segment table (stress test caught an owner/free ordering bug), reserve/commit/release
-  on per-thread log segments at 98% of raw NT-memcpy speed, shared object index that survives a
-  SIGKILLed writer with uncommitted space reclaimed, buffer sets with the overwrite rule.
-- Next: B1 (background process + shared policy page).
+### 2026-09-19 (session 23) — cxlpath built end to end: feasibility checks, four components, three clients, all-clients run
+- The user approved the build plan (campaign file, "Phase 5 v2": checks V → components A–D → clients E →
+  system complete F; evaluation excluded), named the system `cxlpath`, asked for one commit per step on
+  branch `cxlpath` without Claude attribution, and later said to keep going without asking unless a
+  decision is really theirs. The plan table with a results entry per step is the resume point.
+- Feasibility checks, all positive: O_DIRECT to NVMe straight from a devdax mapping; scattered 32 MB
+  segments stitch into one virtually contiguous buffer that CUDA registers (~20 ms/GiB, 200 GiB fine);
+  PyTorch 2.5.1 `async_save` accepts our staging (AsyncStager); the DRAM latency probe tracks a reader's
+  slowdown monotonically (1.18× at −13% … 6.5× at −92%); the 3.9 GiB/s GPU→CXL write cap does not react
+  to anything visible without root (cause open).
+- Component A (segment store on raw devdax): shared CAS segment table, reserve/commit/release on
+  per-thread log segments, shared object index that survives a SIGKILLed writer, buffer sets with the
+  overwrite rule. 82 ns of library work per 32 MiB write, no system call on the data path.
+- Component B (placement): shared policy page + `cxlpathd`; probe costs 1.26% of one core; spill settles
+  at 6/16 for a 60 GiB/s demand and halves 16 ms after an injected DRAM aggressor; GPU sources switch
+  between the direct (3.9 GiB/s) and staged (12.2 GiB/s) path with DRAM pressure. The live runs forced
+  the probe reference to become a median with separate idle/active trackers, a loose idle bound, a
+  headroom guard, and capacity-based full/slack rules.
+- Component C (read path): pin/unpin, per-extent read counts, break-even k — calibrated k = 3 for a CPU
+  consumer on c28 (CXL streaming read 1.77× DRAM), "never" for the GPU (12.45 vs 12.46 GiB/s).
+- Component D (drain and recovery): DRAM-free O_DIRECT drain, byte-identical files for awkward sizes,
+  back-pressure holds a producer at the NVMe's 0.9 GiB/s, recovery from CXL after a killed writer and
+  from NVMe after the store is gone. Checkpoint versions are reclaimed by the runtime.
+- Clients: VeloC (patch on the project's copy `~/apps/veloc-src`; drained files byte-identical to stock
+  VeloC's; LULESH restarts from CXL), PyTorch DCP plugin (`async_save` → CUDA-registered CXL buffer set,
+  reload byte-exact from CXL and from NVMe), KV stand-in driven by the Mooncake traces (971 GiB stored,
+  213 GiB read back, 0 verification errors; LMCache itself still ⏳ user).
+- The 10-minute all-clients run earned its keep: run 1 exposed drain starvation and (on inspection) a
+  silent fall-back of a VeloC client that carried a stale static library; run 2 failed because
+  re-written checkpoint versions piled up until the store was full (a key now names ONE object; pins
+  name the pinned object); run 3 passed — 3.07 TiB through CXL, 0 errors, no leak.
+- Machine facts learned: the Solidigm NVMe sustains 0.90–0.92 GiB/s whatever the parallelism; one core
+  pushes 41 GiB/s = 94% of the dax0.0/dax1.0 pair's write capacity; an idle machine's probe scatters
+  100–160 ns; writers' own source reads lift the probe ~20%; logs on the NFS home must be buffered.
+- Docs: `docs/DESIGN.md` §10 as built (+ §10.11: thirteen differences from the agreed design, with the
+  evidence), `docs/PAPER.md` "Facts from building the system", `system/cxlpath/README.md`.
+- Next (with the user): review the build; plan the evaluation; names; real LMCache integration or not.
 
 ### 2026-09-18 (session 22) — Thesis v3 framing: the horizontal write path (design only, nothing run)
 - Read PolyStore (FAST'25) in full and mapped it onto our data. Its three complaints about

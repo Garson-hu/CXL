@@ -399,7 +399,29 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
    buffered (NFS writes stretched 50 ms epochs to 150 ms); the write-path
    overhead gate is deterministic (82 ns per segment) because throughput
    comparisons at the device limit vary by ±15% on this machine.
-10. **Not built:** DTensor/ShardedTensor support in the PyTorch plugin; a real
+10. **A key names ONE object (found by the all-clients run).** Every rerun of a
+    checkpointing application writes "version 3" again; without a rule each
+    rerun left one more 92 MiB object that is never older than the newest, so
+    the store filled up (361 objects, 32 GiB), KV stores failed and LULESH sat in
+    back-pressure; a lookup could also have returned the stale copy. Now
+    beginning an object under an existing key supersedes the old one: its drain
+    stops at once (the new writer owns the target file), it stays readable until
+    the new object commits, then it is released; lookups return the newest
+    generation; if the new writer dies, the old object is THE object again and
+    its drain resumes. An object that owns its file is truncated to its size.
+11. **A pin names the pinned object, not the key** (`cxlp_pin_t` = slot +
+    generation), otherwise a reader that pinned before a supersede would unpin
+    the new object and the old copy would never be released.
+12. **Clients link the SHARED library and must not fall back silently.** The
+    VeloC client once carried a static copy of an older libcxlpath, failed the
+    metadata-layout check, fell back to stock VeloC, and one all-clients run
+    measured stock VeloC without anybody noticing. Now: layout mismatch is an
+    immediate explicit error, VeloC links `libcxlpath.so`,
+    `VELOC_CXLPATH_REQUIRED=1` aborts instead of falling back, and the gates
+    prove the path (objects listed on CXL, scratch directory stays empty).
+13. **Not built:** per-client space quotas (one client's garbage can still
+    starve the others of space — the F1 failure made that visible);
+    DTensor/ShardedTensor support in the PyTorch plugin; a real
     LMCache integration (E3 is a trace-driven stand-in with the same call
     pattern); compaction; the PM configuration (§10.7).
 
@@ -478,7 +500,7 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
   the client's policy unchanged.
 - **2026-09-19 (as built)** — §10 updated from "planned" to "built": AS BUILT
   paragraphs per component, §10.8 facts/open points refreshed, §10.10 code map /
-  API / tests, §10.11 ten differences between the agreed design and the built
+  API / tests, §10.11 the differences between the agreed design and the built
   system with the evidence that forced each (probe references, fullness and
   slack rules, runtime-side reclaim, non-starving drain, DCP storage format,
   VeloC patch, k = 3). Build record: `experiments/2026-09-08-write-tier-campaign.md`.
