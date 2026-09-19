@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x4358504154483036ull   /* "CXPATH06" */
+#define CXLP_MAGIC   0x4358504154483038ull   /* "CXPATH08" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -37,6 +37,8 @@ typedef struct {                   /* one extent of an object */
     uint32_t obj;                  /* owning object slot */
     _Atomic uint32_t rd_cur, rd_prev, rd_bucket;   /* reads in the current / previous bucket */
     _Atomic uint32_t queued;       /* waiting in the promotion ring */
+    _Atomic uint32_t drain_state;  /* 0 pending, 1 being written, 2 on NVMe */
+    uint64_t obj_off;              /* offset of this extent inside its object */
 } cxlp_ext_t;
 
 typedef struct {                   /* open-addressing hash slot */
@@ -47,7 +49,18 @@ typedef struct {                   /* open-addressing hash slot */
     _Atomic uint64_t bytes;
     _Atomic uint32_t pins;         /* readers holding pointers into this object */
     _Atomic uint32_t seq;          /* seqlock: odd while extents are being relocated */
+    _Atomic uint32_t drain_idx;    /* drain descriptor, CXLP_NIL = never drained */
+    _Atomic uint32_t drained;      /* 1 = complete on NVMe and fsynced */
+    uint64_t chain, version;       /* checkpoint version chain (0 = none): older drained versions are reclaimed by the runtime */
 } cxlp_obj_t;
+
+#define CXLP_NDRAIN 1024
+typedef struct {                   /* where an object goes on NVMe (Component D) */
+    _Atomic uint32_t used;
+    uint32_t obj;
+    uint64_t file_off;
+    char path[240];
+} cxlp_drain_t;
 
 #define CXLP_BS_MAXSEG 2048          /* 64 GiB per set */
 typedef struct {
@@ -58,6 +71,8 @@ typedef struct {
     uint32_t dev[2], nseg[2];
     uint64_t bytes[2];
     uint64_t segtab_off[2];
+    char     drain_path[2][240];
+    _Atomic uint32_t drain_armed[2], drain_next[2], drain_done[2];
 } cxlp_bufset_t;
 
 /* Shared policy page (Component B). Written by the background process, READ by reserve():
@@ -98,6 +113,8 @@ typedef struct {
     uint64_t bs_segtab_off;        /* CXLP_MAX_BUFSETS * 2 * CXLP_BS_MAXSEG uint32_t */
     cxlp_bufset_t bufset[CXLP_MAX_BUFSETS];
     cxlp_policy_t policy;
+    cxlp_drain_t drain[CXLP_NDRAIN];
+    _Atomic uint64_t drained_bytes; _Atomic uint32_t drain_lowspace_pct;   /* below this share of free CXL segments the drain stops yielding */
     cxlp_devmeta_t dev[CXLP_MAX_DEVS];
     /* followed by cxlp_seg_t seg[nseg_total], cxlp_obj_t obj[nobj], cxlp_ext_t ext[next_cap] */
 } cxlp_meta_t;

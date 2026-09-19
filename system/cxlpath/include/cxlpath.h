@@ -127,7 +127,27 @@ uint32_t cxlp_k_compute(double t_copy, double t_cxl, double t_dram, double w, do
 /* Run by the background process (and by tests): relocate queued extents to the DRAM pool while
  * DRAM is within its bound and the pool has room; finish deferred releases. Returns extents moved. */
 int  cxlp_promote_pending(int dram_ok);
+/* --- Component D, drain to NVMe and recovery (D1-D3) ---
+ * A client names where an object (or a buffer-set version) belongs on NVMe; the background
+ * process copies it there straight from CXL with O_DIRECT, extent by extent as extents are
+ * appended, so the drain causes no DRAM traffic. It yields to active writers and stops yielding
+ * when free CXL space is short. Sub-4 KiB tails go through a buffered descriptor. No target =
+ * never drained. Recovery: an object / the newest committed buffer-set version is found through
+ * the node-owned index by any process; after a reboot the client reads the NVMe file instead. */
+int  cxlp_obj_set_drain(uint32_t handle, const char *path, uint64_t file_off);   /* before the first append */
+int  cxlp_obj_drained(cxlp_key_t key);            /* 1 = complete on NVMe and fsynced, 0 = not yet, -1 = unknown */
+/* Checkpoint versions: objects of one chain are reclaimed BY THE RUNTIME as soon as they are on NVMe
+ * and a newer version of the chain is committed. It cannot be left to the client: a producer that
+ * is blocked in reserve() for lack of space cannot release anything (found by the live D2 loop). */
+int  cxlp_obj_set_version(uint32_t handle, uint64_t chain, uint64_t version);
+int  cxlp_put_version(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms, uint64_t chain, uint64_t version);
+int  cxlp_bufset_commit_drain(cxlp_key_t client, int which, const char *path);   /* commit + arm the drain */
+int  cxlp_bufset_drained(cxlp_key_t client, int which);
+/* One unit of drain work (one extent or one buffer-set segment). Returns bytes written, 0 if there
+ * is nothing to do or the drain yields to writers. yield: 1 = obey the pacing rule, 0 = never yield. */
+int64_t cxlp_drain_step(int yield);
 /* Convenience: whole-buffer put/get built on reserve/copy_in/commit/append. */
+int  cxlp_put_drain(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms);
 int  cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len);
 int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap);
 /* Crash cleanup (run by the background process, or by tests): objects never committed by a

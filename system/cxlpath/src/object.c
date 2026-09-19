@@ -29,6 +29,7 @@ int cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle) {
             o->owner = cxlp_g.pid; o->klass = klass;
             atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL); atomic_store(&o->bytes, 0);
             atomic_store(&o->flags, 0); atomic_store(&o->pins, 0); atomic_store(&o->seq, 0);
+            atomic_store(&o->drain_idx, CXLP_NIL); atomic_store(&o->drained, 0); o->chain = 0; o->version = 0;
             atomic_store(&o->key, key);
             *handle = i; return 0;
         }
@@ -41,7 +42,7 @@ int cxlp_obj_append(uint32_t h, const cxlp_res_t *r) {
     uint32_t e = ext_alloc(); if (e == CXLP_NIL) return -1;
     cxlp_ext_t *x = &cxlp_g.ext[e];
     x->dev = (uint32_t)r->dev; x->seg = r->seg; x->off = r->off; x->len = r->len; atomic_store(&x->next, CXLP_NIL);
-    x->obj = h; atomic_store(&x->rd_cur, 0); atomic_store(&x->rd_prev, 0); atomic_store(&x->rd_bucket, 0); atomic_store(&x->queued, 0);
+    x->obj = h; x->obj_off = atomic_load(&o->bytes); atomic_store(&x->drain_state, 0); atomic_store(&x->rd_cur, 0); atomic_store(&x->rd_prev, 0); atomic_store(&x->rd_bucket, 0); atomic_store(&x->queued, 0);
     uint32_t tail = atomic_load(&o->tail);
     if (tail == CXLP_NIL) atomic_store(&o->head, e); else atomic_store(&cxlp_g.ext[tail].next, e);
     atomic_store(&o->tail, e); atomic_fetch_add(&o->bytes, r->len);
@@ -84,6 +85,8 @@ static void drop_extents(cxlp_obj_t *o, int fix_live) {
         atomic_store(&x->used, 0); e = nx;
     }
     atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL);
+    uint32_t di = atomic_exchange(&o->drain_idx, CXLP_NIL);
+    if (di != CXLP_NIL) atomic_store(&cxlp_g.meta->drain[di].used, 0);
 }
 
 int cxlp_obj_release(cxlp_key_t key) {
@@ -96,9 +99,15 @@ int cxlp_obj_release(cxlp_key_t key) {
     return 0;
 }
 
-int cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len) {
+int cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len) { return cxlp_put_version(key, klass, buf, len, NULL, 0, 0, 0); }
+int cxlp_put_drain(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms) { return cxlp_put_version(key, klass, buf, len, path, wait_ms, 0, 0); }
+int cxlp_obj_set_version(uint32_t h, uint64_t chain, uint64_t version) { cxlp_g.obj[h].chain = chain; cxlp_g.obj[h].version = version; return 0; }
+
+int cxlp_put_version(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms, uint64_t chain, uint64_t version) {
     uint32_t h; if (cxlp_obj_begin(key, klass, &h)) return -1;
-    cxlp_hints_t hint = { klass, 0, -1, 0, 0 };
+    cxlp_obj_set_version(h, chain, version); if (chain) cxlp_obj_set_flags(h, CXLP_OBJ_NOPROMOTE);   /* checkpoints are never promoted */
+    if (path && cxlp_obj_set_drain(h, path, 0)) { atomic_store(&cxlp_g.obj[h].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[h].state, OBJ_TOMB); return -1; }
+    cxlp_hints_t hint = { klass, path ? 4096u : 0u, -1, 0, wait_ms };
     for (size_t done = 0; done < len;) {
         size_t n = len - done < CXLP_SEG_BYTES ? len - done : CXLP_SEG_BYTES; cxlp_res_t r;
         if (cxlp_reserve(n, &hint, &r)) goto fail;

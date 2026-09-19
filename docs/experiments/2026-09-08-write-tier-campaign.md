@@ -230,9 +230,9 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | C1 ✅ | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
 | C2 ✅ | promotion of read segments to the DRAM pool under the bound, release of the CXL copy; checkpoints never promoted | object readable before/during/after promotion; no promotion while probe > bound | — |
 | **D — drain and recovery (P4)** | | | |
-| D1 | drain targets on `reserve`; segment-wise O_DIRECT drain (per V1), padding/truncate | drained file byte-identical to the source (checksum), for sizes not multiple of 32 MB | — |
-| D2 | pacing (yield to writers, full speed under space pressure); reclaim rules for checkpoint versions | writer speed during drain within 10 % of no-drain; free space never reaches 0 in a 10-version loop | — |
-| D3 | recovery API: newest complete version from CXL, else NVMe | kill the application after commit: restore from CXL verified; after clearing the store: restore from NVMe verified | — |
+| D1 ✅ | drain targets on `reserve`; segment-wise O_DIRECT drain (per V1), padding/truncate | drained file byte-identical to the source (checksum), for sizes not multiple of 32 MB | — |
+| D2 ✅ | pacing (yield to writers, full speed under space pressure); reclaim rules for checkpoint versions | writer speed during drain within 10 % of no-drain; free space never reaches 0 in a 10-version loop | — |
+| D3 ✅ | recovery API: newest complete version from CXL, else NVMe | kill the application after commit: restore from CXL verified; after clearing the store: restore from NVMe verified | — |
 | **E — clients** | | | |
 | E1 | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
 | E2 | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
@@ -383,6 +383,34 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   counted as live. **Component C complete.** Raw: `C-live/`.
 - Housekeeping: the A3 throughput gate compares two runs at the device limit, which vary by ~8%;
   it failed once by noise (raw 43.8 vs library 40.x) and now takes the best of 9 alternating runs.
+
+- **D1 ✅ 2026-09-19** — Drain targets per object (path + file offset, descriptor table in shared
+  metadata) and per buffer-set version. The daemon's drain thread writes extent by extent / segment by
+  segment with O_DIRECT straight from the CXL mapping (4 KiB-aligned body; sub-4 KiB tails through a
+  buffered descriptor; falls back to buffered where O_DIRECT is refused), fsyncs when an object is
+  complete, truncates a buffer-set file to its exact size. Byte-identical files for 1 B, 4095, 4096,
+  4097, 5 MiB+3, 32 MiB, 40 MiB+777, 100 MiB+1; two objects in one file (second at offset 8192); the
+  first 32 MiB of an object was on NVMe while the object was still being written; buffer-set versions
+  of 300 MiB+12345 identical, and the overwrite rule is now driven by the real drain. The drainer pins
+  the object it writes, so a release waits. Fake devices and dax0.0 + dax1.0, target `/mnt/local`.
+- **D2 ✅ 2026-09-19** — Pacing: the drain yields while CXL writers moved bytes in the last 100 ms,
+  unless free CXL segments fall below 25%. Live: 4 unlimited writers reach 43.90 GiB/s alone and
+  **43.89 GiB/s with a 6 GiB drain backlog pending** (100.0%; gate ≥ 90%); the backlog finished 16 s
+  after they started. 10 versions × 2 GiB on an 8 GiB store: versions 1–4 at 37 GiB/s, then
+  back-pressure holds the producer at the NVMe's pace (0.95 GiB/s), all 10 files byte-identical, all
+  segments free at the end (36 s in total). **Fact: the Solidigm NVMe sustains 0.90–0.92 GiB/s for
+  O_DIRECT writes whatever the parallelism (1–16 threads, 4–32 MiB I/Os)** — one drain thread is
+  enough, and a 32 GB checkpoint needs ~36 s to become durable.
+  **Design gap found by the first D2 run (it hung): a producer blocked in `reserve()` cannot release
+  its own old versions, so reclaiming must be done by the RUNTIME.** Added version chains
+  (`cxlp_obj_set_version`): the drain thread releases every version that is on NVMe once a newer
+  version of its chain is committed; chain objects are NOPROMOTE.
+- **D3 ✅ 2026-09-19** — Recovery: an application SIGKILLed right after commit (before any drain) —
+  a new process restores the 90 MiB checkpoint from CXL byte-exactly through the node-owned index,
+  the store still drains the dead writer's checkpoint; after the store is destroyed and recreated
+  (reboot: CXL content gone) the object is absent from CXL and the NVMe file is byte-identical.
+  Buffer sets: `cxlp_bufset_newest` (A5) gives the newest committed version to a new process.
+  **Component D complete.** Raw: `D-live/`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

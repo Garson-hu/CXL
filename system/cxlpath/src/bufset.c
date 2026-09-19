@@ -58,7 +58,7 @@ int cxlp_bufset_begin(cxlp_key_t client, uint64_t version) {
                    atomic_load(&b->state[other]) == CXLP_BS_COMMITTED &&
                    atomic_load(&b->version[other]) > atomic_load(&b->version[w]));
         if (ok && atomic_compare_exchange_strong(&b->state[w], &st, CXLP_BS_WRITING)) {
-            atomic_store(&b->drained[w], 0); atomic_store(&b->version[w], version); return w; }
+            atomic_store(&b->drained[w], 0); atomic_store(&b->drain_armed[w], 0); atomic_store(&b->version[w], version); return w; }
     }
     return -1;
 }

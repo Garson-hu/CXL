@@ -66,6 +66,10 @@ static int calibrate_read(double *t_dram, double *t_cxl, double *t_copy) {
 }
 
 /* ---- promoter thread (Component C): relocates hot extents to the DRAM pool, off the probe's CCD ---- */
+/* ---- drain thread (Component D): CXL -> NVMe with O_DIRECT; one thread is enough, the NVMe on c28
+ * sustains 0.9 GiB/s whatever the parallelism (measured with 1-16 writers) ---- */
+static void *drainer(void *arg) { (void)arg; while (!quit) { if (cxlp_drain_step(1) <= 0) usleep(20000); } return NULL; }
+
 static void *promoter(void *arg) { (void)arg; while (!quit) { cxlp_promote_pending((int)atomic_load(&POL->dram_ok)); usleep(50000); } return NULL; }
 
 int main(int argc, char **argv) {
@@ -86,7 +90,7 @@ int main(int argc, char **argv) {
     sched_setaffinity(0, sizeof rest, &rest);
     double solo = 0, cap = 0, t_dram = 0, t_cxl = 0, t_copy = 0, w_press = atof(opt(argc, argv, "--w", "10")); int have_rd = 0;
     if (!flag(argc, argv, "--no-calibrate")) { calibrate(&solo, &cap); have_rd = calibrate_read(&t_dram, &t_cxl, &t_copy) == 0; }
-    pthread_t prom; pthread_create(&prom, NULL, promoter, NULL);         /* inherits the affinity: not on the probe's CCD */
+    pthread_t prom, drn; pthread_create(&prom, NULL, promoter, NULL); pthread_create(&drn, NULL, drainer, NULL);         /* inherits the affinity: not on the probe's CCD */
     cpu_set_t pc; CPU_ZERO(&pc); CPU_SET(cpu, &pc); sched_setaffinity(0, sizeof pc, &pc);   /* main thread = probe thread */
 
     cxlp_probe_t *pr = cxlp_probe_create(256ul << 20);
@@ -202,7 +206,7 @@ int main(int argc, char **argv) {
         if (!active && atomic_load(&POL->reserve_seq) != p_seq) next = cxlp_now_ns();
     }
     atomic_store(&POL->daemon_pid, 0);
-    pthread_join(prom, NULL);
+    pthread_join(prom, NULL); pthread_join(drn, NULL);
     if (lg) fclose(lg);
     cxlp_probe_destroy(pr); cxlp_close();
     return 0;
