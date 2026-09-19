@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
     cxlp_config_t c = { .name = argv[1] }; uint64_t cb = (uint64_t)atol(argv[2]) << 20, db = (uint64_t)atol(argv[3]) << 20;
     for (int i = 4; i < argc && c.ndev < 2; i++) c.dev[c.ndev++] = (cxlp_devcfg_t){ argv[i], 0, cb, CXLP_DEV_CXL };
     if (db) c.dev[c.ndev++] = (cxlp_devcfg_t){ pool, 0, db, CXLP_DEV_DRAM };
+    if (getenv("CXLP_OBJ_SLOTS")) c.obj_slots = (uint32_t)atol(getenv("CXLP_OBJ_SLOTS"));
     cxlp_destroy(argv[1]); unlink(pool);
     if (cxlp_open(&c)) { fprintf(stderr, "cannot create store\n"); return 1; }
     for (int d = 0; d < cxlp_ndev(); d++) printf("dev %d: %s %u segments\n", d, cxlp_dev_kind(d) == CXLP_DEV_CXL ? "CXL " : "DRAM", cxlp_dev_nseg(d));

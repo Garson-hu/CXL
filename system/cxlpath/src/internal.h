@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x4358504154483039ull   /* "CXPATH09" */
+#define CXLP_MAGIC   0x435850415448303Aull   /* "CXPATH0:" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -116,6 +116,8 @@ typedef struct {
     cxlp_policy_t policy;
     cxlp_drain_t drain[CXLP_NDRAIN];
     _Atomic uint64_t drained_bytes; _Atomic uint32_t drain_lowspace_pct;   /* below this share of free CXL segments the drain stops yielding */
+    _Atomic uint64_t drain_wanted_ns;      /* a writer is blocked until a drain completes (buffer-set overwrite rule) */
+    _Atomic uint32_t drain_lag_ms;         /* pending work older than this is drained whatever the writers do (durability lag bound) */
     cxlp_devmeta_t dev[CXLP_MAX_DEVS];
     /* followed by cxlp_seg_t seg[nseg_total], cxlp_obj_t obj[nobj], cxlp_ext_t ext[next_cap] */
 } cxlp_meta_t;

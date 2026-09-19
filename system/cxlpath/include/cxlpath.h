@@ -25,6 +25,7 @@ typedef struct {
     const char   *name;       /* store name; metadata lives in /dev/shm/cxlpath.<name>       */
     int           ndev;
     cxlp_devcfg_t dev[CXLP_MAX_DEVS];
+    uint32_t      obj_slots;  /* object table size; 0 = 8 per segment (fits objects of tens of MiB). Small objects need more. */
 } cxlp_config_t;
 
 /* Create the node-level store if it does not exist, otherwise attach to it. 0 on success. */

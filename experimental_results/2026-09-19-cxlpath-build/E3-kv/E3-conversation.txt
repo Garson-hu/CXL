@@ -1,0 +1,4 @@
+KV requests=4000 blocks=105904 hits=6470 (6.1%; 4095 served from the DRAM pool after promotion) misses=99434 stored=99434 evicted=96362 put_failures=0 VERIFY_ERRORS=0
+KV stored 388.4 GiB and read back 25.3 GiB in 99.7 s; promoted so far: 300 MiB in 75 extents
+KV after releasing everything: 576/576 segments free (the promoter may still hold old copies for a moment)
+PASS

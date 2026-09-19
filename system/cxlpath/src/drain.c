@@ -136,10 +136,30 @@ static int reclaim_chains(void) {
     return freed;
 }
 
+static int have_work(void) {
+    for (int s = 0; s < CXLP_MAX_BUFSETS; s++) { cxlp_bufset_t *b = &cxlp_g.meta->bufset[s]; if (!atomic_load(&b->client)) continue;
+        for (int w = 0; w < 2; w++) if (atomic_load(&b->drain_armed[w])) return 1; }
+    for (uint32_t k = 0; k < CXLP_NDRAIN; k++) { cxlp_drain_t *d = &cxlp_g.meta->drain[k]; if (atomic_load(&d->used) != 2) continue;
+        cxlp_obj_t *o = &cxlp_g.obj[d->obj]; if (!atomic_load(&o->drained) && atomic_load(&o->head) != CXLP_NIL) return 1; }
+    return 0;
+}
+
 int64_t cxlp_drain_step(int yield) {
-    static __thread uint32_t idle_steps;
+    static __thread uint32_t idle_steps; static __thread uint64_t pending_since;
     if (idle_steps++ % 25 == 0) reclaim_chains();              /* also covers versions whose successor committed after their drain */
-    if (yield && should_yield()) return 0;
+    /* Pacing: give way to active writers — but never indefinitely. The first all-clients run (F1)
+     * showed the flaw of "yield while anybody writes": with a KV layer writing all the time the drain
+     * never ran, and a checkpoint writer waited a minute for a buffer set. The drain stops yielding
+     * when (a) free CXL space is short, (b) a writer is blocked until a drain completes, or
+     * (c) work has been pending longer than drain_lag_ms (bounds how long data stays non-durable). */
+    if (yield && should_yield()) {
+        uint64_t now = cxlp_now_ns();
+        if (!have_work()) { pending_since = 0; return 0; }
+        if (!pending_since) pending_since = now;
+        int urgent = now - atomic_load(&cxlp_g.meta->drain_wanted_ns) < 200000000ull;
+        int overdue = now - pending_since > (uint64_t)atomic_load(&cxlp_g.meta->drain_lag_ms) * 1000000ull;
+        if (!urgent && !overdue) return 0;
+    }
     for (int s = 0; s < CXLP_MAX_BUFSETS; s++) {               /* checkpoints in buffer sets first: they gate the writer */
         cxlp_bufset_t *b = &cxlp_g.meta->bufset[s]; if (!atomic_load(&b->client)) continue;
         for (int w = 0; w < 2; w++) if (atomic_load(&b->drain_armed[w]) && (uint64_t)atomic_load(&b->drain_next[w]) * CXLP_SEG_BYTES < (b->used[w] ? b->used[w] : b->bytes[w])) { int64_t r = drain_bufset(b, s, w); if (r) return r; }
@@ -152,5 +172,6 @@ int64_t cxlp_drain_step(int yield) {
         if (need_reclaim) { need_reclaim = 0; reclaim_chains(); }
         if (r) { rr = (rr + k) % CXLP_NDRAIN; return r; }
     }
+    if (!have_work()) pending_since = 0;
     return 0;
 }

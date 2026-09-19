@@ -60,6 +60,8 @@ int cxlp_bufset_begin(cxlp_key_t client, uint64_t version) {
         if (ok && atomic_compare_exchange_strong(&b->state[w], &st, CXLP_BS_WRITING)) {
             atomic_store(&b->drained[w], 0); atomic_store(&b->drain_armed[w], 0); b->used[w] = 0; atomic_store(&b->version[w], version); return w; }
     }
+    /* neither set may be overwritten: the caller waits for the drain -> tell the drainer it is urgent */
+    atomic_store(&cxlp_g.meta->drain_wanted_ns, cxlp_now_ns());
     return -1;
 }
 

@@ -73,7 +73,7 @@ int cxlp_open(const cxlp_config_t *cfg) {
     for (int d = 0; d < cfg->ndev; d++) { nseg[d] = (uint32_t)(cfg->dev[d].bytes / CXLP_SEG_BYTES); total += nseg[d]; }
     /* object slots: 8 per segment (KV blocks are tens of MiB; small objects share segments),
      * at least 4096, power of two; extents: 4 per slot. tmpfs pages are allocated on touch. */
-    uint32_t nobj = 4096; while (nobj < total * 8u) nobj <<= 1;
+    uint32_t want = cfg->obj_slots ? cfg->obj_slots : total * 8u, nobj = 4096; while (nobj < want) nobj <<= 1;
     uint32_t next_cap = nobj * 4u;
     uint64_t obj_off = (sizeof(cxlp_meta_t) + (uint64_t)total * sizeof(cxlp_seg_t) + 63) & ~63ull;
     uint64_t ext_off = (obj_off + (uint64_t)nobj * sizeof(cxlp_obj_t) + 63) & ~63ull;
@@ -85,7 +85,7 @@ int cxlp_open(const cxlp_config_t *cfg) {
     cxlp_meta_t *m = cxlp_g.meta;                          /* tmpfs pages start zeroed: all FREE */
     m->version = 5; m->ndev = (uint32_t)cfg->ndev; m->meta_bytes = bytes; m->nseg_total = total;
     m->nobj = nobj; m->next_cap = next_cap; m->obj_off = obj_off; m->ext_off = ext_off; m->bs_segtab_off = bs_off; bind_tables();
-    atomic_store(&m->policy.force_spill16, -1); atomic_store(&m->policy.bound_x1000, 1100); atomic_store(&m->drain_lowspace_pct, 25);
+    atomic_store(&m->policy.force_spill16, -1); atomic_store(&m->policy.bound_x1000, 1100); atomic_store(&m->drain_lowspace_pct, 25); atomic_store(&m->drain_lag_ms, 2000);
     uint32_t first = 0;
     for (int d = 0; d < cfg->ndev; d++) {
         snprintf(m->dev[d].path, CXLP_PATHLEN, "%s", cfg->dev[d].path);
