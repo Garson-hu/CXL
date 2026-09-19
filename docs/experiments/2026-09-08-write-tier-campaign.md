@@ -219,7 +219,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | A2 ✅ | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
 | A3 ✅ | `reserve` / `commit` / `release`, per-thread open log segments, live-byte accounting, reclaim at zero, `copy_in` (NT stores) | unit tests; write throughput within 5 % of a raw NT memcpy to the same device | profile; reduce table touches |
 | A4 ✅ | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
-| A5 | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
+| A5 ✅ | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
 | **B — placement (P2)** | | | |
 | B1 | background process + shared policy page (published ratio/path, read by `reserve` without IPC) | `reserve` sees a changed ratio within one epoch; no syscalls on the data path (strace) | — |
 | B2 | latency probe thread, idle baseline (60 s minimum), adaptive 10 / 200 ms period | probe overhead ≤ 2 % of one core; values match V5 | — |
@@ -311,6 +311,13 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   byte-exactly, the 4th is absent; after release every segment is free (fake devices and
   dax0.0 + dax1.0). Plus 4 processes × 300 put / get+verify / release with no leak. Known limit:
   `cxlp_get` copies at most 64 extents (2 GiB) — lift when a client needs it. Raw: `A4-test-dax.txt`.
+
+- **A5 ✅ 2026-09-19** — Buffer sets: two sets per client built from SCATTERED segments (device
+  fragmented on purpose), stitched per process with `MAP_FIXED`, state in shared metadata. Overwrite
+  rule verified step by step: v2 goes to the other set; v3 is refused until v1 is drained (draining
+  the newer v2 does not help); v3 then overwrites v1's set while v2 stays intact and is reported as
+  the newest complete version; a new process recovers v2 byte-exactly through its own mapping.
+  Passes on fake devices and on dax0.0 + dax1.0. **Component A complete.** Raw: `A5-test-dax.txt`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

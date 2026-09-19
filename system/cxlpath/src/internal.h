@@ -42,6 +42,17 @@ typedef struct {                   /* open-addressing hash slot */
     _Atomic uint64_t bytes;
 } cxlp_obj_t;
 
+#define CXLP_BS_MAXSEG 2048          /* 64 GiB per set */
+typedef struct {
+    _Atomic uint64_t client;       /* 0 = slot free */
+    _Atomic uint32_t state[2];
+    _Atomic uint32_t drained[2];
+    _Atomic uint64_t version[2];
+    uint32_t dev[2], nseg[2];
+    uint64_t bytes[2];
+    uint64_t segtab_off[2];        /* offset in metadata of uint32_t seg[nseg] */
+} cxlp_bufset_t;
+
 typedef struct {
     _Atomic uint64_t magic;        /* written LAST by the creator */
     uint32_t version, ndev;
@@ -49,6 +60,8 @@ typedef struct {
     uint32_t nseg_total, nobj;     /* nobj: power of two */
     uint32_t next_cap; _Atomic uint32_t ext_hint;
     uint64_t obj_off, ext_off;     /* byte offsets of the tables inside the metadata */
+    uint64_t bs_segtab_off;        /* CXLP_MAX_BUFSETS * 2 * CXLP_BS_MAXSEG uint32_t */
+    cxlp_bufset_t bufset[16];
     cxlp_devmeta_t dev[CXLP_MAX_DEVS];
     /* followed by cxlp_seg_t seg[nseg_total], cxlp_obj_t obj[nobj], cxlp_ext_t ext[next_cap] */
 } cxlp_meta_t;

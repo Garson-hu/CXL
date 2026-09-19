@@ -99,6 +99,26 @@ int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap);
  * number of objects dropped. */
 int  cxlp_cleanup_dead(void);
 
+/* --- Component A, buffer sets (A5) ---
+ * For GPU checkpoint clients: a long-lived, VIRTUALLY contiguous buffer built from scattered
+ * segments (mapped at adjacent addresses), registered with CUDA once by the client and
+ * overwritten in place. A client owns two sets and alternates. A set may be overwritten only
+ * when the version it holds is drained to NVMe AND the other set holds a committed version,
+ * so one complete version is always on CXL. State lives in the shared metadata. */
+#define CXLP_MAX_BUFSETS 16
+typedef enum { CXLP_BS_EMPTY = 0, CXLP_BS_WRITING = 1, CXLP_BS_COMMITTED = 2 } cxlp_bsstate_t;
+
+int   cxlp_bufset_create(cxlp_key_t client, int which /*0|1*/, int dev, size_t bytes);   /* idempotent */
+void *cxlp_bufset_map(cxlp_key_t client, int which, size_t *bytes);    /* stitched mapping in this process */
+/* Pick the set to write version `version` into, enforcing the overwrite rule. Returns 0/1,
+ * or -1 if neither set may be overwritten yet (caller waits: back-pressure). */
+int   cxlp_bufset_begin(cxlp_key_t client, uint64_t version);
+int   cxlp_bufset_commit(cxlp_key_t client, int which);
+int   cxlp_bufset_mark_drained(cxlp_key_t client, int which);
+/* Newest committed version and the set holding it (-1 if none): used by recovery. */
+int   cxlp_bufset_newest(cxlp_key_t client, uint64_t *version);
+int   cxlp_bufset_destroy(cxlp_key_t client);
+
 #ifdef __cplusplus
 }
 #endif

@@ -109,6 +109,25 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-09-19 (session 23) — cxlpath build started: all feasibility checks passed, Component A complete
+- User approved the build plan (campaign file, "Phase 5 v2"): checks V → components A–D → clients E →
+  system complete F; evaluation excluded. Name `cxlpath`, branch `cxlpath`, one commit per step.
+  The plan table is the resume point for every later session.
+- Feasibility checks, all positive: O_DIRECT to NVMe straight from a devdax mapping works (V1);
+  scattered 32 MB segments stitch into one virtually contiguous buffer (V2) that CUDA registers, and
+  registration costs ~20 ms/GiB up to 200 GiB (V3); PyTorch 2.5.1 `async_save` stages into our
+  CUDA-registered devdax buffer through the `AsyncStager` protocol and restores exactly (V4); the
+  DRAM latency probe tracks a reader's slowdown monotonically, 1.18× at −13% … 6.5× at −92%, so the
+  1.10× bound ≈ 7% slowdown (V5); the 3.9 GiB/s GPU→CXL write cap does not react to anything visible
+  without root — cause left open (V6).
+- New facts that matter later: a single synchronous O_DIRECT writer gets only ~0.9 GiB/s from the
+  Solidigm NVMe (drain pacing, D2); one CCD of NT writers tops out at ~77 GiB/s.
+- Component A built and tested in `system/cxlpath/` (fake devices + first 8 GiB of dax0.0/dax1.0):
+  shared CAS segment table (stress test caught an owner/free ordering bug), reserve/commit/release
+  on per-thread log segments at 98% of raw NT-memcpy speed, shared object index that survives a
+  SIGKILLed writer with uncommitted space reclaimed, buffer sets with the overwrite rule.
+- Next: B1 (background process + shared policy page).
+
 ### 2026-09-18 (session 22) — Thesis v3 framing: the horizontal write path (design only, nothing run)
 - Read PolyStore (FAST'25) in full and mapped it onto our data. Its three complaints about
   vertical stacking (all writes crowd the fastest device, constant migration, one cache policy

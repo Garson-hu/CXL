@@ -72,13 +72,14 @@ int cxlp_open(const cxlp_config_t *cfg) {
     uint32_t next_cap = nobj * 4u;
     uint64_t obj_off = (sizeof(cxlp_meta_t) + (uint64_t)total * sizeof(cxlp_seg_t) + 63) & ~63ull;
     uint64_t ext_off = (obj_off + (uint64_t)nobj * sizeof(cxlp_obj_t) + 63) & ~63ull;
-    uint64_t bytes = ext_off + (uint64_t)next_cap * sizeof(cxlp_ext_t);
+    uint64_t bs_off = (ext_off + (uint64_t)next_cap * sizeof(cxlp_ext_t) + 63) & ~63ull;
+    uint64_t bytes = bs_off + (uint64_t)CXLP_MAX_BUFSETS * 2 * CXLP_BS_MAXSEG * sizeof(uint32_t);
     bytes = (bytes + 4095) & ~4095ull;
     if (ftruncate(fd, (off_t)bytes) != 0 || map_meta(fd, bytes) != 0) { close(fd); unlink(path); return -1; }
     close(fd);
     cxlp_meta_t *m = cxlp_g.meta;                          /* tmpfs pages start zeroed: all FREE */
-    m->version = 2; m->ndev = (uint32_t)cfg->ndev; m->meta_bytes = bytes; m->nseg_total = total;
-    m->nobj = nobj; m->next_cap = next_cap; m->obj_off = obj_off; m->ext_off = ext_off; bind_tables();
+    m->version = 3; m->ndev = (uint32_t)cfg->ndev; m->meta_bytes = bytes; m->nseg_total = total;
+    m->nobj = nobj; m->next_cap = next_cap; m->obj_off = obj_off; m->ext_off = ext_off; m->bs_segtab_off = bs_off; bind_tables();
     uint32_t first = 0;
     for (int d = 0; d < cfg->ndev; d++) {
         snprintf(m->dev[d].path, CXLP_PATHLEN, "%s", cfg->dev[d].path);

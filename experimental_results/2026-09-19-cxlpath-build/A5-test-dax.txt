@@ -1,0 +1,20 @@
+== build/test_reserve (dax0.0 + dax1.0, first 8 GiB each)
+A3.1 functional
+A3.2 hammer: 16 threads x 4000 reservations, random release order, data verified
+A3.3 throughput: reserve/copy_in/commit vs raw NT memcpy (single thread, device 0)
+  raw NT memcpy 40.97 GiB/s, through cxlpath 43.78 GiB/s (106.8% of raw; gate >= 95%)
+PASS
+== build/test_segments (dax0.0 + dax1.0, first 8 GiB each)
+A1: mapped /dev/dax0.0 (256 segs) and /dev/dax1.0 (256 segs)
+A2: 8 procs x 8 threads x 15625 claims: failed procs=0, free 256/256 + 256/256, still owned=0
+PASS
+== build/test_objects (dax0.0 + dax1.0, first 8 GiB each)
+A4.1 writer is killed mid-write
+  cleanup dropped 1 uncommitted object(s); free segments 504 -> 505 of 512
+A4.2 a NEW process finds and verifies the committed objects
+A4.3 4 processes: put / get+verify / release, 300 objects each
+PASS
+== build/test_bufset (dax0.0 + dax1.0, first 8 GiB each)
+A5.1 overwrite rule
+A5.2 a new process recovers the newest complete version after the writer dies mid-v3
+PASS
