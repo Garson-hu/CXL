@@ -1,0 +1,40 @@
+# 2026-09-18 c28 — feasibility: can the GPU (RTX 4060 Ti 8 GB, PCIe gen4 x8, 61:00.0, driver 580.65.06, CUDA /usr/local/cuda) copy directly into a devdax CXL mapping?
+# tool: hardware/scripts/gpudax.c (mmap MAP_SHARED offset 0, 1024 MiB, cudaHostRegister, cudaMemcpy, CPU verify; range saved and restored). Single run each, 3 reps inside. Feasibility check, NOT a performance experiment.
+
+## dax0.0, registered
+cudaHostRegister(/dev/dax0.0, 1024 MiB): OK
+D2H into devdax: OK, 3.92 GiB/s, verify match
+  rep0 3.92 GiB/s
+  rep1 3.92 GiB/s
+  rep2 3.92 GiB/s
+H2D from devdax: OK, verify match
+cudaHostGetDevicePointer: OK
+ref pinned DRAM rep0 12.31 GiB/s
+ref pinned DRAM rep1 12.31 GiB/s
+ref pinned DRAM rep2 12.31 GiB/s
+ref pageable DRAM rep0 12.14 GiB/s
+ref pageable DRAM rep1 12.14 GiB/s
+ref pageable DRAM rep2 12.14 GiB/s
+
+## dax1.0, registered
+cudaHostRegister(/dev/dax1.0, 1024 MiB): OK
+D2H into devdax: OK, 3.92 GiB/s, verify match
+  rep0 3.92 GiB/s
+  rep1 3.92 GiB/s
+  rep2 3.92 GiB/s
+
+## dax0.0, NOT registered (NOREG=1 skips cudaHostRegister; the 'invalid argument' line is the tool's placeholder, not a driver error) — driver stages through its own pinned DRAM buffer, CPU copies to CXL
+cudaHostRegister(/dev/dax0.0, 1024 MiB): invalid argument
+D2H into devdax: OK, 12.14 GiB/s, verify match
+  rep0 12.14 GiB/s
+  rep1 12.14 GiB/s
+  rep2 12.14 GiB/s
+
+## reverse direction + chunk sizes (dax0.0, registered)
+register: 0
+H2D from devdax (GPU reads CXL) 12.48 GiB/s
+H2D from devdax (GPU reads CXL) 12.48 GiB/s
+H2D from devdax (GPU reads CXL) 12.48 GiB/s
+D2H into devdax, 4 MiB chunks: 3.90 GiB/s
+D2H into devdax, 32 MiB chunks: 3.91 GiB/s
+D2H into devdax, 256 MiB chunks: 3.91 GiB/s

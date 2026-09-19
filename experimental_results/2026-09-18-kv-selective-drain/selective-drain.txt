@@ -1,0 +1,90 @@
+
+=== mooncake_conversation_trace.jsonl  requests=12031  duration=3537s
+-- model 8B (64 MiB/block)  memory tier DRAM-pool 64GiB = 1024 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       35.53   4.45  31.08      185271     11579  100.0%
+   none       4.45   4.45   0.00           0         0    0.0%
+   read>=1    5.42   4.45   0.97         648        40    0.3%
+   read>=2    4.45   4.45   0.00           5         0    0.0%
+   oracle    36.64   4.45  32.19       44070      2754   23.8%
+-- model 8B (64 MiB/block)  memory tier CXL 512GiB = 8192 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       35.80  18.12  17.68      178841     11178  100.0%
+   none      18.12  18.12   0.00           0         0    0.0%
+   read>=1   23.68  18.12   5.56       21962      1373   12.3%
+   read>=2   20.18  18.12   2.07        6048       378    3.4%
+   oracle    36.63  18.12  18.51       31158      1947   17.4%
+-- model 70B (160 MiB/block)  memory tier DRAM-pool 64GiB = 409 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       29.23   4.21  25.01      203863     31854  100.0%
+   none       4.21   4.21   0.00           0         0    0.0%
+   read>=1    4.55   4.21   0.33         125        20    0.1%
+   read>=2    4.22   4.21   0.00           5         1    0.0%
+   oracle    36.02   4.21  31.81       44362      6932   21.8%
+-- model 70B (160 MiB/block)  memory tier CXL 512GiB = 3276 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       30.08   7.00  23.09      199039     31100  100.0%
+   none       7.00   7.00   0.00           0         0    0.0%
+   read>=1   10.25   7.00   3.26        5105       798    2.6%
+   read>=2    7.63   7.00   0.63         779       122    0.4%
+   oracle    36.09   7.00  29.09       42603      6657   21.4%
+
+=== mooncake_toolagent_trace.jsonl  requests=23608  duration=3537s
+-- model 8B (64 MiB/block)  memory tier DRAM-pool 64GiB = 1024 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       55.10  34.06  21.04      183134     11446  100.0%
+   none      34.06  34.06   0.00           0         0    0.0%
+   read>=1   34.80  34.06   0.74         745        47    0.4%
+   read>=2   34.07  34.06   0.01          39         2    0.0%
+   oracle    55.24  34.06  21.18       39339      2459   21.5%
+-- model 8B (64 MiB/block)  memory tier CXL 512GiB = 8192 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       55.16  43.99  11.17      177078     11067  100.0%
+   none      43.99  43.99   0.00           0         0    0.0%
+   read>=1   47.76  43.99   3.77       22336      1396   12.6%
+   read>=2   45.41  43.99   1.42        6412       401    3.6%
+   oracle    55.25  43.99  11.26       25861      1616   14.6%
+-- model 70B (160 MiB/block)  memory tier DRAM-pool 64GiB = 409 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       51.61  33.72  17.90      197913     30924  100.0%
+   none      33.72  33.72   0.00           0         0    0.0%
+   read>=1   34.13  33.72   0.41         162        25    0.1%
+   read>=2   33.88  33.72   0.16          25         4    0.0%
+   oracle    55.21  33.72  21.50       39538      6178   20.0%
+-- model 70B (160 MiB/block)  memory tier CXL 512GiB = 3276 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       52.27  35.93  16.34      192872     30136  100.0%
+   none      35.93  35.93   0.00           0         0    0.0%
+   read>=1   38.11  35.93   2.18        5291       827    2.7%
+   read>=2   36.37  35.93   0.44         838       131    0.4%
+   oracle    55.21  35.93  19.28       37671      5886   19.5%
+
+=== mooncake_synthetic_trace.jsonl  requests=3993  duration=1022s
+-- model 8B (64 MiB/block)  memory tier DRAM-pool 64GiB = 1024 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       63.96   8.38  55.58       43871      2742  100.0%
+   none       8.38   8.38   0.00           0         0    0.0%
+   read>=1   15.89   8.38   7.51        4653       291   10.6%
+   read>=2   10.53   8.38   2.14        1089        68    2.5%
+   oracle    63.96   8.38  55.58       18190      1137   41.5%
+-- model 8B (64 MiB/block)  memory tier CXL 512GiB = 8192 blocks  SSD 3200GiB = 51200 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       63.96  37.80  26.16       42335      2646  100.0%
+   none      37.80  37.80   0.00           0         0    0.0%
+   read>=1   47.14  37.80   9.35       11023       689   26.0%
+   read>=2   41.02  37.80   3.22        4572       286   10.8%
+   oracle    63.96  37.80  26.16       16266      1017   38.4%
+-- model 70B (160 MiB/block)  memory tier DRAM-pool 64GiB = 409 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       57.81   3.30  54.51       51402      8032  100.0%
+   none       3.30   3.30   0.00           0         0    0.0%
+   read>=1    8.84   3.30   5.54        2313       361    4.5%
+   read>=2    4.47   3.30   1.17         318        50    0.6%
+   oracle    63.96   3.30  60.66       18246      2851   35.5%
+-- model 70B (160 MiB/block)  memory tier CXL 512GiB = 3276 blocks  SSD 3200GiB = 20480 blocks
+   policy     hit%   mem%   ssd%  SSD writes   SSD GiB  vs all
+   all       58.77  20.01  38.76       49946      7804  100.0%
+   none      20.01  20.01   0.00           0         0    0.0%
+   read>=1   32.04  20.01  12.03        8990      1405   18.0%
+   read>=2   22.15  20.01   2.14        2372       371    4.7%
+   oracle    63.96  20.01  43.95       17754      2774   35.5%

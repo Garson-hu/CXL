@@ -15,6 +15,12 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-18 addendum — DESIGN PHASE.** Framing agreed with the user: Thesis v3, the
+horizontal write path (PolyStore-inspired; `docs/PAPER.md` top section, `docs/DESIGN.md` §10).
+User ruling: finish the design first; NO experiments until the design is agreed. First
+experiment afterwards = the O2 motivation figure (all-core LULESH + large checkpoint, staging
+on DRAM vs CXL).
+
 **Project.** CXL + LLM systems research for a top systems venue (OSDI/ASPLOS'27,
 SOSP'27, FAST'28). On `c28` directly.
 
@@ -102,6 +108,51 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-18 (session 22) — Thesis v3 framing: the horizontal write path (design only, nothing run)
+- Read PolyStore (FAST'25) in full and mapped it onto our data. Its three complaints about
+  vertical stacking (all writes crowd the fastest device, constant migration, one cache policy
+  for all devices) all hold for today's memory tiering, and are worse in memory because DRAM
+  reads and writes share one pipe, CXL directions are independent, and promotion is itself a
+  DRAM write stream — none of which PolyStore's sum-of-bandwidth model can express.
+- The ten reviewer questions were re-answered and then split: MOTIVATION = three observations
+  (most written data is never read; heavy DRAM writes slow DRAM readers; the same writes on CXL
+  do not), with reviewer question 5 answered by how the second figure is designed (a real
+  bandwidth-bound application plus a realistic checkpoint, synthetic 12× beside it as worst
+  case). EVALUATION = writer cost, read-back cost, rate-limit baseline, same-card constraint.
+  Questions 8 and 10 go to Discussion (user: 10 not needed, 8 not for now).
+- User decisions: scope widened to the whole write path ending on NVMe — agreed; PM nodes
+  c35/c36 supplementary only — agreed; do NOT run experiments yet, design first.
+- Machine facts checked: c28 has DRAM + CXL + NVMe (3.5 TB Solidigm, `/mnt/local`) but no PM;
+  PM is on c35/c36 (idle, `-p cascade`), which have no CXL. No machine has both.
+- Docs updated in place (no new files): `docs/PAPER.md` Thesis v3 section + PolyStore
+  positioning + history; `docs/DESIGN.md` §10 with OPEN points per component + history.
+- Housekeeping: /home quota was over the soft limit (40688 MB used, soft 39936, hard 40960);
+  a PDF read failed because of it.
+- User correction (same day): PolyStore is a paper to LEARN from and borrow ideas from, not a
+  comparison method or baseline; PAPER/DESIGN reworded accordingly (saved as a feedback memory).
+- /home cleaned by the user: 40.7 GB → 29.6 GB (old VS Code servers, conda package cache,
+  gdb-15.2 build tree); quota grace cleared.
+- Design discussion (recorded in `docs/DESIGN.md` §10.2, §10.3, §10.3a): reserve→commit write
+  primitive, 32–64 MB segments, shared table without a middleman, no compaction; three no-root
+  signals with a DRAM latency probe, slow-increase/fast-decrease spill ratio; LLM-scale
+  checkpoints (tens of GB) required by the user → virtually contiguous multi-segment buffers;
+  PyTorch async checkpoint chosen as the LLM client.
+- Feasibility check (the only thing run today, user-approved): the GPU CAN register and write
+  directly into devdax CXL with correct data, but at 3.9 GiB/s vs 12.3 GiB/s into pinned DRAM;
+  GPU reads from CXL are full speed (12.5). Log `hardware/results/2026-09-18-gpu-devdax-dma.log`.
+- End-to-end walkthrough (LLM checkpoint; KV block) forced seven adjustments; `docs/DESIGN.md`
+  §10 was then rewritten as one consistent text with all user decisions (32 MB segments, one
+  machine-wide bound, initial policy constants, 10-minute read window, selective KV drain,
+  emulated multi-GPU stream + CPU-optimizer victim). User: LULESH + VeloC is exploratory only.
+- `docs/DESIGN.md` §10 and the paper outline in `docs/PAPER.md` regrouped in PolyStore's shape
+  (observations → goals G1–G3 → principles P1–P4 → components A–D → per-component evaluation
+  questions); Recovery paragraph added to Component D.
+- Trace analysis (no hardware): selective KV drain REFUTED — hit rate falls 35.8→23.7%
+  (conversation, 8B) because memory-tier residency (~160 s) is shorter than reuse gaps; removed
+  from the design. `docs/experiments/2026-09-18-kv-selective-drain.md`.
+- Next: user picks system/component names; then the machine checks listed in DESIGN §10.8 once
+  experiments are allowed.
 
 ### 2026-09-14 (session 21) — 1b and 3c on healthy DRAM: the write-drain cliff, and CXL as an isolation domain
 Crippled-DRAM results (3b, A1.4) discarded per user ruling. **1b** (`2026-09-08-dram-write-drain.md`,

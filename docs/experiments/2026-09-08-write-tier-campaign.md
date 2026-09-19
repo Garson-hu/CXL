@@ -180,6 +180,67 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
 **Agreed order:** 1a → 2a/2b → 3a/3b (all CXL-side, DRAM-independent) →
 [BIOS revert] → 1b → 3c → 4 → 5. Every step is presented before execution.
 
+## Phase 5 v2 — BUILD PLAN for the write-path runtime (APPROVED by the user 2026-09-19 — executing)
+Supersedes the Phase 5 sketch above. Design: `../DESIGN.md` §10 (goals G1–G3,
+principles P1–P4, components A–D). Scope of this plan: feasibility checks →
+full implementation → end-to-end integration tests. **Evaluation experiments
+are NOT in this plan; they are discussed after step F.**
+
+**How it runs unattended.** This table is the single source of state. A session
+starts by reading it, takes the FIRST item that is not ✅, does it, runs its
+gate, records the result (status here + one WORKLOG line + raw logs under
+`experimental_results/2026-09-19-cxlpath-build/`), then continues with the
+next item. Nothing else is needed to resume after a session ends.
+**Stop and ask the user when:** a gate fails in a way that changes the design
+(not a bug); anything needs root, a BIOS change, dax2.0, or another node; a
+step would delete or rewrite existing results; two fix attempts on the same
+gate have failed; or the step is marked ⏳.
+Standing rules: `METHODOLOGY.md`; only dax0.0 / dax1.0; every program that
+writes to a dax device restores or owns its range; code in `system/cxlpath/`
+(C11 core + Python shim for PyTorch), `make test` must pass at the end of every
+step; no evaluation claims from gate numbers.
+
+User decisions 2026-09-19: plan approved; system name `cxlpath`; work on branch
+`cxlpath`, one commit per step (message starts with the step id, no Claude
+attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress ·
+(blank) not started · ⏳ needs user.
+
+| id | step | gate (pass condition) | if it fails |
+|---|---|---|---|
+| **V — feasibility checks (small yes/no programs)** | | | |
+| V1 | O_DIRECT write to `/mnt/local` with a devdax mapping as the source buffer | file on NVMe byte-identical; no EFAULT/EINVAL | drain copies through a small reused DRAM buffer (DRAM traffic ≤ NVMe speed, ~3 GiB/s) — note in DESIGN D |
+| V2 | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
+| V3 | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
+| V4 | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
+| V5 | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
+| V6 | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
+| **A — segment store (P1)** | | | |
+| A1 | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
+| A2 | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
+| A3 | `reserve` / `commit` / `release`, per-thread open log segments, live-byte accounting, reclaim at zero, `copy_in` (NT stores) | unit tests; write throughput within 5 % of a raw NT memcpy to the same device | profile; reduce table touches |
+| A4 | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
+| A5 | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
+| **B — placement (P2)** | | | |
+| B1 | background process + shared policy page (published ratio/path, read by `reserve` without IPC) | `reserve` sees a changed ratio within one epoch; no syscalls on the data path (strace) | — |
+| B2 | latency probe thread, idle baseline (60 s minimum), adaptive 10 / 200 ms period | probe overhead ≤ 2 % of one core; values match V5 | — |
+| B3 | ledger + achieved-speed signal with per-path solo calibration | "CXL full" detected when 2 writers exceed the pair's write capacity, not detected with 1 | — |
+| B4 | controller: +1/16 per 50 ms epoch, halve on 2 probes over bound, per-stream memory, blocking `reserve` | deterministic tests with injected signals; live: spill rises only when CXL is full and DRAM calm, halves within 50 ms of an injected DRAM aggressor | — |
+| B5 | GPU source: direct vs staged path per chunk, runtime-owned pinned copy threads | both paths produce verified data; path switches under injected pressure | — |
+| **C — read path (P3)** | | | |
+| C1 | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
+| C2 | promotion of read segments to the DRAM pool under the bound, release of the CXL copy; checkpoints never promoted | object readable before/during/after promotion; no promotion while probe > bound | — |
+| **D — drain and recovery (P4)** | | | |
+| D1 | drain targets on `reserve`; segment-wise O_DIRECT drain (per V1), padding/truncate | drained file byte-identical to the source (checksum), for sizes not multiple of 32 MB | — |
+| D2 | pacing (yield to writers, full speed under space pressure); reclaim rules for checkpoint versions | writer speed during drain within 10 % of no-drain; free space never reaches 0 in a 10-version loop | — |
+| D3 | recovery API: newest complete version from CXL, else NVMe | kill the application after commit: restore from CXL verified; after clearing the store: restore from NVMe verified | — |
+| **E — clients** | | | |
+| E1 | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
+| E2 | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
+| E3 | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
+| **F — system complete** | | | |
+| F1 | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
+| F2 | DESIGN.md updated to "as built" (§10 status, API reference), WORKLOG summary, list of what changed versus the design | user review ⏳ → then discuss evaluation | — |
+
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
   machine facts, blockers, and file naming fixed.
@@ -189,6 +250,9 @@ Phase 5 (PolyStore: A1 with concurrent CXL→NVMe drain). Files: `…-lulesh-vel
   reps 2–3 re-run); Phase 2 file closed; pond.c built. Next: 3b needs approval.
 - 2026-09-08 (night) — 3b done: all policies work; results are a high-DRAM-pressure
   preview (DRAM crippled), 3c required for the real ranking. Next: 4a (LULESH).
+- 2026-09-19 — Phase 5 v2 build plan PROPOSED (feasibility checks V1–V6 → components A–D →
+  clients E → system complete F); evaluation deliberately excluded. Awaiting user approval.
+- 2026-09-19 (later) — Phase 5 v2 APPROVED; name `cxlpath`; branch `cxlpath`, commit per step.
 
 ## Naming (rule 2026-09-08 — do not use "Pair A"/"Pair B" in new text)
 | historical label | what it is | use instead |
