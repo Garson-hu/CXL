@@ -1,0 +1,10 @@
+== build/test_reserve (dax0.0 + dax1.0, first 8 GiB each)
+A3.1 functional
+A3.2 hammer: 16 threads x 4000 reservations, random release order, data verified
+A3.3 throughput: reserve/copy_in/commit vs raw NT memcpy (single thread, device 0)
+  raw NT memcpy 43.84 GiB/s, through cxlpath 42.95 GiB/s (98.0% of raw; gate >= 95%)
+PASS
+== build/test_segments (dax0.0 + dax1.0, first 8 GiB each)
+A1: mapped /dev/dax0.0 (256 segs) and /dev/dax1.0 (256 segs)
+A2: 8 procs x 8 threads x 15625 claims: failed procs=0, free 256/256 + 256/256, still owned=0
+PASS

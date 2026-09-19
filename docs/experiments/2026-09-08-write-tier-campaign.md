@@ -215,9 +215,9 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | V5 ✅ | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
 | V6 ✅ (open) | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
 | **A — segment store (P1)** | | | |
-| A1 | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
-| A2 | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
-| A3 | `reserve` / `commit` / `release`, per-thread open log segments, live-byte accounting, reclaim at zero, `copy_in` (NT stores) | unit tests; write throughput within 5 % of a raw NT memcpy to the same device | profile; reduce table touches |
+| A1 ✅ | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
+| A2 ✅ | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
+| A3 ✅ | `reserve` / `commit` / `release`, per-thread open log segments, live-byte accounting, reclaim at zero, `copy_in` (NT stores) | unit tests; write throughput within 5 % of a raw NT memcpy to the same device | profile; reduce table touches |
 | A4 | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
 | A5 | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
 | **B — placement (P2)** | | | |
@@ -291,6 +291,17 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   (c1, e1) sit under different Turin root complexes; IOMMU is present (ivhd0–2). A concurrent
   CXL + pinned-DRAM test is not informative (GeForce has one D2H copy engine: 2.97 + 2.97). Left
   open; the design handles both paths (DESIGN §10.4). Tool: `system/cxlpath/checks/v6_gpu_write_cap.c`.
+
+- **A1–A3 ✅ 2026-09-19** — `system/cxlpath/` (C11, `make test` on sparse /dev/shm files,
+  `make test-dax` on the first 8 GiB of dax0.0 + dax1.0, which cxlpath owns). A1 device layer +
+  shared metadata in `/dev/shm/cxlpath.<name>`. A2 segment table claimed by compare-and-swap:
+  8 processes × 8 threads × 10⁶ claims, no double claim, no leak — the stress test caught one real
+  ordering bug (owner must be cleared BEFORE a segment becomes FREE). A3 reserve / commit / abort /
+  release on per-thread append-only segments per (device, lifetime class), reserved bytes count as
+  live, sealed + empty segments return to the pool, `copy_in` with AVX2 NT stores: 16-thread
+  hammer with random release order, data verified, everything reclaimed; throughput through the
+  library 98.0% (dax) / 99.3% (shm) of a raw NT memcpy (gate ≥ 95%; ratio only, not a performance
+  claim). Raw: `A1-A3-test-dax.txt`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
