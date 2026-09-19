@@ -38,6 +38,10 @@ int cxlp_bufset_commit_drain(cxlp_key_t client, int which, const char *path) {
     atomic_store(&b->drain_armed[which], 1);
     return 0;
 }
+int cxlp_bufset_set_used(cxlp_key_t client, int which, uint64_t bytes) {
+    int sl = bs_slot(client); if (sl < 0 || bytes > cxlp_g.meta->bufset[sl].bytes[which]) return -1;
+    cxlp_g.meta->bufset[sl].used[which] = bytes; return 0;
+}
 int cxlp_bufset_drained(cxlp_key_t client, int which) { int sl = bs_slot(client); return sl < 0 ? -1 : (int)atomic_load(&cxlp_g.meta->bufset[sl].drained[which]); }
 
 /* ---- per-thread descriptor cache: one O_DIRECT and one buffered descriptor per file ---- */
@@ -100,15 +104,16 @@ static int64_t drain_object(cxlp_drain_t *d) {
 }
 
 static int64_t drain_bufset(cxlp_bufset_t *b, int slot, int w) {
-    uint32_t n = b->nseg[w], i = atomic_fetch_add(&b->drain_next[w], 1);
+    uint64_t total = b->used[w] ? b->used[w] : b->bytes[w];
+    uint32_t n = (uint32_t)((total + CXLP_SEG_BYTES - 1) / CXLP_SEG_BYTES), i = atomic_fetch_add(&b->drain_next[w], 1);
     if (i >= n) { atomic_fetch_sub(&b->drain_next[w], 1); return 0; }
     uint32_t *t = (uint32_t *)((char *)cxlp_g.meta + cxlp_g.meta->bs_segtab_off) + ((size_t)slot * 2 + (size_t)w) * CXLP_BS_MAXSEG;
-    uint64_t off = (uint64_t)i * CXLP_SEG_BYTES, len = b->bytes[w] - off < CXLP_SEG_BYTES ? b->bytes[w] - off : CXLP_SEG_BYTES;
+    uint64_t off = (uint64_t)i * CXLP_SEG_BYTES, len = total - off < CXLP_SEG_BYTES ? total - off : CXLP_SEG_BYTES;
     fdc_t *f = get_fd(b->drain_path[w]);
     if (!f || write_range(f, cxlp_seg_ptr((int)b->dev[w], t[i]), len, off)) return -1;
     atomic_fetch_add(&cxlp_g.meta->drained_bytes, len);
     if (atomic_fetch_add(&b->drain_done[w], 1) + 1 == n) {     /* last segment: exact size, durable, then the set may be overwritten */
-        if (ftruncate(f->fd_buf, (off_t)b->bytes[w]) == 0 && fsync(f->fd_buf) == 0) { atomic_store(&b->drain_armed[w], 0); atomic_store(&b->drained[w], 1); }
+        if (ftruncate(f->fd_buf, (off_t)total) == 0 && fsync(f->fd_buf) == 0) { atomic_store(&b->drain_armed[w], 0); atomic_store(&b->drained[w], 1); }
     }
     return (int64_t)len;
 }
@@ -137,7 +142,7 @@ int64_t cxlp_drain_step(int yield) {
     if (yield && should_yield()) return 0;
     for (int s = 0; s < CXLP_MAX_BUFSETS; s++) {               /* checkpoints in buffer sets first: they gate the writer */
         cxlp_bufset_t *b = &cxlp_g.meta->bufset[s]; if (!atomic_load(&b->client)) continue;
-        for (int w = 0; w < 2; w++) if (atomic_load(&b->drain_armed[w]) && atomic_load(&b->drain_next[w]) < b->nseg[w]) { int64_t r = drain_bufset(b, s, w); if (r) return r; }
+        for (int w = 0; w < 2; w++) if (atomic_load(&b->drain_armed[w]) && (uint64_t)atomic_load(&b->drain_next[w]) * CXLP_SEG_BYTES < (b->used[w] ? b->used[w] : b->bytes[w])) { int64_t r = drain_bufset(b, s, w); if (r) return r; }
     }
     static __thread uint32_t rr;
     for (uint32_t k = 0; k < CXLP_NDRAIN; k++) {

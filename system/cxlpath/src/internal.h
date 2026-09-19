@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x4358504154483038ull   /* "CXPATH08" */
+#define CXLP_MAGIC   0x4358504154483039ull   /* "CXPATH09" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -73,6 +73,7 @@ typedef struct {
     uint64_t segtab_off[2];
     char     drain_path[2][240];
     _Atomic uint32_t drain_armed[2], drain_next[2], drain_done[2];
+    uint64_t used[2];              /* bytes of the set that hold data: only these are drained */
 } cxlp_bufset_t;
 
 /* Shared policy page (Component B). Written by the background process, READ by reserve():

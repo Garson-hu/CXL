@@ -1,0 +1,14 @@
+model state: 1536 MiB on NVIDIA GeForce RTX 4060 Ti
+    v1: training blocked 0.35 s (waited 0.00 s for a free buffer set, copied 1536 MiB GPU->CXL in 0.35 s = 4.31 GiB/s)
+  ok   v1 reloaded from CXL in 0.10 s: checkpoint-time values, not the mutated model
+    v2: training blocked 0.27 s (waited 0.00 s for a free buffer set, copied 1536 MiB GPU->CXL in 0.27 s = 5.66 GiB/s)
+    v3: training blocked 0.60 s (waited 0.45 s for a free buffer set, copied 1536 MiB GPU->CXL in 0.14 s = 10.53 GiB/s)
+  ok   v3 had to wait until v1 was on NVMe before it could overwrite v1's buffer set (back-pressure)
+    v1 on NVMe: 1536 MiB
+    v2 on NVMe: 1536 MiB
+    v3 on NVMe: 1536 MiB
+  ok   v3 (newest, still in its buffer set) reloaded from CXL in 0.11 s
+  ok   v1 (its buffer set now holds v3) reloaded from NVME in 0.72 s, byte-exact
+  ok   v2 reloaded from CXL in 0.15 s
+  ok   after the store is gone (reboot): v3 reloaded from NVME in 0.71 s, byte-exact
+PASS

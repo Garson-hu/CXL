@@ -58,7 +58,7 @@ int cxlp_bufset_begin(cxlp_key_t client, uint64_t version) {
                    atomic_load(&b->state[other]) == CXLP_BS_COMMITTED &&
                    atomic_load(&b->version[other]) > atomic_load(&b->version[w]));
         if (ok && atomic_compare_exchange_strong(&b->state[w], &st, CXLP_BS_WRITING)) {
-            atomic_store(&b->drained[w], 0); atomic_store(&b->drain_armed[w], 0); atomic_store(&b->version[w], version); return w; }
+            atomic_store(&b->drained[w], 0); atomic_store(&b->drain_armed[w], 0); b->used[w] = 0; atomic_store(&b->version[w], version); return w; }
     }
     return -1;
 }
@@ -80,6 +80,13 @@ int cxlp_bufset_newest(cxlp_key_t client, uint64_t *version) {
     if (best >= 0 && version) *version = bv;
     return best;
 }
+/* committed version held by set `which`, -1 if the set holds none */
+int64_t cxlp_bufset_version(cxlp_key_t client, int which) {
+    int sl = slot_of(client, 0); if (sl < 0 || which < 0 || which > 1) return -1;
+    cxlp_bufset_t *b = &cxlp_g.meta->bufset[sl];
+    return atomic_load(&b->state[which]) == CXLP_BS_COMMITTED ? (int64_t)atomic_load(&b->version[which]) : -1;
+}
+
 int cxlp_bufset_destroy(cxlp_key_t client) {
     int sl = slot_of(client, 0); if (sl < 0) return -1;
     cxlp_bufset_t *b = &cxlp_g.meta->bufset[sl];

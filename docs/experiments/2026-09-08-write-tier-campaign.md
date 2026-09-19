@@ -235,7 +235,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | D3 ✅ | recovery API: newest complete version from CXL, else NVMe | kill the application after commit: restore from CXL verified; after clearing the store: restore from NVMe verified | — |
 | **E — clients** | | | |
 | E1 ✅ | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
-| E2 | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
+| E2 ✅ | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
 | E3 | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
 | **F — system complete** | | | |
 | F1 | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
@@ -427,6 +427,26 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   the store is destroyed STOCK VeloC restarts from the drained NVMe file byte-exact; LULESH -s 100:
   **the 4 checkpoint files drained by cxlpathd are byte-identical to the files stock VeloC writes**,
   and LULESH restarts from the newest version on CXL (rc=0, 4.9 ms). Raw: `E1-veloc/`.
+
+- **E2 ✅ 2026-09-19** — PyTorch client `system/cxlpath/clients/pytorch/cxlpath_dcp.py` (ctypes over
+  the new `build/libcxlpath.so`): `CxlpathWriter` = DCP `StorageWriter` + `AsyncStager`,
+  `CxlpathReader` = DCP `StorageReader`; used through the standard `dcp.async_save` / `dcp.load`.
+  `stage()` copies every tensor GPU → a CUDA-registered CXL buffer set with `cxlp_gpu_copy_in` (path
+  per 32 MiB chunk from the published ratio) and waits when neither set may be overwritten;
+  `write_data()` moves no data (records offset/nbytes of tensors that already live in the set);
+  `finish()` writes two small metadata files and arms the drain of the USED prefix of the set;
+  the reader restores from the buffer set if that version is still on CXL, else from the NVMe file.
+  This resolves the open point of V4 by option "own storage format behind the DCP plugin interface"
+  (no CXL→CXL serialisation copy). Gate, 1.5 GiB model on the 4060 Ti, weights changed right after
+  every `async_save`: v1 reloaded from CXL = checkpoint-time values (0.10 s); v3 waited 0.45 s for
+  v1 to reach NVMe before overwriting v1's set; v1 then reloaded from NVMe byte-exact (0.72 s), v2/v3
+  from CXL; after the store is destroyed v3 reloads from NVMe byte-exact. Training was blocked
+  0.35 s / 0.27 s / 0.60 s; the copy ran at 4.3 → 5.7 → 10.5 GiB/s as the staged share rose while
+  DRAM was calm. Limits: plain tensors and picklable objects only (no DTensor/ShardedTensor); one
+  rank per writer; the reader is not protected against a writer that starts overwriting the set.
+  Found on the way: a buffer set must drain only its used prefix (`cxlp_bufset_set_used`), and the
+  writer keeps per-checkpoint state so an overlapping save cannot disturb a running one.
+  Raw: `E2-pytorch/`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

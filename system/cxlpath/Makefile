@@ -16,7 +16,7 @@ TOOLS   = $(filter-out $(addprefix build/,$(GPUTOOLS)),$(patsubst tests/tools/%.
 ifneq ($(HAVE_CUDA),)
 TOOLS  += build/libcxlpath_gpu.a $(addprefix build/,$(GPUTOOLS))
 endif
-all: build/libcxlpath.a build/cxlpathd $(TESTS) $(TOOLS)
+all: build/libcxlpath.a build/libcxlpath.so build/cxlpathd $(TESTS) $(TOOLS)
 build/%.o: src/%.c include/cxlpath.h include/cxlpath_daemon.h src/internal.h | build
 	$(CC) $(CFLAGS) -c $< -o $@
 build/libcxlpath.a: $(OBJ)
@@ -33,6 +33,14 @@ build/libcxlpath_gpu.a: build/gpu.o
 	ar rcs $@ $^
 build/cxlp_gpu_test: tests/tools/cxlp_gpu_test.c build/libcxlpath_gpu.a build/libcxlpath.a
 	$(CC) $(CFLAGS) -I$(CUDA)/include $< build/libcxlpath_gpu.a build/libcxlpath.a -L$(CUDA)/lib64 -Wl,-rpath,$(CUDA)/lib64 -lcudart $(LDLIBS) -o $@
+# one shared library for language bindings (Python/ctypes): core + GPU paths when CUDA is present
+ifneq ($(HAVE_CUDA),)
+build/libcxlpath.so: $(OBJ) build/gpu.o
+	$(CC) -shared -o $@ $^ -L$(CUDA)/lib64 -Wl,-rpath,$(CUDA)/lib64 -lcudart -lm -pthread
+else
+build/libcxlpath.so: $(OBJ)
+	$(CC) -shared -o $@ $^ -lm -pthread
+endif
 build:
 	mkdir -p build
 test: all

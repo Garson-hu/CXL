@@ -142,6 +142,7 @@ int  cxlp_obj_drained(cxlp_key_t key);            /* 1 = complete on NVMe and fs
 int  cxlp_obj_set_version(uint32_t handle, uint64_t chain, uint64_t version);
 int  cxlp_put_version(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms, uint64_t chain, uint64_t version);
 int  cxlp_bufset_commit_drain(cxlp_key_t client, int which, const char *path);   /* commit + arm the drain */
+int  cxlp_bufset_set_used(cxlp_key_t client, int which, uint64_t bytes);          /* before commit: drain only this prefix */
 int  cxlp_bufset_drained(cxlp_key_t client, int which);
 /* One unit of drain work (one extent or one buffer-set segment). Returns bytes written, 0 if there
  * is nothing to do or the drain yields to writers. yield: 1 = obey the pacing rule, 0 = never yield. */
@@ -189,6 +190,7 @@ int   cxlp_bufset_commit(cxlp_key_t client, int which);
 int   cxlp_bufset_mark_drained(cxlp_key_t client, int which);
 /* Newest committed version and the set holding it (-1 if none): used by recovery. */
 int   cxlp_bufset_newest(cxlp_key_t client, uint64_t *version);
+int64_t cxlp_bufset_version(cxlp_key_t client, int which);   /* committed version in that set, -1 if none */
 int   cxlp_bufset_destroy(cxlp_key_t client);
 
 #ifdef __cplusplus
