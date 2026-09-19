@@ -5,7 +5,8 @@ evidence in `experiments/`), and how we position against prior work. Literature
 scan: `Related.md` (repo root). Status: **Thesis v3 framing agreed 2026-09-18**
 (horizontal write path, PolyStore-inspired) — DESIGN PHASE, no experiments until
 the design is agreed. Thesis v2 (2026-08-25, both gates passed) is its measured
-foundation. History: Change history at bottom.*
+foundation. **2026-09-19: the runtime (`cxlpath`) is built; evaluation not
+started.** History: Change history at bottom.*
 
 ## Thesis v3 (2026-09-18) — the horizontal write path (DESIGN-ONLY, user-agreed framing)
 
@@ -134,6 +135,37 @@ is discontinued, so this is not a headline result.
 20–30%" and "60–80% less data written into DRAM" — real but not multiples. The
 real-application gap is unknown until the O2 figure is measured; if it is
 small, rethink before building.
+
+### Facts from building the system (2026-09-19) that the paper has to deal with
+The runtime (`cxlpath`) is built (`DESIGN.md` §10, as built). Nothing below is an
+evaluation result; these are constraints and openings found on the way.
+- **One core saturates our CXL write direction.** A single unthrottled NT-store
+  thread pushes 41 GiB/s = 94% of the dax0.0/dax1.0 pair's 43.9 GiB/s. So "CXL
+  write capacity is the scarce resource" holds for ANY multi-threaded writer on
+  this platform, and spill to DRAM is the normal case for a fast writer, not a
+  corner case. It also caps what the evaluation can show: a writer can never get
+  more than ~44 GiB/s from CXL here (DRAM takes ~277).
+- **The durable tier is slow.** The NVMe sustains 0.9 GiB/s regardless of
+  parallelism; a 32 GB checkpoint needs ~36 s to become durable. This strengthens
+  the case for a large staging tier that is not DRAM (tens of GB held for tens of
+  seconds), and means every end-to-end checkpoint number is NVMe-bound.
+- **The GPU path has a platform cap:** GPU → CXL direct 3.9 GiB/s vs 12.3 GiB/s
+  into pinned DRAM (reads from CXL: 12.5). The runtime turns this into a policy
+  choice (direct when DRAM is under pressure, staged when calm); measured through
+  PyTorch: 4.3 → 10.5 GiB/s as the staged share rises. Cause unknown; must be
+  stated as a property of this platform.
+- **A cheap no-root signal exists.** 1000 dependent DRAM loads every 10 ms
+  (1.26% of one core) track a bandwidth-bound reader's slowdown monotonically
+  (1.18× at −13% … 6.5× at −92%) and let the controller react 16 ms after an
+  injected DRAM aggressor. Candidate for a figure in the design section.
+- **The writers' own source reads count.** Copying 50 GiB/s out of DRAM into CXL
+  lifts DRAM latency ~20% although nothing is written to DRAM. "Writes to CXL are
+  free for DRAM readers" (O3) must be worded as "the write half is free; the read
+  of the source remains" — true for both placements, so the comparison is fair,
+  but the absolute slowdown of a co-runner is not zero.
+- **Costs measured on the way:** the library adds 82 ns per 32 MiB write and no
+  system call on the data path; CPU readers see CXL at 1.77× DRAM streaming time
+  (k = 3); a GPU reader sees no difference (never promote).
 
 ## Thesis v2 (2026-08-25) — direction-aware placement
 
@@ -340,3 +372,8 @@ Cross-pair E2 still blocked on famfs access. Details:
   observations, each ending in an implication), goals → principles → four
   components, evaluation opened by per-component questions. Replaces the v2
   outline.
+- **2026-09-19** — System built (`DESIGN.md` §10 as built). Added "Facts from
+  building the system": one core saturates the CXL pair's write direction, the
+  NVMe sustains 0.9 GiB/s, the GPU→CXL direct-write cap, the no-root latency
+  probe as a usable signal, and the caveat that the writers' source reads still
+  load DRAM. Evaluation still to be planned with the user.

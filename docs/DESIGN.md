@@ -9,10 +9,12 @@ History: `## Change history` at the bottom (append-only). Predecessor file:
 (§7) is DESIGNED-ONLY, gated on the experiments in
 `experiments/2026-08-25-direction-gates.md`.
 
-**Status 2026-09-18:** §10 (write-path runtime, PolyStore-inspired) is the
-CURRENT design direction — DESIGN-ONLY, under discussion with the user, nothing
-built, no experiments until it is agreed. §1–§9 describe the existing ObjPlace
-v1 code; §7's per-direction accounting is reused inside §10.3.
+**Status 2026-09-19:** §10 (write-path runtime `cxlpath`, PolyStore-inspired) is
+BUILT: `system/cxlpath/`, all steps of the build plan passed their gates
+(`experiments/2026-09-08-write-tier-campaign.md`, "Phase 5 v2"). §10.10 maps the
+code, §10.11 lists every point where the built system differs from the design
+agreed on 2026-09-18, and why. No evaluation experiment has been run yet. §1–§9
+describe the older ObjPlace v1 code, which cxlpath does not use.
 
 ## 1. What ObjPlace is
 Object-level semantic placement, not a `numa_alloc_onnode` wrapper: the
@@ -110,9 +112,10 @@ SKEW_HOT, SKEW_COLD} (forces a tier, bypasses budget) · `obj_free_hint`.
 Python: ctypes bridge, `ObjAttr` mirrors `obj_attr_t`
 (`benchmarks/embbench.py:alloc_table_objplace`).
 
-## 10. PLANNED — write-path runtime (design-only; consolidated 2026-09-18)
-*All decisions below are provisional and user-agreed on 2026-09-18 unless
-marked OPEN or TO VERIFY. Nothing is built. Motivation and paper framing:
+## 10. Write-path runtime `cxlpath` (design consolidated 2026-09-18, BUILT 2026-09-19)
+*The design text below was agreed with the user on 2026-09-18. It is now built;
+paragraphs marked **AS BUILT** say what the code does where that differs from or
+sharpens the design (summary in §10.11). Motivation and paper framing:
 `PAPER.md` Thesis v3. PolyStore (FAST'25) is a source of ideas, not a
 comparison method; "borrowed" marks what comes from it.*
 
@@ -195,14 +198,27 @@ no allocator (the earlier tmpfs + memory-policy placement no longer works).
   durable copy is on NVMe). Crash cleanup reclaims only uncommitted
   reservations.
 
+**AS BUILT (A).** Metadata lives in `/dev/shm/cxlpath.<store>` (segment table,
+object hash table, extent pool, buffer-set table, drain descriptors, policy
+page); a store owns a configured range of each dax device plus a tmpfs file as
+DRAM pool. Every way back to FREE passes an exclusive FREEING state (the stress
+test found an owner/free ordering bug). Reserved bytes count as live at once;
+`cxlp_shrink` returns the unused end of a reservation. Objects: open-addressing
+hash, one writer per object, readers pin. The library adds 82 ns per
+segment-sized write (0.011% of the copy time) and makes no system call on
+reserve → copy → commit → release (strace: 0). Object table default = 8 slots
+per segment (objects of tens of MiB); smaller objects need `obj_slots`.
+
 ### 10.4 Component B — interference-bounded placement (P2; analogue: Poly-placement)
 Borrowed: measure every short epoch, then reassign. We reassign segments, not
 threads, and the objective is not the sum of bandwidths but: **make the write
 stream as fast as possible while other DRAM readers slow down by no more than
 one machine-wide bound** (user decision: one global bound).
-- **Signals (no root).** (1) Own ledger: bytes committed per device per epoch.
-  (2) Achieved write speed per thread and per path versus its calibrated solo
-  speed (borrowed). (3) DRAM latency probe in the background process: ~1000
+- **Signals (no root).** (1) Own ledger: bytes and copy time per device and per
+  stream, fed by `cxlp_copy_to` / `cxlp_account`. (2) Fullness of the CXL write
+  direction = ledger throughput versus the capacity calibrated at start-up (the
+  per-thread "achieved vs solo speed" test borrowed from PolyStore over-spilled
+  and was dropped, §10.11). (3) DRAM latency probe in the background process: ~1000
   dependent random reads over a region larger than the cache, ≈0.15 ms, pinned
   to a CCD with no writer thread.
 - **Decision variable.** CPU sources: spill ratio = share of new segments
@@ -213,16 +229,29 @@ one machine-wide bound** (user decision: one global bound).
   GPU sources means the share of chunks taking the staged path.
 - **Rule: slow increase, fast decrease.** Start at 0. Published in shared
   memory by the background process; `reserve` only reads it.
-- **Initial parameter values (chosen by Claude on user request; all tunable).**
-  Probe period 10 ms while reservations arrive, 200 ms when idle. Policy epoch
-  50 ms when active (mean of the last 5 probes), 200 ms when idle. Idle
-  baseline = minimum probe latency of the last 60 s. Bound = 1.10 × baseline.
-  Increase: +1/16 per epoch (ratio realised as n of every 16 segments; 0→100%
-  in 0.8 s, inside one multi-second checkpoint), only if the CXL path is full
-  (achieved < 0.8 × solo speed) AND probe ≤ 1.05 × baseline (margin against
-  oscillation). Decrease: halve as soon as 2 consecutive probes exceed the
-  bound (20 ms reaction), whoever caused the pressure. Per-stream memory: a
-  periodic writer starts from the ratio its last burst ended with.
+- **Parameters and signals AS BUILT (values tunable; the live gates forced
+  several changes, see §10.11).** Probe: 1000 dependent loads every 10 ms while
+  writers are active, every 200 ms when idle; it costs 1.26% of one core. Epoch
+  50 ms active / 200 ms idle. **Reference level = MEDIAN of epoch means, two of
+  them:** idle (60 s window) and active (2 s window, fed only by epochs with
+  writer activity and none of our bytes in DRAM; frozen while we spill; known
+  after 5 such epochs, so a first burst spends ~250 ms on CXL only). Bound =
+  1.10 × the reference in use; idle state uses a loose 1.5× (idle readings on
+  c28 scatter 100–160 ns). Headroom guard: reference > 2.0 × the lowest idle
+  reference ever seen ⇒ nothing may spill. Increase +1/16 per epoch when the
+  CXL write direction is FULL = our own ledger shows ≥ 90% of the capacity
+  calibrated at start-up (43.9 GiB/s) AND probe ≤ 1.05 × reference. **Slack rule
+  (new):** below 70% of the capacity the ratio shrinks by 1/16 per epoch — DRAM
+  is only for the excess. Decrease: halve on 2 consecutive probes over the bound.
+  Per-stream memory (16 streams): an idle stream keeps its ratio published, it
+  is halved by pressure while idle, and a burst restores it unless DRAM is under
+  obvious pressure. Measured: spill settles at 6/16 for a 60 GiB/s demand (CXL
+  37 + DRAM 20 GiB/s, probe 131 vs reference 130, no halving); first halving
+  16 ms after an injected DRAM aggressor, spill 0 after 46 ms. GPU sources: the
+  direct path counts as full when it delivers < 80% of the calibrated link speed;
+  measured 3.91 (direct) vs 12.16 GiB/s (staged), share 0.95 when DRAM is calm,
+  0.00 under the aggressor. One unthrottled core already pushes 41 GiB/s = 94%
+  of the card pair's write capacity.
 - **Both devices full:** `reserve` blocks (sleeps on the shared table). Direct
   write to NVMe as a third outlet: possible later extension.
 - **Same-card constraint:** a write stream on a CXL card slows readers of the
@@ -243,6 +272,14 @@ one machine-wide bound** (user decision: one global bound).
   in the traces). Promotion also needs probe ≤ bound and free DRAM quota;
   unit = the segments read. **Checkpoints are never promoted.**
 
+**AS BUILT (C).** `cxlp_obj_pin/unpin`; counts are per EXTENT, so a ranged pin
+promotes only what it reads; w = 10. Calibrated on c28 (single-thread streaming,
+128 MiB): DRAM 40.8 GiB/s, CXL 23.0 GiB/s (1.77×), copy CXL→DRAM 23.5 GiB/s ⇒
+**k = 3 when DRAM is calm** (the k ≈ 5 above came from the stencil proxy's 1.2×);
+GPU consumer 12.45 vs 12.46 GiB/s ⇒ never. A promoter thread in the daemon
+relocates under the object's seqlock; the old CXL copy is released once no
+reader pins the object; `release` is refused while pinned.
+
 ### 10.6 Component D — DRAM-free drain and recovery (P4; analogue: Poly-persist)
 - **Drain:** background process reads CXL, writes NVMe with O_DIRECT (no DRAM
   traffic), segment by segment as segments commit, to the drain target given
@@ -262,21 +299,39 @@ one machine-wide bound** (user decision: one global bound).
   CXL; after a node failure or reboot it restores from NVMe. The two-buffer-set
   rule of Component A guarantees one complete version on CXL at all times.
 
+**AS BUILT (D).** O_DIRECT from a devdax mapping works (V1); 4 KiB-aligned body
+direct, sub-4 KiB tails buffered; files byte-identical for awkward sizes; a
+buffer set drains only its used prefix. **The NVMe on c28 sustains 0.90–0.92
+GiB/s whatever the parallelism**, so one drain thread is enough and a 32 GB
+checkpoint needs ~36 s to become durable. Pacing: yield while CXL writers moved
+bytes in the last 100 ms, EXCEPT when free CXL space is below 25%, when a writer
+is blocked until a drain completes, or when work has been pending for more than
+2 s (durability lag bound) — "yield while anybody writes" starved the drain in
+the first all-clients run. **Checkpoint versions form chains and are reclaimed
+by the RUNTIME** (on NVMe + a newer version committed): a producer blocked in
+`reserve()` cannot release anything itself. Writers keep 99.7% of their speed
+with a drain running beside them (43.89 → 43.76 GiB/s). KV selective drain stays
+removed (trace analysis).
+
 ### 10.7 Generality check (supplementary)
 On c35/c36 (DRAM + Optane PM, no CXL) the same policy fed PM's characteristics
 (fast reads, slow writes) should choose the opposite: buffer writes in DRAM,
 read PM directly.
 
-### 10.8 Facts measured for this design, and what is still unverified
-Measured 2026-09-18 (`hardware/results/2026-09-18-gpu-devdax-dma.log`,
-RTX 4060 Ti, PCIe gen4 x8): `cudaHostRegister` on devdax works; GPU writes CXL
-directly at 3.9 GiB/s (12.3 into pinned DRAM); GPU reads CXL at 12.5 GiB/s;
-unregistered copies are staged through DRAM by the driver at 12.1 GiB/s.
-TO VERIFY (needs the machine): probe latency vs real-application slowdown;
-O_DIRECT from a devdax buffer; cause and scope (per GPU or per host bridge) of
-the 3.9 GiB/s cap; promotion constants for KV-like CPU reads; segment waste
-without compaction; CUDA registration cost and limits for large devdax ranges.
-OPEN (discussion): third outlet to NVMe; which further LLM checkpoint engines.
+### 10.8 Facts measured while building, and what is still unverified
+Verified 2026-09-19 (`experimental_results/2026-09-19-cxlpath-build/`): GPU →
+devdax works, direct writes 3.9 GiB/s vs 12.3 into pinned DRAM, GPU reads CXL at
+12.5 GiB/s; O_DIRECT from devdax; scattered segments stitch into one buffer that
+CUDA registers (~20 ms per GiB, 200 GiB ok); PyTorch 2.5.1 `async_save` accepts
+our staging; the DRAM latency probe tracks a reader's slowdown monotonically
+(1.18× at −13%, 6.5× at −92%); promotion constants for a CPU consumer; the
+library's write-path overhead.
+STILL OPEN: cause and scope (per GPU or per host bridge) of the 3.9 GiB/s cap —
+registration flags, mapped copies and two devices change nothing; segment waste
+without compaction under a long KV run (the three trace replays ended with every
+segment free, but waste over time was not measured); another tenant writing to
+the same cards outside cxlpath is invisible to the fullness signal; third outlet
+to NVMe; a real LMCache integration (needs vLLM; ⏳ user decision).
 
 ### 10.9 Evaluation consequences (user decisions 2026-09-18)
 One GPU on c28 yields ~12 GiB/s, about 4% of the socket's DRAM write capacity,
@@ -288,6 +343,65 @@ ZeRO-Offload style). **The application set is not fixed:** LULESH + VeloC is
 an exploratory application and is replaced if its results are weak. Selection
 criterion for any application: a victim that is DRAM-bandwidth-bound,
 co-located with a real bulk write stream.
+
+### 10.10 As built — code map, API, tests
+`system/cxlpath/`: `include/cxlpath.h` (client API), `include/cxlpath_daemon.h`
+(probe, controller, references), `include/cxlpath_gpu.h`; `src/` store.c
+(devices, segment table), reserve.c, object.c (index, crash cleanup), bufset.c,
+policy.c (library side of B), probe.c, controller.c, readpath.c, drain.c,
+stream.c (file-style shim), gpu/gpu.c; `daemon/cxlpathd.c` (probe loop +
+promoter thread + drain thread); `clients/veloc/` (patch + round-trip helper),
+`clients/pytorch/cxlpath_dcp.py` (DCP StorageWriter/AsyncStager + StorageReader).
+API groups: store (`cxlp_open/attach/close/destroy`); segments; reservations
+(`cxlp_reserve/commit/abort/release/shrink`, `cxlp_copy_in`, `cxlp_copy_to`,
+`cxlp_account`); objects (`cxlp_obj_begin/append/commit/lookup/release`,
+`set_flags`, `set_drain`, `set_version`, `cxlp_put*`, `cxlp_get`); read path
+(`cxlp_obj_pin/unpin`, `cxlp_read`, `cxlp_k_compute`); buffer sets
+(`cxlp_bufset_create/map/begin/commit/commit_drain/set_used/drained/newest/
+version/destroy`); streams (`cxlp_stream_create/write/close/abort`,
+`cxlp_chain_newest`, `cxlp_key_of`); GPU (`cxlp_gpu_init/register/copy_in`);
+policy view (`cxlp_policy_view/force`).
+Tests: `make test` (sparse files in /dev/shm as devices, plus an strace check of
+the data path) and `make test-dax` (first 8 GiB of dax0.0 + dax1.0, which the
+tests own); live gates in `tests/live/` (b_live.py, b5_live.py, c_live.py,
+d_live.py, e1_veloc.sh, e3_kv.sh, f1_all.sh) need a quiet c28 and write their raw
+output under `experimental_results/2026-09-19-cxlpath-build/`.
+
+### 10.11 What changed versus the design agreed on 2026-09-18, and why
+1. **Probe reference = median, not minimum; two references (idle / active).**
+   An idle c28 reads 100–160 ns from probe to probe; a minimum sat 15–25% below
+   typical and made normal readings look like pressure. The writers' own source
+   reads (50 GiB/s from DRAM) lift the probe ~20% with zero spill, so the level
+   "without our DRAM writes" must be learned during the burst.
+2. **Idle state uses a loose bound (1.5×); headroom guard (2.0×) added.** The
+   guard implements "spill only while DRAM has headroom" in absolute terms; the
+   10% bound is relative ("no more than X because of OUR writes").
+3. **CXL-full signal = ledger vs calibrated capacity; slack rule added.** The
+   per-writer-speed test raised spill to 11/16 for a 60 GiB/s demand; with
+   capacity thresholds it settles at 6/16, and spill now shrinks when CXL has
+   slack. A single core saturates the pair (41 of 44 GiB/s).
+4. **Reclaiming drained checkpoint versions is done by the runtime** (version
+   chains). The first 10-version loop hung: a producer blocked in `reserve()`
+   cannot release its own old versions.
+5. **The drain never yields indefinitely** (space low, a blocked writer, or
+   pending > 2 s). With a KV layer writing all the time the drain never ran and
+   a PyTorch checkpoint waited a minute for a buffer set.
+6. **PyTorch: own storage format behind the DCP plugin interface** (raw buffer
+   set + small metadata, `CxlpathReader` for loading) instead of reproducing
+   `.distcp` files — that would have cost a CXL→CXL serialisation copy.
+7. **VeloC: a 193-line patch of the client** (`VELOC_CXLPATH_STORE`), applied to
+   the project's copy `~/apps/veloc-src`; drained files are byte-identical to
+   stock VeloC's, so stock VeloC restarts from them.
+8. **Promotion unit = extent; k = 3 on c28** (design said ≈ 5 from a 1.2×
+   penalty; a single streaming reader sees 1.77×).
+9. **Smaller points:** FREEING segment state; `cxlp_shrink`; buffer sets drain
+   their used prefix; `obj_slots` for small objects; the daemon's log is
+   buffered (NFS writes stretched 50 ms epochs to 150 ms); the write-path
+   overhead gate is deterministic (82 ns per segment) because throughput
+   comparisons at the device limit vary by ±15% on this machine.
+10. **Not built:** DTensor/ShardedTensor support in the PyTorch plugin; a real
+    LMCache integration (E3 is a trace-driven stand-in with the same call
+    pattern); compaction; the PM configuration (§10.7).
 
 ## Change history (append-only — never rewrite entries)
 - **2026-05-20** — v1 designed and built: object registry, single-ceiling
@@ -362,3 +476,9 @@ co-located with a real bulk write stream.
 - **2026-09-18 (trace analysis)** — Selective KV drain removed from Component
   D: refuted by `experiments/2026-09-18-kv-selective-drain.md`. KV drain follows
   the client's policy unchanged.
+- **2026-09-19 (as built)** — §10 updated from "planned" to "built": AS BUILT
+  paragraphs per component, §10.8 facts/open points refreshed, §10.10 code map /
+  API / tests, §10.11 ten differences between the agreed design and the built
+  system with the evidence that forced each (probe references, fullness and
+  slack rules, runtime-side reclaim, non-starving drain, DCP storage format,
+  VeloC patch, k = 3). Build record: `experiments/2026-09-08-write-tier-campaign.md`.

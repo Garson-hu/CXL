@@ -1,0 +1,17 @@
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1536 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8763 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1527 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8769 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1493 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8416 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1539 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8760 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1533 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8743 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1491 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8759 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1511 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8762 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1493 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=28510 hits=9057 (31.8%; 8751 served from the DRAM pool after promotion) misses=19453 stored=19453 evicted=16893 put_failures=0 VERIFY_ERRORS=0
+KV requests=1500 blocks=41702 hits=2123 (5.1%; 1541 served from the DRAM pool after promotion) misses=39579 stored=39579 evicted=37019 put_failures=0 VERIFY_ERRORS=0

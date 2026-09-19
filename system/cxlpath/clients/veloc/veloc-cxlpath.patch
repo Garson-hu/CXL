@@ -1,8 +1,8 @@
 diff --git a/src/lib/CMakeLists.txt b/src/lib/CMakeLists.txt
-index a9eac3a..7ef3820 100644
+index a9eac3a..e17adb9 100644
 --- a/src/lib/CMakeLists.txt
 +++ b/src/lib/CMakeLists.txt
-@@ -14,6 +14,12 @@ target_include_directories (veloc-client PUBLIC $<BUILD_INTERFACE:${VELOC_SOURCE
+@@ -14,6 +14,15 @@ target_include_directories (veloc-client PUBLIC $<BUILD_INTERFACE:${VELOC_SOURCE
    $<INSTALL_INTERFACE:include>
  )
  target_link_libraries (veloc-client PUBLIC veloc::modules ${COMM_QUEUE_LIBRARIES})
@@ -10,16 +10,19 @@ index a9eac3a..7ef3820 100644
 +if (CXLPATH_DIR)
 +  target_compile_definitions (veloc-client PRIVATE WITH_CXLPATH)
 +  target_include_directories (veloc-client PRIVATE ${CXLPATH_DIR}/include)
-+  target_link_libraries (veloc-client PRIVATE ${CXLPATH_DIR}/build/libcxlpath.a m)
++  # the SHARED library: rebuilding cxlpath updates every client; a static copy went stale once and made
++  # the client fall back to the scratch path without anybody noticing
++  target_link_libraries (veloc-client PRIVATE ${CXLPATH_DIR}/build/libcxlpath.so m)
++  set_target_properties (veloc-client PROPERTIES INSTALL_RPATH "${CXLPATH_DIR}/build" BUILD_RPATH "${CXLPATH_DIR}/build")
 +endif ()
  set_target_properties (veloc-client PROPERTIES EXPORT_NAME client)
  
  # Install libraries
 diff --git a/src/lib/client.cpp b/src/lib/client.cpp
-index 07b27b9..0b040f2 100644
+index 07b27b9..20bcf89 100644
 --- a/src/lib/client.cpp
 +++ b/src/lib/client.cpp
-@@ -16,6 +16,28 @@
+@@ -16,6 +16,32 @@
  #define __DEBUG
  #include "common/debug.hpp"
  
@@ -37,7 +40,11 @@ index 07b27b9..0b040f2 100644
 +    if (st < 0) {
 +        const char *n = getenv("VELOC_CXLPATH_STORE");
 +        st = (n != NULL && cxlp_attach(n) == 0) ? 1 : 0;
-+        if (n != NULL && st == 0) ERROR("VELOC_CXLPATH_STORE=" << n << " but the store cannot be attached; using the scratch path");
++        if (n != NULL && st == 0) {
++            ERROR("VELOC_CXLPATH_STORE=" << n << " but the store cannot be attached; using the scratch path");
++            // Tests and experiments set VELOC_CXLPATH_REQUIRED=1: a silent fall-back would measure stock VeloC.
++            if (getenv("VELOC_CXLPATH_REQUIRED") != NULL) { fprintf(stderr, "VELOC_CXLPATH_REQUIRED is set: aborting instead of falling back\n"); abort(); }
++        }
 +    }
 +    return st == 1;
 +}
@@ -48,7 +55,7 @@ index 07b27b9..0b040f2 100644
  static inline bool validate_name(const std::string &name) {
      std::regex e("[a-zA-Z0-9_\\.]+");
      return std::regex_match(name, e);
-@@ -173,6 +195,32 @@ bool client_impl_t::checkpoint_mem(int mode, const std::set<int> &ids) {
+@@ -173,6 +199,32 @@ bool client_impl_t::checkpoint_mem(int mode, const std::set<int> &ids) {
  	return false;
      }
  
@@ -81,7 +88,7 @@ index 07b27b9..0b040f2 100644
      // Direct memory path: bypass scratch file, memcpy into relay ring buffer.
      // Works for raw-pointer regions in both sync and async mode. In async mode
      // the storage module submits slots without waiting, so checkpoint_end
-@@ -242,8 +290,9 @@ bool client_impl_t::checkpoint_end(bool /*success*/) {
+@@ -242,8 +294,9 @@ bool client_impl_t::checkpoint_end(bool /*success*/) {
      checkpoint_in_progress = false;
      // If data was already sent via direct memory path, skip backend transfer.
      // The data is already on the remote host -- no scratch file to flush.
@@ -93,7 +100,7 @@ index 07b27b9..0b040f2 100644
          auto it = observers.find(VELOC_OBSERVE_CKPT_END);
          if (it != observers.end())
              it->second(current_ckpt.name, current_ckpt.version);
-@@ -267,6 +316,14 @@ int client_impl_t::restart_test(const std::string &name, int needed_version, int
+@@ -267,6 +320,14 @@ int client_impl_t::restart_test(const std::string &name, int needed_version, int
  	return VELOC_FAILURE;
      }
      int version = run_blocking(command_t(check_rank(target_rank), command_t::TEST, needed_version, name.c_str()));
@@ -108,7 +115,7 @@ index 07b27b9..0b040f2 100644
      DBG(name << ": latest version = " << version);
      if (comm != MPI_COMM_NULL && target_rank < 0) {
  	int max_version;
-@@ -304,6 +361,16 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
+@@ -304,6 +365,16 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
      int result, end_result;
      current_ckpt = command_t(check_rank(target_rank), command_t::RESTART, version, name.c_str());
  
@@ -125,7 +132,7 @@ index 07b27b9..0b040f2 100644
      // Direct memory path: skip backend restore (data will be received in recover_mem)
      if (cfg.is_sync() && cfg.storage() && cfg.storage()->supports_direct_mem()) {
          header_size = 0;
-@@ -324,6 +391,21 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
+@@ -324,6 +395,21 @@ bool client_impl_t::restart_begin(const std::string &name, int version, int targ
  }
  
  bool client_impl_t::read_current_header() {
@@ -147,7 +154,7 @@ index 07b27b9..0b040f2 100644
      header_size = read_header(current_ckpt.filename(cfg.get("scratch")), region_info);
      return header_size != 0;
  }
-@@ -361,6 +443,23 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
+@@ -361,6 +447,23 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
  	ERROR("cannot recover in memory mode if header unavailable or corrupted");
  	return false;
      }
@@ -171,7 +178,7 @@ index 07b27b9..0b040f2 100644
      try {
  	std::ifstream f;
  	f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-@@ -401,5 +500,6 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
+@@ -401,5 +504,6 @@ bool client_impl_t::recover_mem(int mode, const std::set<int> &ids) {
  }
  
  bool client_impl_t::restart_end(bool /*success*/) {

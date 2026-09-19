@@ -1,14 +1,20 @@
 E1.a VeloC API round trip
-    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:108:~client_impl_t] VELOC finalized
+    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:112:~client_impl_t] VELOC finalized
     PASS
   ok   no scratch file was written (the checkpoint went to CXL)
-    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:108:~client_impl_t] VELOC finalized
+    obj slot 1846 key 8abffd4112a4f032 COMMITTED bytes 96469813 chain db549a37ca6a9357 version 1 drained 0 pins 0 owner 883102
+    obj slot 2655 key 8abffc4112a4ee7f COMMITTED bytes 96469813 chain db549a37ca6a9357 version 2 drained 0 pins 0 owner 883102
+    obj slot 2854 key 8abffb4112a4eccc COMMITTED bytes 96469813 chain db549a37ca6a9357 version 3 drained 0 pins 0 owner 883102
+    3 live objects
+  ok   the newest version (3) is an object on CXL; older ones are reclaimed once drained
+    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:112:~client_impl_t] VELOC finalized
     PASS
-  ok   restart in a new process from CXL, newest version, byte-exact
+  ok   restart in a new process, newest version, byte-exact
+  ok   ... and it came from CXL: the stock restart path would have copied the file into scratch, scratch is still empty
     drained: rt-0-1.dat 96469813 bytes
     drained: rt-0-2.dat 96469813 bytes
     drained: rt-0-3.dat 96469813 bytes
-    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:108:~client_impl_t] VELOC finalized
+    [DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:112:~client_impl_t] VELOC finalized
     PASS
   ok   after the store is gone: STOCK VeloC path restarts from the drained NVMe file, byte-exact
 E1.b LULESH -s 100 -i 20, checkpoint every 5 cycles
@@ -17,10 +23,13 @@ E1.b LULESH -s 100 -i 20, checkpoint every 5 cycles
     stock VeloC persistent: lulesh-0-2.dat
     stock VeloC persistent: lulesh-0-3.dat
     [LULESH+VELOC] ckpt v3 node=-1 took 0.003 s
-    [LULESH+VELOC] cycle=20 ckpt v=3 took 2.589 ms
-    Elapsed time         =        2.3 (s)
+    [LULESH+VELOC] cycle=20 ckpt v=3 took 2.601 ms
+    Elapsed time         =        2.6 (s)
     compared 4 checkpoint files (stock VeloC vs drained by cxlpathd)
   ok   drained checkpoint files byte-identical to stock VeloC's files
-    [LULESH+VELOC] restart v=3 rc=0 T_load=4.931 ms
-  ok   LULESH restarts from the newest version on CXL (rc=0)
+  ok   LULESH wrote no scratch file (all checkpoints went through cxlpath)
+    obj slot 3440 key e8893b6beb151759 COMMITTED bytes 89696996 chain 7eced8a31ac70f6a version 3 drained 1 pins 0 owner 883278
+    1 live objects
+    [LULESH+VELOC] restart v=3 rc=0 T_load=4.769 ms
+  ok   LULESH restarts from the newest version (rc=0)
 PASS

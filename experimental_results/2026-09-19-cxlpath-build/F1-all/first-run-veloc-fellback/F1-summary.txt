@@ -1,0 +1,21 @@
+    dev 0: CXL  512 segments
+    dev 1: CXL  512 segments
+    dev 2: DRAM 128 segments
+  after 600 s:
+    VELOC round_trips=55 ERRORS=0
+    LULESH runs=26 ERRORS=0
+    DCP versions=231 reloads_from_cxl=231 reloads_from_nvme=229 mean_blocked_s=0.14 total_wait_for_set_s=3.2 ERRORS=0
+    KV replays=17 blocks=603398 hits=91563 put_failures=0 VERIFY_ERRORS=0
+    aggressor bursts: 10
+  ok   VeloC: every round trip restarted byte-exact
+  ok   LULESH + VeloC: every run completed
+  ok   PyTorch: every reload equal to the checkpoint-time tensors (from CXL and from NVMe)
+  ok   KV: every hit byte-exact, no failed store
+    alive=1 spill16=0 staged16=0 dram_ok=1 cxl_full=0 gpu_full=1 probe=138.1 base=144.0 bound=1.10 epoch=12214
+    dev 0 CXL  free 512/512 written 1218.72 GiB
+    dev 1 CXL  free 444/512 written 780.64 GiB
+    dev 2 DRAM free 128/128 written 0.00 GiB
+    policy: 3443 fast decreases, 10982 epochs with GPU chunks on the staged path
+    sweep: released 0 objects, destroyed 1 buffer sets; free segments 1152/1152
+  ok   no segment left after releasing every object and buffer set (no leak)
+PASS

@@ -8,6 +8,7 @@
 # usage: e1_veloc.sh <outdir>
 set -u; OUT=$1; mkdir -p "$OUT"; cd "$(dirname "$0")/../.."; B=$PWD/build; FAILS=0
 V=$HOME/apps/veloc-cxlpath-inst; export LD_LIBRARY_PATH=$V/lib64:$HOME/checkpoint/veloc_lib/lib64:${LD_LIBRARY_PATH:-} PATH=$V/bin:$PATH
+export VELOC_CXLPATH_REQUIRED=1   # a client that cannot attach must abort, not fall back silently to stock VeloC (that happened once)
 ok() { if [ "$1" = 0 ]; then echo "  ok   $2"; else echo "  FAIL $2"; FAILS=$((FAILS+1)); fi; }
 SCR=/dev/shm/cxlp_veloc_scratch; META=/dev/shm/cxlp_veloc_meta; PER=/mnt/local/ghu4/cxlp_veloc_persistent
 reset_veloc() { pkill -x veloc-backend 2>/dev/null; sleep 1; rm -f /dev/shm/*veloc-* /dev/shm/*queue* 2>/dev/null; rm -rf $SCR $META; mkdir -p $SCR $META $PER; }
@@ -20,7 +21,10 @@ echo "E1.a VeloC API round trip"
 reset_veloc; rm -rf $PER/*; start_daemon E1a-daemon.csv
 VELOC_CXLPATH_STORE=veloc $B/veloc_roundtrip write $CFG | tail -2 | sed 's/^/    /'
 ls $SCR | grep -q . ; ok $((1-$?)) "no scratch file was written (the checkpoint went to CXL)"
-VELOC_CXLPATH_STORE=veloc $B/veloc_roundtrip check $CFG 3 > $OUT/E1a-check-cxl.txt; R=$?; sed 's/^/    /' $OUT/E1a-check-cxl.txt | tail -2; ok $R "restart in a new process from CXL, newest version, byte-exact"
+$B/cxlp_admin veloc objects | sed 's/^/    /' | cut -c1-140
+$B/cxlp_admin veloc objects | grep -q "version 3 "; ok $? "the newest version (3) is an object on CXL; older ones are reclaimed once drained"
+VELOC_CXLPATH_STORE=veloc $B/veloc_roundtrip check $CFG 3 > $OUT/E1a-check-cxl.txt; R=$?; sed 's/^/    /' $OUT/E1a-check-cxl.txt | tail -2; ok $R "restart in a new process, newest version, byte-exact"
+ls $SCR | grep -q . ; ok $((1-$?)) "... and it came from CXL: the stock restart path would have copied the file into scratch, scratch is still empty"
 for i in $(seq 300); do [ -s $PER/rt-0-3.dat ] && $B/cxlp_admin veloc view | grep -q . && sleep 0.2 && break; sleep 0.1; done; sleep 2
 ls -l $PER | awk 'NR>1{print "    drained: "$9" "$5" bytes"}'
 stop_daemon; $B/cxlp_admin veloc destroy; reset_veloc                       # reboot: store and scratch gone, NVMe files stay
@@ -33,6 +37,8 @@ reset_veloc; rm -rf $PER/*; start_daemon E1b-daemon.csv
 export VELOC_CXLPATH_STORE=veloc; run_lulesh 1 > $OUT/E1b-lulesh-cxlpath.txt; grep -E "ckpt|Elapsed" $OUT/E1b-lulesh-cxlpath.txt | tail -3 | sed 's/^/    /'
 sleep 6; SAME=1; N=0; for f in $OUT/stock/lulesh-0-*.dat; do b=$(basename $f); if [ -f $PER/$b ]; then N=$((N+1)); cmp -s $f $PER/$b || SAME=0; fi; done
 echo "    compared $N checkpoint files (stock VeloC vs drained by cxlpathd)"; [ $N -gt 0 ] && [ $SAME = 1 ]; ok $? "drained checkpoint files byte-identical to stock VeloC's files"
-run_lulesh 1 > $OUT/E1b-lulesh-restart.txt; grep -E "restart" $OUT/E1b-lulesh-restart.txt | sed 's/^/    /'; grep -q "restart v=.* rc=0" $OUT/E1b-lulesh-restart.txt; ok $? "LULESH restarts from the newest version on CXL (rc=0)"
+ls $SCR | grep -q . ; ok $((1-$?)) "LULESH wrote no scratch file (all checkpoints went through cxlpath)"
+$B/cxlp_admin veloc objects | sed 's/^/    /' | cut -c1-140
+run_lulesh 1 > $OUT/E1b-lulesh-restart.txt; grep -E "restart" $OUT/E1b-lulesh-restart.txt | sed 's/^/    /'; grep -q "restart v=.* rc=0" $OUT/E1b-lulesh-restart.txt; ok $? "LULESH restarts from the newest version (rc=0)"
 unset VELOC_CXLPATH_STORE; stop_daemon; $B/cxlp_admin veloc destroy; pkill -x veloc-backend; rm -rf $OUT/stock
 [ $FAILS = 0 ] && echo PASS || echo "FAIL ($FAILS)"; exit $FAILS

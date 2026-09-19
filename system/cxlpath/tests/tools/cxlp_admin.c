@@ -11,6 +11,15 @@ int main(int argc, char **argv) {
     if (!strcmp(argv[2], "destroy")) { char p[256]; snprintf(p, sizeof p, "/dev/shm/cxlpath.%s.drampool", argv[1]); unlink(p); return cxlp_destroy(argv[1]); }
     if (cxlp_attach(argv[1])) { fprintf(stderr, "no such store\n"); return 1; }
     if (!strcmp(argv[2], "force") && argc > 3) cxlp_policy_force(atoi(argv[3]));
+    if (!strcmp(argv[2], "objects")) {
+        unsigned n = 0;
+        for (uint32_t i = 0; i < cxlp_g.meta->nobj; i++) { cxlp_obj_t *o = &cxlp_g.obj[i]; uint32_t st = atomic_load(&o->state);
+            if (st != OBJ_COMMITTED && st != OBJ_CREATING) continue;
+            n++;
+            printf("obj slot %u key %016llx %s bytes %llu chain %016llx version %llu drained %u pins %u owner %u\n", i, (unsigned long long)atomic_load(&o->key), st == OBJ_COMMITTED ? "COMMITTED" : "CREATING ",
+                   (unsigned long long)atomic_load(&o->bytes), (unsigned long long)o->chain, (unsigned long long)o->version, atomic_load(&o->drained), atomic_load(&o->pins), o->owner); }
+        printf("%u live objects\n", n); cxlp_close(); return 0;
+    }
     if (!strcmp(argv[2], "sweep")) {
         unsigned objs = 0, sets = 0;
         for (uint32_t i = 0; i < cxlp_g.meta->nobj; i++) if (atomic_load(&cxlp_g.obj[i].state) == OBJ_COMMITTED) { while (cxlp_obj_release(atomic_load(&cxlp_g.obj[i].key)) == -2) usleep(1000); objs++; }

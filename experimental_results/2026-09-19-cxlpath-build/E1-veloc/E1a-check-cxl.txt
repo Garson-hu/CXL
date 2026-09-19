@@ -1,6 +1,6 @@
 [INFO 0] [/home/ghu4/apps/veloc-src/src/common/config.cpp:134:config_t] using POSIX to interact with persistent storage in single file mode, path: /mnt/local/ghu4/cxlp_veloc_persistent
-[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:75:client_impl_t] VELOC initialized
-[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:327:restart_test] rt: latest version = 3
+[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:79:client_impl_t] VELOC initialized
+[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:331:restart_test] rt: latest version = 3
 Restart_test -> version 3 (expected 3), Restart rc=0, regions byte-exact
-[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:108:~client_impl_t] VELOC finalized
+[DEBUG 0] [/home/ghu4/apps/veloc-src/src/lib/client.cpp:112:~client_impl_t] VELOC finalized
 PASS

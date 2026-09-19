@@ -1,0 +1,3 @@
+    dev 0: CXL  512 segments
+    dev 1: CXL  512 segments
+    dev 2: DRAM 128 segments

@@ -11,7 +11,7 @@ pkill -x veloc-backend 2>/dev/null; rm -f /dev/shm/*veloc-* /dev/shm/*queue* 2>/
 CFG=$OUT/veloc.cfg; printf 'scratch = %s\npersistent = %s\nmeta = %s\nmax_versions = 8\nscratch_versions = 8\nmode = async\n' $SCR $PER $META > $CFG
 CXLP_OBJ_SLOTS=65536 $B/cxlp_mkstore f1 16384 4096 /dev/dax0.0 /dev/dax1.0 | sed 's/^/    /'
 $B/cxlpathd f1 --cpu 16 --log $OUT/F1-daemon.csv & DPID=$!; for i in $(seq 100); do sleep 0.05; $B/cxlp_admin f1 view 2>/dev/null | grep -q alive=1 && break; done
-END=$(( $(date +%s) + SECS )); export VELOC_CXLPATH_STORE=f1
+END=$(( $(date +%s) + SECS )); export VELOC_CXLPATH_STORE=f1 VELOC_CXLPATH_REQUIRED=1   # REQUIRED: abort instead of a silent fall-back to stock VeloC
 ( n=0; e=0; while [ $(date +%s) -lt $END ]; do $B/veloc_roundtrip write $CFG > /dev/null 2>&1 || e=$((e+1)); $B/veloc_roundtrip check $CFG 3 2>/dev/null | grep -q "byte-exact" || e=$((e+1)); n=$((n+1)); done; echo "VELOC round_trips=$n ERRORS=$e" ) > $OUT/F1-veloc.txt &
 ( n=0; e=0; cd $HOME/apps/lulesh-veloc; while [ $(date +%s) -lt $END ]; do LULESH_VELOC_CFG=$CFG LULESH_CKPT_EVERY=5 OMP_NUM_THREADS=16 OMP_PROC_BIND=close OMP_PLACES=cores timeout 300 mpirun --bind-to none -np 1 -x PATH -x LD_LIBRARY_PATH -x VELOC_CXLPATH_STORE ./lulesh2.0.veloc -s 100 -i 100 2>&1 | grep -q "Elapsed" || e=$((e+1)); n=$((n+1)); done; echo "LULESH runs=$n ERRORS=$e" ) > $OUT/F1-lulesh.txt &
 python3 -u clients/pytorch/loop_dcp.py f1 $SECS /mnt/local/ghu4/cxlpath_test/f1dcp 2>/dev/null | grep -E "^DCP" > $OUT/F1-dcp.txt &
@@ -22,6 +22,8 @@ echo "  after ${SECS} s:"; for f in veloc lulesh dcp; do sed 's/^/    /' $OUT/F1
 awk '{r+=1; split($3,a,"="); b+=a[2]; split($4,h,"="); hh+=h[2]; for(i=1;i<=NF;i++){ if($i ~ /^VERIFY_ERRORS=/){split($i,v,"="); ve+=v[2]} if($i ~ /^put_failures=/){split($i,pf,"="); p+=pf[2]} } } END{printf "    KV replays=%d blocks=%d hits=%d put_failures=%d VERIFY_ERRORS=%d\n", r, b, hh, p, ve}' $OUT/F1-kv.txt | tee $OUT/F1-kv-sum.txt
 echo "    aggressor bursts: $(wc -l < $OUT/F1-aggressor.txt)"
 grep -q "ERRORS=0" $OUT/F1-veloc.txt; ok $? "VeloC: every round trip restarted byte-exact"
+ls $SCR | grep -q . ; ok $((1-$?)) "VeloC and LULESH really went through cxlpath: no scratch file was ever written"
+$B/cxlp_admin f1 objects | grep -c "chain" | sed 's/^/    checkpoint objects still on CXL (newest version of each chain): /'
 grep -q "ERRORS=0" $OUT/F1-lulesh.txt; ok $? "LULESH + VeloC: every run completed"
 grep -q "ERRORS=0" $OUT/F1-dcp.txt; ok $? "PyTorch: every reload equal to the checkpoint-time tensors (from CXL and from NVMe)"
 grep -q "put_failures=0 VERIFY_ERRORS=0" $OUT/F1-kv-sum.txt; ok $? "KV: every hit byte-exact, no failed store"

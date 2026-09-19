@@ -53,10 +53,17 @@ int cxlp_attach(const char *name) {
     for (int tries = 0; tries < 5000; tries++) {           /* wait for the creator to finish */
         if (fstat(fd, &sb) == 0 && (uint64_t)sb.st_size >= sizeof(cxlp_meta_t)) {
             if (map_meta(fd, (uint64_t)sb.st_size) == 0) {
-                if (atomic_load(&cxlp_g.meta->magic) == CXLP_MAGIC && cxlp_g.meta->meta_bytes == (uint64_t)sb.st_size) {
+                uint64_t mg = atomic_load(&cxlp_g.meta->magic);
+                if (mg == CXLP_MAGIC && cxlp_g.meta->meta_bytes == (uint64_t)sb.st_size) {
                     close(fd); bind_tables(); return map_devices();
                 }
                 munmap(cxlp_g.meta, cxlp_g.meta_bytes); cxlp_g.meta = NULL;
+                /* A different layout version is not "still being created": say so at once. A client that
+                 * links an old copy of this library must not wait 5 s and then fall back silently. */
+                if (mg != 0 && (mg >> 8) == (CXLP_MAGIC >> 8)) {
+                    fprintf(stderr, "cxlpath: store '%s' has metadata layout %c, this library expects %c — rebuild the client against the current libcxlpath\n", name, (int)(mg & 0xff), (int)(CXLP_MAGIC & 0xff));
+                    close(fd); return -2;
+                }
             }
         }
         usleep(1000);

@@ -236,7 +236,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | **E — clients** | | | |
 | E1 ✅ | file-style shim + VeloC (`~/checkpoint/veloc`, existing hook point) | LULESH + VeloC checkpoint lands on NVMe, restart works | — |
 | E2 ✅ | PyTorch async checkpoint shim (per V4) | small model on the 4060 Ti: async checkpoint through the runtime, reload gives identical tensors | — |
-| E3 | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
+| E3 ✅ (LMCache ⏳) | KV client: trace-driven stand-in with allocate / free / get semantics (Mooncake traces). LMCache itself is NOT installed and needs vLLM — ⏳ ask user before attempting the real integration | replay of a trace through the runtime with correct data on every hit | — |
 | **F — system complete** | | | |
 | F1 | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
 | F2 | DESIGN.md updated to "as built" (§10 status, API reference), WORKLOG summary, list of what changed versus the design | user review ⏳ → then discuss evaluation | — |
@@ -447,6 +447,27 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   Found on the way: a buffer set must drain only its used prefix (`cxlp_bufset_set_used`), and the
   writer keeps per-checkpoint state so an overlapping save cannot disturb a running one.
   Raw: `E2-pytorch/`.
+
+- **E3 ✅ 2026-09-19 (real LMCache integration still ⏳ user)** — `tests/tools/cxlp_kv_replay.c`: a KV
+  layer in miniature driven by the Mooncake traces, with the call pattern of an LMCache-like layer —
+  pin/unpin for every block of the longest matching prefix, allocate + fill + commit for the rest, and
+  ITS OWN LRU eviction (the runtime does not decide what a KV layer drops). Block content is a function
+  of the block hash, so every hit is checked word by word. With a real cxlpathd (4 MiB blocks, first
+  4000 requests of each trace, 12 GiB layer capacity): conversation 105,904 blocks / 6,470 hits;
+  toolagent 75,443 / 24,927; synthetic 121,877 / 23,225 — **971 GiB stored, 213 GiB read back,
+  0 verification errors, 0 failed stores**; hot blocks were promoted while the traces ran (up to
+  23,550 hits served from the DRAM pool); every segment free at the end. Object table size is now a
+  store parameter (`obj_slots`; small objects need more than the default 8 per segment).
+- **Correction to E1 and a lesson (found while checking F1's output).** After E1 the shared-metadata
+  layout changed twice, but the VeloC client still carried the STATIC copy of libcxlpath from E1 time:
+  its attach failed on the layout check and the patch fell back to stock VeloC without anybody
+  noticing (my scripts discarded stderr). Consequence: in the FIRST F1 run the VeloC and LULESH loops
+  exercised stock VeloC, not cxlpath (PyTorch and KV parts were valid); that run's raw files are kept
+  under `F1-all/first-run-veloc-fellback/`. Fixes: a layout mismatch is an immediate, explicit error
+  in `cxlp_attach`; VeloC links the SHARED library; `VELOC_CXLPATH_REQUIRED=1` turns the fall-back
+  into an abort and is set by every gate; the E1 and F1 gates now PROVE the path (checkpoint objects
+  listed on CXL, scratch directory stays empty through checkpoint and restart). E1 rerun with these
+  checks: PASS — restart came from CXL, drained files byte-identical to stock VeloC's.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
