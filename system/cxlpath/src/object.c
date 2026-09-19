@@ -30,7 +30,14 @@ int cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle) {
             atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL); atomic_store(&o->bytes, 0);
             atomic_store(&o->flags, 0); atomic_store(&o->pins, 0); atomic_store(&o->seq, 0);
             atomic_store(&o->drain_idx, CXLP_NIL); atomic_store(&o->drained, 0); o->chain = 0; o->version = 0;
+            atomic_store(&o->gen, 0); atomic_store(&o->superseded, 0); o->drain_whole = 0;
             atomic_store(&o->key, key);
+            /* a new writer of an existing key: the old object's drain stops now (we own the target file) */
+            for (uint32_t p2 = 0, j = (uint32_t)mix(key) & mask; p2 <= mask; p2++, j = (j + 1) & mask) {
+                cxlp_obj_t *q = &cxlp_g.obj[j]; uint32_t qs = atomic_load(&q->state);
+                if (qs == OBJ_EMPTY) break;
+                if (j != i && qs == OBJ_COMMITTED && atomic_load(&q->key) == key) atomic_store(&q->superseded, 1);
+            }
             *handle = i; return 0;
         }
     }
@@ -52,19 +59,30 @@ int cxlp_obj_append(uint32_t h, const cxlp_res_t *r) {
 int cxlp_obj_set_flags(uint32_t h, uint32_t flags) { atomic_store(&cxlp_g.obj[h].flags, flags); return 0; }
 
 int cxlp_obj_commit(uint32_t h) {
+    cxlp_obj_t *o = &cxlp_g.obj[h]; cxlp_key_t key = atomic_load(&o->key);
+    atomic_store(&o->gen, atomic_fetch_add(&cxlp_g.meta->obj_gen, 1) + 1);       /* before it becomes visible */
     uint32_t st = OBJ_CREATING;
-    return atomic_compare_exchange_strong(&cxlp_g.obj[h].state, &st, OBJ_COMMITTED) ? 0 : -1;
+    if (!atomic_compare_exchange_strong(&o->state, &st, OBJ_COMMITTED)) return -1;
+    /* this is THE object of its key now: older committed objects under the same key go away
+     * (pinned ones stay flagged and are reaped once their readers are gone) */
+    uint32_t mask = cxlp_g.meta->nobj - 1;
+    for (uint32_t p = 0, j = (uint32_t)mix(key) & mask; p <= mask; p++, j = (j + 1) & mask) {
+        cxlp_obj_t *q = &cxlp_g.obj[j]; uint32_t qs = atomic_load(&q->state);
+        if (qs == OBJ_EMPTY) break;
+        if (j != h && qs == OBJ_COMMITTED && atomic_load(&q->key) == key && atomic_load(&q->gen) < atomic_load(&o->gen)) { atomic_store(&q->superseded, 1); cxlp_obj_release_slot(q); }
+    }
+    return 0;
 }
 
 static cxlp_obj_t *find(cxlp_key_t key) {
-    uint32_t mask = cxlp_g.meta->nobj - 1, i = (uint32_t)mix(key) & mask;
+    uint32_t mask = cxlp_g.meta->nobj - 1, i = (uint32_t)mix(key) & mask; cxlp_obj_t *best = NULL; uint64_t bg = 0;
     for (uint32_t probe = 0; probe <= mask; probe++, i = (i + 1) & mask) {
         cxlp_obj_t *o = &cxlp_g.obj[i];
         uint32_t st = atomic_load(&o->state);
-        if (st == OBJ_EMPTY) return NULL;                     /* never used: end of the probe chain */
-        if (st == OBJ_COMMITTED && atomic_load(&o->key) == key) return o;
+        if (st == OBJ_EMPTY) break;                           /* never used: end of the probe chain */
+        if (st == OBJ_COMMITTED && atomic_load(&o->key) == key) { uint64_t g = atomic_load(&o->gen); if (!best || g > bg) { best = o; bg = g; } }
     }
-    return NULL;
+    return best;                                              /* the newest committed object under this key */
 }
 
 int cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes) {
@@ -89,14 +107,39 @@ static void drop_extents(cxlp_obj_t *o, int fix_live) {
     if (di != CXLP_NIL) atomic_store(&cxlp_g.meta->drain[di].used, 0);
 }
 
-int cxlp_obj_release(cxlp_key_t key) {
-    cxlp_obj_t *o = find(key); if (!o) return -1;
+int cxlp_obj_release_slot(cxlp_obj_t *o) {
     if (atomic_load(&o->pins)) return -2;                     /* readers still hold pointers: retry later */
     uint32_t st = OBJ_COMMITTED;
     if (!atomic_compare_exchange_strong(&o->state, &st, OBJ_CREATING)) return -1;   /* one releaser wins */
     drop_extents(o, 1);
     atomic_store(&o->key, CXLP_KEY_TOMB); atomic_store(&o->state, OBJ_TOMB);
     return 0;
+}
+
+int cxlp_obj_release(cxlp_key_t key) {
+    cxlp_obj_t *o = find(key); if (!o) return -1;
+    return cxlp_obj_release_slot(o);
+}
+
+/* Superseded objects that were pinned when their successor committed. Also un-supersede an object
+ * whose successor never arrived (its writer died): the old object is THE object again. */
+int cxlp_obj_reap_superseded(void) {
+    int n = 0; uint32_t mask = cxlp_g.meta->nobj - 1;
+    for (uint32_t i = 0; i <= mask; i++) {
+        cxlp_obj_t *o = &cxlp_g.obj[i];
+        if (atomic_load(&o->state) != OBJ_COMMITTED || !atomic_load(&o->superseded)) continue;
+        cxlp_key_t key = atomic_load(&o->key); int newer = 0, writer = 0;
+        for (uint32_t p = 0, j = (uint32_t)mix(key) & mask; p <= mask; p++, j = (j + 1) & mask) {
+            cxlp_obj_t *q = &cxlp_g.obj[j]; uint32_t qs = atomic_load(&q->state);
+            if (qs == OBJ_EMPTY) break;
+            if (q == o || atomic_load(&q->key) != key) continue;
+            if (qs == OBJ_COMMITTED && atomic_load(&q->gen) > atomic_load(&o->gen)) newer = 1;
+            if (qs == OBJ_CREATING) writer = 1;
+        }
+        if (newer) { if (cxlp_obj_release_slot(o) == 0) n++; }
+        else if (!writer) atomic_store(&o->superseded, 0);
+    }
+    return n;
 }
 
 int cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len) { return cxlp_put_version(key, klass, buf, len, NULL, 0, 0, 0); }
@@ -106,7 +149,7 @@ int cxlp_obj_set_version(uint32_t h, uint64_t chain, uint64_t version) { cxlp_g.
 int cxlp_put_version(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms, uint64_t chain, uint64_t version) {
     uint32_t h; if (cxlp_obj_begin(key, klass, &h)) return -1;
     cxlp_obj_set_version(h, chain, version); if (chain) cxlp_obj_set_flags(h, CXLP_OBJ_NOPROMOTE);   /* checkpoints are never promoted */
-    if (path && cxlp_obj_set_drain(h, path, 0)) { atomic_store(&cxlp_g.obj[h].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[h].state, OBJ_TOMB); return -1; }
+    if (path && cxlp_obj_set_drain_whole(h, path)) { atomic_store(&cxlp_g.obj[h].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[h].state, OBJ_TOMB); return -1; }
     cxlp_hints_t hint = { klass, path ? 4096u : 0u, -1, 0, wait_ms };
     for (size_t done = 0; done < len;) {
         size_t n = len - done < CXLP_SEG_BYTES ? len - done : CXLP_SEG_BYTES; cxlp_res_t r;
@@ -123,11 +166,11 @@ fail:
 }
 
 int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap) {
-    cxlp_res_t ext[64]; uint64_t bytes; int n = cxlp_obj_pin(key, CXLP_CONSUMER_CPU, 0, UINT64_MAX, ext, 64, &bytes);
+    cxlp_res_t ext[64]; uint64_t bytes; cxlp_pin_t pin; int n = cxlp_obj_pin(key, CXLP_CONSUMER_CPU, 0, UINT64_MAX, ext, 64, &bytes, &pin);
     if (n < 0) return -1;
-    if (n > 64 || bytes > cap) { cxlp_obj_unpin(key); return -1; }
+    if (n > 64 || bytes > cap) { cxlp_obj_unpin(&pin); return -1; }
     size_t off = 0; for (int i = 0; i < n; i++) { memcpy((char *)buf + off, ext[i].ptr, ext[i].len); off += ext[i].len; }
-    cxlp_obj_unpin(key);
+    cxlp_obj_unpin(&pin);
     return (int64_t)bytes;
 }
 
@@ -145,6 +188,7 @@ int cxlp_cleanup_dead(void) {
             atomic_store(&o->key, CXLP_KEY_TOMB); atomic_store(&o->state, OBJ_TOMB); dropped++;
         }
     }
+    cxlp_obj_reap_superseded();                                /* an object superseded by a writer that died is THE object again */
     /* 2. segments of dead writers: true live bytes = extents of committed objects inside them;
      *    everything else (reserved, never committed) disappears with the recount */
     uint64_t *live = calloc(m->nseg_total, sizeof *live); int any = 0;

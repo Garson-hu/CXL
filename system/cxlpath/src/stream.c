@@ -15,7 +15,7 @@ cxlp_stream_t *cxlp_stream_create(cxlp_key_t key, uint32_t klass, uint32_t strea
     cxlp_stream_t *s = calloc(1, sizeof *s); if (!s) return NULL;
     if (cxlp_obj_begin(key, klass, &s->h)) { free(s); return NULL; }
     cxlp_obj_set_version(s->h, chain, version); if (chain) cxlp_obj_set_flags(s->h, CXLP_OBJ_NOPROMOTE);
-    if (path && cxlp_obj_set_drain(s->h, path, 0)) { cxlp_stream_abort(s); return NULL; }
+    if (path && cxlp_obj_set_drain_whole(s->h, path)) { cxlp_stream_abort(s); return NULL; }
     s->hints = (cxlp_hints_t){ klass, 4096, -1, stream_id, wait_ms };
     return s;
 }
@@ -58,9 +58,9 @@ void cxlp_stream_abort(cxlp_stream_t *s) {
 }
 
 int64_t cxlp_read(cxlp_key_t key, uint64_t off, void *buf, size_t n) {
-    cxlp_res_t ext[64]; uint64_t bytes; int ne = cxlp_obj_pin(key, CXLP_CONSUMER_CPU, 0, UINT64_MAX, ext, 64, &bytes);
+    cxlp_res_t ext[64]; uint64_t bytes; cxlp_pin_t pin; int ne = cxlp_obj_pin(key, CXLP_CONSUMER_CPU, 0, UINT64_MAX, ext, 64, &bytes, &pin);
     if (ne < 0) return -1;
-    if (ne > 64 || off > bytes) { cxlp_obj_unpin(key); return -1; }
+    if (ne > 64 || off > bytes) { cxlp_obj_unpin(&pin); return -1; }
     if (n > bytes - off) n = (size_t)(bytes - off);
     uint64_t pos = 0; size_t done = 0;
     for (int i = 0; i < ne && done < n; i++) {
@@ -69,7 +69,7 @@ int64_t cxlp_read(cxlp_key_t key, uint64_t off, void *buf, size_t n) {
         uint64_t in = off + done - a; size_t m = (size_t)(ext[i].len - in); if (m > n - done) m = n - done;
         memcpy((char *)buf + done, (char *)ext[i].ptr + in, m); done += m;
     }
-    cxlp_obj_unpin(key);
+    cxlp_obj_unpin(&pin);
     return (int64_t)done;
 }
 

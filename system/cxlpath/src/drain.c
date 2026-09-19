@@ -22,6 +22,8 @@ int cxlp_obj_set_drain(uint32_t h, const char *path, uint64_t file_off) {
     return -1;
 }
 
+int cxlp_obj_set_drain_whole(uint32_t h, const char *path) { if (cxlp_obj_set_drain(h, path, 0)) return -1; cxlp_g.obj[h].drain_whole = 1; return 0; }
+
 int cxlp_obj_drained(cxlp_key_t key) {
     cxlp_obj_t *o = cxlp_obj_find(key); if (!o || atomic_load(&o->drain_idx) == CXLP_NIL) return -1;
     return (int)atomic_load(&o->drained);
@@ -82,7 +84,7 @@ static __thread int need_reclaim;
 static int64_t drain_object(cxlp_drain_t *d) {
     cxlp_obj_t *o = &cxlp_g.obj[d->obj];
     uint32_t st = atomic_load(&o->state); if (st != OBJ_CREATING && st != OBJ_COMMITTED) return 0;
-    if (atomic_load(&o->drained)) return 0;
+    if (atomic_load(&o->drained) || atomic_load(&o->superseded)) return 0;   /* superseded: a newer writer owns the target file */
     atomic_fetch_add(&o->pins, 1);                             /* a release now waits for us */
     int64_t wrote = 0; int all_done = 1;
     for (uint32_t e = atomic_load(&o->head); e != CXLP_NIL; e = atomic_load(&cxlp_g.ext[e].next)) {
@@ -97,7 +99,9 @@ static int64_t drain_object(cxlp_drain_t *d) {
         break;                                                 /* one extent per step */
     }
     if (all_done && atomic_load(&o->state) == OBJ_COMMITTED) {  /* nothing pending and no more extents can come */
-        uint32_t z = 0; if (atomic_compare_exchange_strong(&o->drained, &z, 2)) { fdc_t *f = get_fd(d->path); if (f) { fsync(f->fd_buf); } atomic_store(&o->drained, 1); need_reclaim = 1; }
+        uint32_t z = 0; if (!atomic_load(&o->superseded) && atomic_compare_exchange_strong(&o->drained, &z, 2)) { fdc_t *f = get_fd(d->path);
+            if (f) { if (o->drain_whole && ftruncate(f->fd_buf, (off_t)(d->file_off + atomic_load(&o->bytes))) != 0) { /* keep going: content is complete, length may be stale */ } fsync(f->fd_buf); }
+            atomic_store(&o->drained, 1); need_reclaim = 1; }
     }
     atomic_fetch_sub(&o->pins, 1);
     return wrote;
@@ -140,13 +144,13 @@ static int have_work(void) {
     for (int s = 0; s < CXLP_MAX_BUFSETS; s++) { cxlp_bufset_t *b = &cxlp_g.meta->bufset[s]; if (!atomic_load(&b->client)) continue;
         for (int w = 0; w < 2; w++) if (atomic_load(&b->drain_armed[w])) return 1; }
     for (uint32_t k = 0; k < CXLP_NDRAIN; k++) { cxlp_drain_t *d = &cxlp_g.meta->drain[k]; if (atomic_load(&d->used) != 2) continue;
-        cxlp_obj_t *o = &cxlp_g.obj[d->obj]; if (!atomic_load(&o->drained) && atomic_load(&o->head) != CXLP_NIL) return 1; }
+        cxlp_obj_t *o = &cxlp_g.obj[d->obj]; if (!atomic_load(&o->drained) && !atomic_load(&o->superseded) && atomic_load(&o->head) != CXLP_NIL) return 1; }
     return 0;
 }
 
 int64_t cxlp_drain_step(int yield) {
     static __thread uint32_t idle_steps; static __thread uint64_t pending_since;
-    if (idle_steps++ % 25 == 0) reclaim_chains();              /* also covers versions whose successor committed after their drain */
+    if (idle_steps++ % 25 == 0) { reclaim_chains(); cxlp_obj_reap_superseded(); }   /* versions whose successor committed after their drain; superseded objects whose readers left */
     /* Pacing: give way to active writers — but never indefinitely. The first all-clients run (F1)
      * showed the flaw of "yield while anybody writes": with a KV layer writing all the time the drain
      * never ran, and a checkpoint writer waited a minute for a buffer set. The drain stops yielding

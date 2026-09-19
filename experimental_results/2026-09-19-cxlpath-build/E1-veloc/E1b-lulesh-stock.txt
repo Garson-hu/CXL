@@ -1,11 +1,11 @@
 [LULESH+VELOC] registered 11 regions, ~85.5 MB total per rank, ckpt every 5 cycles
 [LULESH+VELOC] ckpt v0 node=-1 took 0.018 s
-[LULESH+VELOC] cycle=5 ckpt v=0 took 18.015 ms
-[LULESH+VELOC] ckpt v1 node=-1 took 0.018 s
-[LULESH+VELOC] cycle=10 ckpt v=1 took 18.001 ms
-[LULESH+VELOC] ckpt v2 node=-1 took 0.019 s
-[LULESH+VELOC] cycle=15 ckpt v=2 took 19.259 ms
+[LULESH+VELOC] cycle=5 ckpt v=0 took 17.591 ms
+[LULESH+VELOC] ckpt v1 node=-1 took 0.019 s
+[LULESH+VELOC] cycle=10 ckpt v=1 took 19.015 ms
+[LULESH+VELOC] ckpt v2 node=-1 took 0.018 s
+[LULESH+VELOC] cycle=15 ckpt v=2 took 17.715 ms
 [LULESH+VELOC] ckpt v3 node=-1 took 0.018 s
-[LULESH+VELOC] cycle=20 ckpt v=3 took 18.116 ms
+[LULESH+VELOC] cycle=20 ckpt v=3 took 17.958 ms
    Final Origin Energy =  1.622358e+08
-Elapsed time         =        2.5 (s)
+Elapsed time         =        2.3 (s)

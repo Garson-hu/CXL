@@ -32,7 +32,7 @@ static void count_read(uint32_t e, cxlp_consumer_t who) {
     atomic_store(&POL->promo_ring[slot], e + 1);
 }
 
-int cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len, cxlp_res_t *ext, int max, uint64_t *bytes) {
+int cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len, cxlp_res_t *ext, int max, uint64_t *bytes, cxlp_pin_t *pin) {
     cxlp_obj_t *o = cxlp_obj_find(key); if (!o) return -1;
     atomic_fetch_add(&o->pins, 1);                             /* pin FIRST: a relocation now keeps the old copy alive for us */
     if (atomic_load(&o->state) != OBJ_COMMITTED || atomic_load(&o->key) != key) { atomic_fetch_sub(&o->pins, 1); return -1; }
@@ -52,11 +52,14 @@ int cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len
     }
     for (int i = 0; i < nhit; i++) count_read(hit[i], who);
     if (bytes) *bytes = atomic_load(&o->bytes);
+    if (pin) { pin->slot = (uint32_t)(o - cxlp_g.obj); pin->gen = atomic_load(&o->gen); }
     return n;
 }
 
-int cxlp_obj_unpin(cxlp_key_t key) {
-    cxlp_obj_t *o = cxlp_obj_find(key); if (!o || atomic_load(&o->pins) == 0) return -1;
+int cxlp_obj_unpin(const cxlp_pin_t *pin) {
+    if (!pin || pin->slot >= cxlp_g.meta->nobj) return -1;
+    cxlp_obj_t *o = &cxlp_g.obj[pin->slot];                   /* the object that was pinned, even if its key was re-written since */
+    if (atomic_load(&o->gen) != pin->gen || atomic_load(&o->pins) == 0) return -1;
     atomic_fetch_sub(&o->pins, 1); return 0;
 }
 

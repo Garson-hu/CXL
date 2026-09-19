@@ -103,6 +103,11 @@ cxlp_devkind_t cxlp_dev_kind(int dev);
  * node-level store, not to the process that wrote it, so the drain process and a restarted
  * application can find it. One writer per object; readers look it up after obj_commit. */
 typedef uint64_t cxlp_key_t;                       /* 0 and UINT64_MAX are reserved */
+/* A key names ONE logical object. Beginning an object under a key that already has a committed
+ * object SUPERSEDES the old one: its drain is cancelled at once (the new writer owns the target
+ * file), it stays readable until the new object commits, and is then released (after its last
+ * reader unpins). A rerun of an application that writes "checkpoint version 3" again therefore
+ * replaces version 3 instead of piling up a second one (found by the all-clients run F1). */
 int  cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle);
 int  cxlp_obj_append(uint32_t handle, const cxlp_res_t *committed);
 int  cxlp_obj_commit(uint32_t handle);
@@ -122,8 +127,11 @@ int  cxlp_obj_release(cxlp_key_t key);
 typedef enum { CXLP_CONSUMER_CPU = 0, CXLP_CONSUMER_GPU = 1 } cxlp_consumer_t;
 #define CXLP_OBJ_NOPROMOTE 1u                      /* checkpoints: never promoted */
 int  cxlp_obj_set_flags(uint32_t handle, uint32_t flags);
-int  cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len, cxlp_res_t *ext, int max, uint64_t *bytes);
-int  cxlp_obj_unpin(cxlp_key_t key);
+/* A pin names the OBJECT that was pinned, not the key: if the key is re-written while a reader holds
+ * pointers, the reader still unpins the old object (which is then released). */
+typedef struct { uint32_t slot; uint64_t gen; } cxlp_pin_t;
+int  cxlp_obj_pin(cxlp_key_t key, cxlp_consumer_t who, uint64_t off, uint64_t len, cxlp_res_t *ext, int max, uint64_t *bytes, cxlp_pin_t *pin);
+int  cxlp_obj_unpin(const cxlp_pin_t *pin);
 uint32_t cxlp_k_compute(double t_copy, double t_cxl, double t_dram, double w, double pressure);   /* 0 = never */
 /* Run by the background process (and by tests): relocate queued extents to the DRAM pool while
  * DRAM is within its bound and the pool has room; finish deferred releases. Returns extents moved. */
@@ -136,6 +144,7 @@ int  cxlp_promote_pending(int dram_ok);
  * never drained. Recovery: an object / the newest committed buffer-set version is found through
  * the node-owned index by any process; after a reboot the client reads the NVMe file instead. */
 int  cxlp_obj_set_drain(uint32_t handle, const char *path, uint64_t file_off);   /* before the first append */
+int  cxlp_obj_set_drain_whole(uint32_t handle, const char *path);               /* the object IS the file: truncated to its size when drained */
 int  cxlp_obj_drained(cxlp_key_t key);            /* 1 = complete on NVMe and fsynced, 0 = not yet, -1 = unknown */
 /* Checkpoint versions: objects of one chain are reclaimed BY THE RUNTIME as soon as they are on NVMe
  * and a newer version of the chain is committed. It cannot be left to the client: a producer that

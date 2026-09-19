@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x435850415448303Aull   /* "CXPATH0:" */
+#define CXLP_MAGIC   0x435850415448303Bull   /* "CXPATH0;" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -52,6 +52,9 @@ typedef struct {                   /* open-addressing hash slot */
     _Atomic uint32_t drain_idx;    /* drain descriptor, CXLP_NIL = never drained */
     _Atomic uint32_t drained;      /* 1 = complete on NVMe and fsynced */
     uint64_t chain, version;       /* checkpoint version chain (0 = none): older drained versions are reclaimed by the runtime */
+    _Atomic uint64_t gen;          /* commit order: of several committed objects under one key the highest gen is THE object */
+    _Atomic uint32_t superseded;   /* a newer writer of the same key exists: drain cancelled, released when unpinned */
+    uint32_t drain_whole;          /* the object owns its file: truncate to the object's size when drained */
 } cxlp_obj_t;
 
 #define CXLP_NDRAIN 1024
@@ -110,6 +113,7 @@ typedef struct {
     uint64_t meta_bytes;
     uint32_t nseg_total, nobj;     /* nobj: power of two */
     uint32_t next_cap; _Atomic uint32_t ext_hint;
+    _Atomic uint64_t obj_gen;      /* source of cxlp_obj_t.gen */
     uint64_t obj_off, ext_off;     /* byte offsets of the tables inside the metadata */
     uint64_t bs_segtab_off;        /* CXLP_MAX_BUFSETS * 2 * CXLP_BS_MAXSEG uint32_t */
     cxlp_bufset_t bufset[CXLP_MAX_BUFSETS];
@@ -146,6 +150,8 @@ int  cxlp_seg_to_free(int dev, uint32_t seg, int only_if_sealed_empty);   /* 1 i
 void cxlp_seg_force_seal(int dev, uint32_t seg, uint64_t live);
 /* object.c */
 cxlp_obj_t *cxlp_obj_find(cxlp_key_t key);
+int  cxlp_obj_release_slot(cxlp_obj_t *o);      /* 0, -2 if pinned, -1 if someone else got it */
+int  cxlp_obj_reap_superseded(void);            /* release superseded objects that nobody pins any more */
 /* policy.c */
 int  cxlp_policy_daemon_alive(void);
 int  cxlp_policy_pick(uint32_t stream, uint32_t nclaim);

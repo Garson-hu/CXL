@@ -36,11 +36,11 @@ int main(int argc, char **argv) {
             uint64_t h = strtoull(p, &p, 10); nblk++;
             ent_t *e = find(h);
             if (matching && e) {                                   /* prefix hit: read the block in place and check every word */
-                cxlp_res_t x[4]; uint64_t bytes; int n = cxlp_obj_pin(key_of(h), CXLP_CONSUMER_CPU, 0, UINT64_MAX, x, 4, &bytes);
-                if (n < 1 || bytes != bsz) { bad++; if (n >= 0) cxlp_obj_unpin(key_of(h)); }
+                cxlp_res_t x[4]; uint64_t bytes; cxlp_pin_t pin; int n = cxlp_obj_pin(key_of(h), CXLP_CONSUMER_CPU, 0, UINT64_MAX, x, 4, &bytes, &pin);
+                if (n < 1 || bytes != bsz) { bad++; if (n >= 0) cxlp_obj_unpin(&pin); }
                 else { fill(exp, words, h); size_t o = 0; int ok = 1; for (int i = 0; i < n; i++) { if (memcmp((char *)exp + o, x[i].ptr, x[i].len)) ok = 0; o += x[i].len; hit_dram += cxlp_dev_kind(x[i].dev) == CXLP_DEV_DRAM && i == 0; }
                        if (!ok) { bad++; }
-                       cxlp_obj_unpin(key_of(h)); hits++; }
+                       cxlp_obj_unpin(&pin); hits++; }
                 lru_unlink(e); lru_push(e);
                 continue;
             }
