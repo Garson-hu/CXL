@@ -208,7 +208,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | id | step | gate (pass condition) | if it fails |
 |---|---|---|---|
 | **V — feasibility checks (small yes/no programs)** | | | |
-| V1 | O_DIRECT write to `/mnt/local` with a devdax mapping as the source buffer | file on NVMe byte-identical; no EFAULT/EINVAL | drain copies through a small reused DRAM buffer (DRAM traffic ≤ NVMe speed, ~3 GiB/s) — note in DESIGN D |
+| V1 ✅ | O_DIRECT write to `/mnt/local` with a devdax mapping as the source buffer | file on NVMe byte-identical; no EFAULT/EINVAL | drain copies through a small reused DRAM buffer (DRAM traffic ≤ NVMe speed, ~3 GiB/s) — note in DESIGN D |
 | V2 | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
 | V3 | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
 | V4 | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
@@ -240,6 +240,13 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | **F — system complete** | | | |
 | F1 | end-to-end run of all three clients together for 10 minutes, invariants checked (no leak, no lost object, files identical) | clean run | — |
 | F2 | DESIGN.md updated to "as built" (§10 status, API reference), WORKLOG summary, list of what changed versus the design | user review ⏳ → then discuss evaluation | — |
+
+### Phase 5 v2 results log (one entry per finished step; raw: `experimental_results/2026-09-19-cxlpath-build/`)
+- **V1 ✅ 2026-09-19** — O_DIRECT from a devdax mapping WORKS on dax0.0 and dax1.0 (2 GiB, 32 MB
+  `pwrite`s, file byte-identical). Speed equals O_DIRECT from DRAM (0.89–0.95 vs 0.91–0.93 GiB/s):
+  the NVMe, not the source, is the limit. Note for D2: a single synchronous writer gets only
+  ~0.9 GiB/s from the Solidigm drive — try parallel/queued writes there. Tool:
+  `system/cxlpath/checks/v1_odirect_devdax.c`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

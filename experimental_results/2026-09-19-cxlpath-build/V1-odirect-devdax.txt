@@ -1,0 +1,10 @@
+## /dev/dax0.0
+O_DIRECT from devdax: OK, 2048 MiB in 2.11s = 0.95 GiB/s, verify match
+buffered from devdax: OK, 2048 MiB in 2.66s = 0.75 GiB/s, verify match
+reference O_DIRECT from DRAM: 0.93 GiB/s
+exit=0
+## /dev/dax1.0
+O_DIRECT from devdax: OK, 2048 MiB in 2.25s = 0.89 GiB/s, verify match
+buffered from devdax: OK, 2048 MiB in 2.73s = 0.73 GiB/s, verify match
+reference O_DIRECT from DRAM: 0.91 GiB/s
+exit=0
