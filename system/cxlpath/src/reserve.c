@@ -17,7 +17,7 @@ uint64_t cxlp_seg_live(int dev, uint32_t seg) { return atomic_load(&segp(dev, se
 
 /* A SEALED segment with no live bytes goes back to the pool. Sealer and releaser may race here;
  * the compare-and-swap on the state lets exactly one of them free it. */
-static void try_free(int dev, uint32_t seg) {
+void cxlp_seg_try_free(int dev, uint32_t seg) {
     cxlp_seg_t *s = segp(dev, seg);
     uint32_t cur = atomic_load(&s->st);
     if (ST_STATE(cur) != CXLP_SEG_SEALED || atomic_load(&s->live) != 0) return;
@@ -31,8 +31,17 @@ static void seal(int dev, open_t *o) {
     cxlp_seg_t *s = segp(dev, o->seg);
     uint32_t cur = atomic_load(&s->st);
     if (ST_STATE(cur) == CXLP_SEG_OPEN) atomic_compare_exchange_strong(&s->st, &cur, ST_MAKE(ST_GEN(cur), CXLP_SEG_SEALED));
-    try_free(dev, o->seg);
+    cxlp_seg_try_free(dev, o->seg);
     o->seg = CXLP_NO_SEG; o->off = 0;
+}
+
+/* Crash cleanup: the owner is gone; set the true live byte count and seal. */
+void cxlp_seg_force_seal(int dev, uint32_t seg, uint64_t live) {
+    cxlp_seg_t *s = segp(dev, seg);
+    atomic_store(&s->live, live);
+    uint32_t cur = atomic_load(&s->st);
+    if (ST_STATE(cur) == CXLP_SEG_OPEN) atomic_compare_exchange_strong(&s->st, &cur, ST_MAKE(ST_GEN(cur), CXLP_SEG_SEALED));
+    cxlp_seg_try_free(dev, seg);
 }
 
 void cxlp_thread_seal(void) {
@@ -96,7 +105,7 @@ void cxlp_commit(const cxlp_res_t *r) { (void)r; _mm_sfence(); }
 
 static void drop(const cxlp_res_t *r) {
     atomic_fetch_sub(&segp(r->dev, r->seg)->live, r->len);
-    try_free(r->dev, r->seg);
+    cxlp_seg_try_free(r->dev, r->seg);
 }
 void cxlp_abort(const cxlp_res_t *r)   { drop(r); }
 void cxlp_release(const cxlp_res_t *r) { drop(r); }

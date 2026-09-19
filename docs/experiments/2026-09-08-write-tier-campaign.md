@@ -218,7 +218,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | A1 ✅ | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
 | A2 ✅ | shared segment table, compare-and-swap claim/release, owner + state per segment | stress: 8 processes × 8 threads, 10⁶ claims, no double claim, no leak | — |
 | A3 ✅ | `reserve` / `commit` / `release`, per-thread open log segments, live-byte accounting, reclaim at zero, `copy_in` (NT stores) | unit tests; write throughput within 5 % of a raw NT memcpy to the same device | profile; reduce table touches |
-| A4 | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
+| A4 ✅ | shared index (object → extents), `lookup`, objects outlive the writer; cleanup of uncommitted reservations | kill -9 a writer mid-write: committed objects readable from a new process, uncommitted space reclaimed | — |
 | A5 | buffer sets (uses V2/V3): create, two alternating sets, overwrite rule | rule test: a set cannot be overwritten before its version is drained and the other committed | — |
 | **B — placement (P2)** | | | |
 | B1 | background process + shared policy page (published ratio/path, read by `reserve` without IPC) | `reserve` sees a changed ratio within one epoch; no syscalls on the data path (strace) | — |
@@ -302,6 +302,15 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   hammer with random release order, data verified, everything reclaimed; throughput through the
   library 98.0% (dax) / 99.3% (shm) of a raw NT memcpy (gate ≥ 95%; ratio only, not a performance
   claim). Raw: `A1-A3-test-dax.txt`.
+
+- **A4 ✅ 2026-09-19** — Object index in the shared metadata (open-addressing hash of
+  `cxlp_obj_t`, extents claimed by compare-and-swap; one writer per object). Gate: a writer commits
+  3 objects (44–70 MiB, not segment multiples), starts a 4th, leaves a raw uncommitted reservation
+  and is SIGKILLed; `cxlp_cleanup_dead` drops exactly the uncommitted object and recounts live
+  bytes of the dead writer's segments from the index; a NEW process reads the 3 objects
+  byte-exactly, the 4th is absent; after release every segment is free (fake devices and
+  dax0.0 + dax1.0). Plus 4 processes × 300 put / get+verify / release with no leak. Known limit:
+  `cxlp_get` copies at most 64 extents (2 GiB) — lift when a client needs it. Raw: `A4-test-dax.txt`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

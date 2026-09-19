@@ -26,10 +26,16 @@ static int map_devices(void) {
     return 0;
 }
 
+static void bind_tables(void) {
+    cxlp_g.obj = (cxlp_obj_t *)((char *)cxlp_g.meta + cxlp_g.meta->obj_off);
+    cxlp_g.ext = (cxlp_ext_t *)((char *)cxlp_g.meta + cxlp_g.meta->ext_off);
+}
+
 static int map_meta(int fd, uint64_t bytes) {
     void *p = mmap(NULL, bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (p == MAP_FAILED) return -1;
     cxlp_g.meta = p; cxlp_g.meta_bytes = bytes; cxlp_g.seg = (cxlp_seg_t *)((char *)p + sizeof(cxlp_meta_t));
+    cxlp_g.obj = NULL; cxlp_g.ext = NULL;       /* set by bind_tables() once the header is valid */
     cxlp_g.pid = (uint32_t)getpid();
     return 0;
 }
@@ -43,7 +49,7 @@ int cxlp_attach(const char *name) {
         if (fstat(fd, &sb) == 0 && (uint64_t)sb.st_size >= sizeof(cxlp_meta_t)) {
             if (map_meta(fd, (uint64_t)sb.st_size) == 0) {
                 if (atomic_load(&cxlp_g.meta->magic) == CXLP_MAGIC && cxlp_g.meta->meta_bytes == (uint64_t)sb.st_size) {
-                    close(fd); return map_devices();
+                    close(fd); bind_tables(); return map_devices();
                 }
                 munmap(cxlp_g.meta, cxlp_g.meta_bytes); cxlp_g.meta = NULL;
             }
@@ -60,12 +66,19 @@ int cxlp_open(const cxlp_config_t *cfg) {
     if (fd < 0) { if (errno == EEXIST) return cxlp_attach(cfg->name); return -1; }
     uint32_t total = 0, nseg[CXLP_MAX_DEVS];
     for (int d = 0; d < cfg->ndev; d++) { nseg[d] = (uint32_t)(cfg->dev[d].bytes / CXLP_SEG_BYTES); total += nseg[d]; }
-    uint64_t bytes = sizeof(cxlp_meta_t) + (uint64_t)total * sizeof(cxlp_seg_t);
+    /* object slots: 8 per segment (KV blocks are tens of MiB; small objects share segments),
+     * at least 4096, power of two; extents: 4 per slot. tmpfs pages are allocated on touch. */
+    uint32_t nobj = 4096; while (nobj < total * 8u) nobj <<= 1;
+    uint32_t next_cap = nobj * 4u;
+    uint64_t obj_off = (sizeof(cxlp_meta_t) + (uint64_t)total * sizeof(cxlp_seg_t) + 63) & ~63ull;
+    uint64_t ext_off = (obj_off + (uint64_t)nobj * sizeof(cxlp_obj_t) + 63) & ~63ull;
+    uint64_t bytes = ext_off + (uint64_t)next_cap * sizeof(cxlp_ext_t);
     bytes = (bytes + 4095) & ~4095ull;
     if (ftruncate(fd, (off_t)bytes) != 0 || map_meta(fd, bytes) != 0) { close(fd); unlink(path); return -1; }
     close(fd);
     cxlp_meta_t *m = cxlp_g.meta;                          /* tmpfs pages start zeroed: all FREE */
-    m->version = 1; m->ndev = (uint32_t)cfg->ndev; m->meta_bytes = bytes; m->nseg_total = total;
+    m->version = 2; m->ndev = (uint32_t)cfg->ndev; m->meta_bytes = bytes; m->nseg_total = total;
+    m->nobj = nobj; m->next_cap = next_cap; m->obj_off = obj_off; m->ext_off = ext_off; bind_tables();
     uint32_t first = 0;
     for (int d = 0; d < cfg->ndev; d++) {
         snprintf(m->dev[d].path, CXLP_PATHLEN, "%s", cfg->dev[d].path);

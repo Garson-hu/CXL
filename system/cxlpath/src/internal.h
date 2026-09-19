@@ -24,18 +24,40 @@ typedef struct {
     _Atomic uint32_t hint;         /* rotating scan start */
 } cxlp_devmeta_t;
 
+#define CXLP_NIL      UINT32_MAX
+#define CXLP_KEY_TOMB UINT64_MAX
+enum { OBJ_EMPTY = 0, OBJ_CREATING = 1, OBJ_COMMITTED = 2, OBJ_TOMB = 3 };
+
+typedef struct {                   /* one extent of an object */
+    _Atomic uint32_t used;
+    uint32_t dev, seg, off, len;
+    _Atomic uint32_t next;
+} cxlp_ext_t;
+
+typedef struct {                   /* open-addressing hash slot */
+    _Atomic uint64_t key;
+    _Atomic uint32_t state;
+    uint32_t owner, klass;
+    _Atomic uint32_t head, tail, next_pad;
+    _Atomic uint64_t bytes;
+} cxlp_obj_t;
+
 typedef struct {
     _Atomic uint64_t magic;        /* written LAST by the creator */
     uint32_t version, ndev;
     uint64_t meta_bytes;
-    uint32_t nseg_total, pad;
+    uint32_t nseg_total, nobj;     /* nobj: power of two */
+    uint32_t next_cap; _Atomic uint32_t ext_hint;
+    uint64_t obj_off, ext_off;     /* byte offsets of the tables inside the metadata */
     cxlp_devmeta_t dev[CXLP_MAX_DEVS];
-    /* followed by cxlp_seg_t seg[nseg_total] */
+    /* followed by cxlp_seg_t seg[nseg_total], cxlp_obj_t obj[nobj], cxlp_ext_t ext[next_cap] */
 } cxlp_meta_t;
 
 typedef struct {
     cxlp_meta_t *meta;
     cxlp_seg_t  *seg;
+    cxlp_obj_t  *obj;
+    cxlp_ext_t  *ext;
     uint64_t     meta_bytes;
     void        *base[CXLP_MAX_DEVS];
     int          fd[CXLP_MAX_DEVS];
@@ -43,6 +65,8 @@ typedef struct {
 } cxlp_state_t;
 
 extern cxlp_state_t cxlp_g;
+void cxlp_seg_try_free(int dev, uint32_t seg);
+void cxlp_seg_force_seal(int dev, uint32_t seg, uint64_t live);
 #define ST_STATE(x) ((x) & 0xffu)
 #define ST_GEN(x)   ((x) >> 8)
 #define ST_MAKE(gen, state) ((((gen) & 0xffffffu) << 8) | (uint32_t)(state))

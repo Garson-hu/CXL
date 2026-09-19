@@ -78,6 +78,27 @@ uint64_t cxlp_seg_live(int dev, uint32_t seg);
 typedef int (*cxlp_pick_fn)(uint32_t klass);
 void cxlp_set_pick(cxlp_pick_fn fn);
 
+/* --- Component A, object index (A4) ---
+ * An object is a list of committed extents, kept in the SHARED metadata: it belongs to the
+ * node-level store, not to the process that wrote it, so the drain process and a restarted
+ * application can find it. One writer per object; readers look it up after obj_commit. */
+typedef uint64_t cxlp_key_t;                       /* 0 and UINT64_MAX are reserved */
+int  cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle);
+int  cxlp_obj_append(uint32_t handle, const cxlp_res_t *committed);
+int  cxlp_obj_commit(uint32_t handle);
+/* Fills up to `max` extents (pointers valid in this process). Returns the number of extents,
+ * or -1 if the object does not exist or is not committed. */
+int  cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes);
+int  cxlp_obj_release(cxlp_key_t key);
+/* Convenience: whole-buffer put/get built on reserve/copy_in/commit/append. */
+int  cxlp_put(cxlp_key_t key, uint32_t klass, const void *buf, size_t len);
+int64_t cxlp_get(cxlp_key_t key, void *buf, size_t cap);
+/* Crash cleanup (run by the background process, or by tests): objects never committed by a
+ * dead writer are dropped, segments of dead writers are sealed with their live bytes
+ * recomputed from the index, so reserved-but-uncommitted space is reclaimed. Returns the
+ * number of objects dropped. */
+int  cxlp_cleanup_dead(void);
+
 #ifdef __cplusplus
 }
 #endif
