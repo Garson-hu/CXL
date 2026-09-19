@@ -225,7 +225,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | B2 ✅ | latency probe thread, idle baseline (60 s minimum), adaptive 10 / 200 ms period | probe overhead ≤ 2 % of one core; values match V5 | — |
 | B3 ✅ | ledger + achieved-speed signal with per-path solo calibration | "CXL full" detected when 2 writers exceed the pair's write capacity, not detected with 1 | — |
 | B4 ✅ | controller: +1/16 per 50 ms epoch, halve on 2 probes over bound, per-stream memory, blocking `reserve` | deterministic tests with injected signals; live: spill rises only when CXL is full and DRAM calm, halves within 50 ms of an injected DRAM aggressor | — |
-| B5 | GPU source: direct vs staged path per chunk, runtime-owned pinned copy threads | both paths produce verified data; path switches under injected pressure | — |
+| B5 ✅ | GPU source: direct vs staged path per chunk, runtime-owned pinned copy threads | both paths produce verified data; path switches under injected pressure | — |
 | **C — read path (P3)** | | | |
 | C1 | read counting in a 10-minute window (two buckets), per-consumer constants calibrated at start-up, break-even k | unit tests; calibration prints k for CPU consumer and "never" for GPU consumer on c28 | — |
 | C2 | promotion of read segments to the DRAM pool under the bound, release of the CXL copy; checkpoints never promoted | object readable before/during/after promotion; no promotion while probe > bound | — |
@@ -354,6 +354,16 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   rule over-spilled (11/16 for a 60 GiB/s demand) and was replaced by capacity thresholds; new
   slack rule: spill shrinks by 1/16 per epoch when CXL runs below 70% — DRAM is only for the excess.
   Not covered: another tenant writing to the same cards outside cxlpath.
+
+- **B5 ✅ 2026-09-19** — GPU sources (`libcxlpath_gpu`, optional, CUDA): per 32 MiB chunk either
+  direct (GPU → CUDA-registered CXL buffer set) or staged (GPU → one of 4 reused pinned DRAM buffers →
+  a runtime-owned copy thread pinned to a chosen CPU NT-copies to CXL). 1 GiB copies byte-exact at
+  staged 0/16, 16/16, 8/16, 3/16 with exactly the published share: **direct 3.91 GiB/s, staged
+  12.16 GiB/s** (link 12.29), 8/16 → 5.87. Live with a real daemon: a first burst starts direct, the
+  staged share reaches 0.95 while DRAM is calm (11.5 GiB/s), falls to 0.00 during a 64-thread DRAM
+  aggressor (3.7 GiB/s), returns to 1.00 afterwards; every verified copy byte-exact while switching.
+  "Path full" for a GPU source = direct path delivers < 80% of the calibrated link speed (sticky).
+  **Component B complete.** Raw: `B-live/B5-*`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;

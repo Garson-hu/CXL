@@ -8,7 +8,13 @@ TESTS   = $(patsubst tests/%.c,build/%,$(wildcard tests/test_*.c))
 FAKE0   = /dev/shm/cxlpath.fakedev0
 FAKE1   = /dev/shm/cxlpath.fakedev1
 
-TOOLS   = $(patsubst tests/tools/%.c,build/%,$(wildcard tests/tools/*.c))
+CUDA    = /usr/local/cuda
+HAVE_CUDA = $(wildcard $(CUDA)/include/cuda_runtime.h)
+GPUTOOLS = cxlp_gpu_test
+TOOLS   = $(filter-out $(addprefix build/,$(GPUTOOLS)),$(patsubst tests/tools/%.c,build/%,$(wildcard tests/tools/*.c)))
+ifneq ($(HAVE_CUDA),)
+TOOLS  += build/libcxlpath_gpu.a $(addprefix build/,$(GPUTOOLS))
+endif
 all: build/libcxlpath.a build/cxlpathd $(TESTS) $(TOOLS)
 build/%.o: src/%.c include/cxlpath.h include/cxlpath_daemon.h src/internal.h | build
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -20,6 +26,12 @@ build/cxlpathd: daemon/cxlpathd.c build/libcxlpath.a
 	$(CC) $(CFLAGS) $< build/libcxlpath.a -o $@
 build/%: tests/tools/%.c build/libcxlpath.a
 	$(CC) $(CFLAGS) -march=native $< build/libcxlpath.a -o $@
+build/gpu.o: src/gpu/gpu.c include/cxlpath_gpu.h src/internal.h | build
+	$(CC) $(CFLAGS) -I$(CUDA)/include -c $< -o $@
+build/libcxlpath_gpu.a: build/gpu.o
+	ar rcs $@ $^
+build/cxlp_gpu_test: tests/tools/cxlp_gpu_test.c build/libcxlpath_gpu.a build/libcxlpath.a
+	$(CC) $(CFLAGS) -I$(CUDA)/include $< build/libcxlpath_gpu.a build/libcxlpath.a -L$(CUDA)/lib64 -Wl,-rpath,$(CUDA)/lib64 -lcudart -o $@
 build:
 	mkdir -p build
 test: all

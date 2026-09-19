@@ -1,0 +1,20 @@
+dev 0: CXL  256 segments
+dev 1: CXL  256 segments
+dev 2: DRAM 128 segments
+GPU link (D2H into pinned DRAM): 12.29 GiB/s
+staged  0/16: direct 1024 MiB, staged    0 MiB, 3.91 GiB/s, data verified
+staged 16/16: direct    0 MiB, staged 1024 MiB, 12.16 GiB/s, data verified
+staged  8/16: direct  512 MiB, staged  512 MiB, 5.86 GiB/s, data verified
+staged  3/16: direct  832 MiB, staged  192 MiB, 4.48 GiB/s, data verified
+PASS
+  ok   direct, staged and mixed copies byte-exact; staged share exactly as published
+    first 0.6 s                 : staged share 0.09, 4.20 GiB/s (2 copies)
+    calm, before the aggressor  : staged share 0.95, 11.51 GiB/s (54 copies)
+    aggressor 7773-10774 ms    : staged share 0.00, 3.73 GiB/s (8 copies)
+    2.5 s after it left         : staged share 1.00, 12.16 GiB/s (20 copies)
+  ok   a first burst starts on the direct path (no DRAM traffic)
+  ok   DRAM calm: the staged path takes over (full link speed)
+  ok   DRAM under pressure: back to the direct path
+  ok   pressure gone: staged again
+  ok   every verified copy byte-exact while paths were switching
+PASS
