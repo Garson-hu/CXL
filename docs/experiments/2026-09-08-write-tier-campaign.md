@@ -212,7 +212,7 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 | V2 ✅ | virtually contiguous buffer: scattered 32 MB devdax segments mapped at adjacent addresses with `MAP_FIXED`; CPU write/read across the seams | data verified across seams | buffer sets use physically contiguous runs of segments |
 | V3 ✅ | `cudaHostRegister` on (a) a stitched buffer from V2, (b) large ranges 1 / 8 / 64 / 200 GiB: success, time, limits | registration succeeds for ≥ 8 GiB per buffer; time recorded | register per segment lazily; cap buffer-set size |
 | V4 ✅ | PyTorch 2.5.1 `async_save` / `staging`: can the staging buffers and the storage writer be supplied by us? (code reading + 20-line prototype) | a checkpoint staged into our buffer and restored correctly | hook at `torch.save`-level pinned copy instead; ⏳ ask user if neither works |
-| V5 | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
+| V5 ✅ | probe calibration: DRAM latency probe vs DRAM write load at 0 / 10 / 20 / 40 / 70 / 100 % (membench aggressor, separate CCDs), beside a bandwidth victim | probe latency rises monotonically with victim slowdown; pick the bound constant | ⏳ stop: signal (3) of Component B needs redesign |
 | V6 | (time-boxed 1 h, optional) GPU→CXL 3.9 GiB/s cap: try registration flags, pinned-mapped kernel copy, IOMMU state visible without root | cause identified or recorded as open | keep as open item; design already handles both paths |
 | **A — segment store (P1)** | | | |
 | A1 | skeleton `system/cxlpath/`: Makefile, headers, test harness, device layer (map dax0.0/dax1.0 + DRAM pool via memfd/shm, 32 MB geometry) | `make test` maps both devices and the pool, unmaps cleanly | — |
@@ -263,6 +263,26 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   DCP serialises staged tensors into `.distcp` files itself; either feed that stream through the
   file-style shim (one CXL→CXL copy) or stage directly in the serialised layout. Tool:
   `system/cxlpath/checks/v4_torch_async_stage.py`.
+
+- **V5 ✅ 2026-09-19** — The DRAM latency probe TRACKS the slowdown of a bandwidth-bound reader,
+  monotonically and with ±1% repeatability (3 reps × 10 s; victim 8 readers cpus 0–7, probe cpu 16,
+  NT writers cpus 32+; `V5-probe-calibration.txt`):
+
+  | DRAM NT-write load | victim read GiB/s | victim slowdown | probe p50 ns/load | probe vs idle |
+  |---|---|---|---|---|
+  | 0 | 99.6 | — | 138 | 1.00× |
+  | 77 GiB/s (28% of 277) | 85–88 | −12…−14% | 163 | 1.18× |
+  | 113 GiB/s (41%) | 77–78 | −23% | 182 | 1.32× |
+  | 203 GiB/s (73%) | 39 | −61% | 291 | 2.1× |
+  | 267 GiB/s (96%) | 8.8–9.6 | −91% | 722 | 5.2× |
+  | 277 GiB/s (100%) | 8.0 | −92% | 900 | 6.5× |
+
+  Consequences for Component B: the default bound 1.10× idle corresponds to roughly a 7% reader
+  slowdown; idle noise is small (p99 = 1.07× p50), so "mean of 5 probes" and "2 consecutive probes
+  over the bound" will not fire when idle. Load steps follow CCD count (one CCD of writers tops out
+  at ~77 GiB/s). First attempt had a timing bug in the probe loop (read 0.3 ns/load); fixed by a
+  non-inlined probe function with integer clock math — reuse THAT code in B2. Tool:
+  `system/cxlpath/checks/v5_probe_calib.c`.
 
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
