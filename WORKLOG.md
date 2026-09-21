@@ -15,6 +15,11 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-21 addendum — PAPER OUTLINE REVISED.** Motivation = one table, three observations (moving is
+nearly free / keeping is harmful / CXL is a safe destination), three strawmen ⇒ "CXL by default, borrow
+DRAM only when it does not hurt readers". Gain hypothesis: about twice either simple policy under an
+equal reader-protection bound (unmeasured). See `docs/PAPER.md` top section.
+
 **2026-09-19 addendum — SYSTEM BUILT.** The write-path runtime `cxlpath` (Thesis v3) is implemented on
 git branch `cxlpath` (`system/cxlpath/`, README there): every step of the build plan passed its gate,
 including a 10-minute run of all three clients (VeloC/LULESH, PyTorch async checkpoint, KV stand-in).
@@ -115,6 +120,31 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-21 (session 24) — paper outline reviewed with the user; motivation restructured, gain repositioned
+- `cxlpath` branch and the pending docs commit on `main` were pushed to GitHub (no merge, user's wish).
+- The user reviewed the paper outline and asked for a considered answer, not agreement. Outcome, now in
+  `docs/PAPER.md`: (1) the three observations split the work — moving low-reuse data off DRAM is nearly
+  free, keeping it there is harmful, CXL is a safe destination — and the first one no longer concludes
+  "DRAM is for reads only", which contradicted the controller that lends DRAM to writers; (2) the
+  motivation ends with three simple policies (all-DRAM, all-CXL, rate-limited all-DRAM) on two axes and
+  the sentence that is design principle P2; "raw devdax has no allocator" moves to the opening of the
+  design section as a challenge; (3) Background keeps hardware facts only, and the Thesis-v2 sentence
+  "CXL directions are independent" is dropped as overstated.
+- Thinking through the rate-limiting strawman changed the positioning of the gain: once DRAM readers
+  must be protected, the usable DRAM write bandwidth is only tens of GiB/s (interpolated from the probe
+  calibration and the live controller run), the same order as the CXL pair's 43.9 GiB/s. Hypothesis:
+  under an equal protection bound, "CXL by default + DRAM on loan" delivers about twice either simple
+  policy. It replaces "only +15% from adding bandwidth" and is the first thing to measure.
+- Second round of the review: the user asked for the design section to say HOW only, with "what we
+  want to build, for which existing problem" placed before it, and told me to study PolyStore's writing
+  technique. Re-read: its introduction goes limitations → insight → challenges → contributions one to
+  one; its motivation is pure analysis; goals and principles (requirements) and the overview precede
+  the mechanisms; each component subsection is a short lead-in plus mechanism. `docs/PAPER.md` outline
+  and `docs/DESIGN.md` §10.1 now follow that; the "challenges" block moved from the design opening to
+  the introduction; build-time rationale goes to evaluation ablations or the discussion.
+- Next: agree the first experiments (the application for the headline figure of the second observation,
+  the three-policies figure, the DRAM write budget under a protection bound).
 
 ### 2026-09-19 (session 23) — cxlpath built end to end: feasibility checks, four components, three clients, all-clients run
 - The user approved the build plan (campaign file, "Phase 5 v2": checks V → components A–D → clients E →

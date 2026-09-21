@@ -125,24 +125,35 @@ produces it until it rests on NVMe, using DRAM and CXL side by side
 (borrowed) instead of DRAM-first. Rarely-read write streams go straight to
 CXL; DRAM bandwidth is kept for programs that read.
 
-### 10.1 Goals and principles (structure borrowed from PolyStore §4.1)
-Each goal answers one observation of the motivation (`PAPER.md` O1–O3); each
-principle is realised by exactly one component below.
-- **Goal 1 — keep bulk writes off DRAM without slowing the writer.**
-  (from O2: heavy DRAM writes slow DRAM readers; O3: the same writes on CXL do
-  not.)
-  *P1: a direct, copy-free write path onto raw CXL* — the writer gets a pointer
-  into the device; no staging copy, no middleman. → Component A.
-  *P2: interference-bounded, direction-aware placement* — decide per segment
-  where a write goes, from per-device per-direction state, bounded by how much
-  DRAM readers may slow down. → Component B.
-- **Goal 2 — spend DRAM only where reading benefits.**
-  (from O1: most written data is never read again.)
-  *P3: read in place, promote by break-even* — DRAM is a cache for repeated
-  reads only, with the threshold derived per consumer. → Component C.
-- **Goal 3 — give up nothing today's staging provides: data still reaches
-  NVMe in the client's format, and survives a process crash.**
-  *P4: DRAM-free drain and node-owned metadata.* → Component D.
+### 10.1 Goals and principles (draft of the paper's §4.1 — WHAT we want, for WHICH problem)
+*Writing rule (user, 2026-09-21; PolyStore's technique): what we want to build and
+the existing problem it answers are said HERE (and in the paper's introduction and
+motivation). The component sections that follow say HOW only. Principles are
+requirement statements; each is realised by exactly one component.*
+- **Goal 1 — keep bulk writes off DRAM by default, without slowing the producer.**
+  Answers: keeping such data in DRAM slows DRAM readers (O2); CXL is a safe
+  destination (O3); neither "everything to CXL" nor a rate-limited "everything to
+  DRAM" serves the producer (the three simple policies of `PAPER.md` §3).
+  *P1: a direct, copy-free write path onto raw CXL.* Writers in many unprivileged
+  processes must obtain space on a raw devdax device and fill it in place: no
+  staging copy, no system call and no central allocator on the data path.
+  (Challenge answered: a devdax device has neither allocator nor file system.)
+  → Component A.
+  *P2: interference-bounded, capacity-aware placement.* Placement must follow the
+  CXL write capacity it measures and lend DRAM to writers only while other DRAM
+  readers stay within a configured slowdown bound; it must react within tens of
+  milliseconds and use no privileged counters. → Component B.
+- **Goal 2 — spend DRAM where reading benefits.**
+  Answers: most written data is never read again, a minority is (O1).
+  *P3: read in place, promote by break-even.* Data is served from where it lies;
+  a copy into DRAM is made only when the expected saving exceeds the cost of the
+  copy, including the harm the copy does to other DRAM readers. → Component C.
+- **Goal 3 — do not compromise what DRAM staging provides.** Data still reaches
+  NVMe in the client's format, stays findable after its writer dies, and frees
+  its space without the client's help.
+  *P4: DRAM-free drain and node-owned metadata.* The path to NVMe must not pass
+  through DRAM or the page cache, and the index must belong to the node, not to
+  the writing process. → Component D.
 
 ### 10.2 Overview, clients and API
 One library + one background process per node. Data path of a write:
@@ -504,3 +515,12 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
   system with the evidence that forced each (probe references, fullness and
   slack rules, runtime-side reclaim, non-starving drain, DCP storage format,
   VeloC patch, k = 3). Build record: `experiments/2026-09-08-write-tier-campaign.md`.
+- **2026-09-21** — §10.1 wording aligned with the restructured motivation of
+  `PAPER.md`: Goal 1 is "off DRAM by default" and takes P2 from the three-strawmen
+  argument; Goal 2 derives from the flip side of O1; Goal 3 / Component A are
+  introduced by the raw-devdax challenge. No design content changed.
+- **2026-09-21 (second round)** — §10.1 rewritten in the register of PolyStore's
+  §4.1 (goals; principles as requirement statements; each names the finding or
+  challenge it answers) so that it can serve as the draft of the paper's §4.1.
+  The paper's component sections will say HOW only; this file keeps the
+  engineering rationale (§10.11). No design content changed.
