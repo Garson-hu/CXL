@@ -1,6 +1,6 @@
 # 2026-09-22 — Evaluation phase 2: three simple policies vs cxlpath (the core figure), and the headline of Observation 2
 
-**STATUS: RUNNING (started 2026-09-22).** 42 runs: 2 victims × 7 policy settings × 3 repetitions, repetitions
+**STATUS: CLOSED 2026-09-22 (verdict below).** 42 runs: 2 victims × 7 policy settings × 3 repetitions, repetitions
 interleaved. Raw: `experimental_results/2026-09-22-three-policies/` (per run: `<tag>-victim.txt`,
 `<tag>-producer.txt`, `<tag>-daemon.csv` for cxlpath). Tools: `benchmarks/policy/`.
 
@@ -50,5 +50,64 @@ at a 26–31% DRAM share, no halvings. Observation: with per-chunk spill and a f
 loses saturation as the spill grows (each thread spends time on its DRAM chunks), so the "full" signal
 (≥ 90% of capacity) self-limits the spill at the point where CXL drops to ~89% — a sensitivity item.
 
-## Results
-*(when the campaign has finished)*
+## Results (median of 3 repetitions; each repetition = median over its last 3 of 6 copy windows; every
+producer run rc = 0; per-run lines in `summary.csv`; figures `three-policies.png`, `headline-adam-timeline.png`)
+
+| victim | policy | copy rate GiB/s | completion s | victim slowdown during the copy | DRAM share |
+|---|---|---|---|---|---|
+| reader (moderate, ~100 GiB/s) | all-DRAM, NT stores (today) | 93.7 | 0.68 | **26.7%** (23.4–27.7) | 1.00 |
+| reader | all-DRAM, plain stores | 60.8 | 1.05 | 24.4% | 1.00 |
+| reader | all-CXL | 43.9 | 1.46 | 0.3% | 0 |
+| reader | DRAM throttled 20 GiB/s | 20.0 | 3.20 | 6.7% | 1.00 |
+| reader | DRAM throttled 30 GiB/s | 30.0 | 2.13 | 10.1% | 1.00 |
+| reader | **cxlpath**, bound 1.09 (tight) | 64.7 (59–72) | 0.99 (0.89–1.08) | 4.0% (2.6–8.7) | 0.34 (0.27–0.47) |
+| reader | **cxlpath**, bound 1.15 (loose) | 66.0 (64–71) | 0.97 (0.90–1.00) | 5.9% (4.6–6.1) | 0.38 (0.33–0.44) |
+| Adam step (saturated, ~340 GB/s) | all-DRAM, NT stores (today) | 18.6 | 3.44 | **15.6%** | 1.00 |
+| Adam | all-DRAM, plain stores | 9.2 | 6.92 | 11.2% | 1.00 |
+| Adam | all-CXL | 18.3 | 3.50 | 6.6% | 0 |
+| Adam | DRAM throttled 10 GiB/s | 10.0 | 6.40 | 7.8% | 1.00 |
+| Adam | DRAM throttled 20 GiB/s | 20.0 | 3.20 | 16.9% | 1.00 |
+| Adam | **cxlpath**, bound 1.05 / 1.10 | 18.0 | 3.55 | 6.5% | 0.00 |
+
+Repeatability: beside the Adam step every policy's three repetitions agree within 0.3 points of slowdown and
+0.1 s; beside the reader the simple policies agree within ±2 points, cxlpath's operating point varies more
+(slowdown 2.6–8.7%, DRAM share 27–47% at the tight bound) because the controller's per-stream memory keeps
+ramping across the 6 periods and a 1.09× probe bound maps to a victim slowdown of about 7 ± 2 points
+(within one run the per-window slowdown rose from 3.9% to 10.0% over the six periods in repetition 1).
+
+Two regimes:
+1. **Moderate victim (the reader leaves DRAM headroom).** Today's practice (all-DRAM, NT) finishes fastest
+   (0.68 s) but slows the reader by 27%; all-CXL removes the harm (0.3%) at 2.1× the completion time; a
+   throttled DRAM writer that stays under 7% needs 3.2 s. cxlpath lends DRAM for 34–38% of the chunks and
+   finishes in 0.97–0.99 s at 4–6% harm: **1.5× faster than all-CXL, 3.3× faster than the throttled writer at
+   equal harm, and 5× less harm than today's practice at 1.4× its completion time.** Its 65–66 GiB/s is 0.9
+   of the sum of the CXL capacity (44) and the 7% DRAM budget for copies (28.5).
+2. **Saturated victim (the Adam step leaves nothing).** The copy is SOURCE-bound at ~18 GiB/s whatever its
+   destination (the 8 copy threads read the snapshot out of a DRAM that the victim saturates), so all
+   unthrottled policies complete in 3.4–3.6 s; what the destination changes is the harm: 15.6% into DRAM vs
+   6.6% into CXL (2.4× less). cxlpath lends nothing (DRAM share 0.00): CXL never reaches 90% of its capacity,
+   and a loan could not have helped a source-bound producer. Throttling to the same ~7% harm costs 6.4 s,
+   1.8× longer. Plain-store staging (what `memcpy` / `tensor.copy_` do) is worse still: 6.9 s at 11%.
+   A curiosity: the throttled-20 writer completes faster (3.2 s) than the unthrottled one (3.4 s) — pacing
+   gaps let the source reads through; both are source-bound.
+
+## Verdict
+- **The core figure works and says what the motivation needs:** the simple policies each fail on one axis,
+  cxlpath sits inside the bound at a completion time no throttled writer reaches. The multiple is regime-
+  dependent and must be stated so: ≈1.5× all-CXL / ≈3.3× throttling for a moderate victim; ≈ all-CXL
+  (correctly, no loan) with 2.4× less harm than DRAM staging for a saturated victim. "Roughly the sum" holds
+  for the moderate victim (0.9 of it); the paper should say "approaches the sum", not "doubles".
+- **Observation 2 headline (`headline-adam-timeline.png`):** a CPU-offloaded training step (Adam over 24 GB)
+  runs 15–17% slower for the whole 3.5 s a 64 GiB checkpoint is copied out of DRAM into DRAM staging; into
+  CXL staging the same copy costs 6.5% (the source read) and finishes at the same time; throttling to 10 GiB/s
+  costs 7.8% for 6.4 s. This is the real-application version of "keeping it in DRAM is harmful" (O2) and the
+  precise form of O3 ("the write half leaves DRAM; the source read remains").
+- **Controller findings for the sensitivity section:** (a) a probe bound maps to victim slowdown with ±2–3
+  points of scatter, and the tight/loose bounds produced nearly the same operating point — the ramp rate and
+  the ≥ 90%-capacity fullness rule limit the loan more than the bound does; (b) per-stream memory keeps
+  ramping across periods, so the operating point drifts upward over a run; (c) beside a saturated victim the
+  fullness signal (not the probe) is what keeps the loan at zero. Items for the sensitivity study: bound,
+  step, fullness threshold, number of periods to steady state.
+- Next: the two further victims (GAPBS PageRank, llama.cpp CPU decoding) through the phase-1 protocol, then
+  the same core experiment beside them; the real PyTorch and VeloC clients replace the synthetic producer in
+  the real-application section.

@@ -64,6 +64,15 @@ the live controller test 31–38 GiB/s of our own DRAM writes lifted the latency
 probe ~5% (`.../B-live/`). Interpolating these few points, a 7–10% protection
 bound leaves only some 40–60 GiB/s of usable DRAM write bandwidth — THE SAME
 ORDER as the CXL pair's 43.9 GiB/s.
+**MEASURED with the system, 2026-09-22 (`experiments/2026-09-22-three-policies.md`, the core
+figure):** beside a moderate victim (a reader using ~100 of the socket's ~273 GiB/s) a 64 GiB
+checkpoint copy through cxlpath finishes in 0.97–0.99 s at 4–6% harm — 1.5× faster than all-CXL,
+3.3× faster than a DRAM writer throttled to the same harm, 5× less harm than today's all-DRAM
+staging at 1.4× its time; its 65 GiB/s is 0.9 of "CXL capacity + DRAM budget". Beside a SATURATED
+victim (CPU Adam over 24 GB) every copy is source-bound at ~18 GiB/s, so the destination changes
+only the harm: 15.6% (DRAM) vs 6.6% (CXL); cxlpath correctly lends nothing; throttling to 7% harm
+costs 1.8× the time. Wording for the paper: "approaches the sum" for a moderate victim; "same
+completion, 2.4× less harm" for a saturated one. The paragraph below is the phase-1 budget.
 **MEASURED 2026-09-22 (`experiments/2026-09-21-dram-write-budget.md`):** under a 7% bound the
 usable DRAM write bandwidth is 40 GiB/s (pure writes) / 28 GiB/s (copies) beside a synthetic
 reader and 17.5 / ~9–30 beside a saturated CPU Adam step — the same order as, or below, the
@@ -114,7 +123,11 @@ contradicted a controller that lends DRAM to writers).
   and the write-tier campaign) goes beside it as the worst case. The figure
   design is our answer to "real write streams never saturate DRAM" (reviewer
   question 5): we do not claim saturation; a moderate write burst hurts an
-  application that is already bandwidth-bound. **Not measured yet.**
+  application that is already bandwidth-bound. **Candidate measured 2026-09-22
+  (`experiments/2026-09-22-three-policies.md`, `headline-adam-timeline.png`): a CPU-offloaded
+  training step (Adam over 24 GB, 80 threads) runs 15–17% slower for the 3.5 s a 64 GiB
+  checkpoint is copied into DRAM staging; into CXL staging the same copy costs 6.5% (the
+  source read) — one timeline carries O2 and O3.**
 - **O3 — CXL is a safe destination.** THE empirical statement of the section; it
   is not pre-empted in Background: *redirecting the write stream from DRAM to CXL
   largely removes its interference with the DRAM reader* (D4: reader back to
@@ -547,3 +560,7 @@ Cross-pair E2 still blocked on famfs access. Details:
   ≈1.4× vs all-CXL and ≈3.5× vs throttled DRAM for a saturated CPU Adam step). Headline victim
   = CPU optimizer step; LULESH dropped as victim. Benchmark survey saved to
   `benchmarks/results/2026-09-21-benchmark-survey.md`.
+- **2026-09-22 (later)** — Phase 2 core figure measured (three simple policies + cxlpath beside a
+  moderate and a saturated victim) and the O2 headline timeline. Gain wording fixed: "approaches
+  the sum" (moderate victim: 1.5× all-CXL, 3.3× throttling at equal harm) and "same completion,
+  2.4× less harm" (saturated victim, source-bound copy, no loan).
