@@ -500,10 +500,19 @@ at every phase boundary. Paper text lives in `/home/ghu4/papers/cxlpath` (own gi
 never in this repo. Work happens on branch `evaluation` (`cxlpath` was merged into `main` on 2026-09-21).
 1. **Usable DRAM write bandwidth under a reader-protection bound + screening of victim applications**
    (synthetic reader, CPU optimizer step, all-core LULESH; bounds 5/7/10%) —
-   `2026-09-21-dram-write-budget.md`. ▶ running. After it: show the curves and the go / re-discuss judgement.
+   `2026-09-21-dram-write-budget.md` + `2026-09-22-budget-more-victims.md`. ✅ DONE 2026-09-22 — budget
+   under a 7% bound: 40 (pure) / 28 (copies) GiB/s beside the synthetic reader, 18–21 / 9–12 beside the
+   saturated applications (CPU Adam step, llama.cpp decoding, GAPBS PageRank); LULESH dropped as victim;
+   headline victim = CPU Adam step. User: go.
 2. The two missing motivation figures: the three simple policies (+ our system on the same axes = the core
    figure of the evaluation; periodic producer, steady state; first-burst behaviour goes to sensitivity) and
    the headline figure of Observation 2 with the application picked in step 1.
+   ✅ DONE 2026-09-22 — `2026-09-22-three-policies.md`, four victims: moderate reader → cxlpath 1.3–1.5×
+   faster than all-CXL inside the bound, 3× faster than throttling at equal harm; saturated Adam / llama.cpp
+   / PageRank → source-bound copies, cxlpath = all-CXL (no loan), 2.4–3.5× less harm than DRAM staging.
+   Design consequence: headroom guard = 1.3× a calibrated unloaded probe level (was 2.0× the lowest
+   windowed reference; it over-lent beside PageRank, 36% vs 14%). Gap recorded: no producer pacing.
+   O2 headline timeline: `headline-adam-timeline.png`.
 3. Full evaluation per component (segment store; placement; read path; drain and recovery), parameter
    sensitivity and ablations, real applications, PM configuration last. Prerequisite: lift the 64-extent
    (2 GiB) limit of `cxlp_get` / `cxlp_read`.
@@ -527,6 +536,9 @@ comparable papers use (running in the background on 2026-09-21); names not urgen
   (E3 = trace-driven stand-in; real LMCache ⏳ user; F2 awaits the user's review). Evaluation not started.
 - 2026-09-21 — Phase 6 (evaluation) approved; step 1 started; `cxlpath` merged into `main`; paper repo
   skeleton created in `/home/ghu4/papers/cxlpath` after the layout of `checkpoint/dpu-relay-paper`.
+- 2026-09-22 — Phase 6 steps 1–2 DONE (five victims screened, core figure with four victims, headline
+  timeline); guard revised; producer pacing recorded as a gap. Step 3 (full evaluation) awaits the user's
+  order and the pacing decision.
 
 ## Naming (rule 2026-09-08 — do not use "Pair A"/"Pair B" in new text)
 | historical label | what it is | use instead |

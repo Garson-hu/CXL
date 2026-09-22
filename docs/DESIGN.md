@@ -248,8 +248,11 @@ one machine-wide bound** (user decision: one global bound).
   writer activity and none of our bytes in DRAM; frozen while we spill; known
   after 5 such epochs, so a first burst spends ~250 ms on CXL only). Bound =
   1.10 × the reference in use; idle state uses a loose 1.5× (idle readings on
-  c28 scatter 100–160 ns). Headroom guard: reference > 2.0 × the lowest idle
-  reference ever seen ⇒ nothing may spill. Increase +1/16 per epoch when the
+  c28 scatter 100–160 ns). Headroom guard (revised 2026-09-22, §10.11 item 14):
+  reference > 1.3 × the machine's UNLOADED probe level (median of 200 probes taken over 2 s at
+  daemon start, or `--idle-ns`) ⇒ nothing may spill — this is what separates a victim that leaves
+  headroom (probe ≈ unloaded) from a saturated one (probe ≥ 1.45× unloaded), which a relative bound
+  cannot do. Increase +1/16 per epoch when the
   CXL write direction is FULL = our own ledger shows ≥ 90% of the capacity
   calibrated at start-up (43.9 GiB/s) AND probe ≤ 1.05 × reference. **Slack rule
   (new):** below 70% of the capacity the ratio shrinks by 1/16 per epoch — DRAM
@@ -552,3 +555,4 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
   path), burst-tail fixes in the controller and the active reference, `--margin`; trimming opt-in.
 - **2026-09-22 (later)** — §10.11 items 14–15: headroom guard 1.3× a calibrated unloaded probe level
   (was 2.0× the lowest windowed reference), `--idle-ns`; producer pacing recorded as not built.
+- **2026-09-22 (night)** — §10.4 AS BUILT paragraph updated to the revised headroom guard.

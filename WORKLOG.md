@@ -15,6 +15,16 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-22 addendum — EVALUATION PHASES 1–2 DONE (branch `evaluation`).** Five victims screened for the
+DRAM write budget under a reader-protection bound; the core figure (three simple policies vs cxlpath) measured
+beside four victims; the Observation-2 headline timeline measured. Two regimes: a moderate victim gets a DRAM
+loan (cxlpath 1.3–1.5× faster than all-CXL inside the bound, 3× faster than throttling at equal harm, 5× less
+harm than DRAM staging); saturated victims get none (copies are source-bound; cxlpath = all-CXL, 2.4–3.5× less
+harm than DRAM staging at the same completion). The headroom guard on the ABSOLUTE probe level (1.3× a
+calibrated unloaded level) decides the regime — the old 2.0× guard over-lent. Gap: no producer pacing. Files:
+`docs/experiments/2026-09-21-dram-write-budget.md`, `2026-09-22-budget-more-victims.md`,
+`2026-09-22-three-policies.md`. Next: phase 3 order and the pacing decision, with the user.
+
 **2026-09-21 addendum — PAPER OUTLINE REVISED.** Motivation = one table, three observations (moving is
 nearly free / keeping is harmful / CXL is a safe destination), three strawmen ⇒ "CXL by default, borrow
 DRAM only when it does not hurt readers". Gain hypothesis: about twice either simple policy under an
@@ -120,6 +130,33 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-21/22 (session 25) — evaluation phases 1 and 2: budgets, the core figure, the guard
+- User decisions: start experiments; OSDI quality regardless of venue; paper in `/home/ghu4/papers/cxlpath`
+  (skeleton created after `checkpoint/dpu-relay-paper`, git initialised, not committed); integrate the real
+  LMCache after surveying benchmarks (survey saved to `benchmarks/results/2026-09-21-benchmark-survey.md`);
+  `cxlpath` merged into `main`; evaluation work on branch `evaluation`.
+- Phase 1 (`benchmarks/budget/`): DRAM write budget under a 5/7/10% bound beside a synthetic reader, the CPU
+  Adam step, LULESH, GAPBS PageRank and llama.cpp decoding; pure writes vs copies; CXL as control. Under 7%:
+  40/28 GiB/s beside the reader, 18–21/9–12 beside the saturated applications — same order as or below the
+  CXL pair's 43.9. Copies hurt ~2× more than pure writes; copies to CXL still cost 3–5% (source reads).
+  LULESH's first sweep was void (library path; the driver now aborts on a silent victim) and LULESH was
+  dropped as a victim (≤ 9% effect, 6% noise). Headline victim: the CPU Adam step (340 GB/s of traffic).
+- Phase 2 (`benchmarks/policy/`): a periodic 64 GiB (PageRank: 192 GiB) checkpoint copy beside each victim
+  under all-DRAM (NT / plain stores), all-CXL, throttled DRAM and cxlpath, on two axes (victim slowdown
+  during the copy; completion). Preparing it fixed three daemon issues (populated DRAM pool — first-touch
+  faults had made a spilled chunk 5× slower than a CXL chunk; burst-tail decrements; polluted active
+  reference). Results: two regimes as in the status addendum; O2 headline timeline (Adam step 15–17% slower
+  for 3.5 s with DRAM staging, 6.5% with CXL staging).
+- The guard finding: a probe bound maps to victim slowdown by a victim-dependent factor (0.7× reader, 2×
+  Adam, 3× PageRank) and beside a saturated victim the probe's scatter exceeds a 7% signal; the absolute
+  probe level (135 ns idle and beside the reader; 200 beside llama/PageRank; 262 beside Adam) separates the
+  regimes, so the headroom guard is now 1.3× a 2 s calibration of the unloaded level (the lowest windowed
+  reference had denied the loan to the reader once). With it cxlpath lends only where lending is safe.
+- Gap recorded (DESIGN §10.11 item 15): cxlpath never paces the producer, so even all-CXL exceeds 7% beside
+  read-saturated victims (source reads); producer pacing as a last resort is proposed, not built.
+- Lessons: never `pkill -f` with a pattern that matches the shell (twice); a 1 s-step victim needs copy
+  windows of several steps; llama.cpp on this machine must be built without AVX512-BF16/VNNI (binutils 2.30).
 
 ### 2026-09-21 (session 24) — paper outline reviewed with the user; motivation restructured, gain repositioned
 - `cxlpath` branch and the pending docs commit on `main` were pushed to GitHub (no merge, user's wish).
