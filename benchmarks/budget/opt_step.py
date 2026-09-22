@@ -13,5 +13,5 @@ opt = torch.optim.Adam(params, lr=1e-4, fused=True)
 for _ in range(3): opt.step()                                   # allocate the states, warm up
 print(f"START {time.monotonic_ns()}", flush=True)
 for i in range(steps):
-    t0 = time.perf_counter(); opt.step(); print(f"[STEP] {i} {time.perf_counter() - t0:.4f}", flush=True)
+    t0 = time.perf_counter(); opt.step(); print(f"[STEP] {i} {time.perf_counter() - t0:.4f} {time.monotonic_ns()}", flush=True)   # step time and its end, monotonic ns
 print(f"END {time.monotonic_ns()}", flush=True)

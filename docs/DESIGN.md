@@ -430,7 +430,16 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
     immediate explicit error, VeloC links `libcxlpath.so`,
     `VELOC_CXLPATH_REQUIRED=1` aborts instead of falling back, and the gates
     prove the path (objects listed on CXL, scratch directory stays empty).
-13. **Not built:** per-client space quotas (one client's garbage can still
+13. **Preparing the policy experiment (2026-09-22) forced three daemon/store fixes:** (a) the DRAM
+    pool is pre-allocated and mapped populated — with first-touch 4 KiB faults (tmpfs; shmem THP needs
+    root) a spilled chunk was ~5× slower than a CXL chunk and cxlpath ran below all-CXL; pool trimming
+    is opt-in now; (b) the slack rule ignores the tail epoch of a burst and an idle stream remembers the
+    ratio it ran with while CXL was loaded (periodic bursts lost their ramp to tail-off decrements);
+    (c) the active reference is fed only by epochs with CXL bytes (burst tails fed it idle values and
+    the next burst started with halvings). Also `--margin`. Known property: with per-chunk spill and a
+    fixed producer thread pool, CXL loses saturation as the spill grows, so the ≥ 90%-of-capacity
+    "full" signal self-limits the spill; a producer with spare threads is needed for the loan to show.
+14. **Not built:** per-client space quotas (one client's garbage can still
     starve the others of space — the F1 failure made that visible);
     DTensor/ShardedTensor support in the PyTorch plugin; a real
     LMCache integration (E3 is a trace-driven stand-in with the same call
@@ -524,3 +533,5 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
   challenge it answers) so that it can serve as the draft of the paper's §4.1.
   The paper's component sections will say HOW only; this file keeps the
   engineering rationale (§10.11). No design content changed.
+- **2026-09-22** — §10.11 item 13: DRAM pool pre-allocated/populated (no faults on the data
+  path), burst-tail fixes in the controller and the active reference, `--margin`; trimming opt-in.

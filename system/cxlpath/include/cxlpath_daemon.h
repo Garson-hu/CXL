@@ -18,6 +18,7 @@ typedef struct {
     uint32_t cpu, gpu;
     uint32_t mem_cpu[CXLP_NSTREAM], mem_gpu[CXLP_NSTREAM];   /* per-stream memory */
     int      over;               /* consecutive probes above the bound */
+    uint32_t last_loaded_cpu;    /* ratio at the most recent epoch in which the CXL path was loaded (not slack) */
     double   bound, margin;      /* 1.10, 1.05 */
     uint64_t n_up, n_halve;
 } cxlp_ctl_t;

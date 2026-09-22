@@ -20,10 +20,15 @@ static int map_devices(void) {
         int fd = open(m->dev[d].path, m->dev[d].kind == CXLP_DEV_DRAM ? (O_RDWR | O_CREAT) : O_RDWR, 0600);
         if (fd < 0) { fprintf(stderr, "cxlpath: open %s: %s\n", m->dev[d].path, strerror(errno)); return -1; }
         if (m->dev[d].kind == CXLP_DEV_DRAM) {
+            /* The DRAM pool is a tmpfs file, i.e. 4 KiB pages (shmem THP needs root). Allocate its pages
+             * once here and map them populated, so no page fault or zeroing ever sits on the data path
+             * (first-touch faults made a spilled 32 MiB chunk ~5x slower than a CXL chunk). */
             struct stat sb; uint64_t need = m->dev[d].offset + m->dev[d].bytes;
-            if (fstat(fd, &sb) == 0 && (uint64_t)sb.st_size < need && ftruncate(fd, (off_t)need) != 0) { close(fd); return -1; }
+            if (fstat(fd, &sb) == 0 && (uint64_t)sb.st_size < need) {
+                if (ftruncate(fd, (off_t)need) != 0 || fallocate(fd, 0, (off_t)m->dev[d].offset, (off_t)m->dev[d].bytes) != 0) { close(fd); return -1; }
+            }
         }
-        void *p = mmap(NULL, (size_t)m->dev[d].nseg * CXLP_SEG_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+        void *p = mmap(NULL, (size_t)m->dev[d].nseg * CXLP_SEG_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, fd,
                        (off_t)m->dev[d].offset);
         if (p == MAP_FAILED) { fprintf(stderr, "cxlpath: mmap %s: %s\n", m->dev[d].path, strerror(errno)); close(fd); return -1; }
         cxlp_g.base[d] = p; cxlp_g.fd[d] = fd;

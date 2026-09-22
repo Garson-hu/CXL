@@ -3,7 +3,7 @@
  *   tick  : 10 ms while writers are active, 200 ms when idle — one DRAM latency probe
  *   epoch : 5 ticks when active, 1 tick when idle — signals, controller, publish, log
  *   1 s   : crash cleanup, DRAM pool trim
- * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--guard 2.0] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
+ * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  */
 #define _GNU_SOURCE
 #include "../src/internal.h"
@@ -75,7 +75,8 @@ static void *promoter(void *arg) { (void)arg; while (!quit) { cxlp_promote_pendi
 int main(int argc, char **argv) {
     if (argc < 2) { fprintf(stderr, "usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound X] [--no-calibrate]\n"); return 2; }
     int cpu = atoi(opt(argc, argv, "--cpu", "16")), ccd = atoi(opt(argc, argv, "--ccd-size", "16")), smt = atoi(opt(argc, argv, "--smt-offset", "128"));
-    double bound = atof(opt(argc, argv, "--bound", "1.10")), guard = atof(opt(argc, argv, "--guard", "2.0")), idle_loose = atof(opt(argc, argv, "--idle-bound", "1.5")); const char *logp = opt(argc, argv, "--log", NULL);
+    double bound = atof(opt(argc, argv, "--bound", "1.10")), guard = atof(opt(argc, argv, "--guard", "2.0")), idle_loose = atof(opt(argc, argv, "--idle-bound", "1.5"));
+    double margin = atof(opt(argc, argv, "--margin", "1.05")); int do_trim = flag(argc, argv, "--trim");   /* margin < bound; --trim gives free DRAM-pool pages back (they must then be re-faulted: off by default) */ const char *logp = opt(argc, argv, "--log", NULL);
     for (int i = 0; i < 100 && cxlp_attach(argv[1]) != 0; i++) usleep(100000);
     if (!cxlp_g.meta) { fprintf(stderr, "cxlpathd: store %s not found\n", argv[1]); return 1; }
     if (cxlp_policy_daemon_alive()) { fprintf(stderr, "cxlpathd: another daemon (pid %u) serves this store\n", atomic_load(&POL->daemon_pid)); return 1; }
@@ -94,12 +95,12 @@ int main(int argc, char **argv) {
     cpu_set_t pc; CPU_ZERO(&pc); CPU_SET(cpu, &pc); sched_setaffinity(0, sizeof pc, &pc);   /* main thread = probe thread */
 
     cxlp_probe_t *pr = cxlp_probe_create(256ul << 20);
-    cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, 1.05); cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
+    cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, margin); cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
     atomic_store(&POL->bound_x1000, (uint32_t)(bound * 1000 + 0.5));
     double ring[5]; int nring = 0; double base = 0;
     for (int i = 0; i < 25; i++) { ring[i % 5] = cxlp_probe_once(pr, 1000); if (i % 5 == 4) { double m = 0; for (int k = 0; k < 5; k++) m += ring[k]; base = cxlp_ref_feed(&ref_idle, m / 5, cxlp_now_ns() / 1000000ull); } usleep(10000); }
     nring = 5;
-    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.2f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
+    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
               if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
               fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns\n"); fflush(lg); }
 
@@ -109,7 +110,7 @@ int main(int argc, char **argv) {
     for (int d = 0; d < CXLP_MAX_DEVS; d++) { pb[d] = atomic_load(&POL->led[d].bytes); pn[d] = atomic_load(&POL->led[d].ns); }
     for (int s = 0; s < CXLP_NSTREAM; s++) ps[s] = atomic_load(&POL->sled[s].bytes);
     uint64_t p_seq = atomic_load(&POL->reserve_seq), pgd_b = atomic_load(&POL->gpu_direct.bytes), pgd_n = atomic_load(&POL->gpu_direct.ns);
-    uint64_t pgs_b = atomic_load(&POL->gpu_staged.bytes); uint32_t prev_mask = 0; int tick = 0, halved_in_epoch = 0, gpu_full = 0, cxl_full = 0;
+    uint64_t pgs_b = atomic_load(&POL->gpu_staged.bytes), prev_cb = 0; uint32_t prev_mask = 0; int tick = 0, halved_in_epoch = 0, gpu_full = 0, cxl_full = 0;
 
     while (!quit) {
         uint64_t now = cxlp_now_ns();
@@ -157,7 +158,7 @@ int main(int argc, char **argv) {
             }
             uint64_t gsb = atomic_load(&POL->gpu_staged.bytes);
             if (!mask && !active) cxlp_ref_feed(&ref_idle, mean5, now / 1000000ull);
-            else if (mask && db == 0 && gsb == pgs_b) cxlp_ref_feed(&ref_act, mean5, now / 1000000ull);   /* writers active, none of our bytes in DRAM */
+            else if (mask && cb > 0 && db == 0 && gsb == pgs_b) cxlp_ref_feed(&ref_act, mean5, now / 1000000ull);   /* writers moved CXL bytes THIS epoch, none of ours in DRAM (the 200 ms tail of a burst polluted it with idle values and caused halvings at the next burst) */
             pgs_b = gsb;
             double agg = cb / dt, per_writer = cn ? cb * 1e9 / (double)cn : 0, conc = cn / 1e9 / dt;
             /* CXL write direction, seen through our own ledger and the capacity calibrated at start-up:
@@ -166,7 +167,11 @@ int main(int argc, char **argv) {
              * A per-writer-speed rule was tried first and over-spilled (live B4: it kept raising spill to
              * 11/16 for a 60 GiB/s demand because concurrent writers always look slow individually). Not
              * covered: another tenant writing to the same cards outside cxlpath (would need a CXL write probe). */
-            cxl_full = cap > 0 ? (agg >= 0.9 * cap ? 1 : (agg < 0.7 * cap ? -1 : 0)) : 0;
+            /* The tail of a burst (an epoch only partly covered by the stream) must not count as slack:
+             * slack needs bytes in this epoch AND in the previous one (the first smoke test of periodic
+             * 8 GiB bursts lost its whole ramp to tail-off decrements and restarted every burst from 0). */
+            cxl_full = cap > 0 ? (agg >= 0.9 * cap ? 1 : ((agg < 0.7 * cap && cb > 0 && prev_cb > 0) ? -1 : 0)) : 0;
+            prev_cb = cb;
             /* GPU sources: the direct path is "full" when it delivers < 80% of what the GPU link can
              * push; sticky, because with everything staged there is no direct sample to look at. */
             uint64_t gb = atomic_load(&POL->gpu_direct.bytes), gn = atomic_load(&POL->gpu_direct.ns), link = atomic_load(&POL->gpu_link_bps);
@@ -193,7 +198,7 @@ int main(int argc, char **argv) {
             }
         atomic_store(&POL->dram_ok, room && p <= bound * base && mean5 <= bound * base);
         atomic_store(&POL->heartbeat_ns, now);
-        if (now / 1000000000ull != last_sec) { last_sec = now / 1000000000ull; cxlp_cleanup_dead(); if (!active) cxlp_dram_trim(); }
+        if (now / 1000000000ull != last_sec) { last_sec = now / 1000000000ull; cxlp_cleanup_dead(); if (!active && do_trim) cxlp_dram_trim(); }
 
         next += active ? 10000000ull : 200000000ull;
         uint64_t n2 = cxlp_now_ns(); if (next < n2) next = n2;

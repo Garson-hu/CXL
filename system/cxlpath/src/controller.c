@@ -22,13 +22,14 @@ int cxlp_ctl_probe_b(cxlp_ctl_t *c, double probe_ns, double base_ns, double boun
 }
 
 void cxlp_ctl_epoch(cxlp_ctl_t *c, int cpu_full, int gpu_full, double mean5_ns, double base_ns) {
+    if (cpu_full >= 0) c->last_loaded_cpu = c->cpu;           /* a periodic writer resumes from the ratio it ran with while loading CXL, not from its tail-off */
     if (cpu_full < 0 && c->cpu > 0) c->cpu--;                 /* CXL has slack again: hand DRAM back, whatever the probe says */
     if (base_ns <= 0 || mean5_ns > c->margin * base_ns) return;   /* DRAM not clearly calm, or no headroom: hold */
     if (cpu_full > 0 && c->cpu < 16) { c->cpu++; c->n_up++; }
     if (gpu_full && c->gpu < 16) { c->gpu++; c->n_up++; }
 }
 
-void cxlp_ctl_stream_idle(cxlp_ctl_t *c, int s) { c->mem_cpu[s] = c->cpu; c->mem_gpu[s] = c->gpu; }
+void cxlp_ctl_stream_idle(cxlp_ctl_t *c, int s) { c->mem_cpu[s] = c->last_loaded_cpu > c->cpu ? c->last_loaded_cpu : c->cpu; c->mem_gpu[s] = c->gpu; }
 
 void cxlp_ctl_burst_start(cxlp_ctl_t *c, uint32_t mask, double mean5_ns, double base_ns) {
     uint32_t cpu = 0, gpu = 0;
