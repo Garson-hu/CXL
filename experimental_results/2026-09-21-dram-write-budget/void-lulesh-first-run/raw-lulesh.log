@@ -1,0 +1,108 @@
+## rep1 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         26 (s)
+## rep1 pure dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         26 (s)
+## rep1 copy dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 pure dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         26 (s)
+## rep1 copy dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep1 pure dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 copy dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 pure dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 copy dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 pure dram asked=60 write=60.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep1 copy dram asked=60 write=55.9 steps=0 median=nan overlap=1
+Elapsed time         =         32 (s)
+## rep1 pure dram asked=80 write=77.11 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep1 copy dram asked=80 write=55.79 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 pure dram asked=110 write=76.94 steps=0 median=nan overlap=1
+Elapsed time         =         34 (s)
+## rep1 copy dram asked=110 write=55.49 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep1 copy /dev/dax0.0 asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep1 copy /dev/dax0.0 asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep1 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep2 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep2 pure dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         27 (s)
+## rep2 copy dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep2 pure dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         27 (s)
+## rep2 copy dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep2 pure dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         27 (s)
+## rep2 copy dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep2 pure dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep2 copy dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep2 pure dram asked=60 write=59.98 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep2 copy dram asked=60 write=55.59 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep2 pure dram asked=80 write=77.03 steps=0 median=nan overlap=1
+Elapsed time         =         32 (s)
+## rep2 copy dram asked=80 write=56.11 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep2 pure dram asked=110 write=76.9 steps=0 median=nan overlap=1
+Elapsed time         =         34 (s)
+## rep2 copy dram asked=110 write=55.27 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep2 copy /dev/dax0.0 asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep2 copy /dev/dax0.0 asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep2 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep3 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep3 pure dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         26 (s)
+## rep3 copy dram asked=10 write=10.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 pure dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 copy dram asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep3 pure dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 copy dram asked=30 write=30.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 pure dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 copy dram asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 pure dram asked=60 write=60.0 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep3 copy dram asked=60 write=55.63 steps=0 median=nan overlap=1
+Elapsed time         =         30 (s)
+## rep3 pure dram asked=80 write=76.94 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep3 copy dram asked=80 write=56.09 steps=0 median=nan overlap=1
+Elapsed time         =         31 (s)
+## rep3 pure dram asked=110 write=76.57 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 copy dram asked=110 write=55.27 steps=0 median=nan overlap=1
+Elapsed time         =         29 (s)
+## rep3 copy /dev/dax0.0 asked=20 write=20.0 steps=0 median=nan overlap=1
+Elapsed time         =         27 (s)
+## rep3 copy /dev/dax0.0 asked=40 write=40.0 steps=0 median=nan overlap=1
+Elapsed time         =         28 (s)
+## rep3 pure dram asked=0 write=0.0 steps=0 median=nan overlap=1
+Elapsed time         =         26 (s)

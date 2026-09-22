@@ -15,8 +15,8 @@ foundation. History: Change history at bottom.*
 the characterization). v3 changes the FRAMING and the SYSTEM, following the paper
 shape of PolyStore (FAST'25; notes in `Related.md`): one strong phenomenon → a
 practical but "systems-heavy" design → large effect. The system is built
-(`DESIGN.md` §10); nothing below is an evaluation result. O2 names LULESH only as
-a candidate application.*
+(`DESIGN.md` §10); nothing below is an evaluation result. O2's headline victim is the CPU optimizer step (phase-1 result); LULESH is dropped as the
+victim and stays a checkpoint client.*
 
 **The phenomenon, in one sentence.** Today every bulk write lands in DRAM first
 (checkpoint staging buffers, CPU-side KV-cache pools, tiering systems that
@@ -64,6 +64,14 @@ the live controller test 31–38 GiB/s of our own DRAM writes lifted the latency
 probe ~5% (`.../B-live/`). Interpolating these few points, a 7–10% protection
 bound leaves only some 40–60 GiB/s of usable DRAM write bandwidth — THE SAME
 ORDER as the CXL pair's 43.9 GiB/s.
+**MEASURED 2026-09-22 (`experiments/2026-09-21-dram-write-budget.md`):** under a 7% bound the
+usable DRAM write bandwidth is 40 GiB/s (pure writes) / 28 GiB/s (copies) beside a synthetic
+reader and 17.5 / ~9–30 beside a saturated CPU Adam step — the same order as, or below, the
+CXL pair's 43.9 GiB/s. So the sum is ≈ 2× either simple policy for the reader, and for the
+saturated victim ≈ 1.4× all-CXL and ≈ 3.5× a rate-limited DRAM writer. State the multiple
+against BOTH simple policies; the loan is whatever the victim leaves over, and the controller
+measures it. Copies to CXL still cost 3–5% at 25–40 GiB/s (the source read stays in DRAM).
+The paragraph below is the pre-measurement hypothesis, kept for the record.
 **Hypothesis to measure first: under an equal reader-protection bound, "CXL by
 default + DRAM on loan" delivers roughly the SUM — about twice either simple
 policy** (all-CXL is capped at the CXL capacity; a rate-limited all-DRAM writer
@@ -533,3 +541,9 @@ Cross-pair E2 still blocked on famfs access. Details:
   the strawmen") leave the component subsections and live in §4.1; rationale
   learned while building goes to evaluation ablations or the discussion. §3 keeps
   exactly one forward-looking sentence, the hinge the user proposed.
+- **2026-09-22** — Phase 1 measured: the DRAM write budget under a 7% reader-protection bound is
+  18–40 GiB/s (pure) / ~9–29 (copies), same order as or below the CXL pair's capacity; positioning
+  confirmed with a victim-dependent multiple (≈2× vs either simple policy for a synthetic reader;
+  ≈1.4× vs all-CXL and ≈3.5× vs throttled DRAM for a saturated CPU Adam step). Headline victim
+  = CPU optimizer step; LULESH dropped as victim. Benchmark survey saved to
+  `benchmarks/results/2026-09-21-benchmark-survey.md`.

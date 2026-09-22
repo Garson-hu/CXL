@@ -494,6 +494,23 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
   from building the system"; `system/cxlpath/README.md`; WORKLOG session 23. **The build plan is
   complete. Next, with the user: evaluation plan; names; whether to attempt a real LMCache integration.**
 
+## Phase 6 — EVALUATION (plan approved by the user 2026-09-21)
+Quality bar set by the user: OSDI quality; do not trim to a venue or a date. The user decides go / re-discuss
+at every phase boundary. Paper text lives in `/home/ghu4/papers/cxlpath` (own git repo, GitHub ↔ Overleaf),
+never in this repo. Work happens on branch `evaluation` (`cxlpath` was merged into `main` on 2026-09-21).
+1. **Usable DRAM write bandwidth under a reader-protection bound + screening of victim applications**
+   (synthetic reader, CPU optimizer step, all-core LULESH; bounds 5/7/10%) —
+   `2026-09-21-dram-write-budget.md`. ▶ running. After it: show the curves and the go / re-discuss judgement.
+2. The two missing motivation figures: the three simple policies (+ our system on the same axes = the core
+   figure of the evaluation; periodic producer, steady state; first-burst behaviour goes to sensitivity) and
+   the headline figure of Observation 2 with the application picked in step 1.
+3. Full evaluation per component (segment store; placement; read path; drain and recovery), parameter
+   sensitivity and ablations, real applications, PM configuration last. Prerequisite: lift the 64-extent
+   (2 GiB) limit of `cxlp_get` / `cxlp_read`.
+4. Writing, in parallel from step 2 on (motivation and §4.1–4.2 first, introduction last).
+Also decided: integrate the REAL LMCache (with vLLM) — after a survey of the benchmarks and applications that
+comparable papers use (running in the background on 2026-09-21); names not urgent.
+
 ## Change log (append-only)
 - 2026-09-08 — created from the user's four-phase plan + PolyStore request;
   machine facts, blockers, and file naming fixed.
@@ -508,6 +525,8 @@ attribution); V5 measurement allowed. Status column: ✅ done · ▶ in progress
 - 2026-09-19 (later) — Phase 5 v2 APPROVED; name `cxlpath`; branch `cxlpath`, commit per step.
 - 2026-09-19 (end of day) — Phase 5 v2 COMPLETE: V1–V6, A1–A5, B1–B5, C1–C2, D1–D3, E1–E3, F1–F2 all ✅
   (E3 = trace-driven stand-in; real LMCache ⏳ user; F2 awaits the user's review). Evaluation not started.
+- 2026-09-21 — Phase 6 (evaluation) approved; step 1 started; `cxlpath` merged into `main`; paper repo
+  skeleton created in `/home/ghu4/papers/cxlpath` after the layout of `checkpoint/dpu-relay-paper`.
 
 ## Naming (rule 2026-09-08 — do not use "Pair A"/"Pair B" in new text)
 | historical label | what it is | use instead |
