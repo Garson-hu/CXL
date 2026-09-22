@@ -8,13 +8,15 @@ for pf in sorted(glob.glob(f"{out}/*-producer.txt")):
     tag = os.path.basename(pf)[:-len("-producer.txt")]; victim = tag.split("-")[0]
     wins = [(int(m[1]), int(m[2]), float(m[3]), float(m[4])) for m in re.findall(r"COPY (\d+) START (\d+) END (\d+) bytes=\d+ GiBs=([\d.]+) dram_share=([\d.]+)", open(pf).read())]
     vt = open(f"{out}/{tag}-victim.txt").read()
-    if victim == "opt": samples = [(int(m[1]), float(m[0])) for m in re.findall(r"\[STEP\] \d+ ([\d.]+) (\d+)", vt)]          # (end ns, step s)
+    if victim in ("opt", "pr"): samples = [(int(m[1]), float(m[0])) for m in re.findall(r"\[STEP\] \d+ ([\d.]+) (\d+)", vt)]   # (end ns, step s)
+    elif victim == "llama": samples = [(int(m), 1.0) for m in re.findall(r"^TOK (\d+)", vt, flags=re.M)]                       # one token per line: rate = count / time
     else: samples = [(int(m[0]), float(m[1])) for m in re.findall(r"^T (\d+) ([\d.]+)", vt, flags=re.M)]                     # (ns, GiB/s)
     per = []
     for s0, s1, gibs, share in wins:
         inside = [v for t, v in samples if s0 <= t <= s1 + 150_000_000]; before = [v for t, v in samples if s0 - 10_000_000_000 <= t < s0 - 500_000_000]
         if not inside or not before: continue
-        if victim == "opt": slow = 100 * (st.median(inside) / st.median(before) - 1)
+        if victim in ("opt", "pr"): slow = 100 * (st.median(inside) / st.median(before) - 1)
+        elif victim == "llama": slow = 100 * (1 - (len(inside) / ((s1 + 150_000_000 - s0) / 1e9)) / (len(before) / 9.5))     # tok/s inside vs before
         else: slow = 100 * (1 - st.mean(inside) / st.mean(before))
         per.append((slow, (s1 - s0) / 1e9, gibs, share))
     last = per[-3:] if len(per) >= 3 else per

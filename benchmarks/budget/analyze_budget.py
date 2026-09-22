@@ -17,8 +17,8 @@ def budget(pts, bound):
 summary = {}
 for v in victims:
     if not os.path.exists(f"{out}/{v}.csv"): continue
-    g = load(v); zero = g[("pure", "dram", 0)]; base = st.median(x[1] for x in zero); higher_is_better = v == "synth"
-    print(f"\n=== victim {v}: baseline {base:.4f} {'GiB/s read' if higher_is_better else 's per step'} over {len(zero)} zero-level runs, spread {100*(max(x[1] for x in zero)/min(x[1] for x in zero)-1):.1f}%")
+    g = load(v); zero = g[("pure", "dram", 0)]; base = st.median(x[1] for x in zero); higher_is_better = v in ("synth", "llama")
+    print(f"\n=== victim {v}: baseline {base:.4f} {'GiB/s read' if v == 'synth' else ('tok/s' if v == 'llama' else 's per step')} over {len(zero)} zero-level runs, spread {100*(max(x[1] for x in zero)/min(x[1] for x in zero)-1):.1f}%")
     curves = {}
     for (m, t, r), xs in sorted(g.items(), key=lambda kv: (kv[0][1], kv[0][0], kv[0][2])):
         if r == 0: continue

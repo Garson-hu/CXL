@@ -27,9 +27,15 @@ if victim == "lulesh":
     cmd = ["mpirun", "--bind-to", "none", "-np", "1", "-x", "LULESH_STEP_TIMES", "-x", "OMP_NUM_THREADS", "-x", "OMP_PROC_BIND", "-x", "OMP_PLACES", "-x", "LD_LIBRARY_PATH", "./lulesh2.0.veloc", "-s", "200", "-i", "40"]
     cwd = os.path.expanduser("~/apps/lulesh-veloc"); skip = 5
     steps = lambda txt: [float(l.split("dt=")[1].split()[0]) for l in txt.splitlines() if l.startswith("[STEP]")]
-else:
+elif victim == "opt":
     cmd = ["taskset", "-c", "0-79", "python3", f"{HERE}/opt_step.py", "80", "1500", "60"]; cwd = HERE; skip = 5
     steps = lambda txt: [float(l.split()[2]) for l in txt.splitlines() if l.startswith("[STEP]")]
+elif victim == "pr":                                   # GAPBS PageRank, Kronecker 2^26, 30 trials of ~1.1 s
+    cmd = ["python3", f"{HERE}/../policy/gapbs_victim.py", "80", "0-79", "30"]; cwd = HERE; skip = 3
+    steps = lambda txt: [float(l.split()[2]) for l in txt.splitlines() if l.startswith("[STEP]")]
+elif victim == "llama":                                # llama.cpp decoding, Qwen2.5-7B Q8_0, ~60 s of generation; "steps" = tok/s per 500 ms (higher is better)
+    cmd = ["python3", f"{HERE}/../policy/llama_victim.py", "80", "0-79", "2200"]; cwd = HERE; skip = 6
+    steps = lambda txt: [float(l.split()[2]) for l in txt.splitlines() if l.startswith("T ")]
 levels = [(0, "pure", "dram")] + [(r, m, "dram") for r in (10, 20, 30, 40, 60, 80, 110) for m in ("pure", "copy")] + [(r, "copy", "/dev/dax0.0") for r in (20, 40)] + [(0, "pure", "dram")]
 for rep in range(1, reps + 1):
     for r, m, tgt in levels:
