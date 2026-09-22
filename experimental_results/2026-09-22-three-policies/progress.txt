@@ -66,3 +66,39 @@ llama-cxl-rep3: producer rc=0
 llama-dram-limited-r20-rep3: producer rc=0
 llama-cxlpath-b1.10-rep3: producer rc=0
 PHASE2B-DONE
+pr-dram-s192-rep1: producer rc=0
+pr-cxl-s192-rep1: producer rc=0
+pr-dram-limited-r10-s192-rep1: producer rc=0
+pr-cxlpath-b1.10-s192-rep1: producer rc=0
+llama-cxlpath-b1.03-rep1: producer rc=0
+pr-dram-s192-rep2: producer rc=0
+pr-cxl-s192-rep2: producer rc=0
+pr-dram-limited-r10-s192-rep2: producer rc=0
+pr-cxlpath-b1.10-s192-rep2: producer rc=0
+llama-cxlpath-b1.03-rep2: producer rc=0
+pr-dram-s192-rep3: producer rc=0
+pr-cxl-s192-rep3: producer rc=0
+pr-dram-limited-r10-s192-rep3: producer rc=0
+pr-cxlpath-b1.10-s192-rep3: producer rc=0
+llama-cxlpath-b1.03-rep3: producer rc=0
+PHASE2C-DONE
+pr-cxlpath-b1.10-g1.3-s192-rep1: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep1: producer rc=0
+reader-cxlpath-b1.09-g1.3-rep1: producer rc=0
+pr-cxlpath-b1.10-g1.3-s192-rep2: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep2: producer rc=0
+reader-cxlpath-b1.09-g1.3-rep2: producer rc=0
+pr-cxlpath-b1.10-g1.3-s192-rep3: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep3: producer rc=0
+PHASE2D-DONE
+reader-cxlpath-b1.09-g1.3-rep1: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep1: producer rc=0
+pr-cxlpath-b1.10-g1.3-s192-rep1: producer rc=0
+reader-cxlpath-b1.09-g1.3-rep2: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep2: producer rc=0
+pr-cxlpath-b1.10-g1.3-s192-rep2: producer rc=0
+reader-cxlpath-b1.09-g1.3-rep3: producer rc=0
+llama-cxlpath-b1.10-g1.3-rep3: producer rc=0
+pr-cxlpath-b1.10-g1.3-s192-rep3: producer rc=0
+opt-cxlpath-b1.05-g1.3-rep1: producer rc=0
+PHASE2E-DONE

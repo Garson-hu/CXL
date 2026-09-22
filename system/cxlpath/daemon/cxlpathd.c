@@ -3,7 +3,7 @@
  *   tick  : 10 ms while writers are active, 200 ms when idle — one DRAM latency probe
  *   epoch : 5 ticks when active, 1 tick when idle — signals, controller, publish, log
  *   1 s   : crash cleanup, DRAM pool trim
- * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
+ * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--idle-ns N] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  */
 #define _GNU_SOURCE
 #include "../src/internal.h"
@@ -21,6 +21,7 @@ static int flag(int argc, char **argv, const char *k) { for (int i = 2; i < argc
 
 static volatile sig_atomic_t quit;
 static void on_sig(int s) { (void)s; quit = 1; }
+static int cmp_double(const void *a, const void *b) { double x = *(const double *)a, y = *(const double *)b; return x < y ? -1 : x > y; }
 
 /* ---- start-up calibration of the CXL write path: solo speed and aggregate capacity ---- */
 typedef struct { void *dst[2]; const char *src; int rounds; uint64_t bytes, ns; pthread_barrier_t *bar; } cal_t;
@@ -99,8 +100,14 @@ int main(int argc, char **argv) {
     atomic_store(&POL->bound_x1000, (uint32_t)(bound * 1000 + 0.5));
     double ring[5]; int nring = 0; double base = 0;
     for (int i = 0; i < 25; i++) { ring[i % 5] = cxlp_probe_once(pr, 1000); if (i % 5 == 4) { double m = 0; for (int k = 0; k < 5; k++) m += ring[k]; base = cxlp_ref_feed(&ref_idle, m / 5, cxlp_now_ns() / 1000000ull); } usleep(10000); }
+    /* The headroom guard compares the reference in use with the UNLOADED level of this machine. That level
+     * is calibrated here over 2 s (median of 200 probes; single idle probes scatter 100-160 ns on c28, and
+     * the lowest windowed reference ever seen was too fragile: one low start-up window denied the loan to a
+     * victim with plenty of headroom). A daemon started on an already loaded machine passes --idle-ns. */
+    double idle_ns = atof(opt(argc, argv, "--idle-ns", "0"));
+    if (idle_ns <= 0) { double v[200]; for (int i = 0; i < 200; i++) { v[i] = cxlp_probe_once(pr, 1000); usleep(10000); } qsort(v, 200, sizeof *v, cmp_double); idle_ns = v[100]; }
     nring = 5;
-    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
+    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f guard=%.2f idle_ns=%.1f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, guard, idle_ns, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
               if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
               fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns\n"); fflush(lg); }
 
@@ -135,11 +142,11 @@ int main(int argc, char **argv) {
         /* reference in use: writers active -> the active reference (0 = not known yet), else idle */
         double ref_a = cxlp_ref_value(&ref_act, 5);
         base = mask ? ref_a : ref_idle.last;
-        int room = base > 0 && base <= guard * ref_idle.low;        /* headroom guard */
+        int room = base > 0 && base <= guard * idle_ns;             /* headroom guard: DRAM already loaded beyond guard x unloaded -> no loan */
         /* A burst may start from its remembered ratio unless DRAM is under OBVIOUS pressure right now.
          * Idle readings are too noisy for the 10% bound (100-160 ns on an idle c28), so the idle state
          * uses a loose factor; the burst itself re-checks against the active reference within 20-50 ms. */
-        if (mask && !prev_mask) cxlp_ctl_burst_start(&ctl, mask, mean5 / idle_loose * ctl.margin, ref_idle.last <= guard * ref_idle.low ? ref_idle.last : 0);
+        if (mask && !prev_mask) cxlp_ctl_burst_start(&ctl, mask, mean5 / idle_loose * ctl.margin, ref_idle.last <= guard * idle_ns ? ref_idle.last : 0);
         prev_mask = mask;
 
         /* fast decrease, every probe; skipped while the active reference is being learned */

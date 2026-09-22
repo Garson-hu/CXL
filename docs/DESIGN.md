@@ -439,7 +439,22 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
     the next burst started with halvings). Also `--margin`. Known property: with per-chunk spill and a
     fixed producer thread pool, CXL loses saturation as the spill grows, so the ≥ 90%-of-capacity
     "full" signal self-limits the spill; a producer with spare threads is needed for the loan to show.
-14. **Not built:** per-client space quotas (one client's garbage can still
+14. **The headroom guard decides the regime (phase-2 finding, 2026-09-22).** A probe bound maps to a
+    victim's slowdown by a factor that depends on the victim (a 10% probe rise ≈ 7% for a streaming
+    reader, ≈ 19% for a CPU Adam step, ≈ 30% for PageRank), and beside a saturated victim the probe's
+    scatter (p90/p50 ≈ 1.045) exceeds the signal of a 7% bound. With the guard at its original 2.0×,
+    cxlpath lent DRAM beside PageRank and llama.cpp and hurt them 2–3× more than all-CXL. The absolute
+    probe level separates the regimes (135 ns idle and beside a moderate reader; ~200 ns beside PageRank
+    and llama.cpp; 262 ns beside the Adam step), so the guard is now **1.3× the unloaded level**, and
+    that level is **calibrated over 2 s at daemon start** (`--idle-ns` overrides it when the daemon
+    starts on a loaded machine) instead of being the lowest windowed reference ever seen. Result: the
+    loan goes only to victims that leave headroom; beside saturated ones cxlpath = all-CXL.
+15. **Not built — producer pacing.** cxlpath decides WHERE writes go, never how fast the producer copies.
+    Beside a read-saturated victim the source reads of a copy alone exceed a 7% bound (all-CXL costs
+    llama.cpp 10%, PageRank 14%); holding the bound there needs the producer paced to ~25 GiB/s of copies
+    into CXL, which only a throttled writer does today. A future last-resort rule: pace `reserve` when the
+    probe is over the bound while no DRAM is being lent.
+16. **Not built:** per-client space quotas (one client's garbage can still
     starve the others of space — the F1 failure made that visible);
     DTensor/ShardedTensor support in the PyTorch plugin; a real
     LMCache integration (E3 is a trace-driven stand-in with the same call
@@ -535,3 +550,5 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
   engineering rationale (§10.11). No design content changed.
 - **2026-09-22** — §10.11 item 13: DRAM pool pre-allocated/populated (no faults on the data
   path), burst-tail fixes in the controller and the active reference, `--margin`; trimming opt-in.
+- **2026-09-22 (later)** — §10.11 items 14–15: headroom guard 1.3× a calibrated unloaded probe level
+  (was 2.0× the lowest windowed reference), `--idle-ns`; producer pacing recorded as not built.

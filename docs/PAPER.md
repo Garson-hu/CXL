@@ -72,7 +72,14 @@ staging at 1.4× its time; its 65 GiB/s is 0.9 of "CXL capacity + DRAM budget". 
 victim (CPU Adam over 24 GB) every copy is source-bound at ~18 GiB/s, so the destination changes
 only the harm: 15.6% (DRAM) vs 6.6% (CXL); cxlpath correctly lends nothing; throttling to 7% harm
 costs 1.8× the time. Wording for the paper: "approaches the sum" for a moderate victim; "same
-completion, 2.4× less harm" for a saturated one. The paragraph below is the phase-1 budget.
+completion, 2.4× less harm" for a saturated one. **Extended to four victims the same day
+(llama.cpp decoding, GAPBS PageRank): the headroom guard on the absolute probe level (1.3× the
+unloaded level) is what tells the two regimes apart — with it cxlpath lends only to the moderate
+victim and equals all-CXL beside the three saturated ones (2.4–3.5× less harm than DRAM staging
+at the same completion; today's staging costs llama.cpp 34% and PageRank 44%). Limitation to
+state: beside read-saturated victims even all-CXL exceeds a 7% bound (the copy's source reads),
+and cxlpath does not pace the producer; the paper reports it and lists producer pacing as future
+work.** The paragraph below is the phase-1 budget.
 **MEASURED 2026-09-22 (`experiments/2026-09-21-dram-write-budget.md`):** under a 7% bound the
 usable DRAM write bandwidth is 40 GiB/s (pure writes) / 28 GiB/s (copies) beside a synthetic
 reader and 17.5 / ~9–30 beside a saturated CPU Adam step — the same order as, or below, the
@@ -564,3 +571,6 @@ Cross-pair E2 still blocked on famfs access. Details:
   moderate and a saturated victim) and the O2 headline timeline. Gain wording fixed: "approaches
   the sum" (moderate victim: 1.5× all-CXL, 3.3× throttling at equal harm) and "same completion,
   2.4× less harm" (saturated victim, source-bound copy, no loan).
+- **2026-09-22 (evening)** — Four-victim core figure; the guard (absolute probe level) decides the
+  regime; producer pacing recorded as a limitation. Two more victims' budgets in
+  `experiments/2026-09-22-budget-more-victims.md`.

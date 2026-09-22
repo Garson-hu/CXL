@@ -7,14 +7,14 @@ CPU layout: victims opt / pr / llama = cpus 0-79 (probe 80); victim reader = cpu
 import os, signal, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__)); B = os.path.join(HERE, "..", "..", "system", "cxlpath", "build"); BUDGET = os.path.join(HERE, "..", "budget")
 out, victim, policy, rep = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
-tag = f"{victim}-{policy}" + (f"-b{bound}" if policy == "cxlpath" else "") + (f"-r{rate}" if rate else "") + (f"-s{S}" if S != "64" else "") + f"-rep{rep}"
+a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+tag = f"{victim}-{policy}" + (f"-b{bound}" if policy == "cxlpath" else "") + (f"-g{guard}" if guard else "") + (f"-r{rate}" if rate else "") + (f"-s{S}" if S != "64" else "") + f"-rep{rep}"
 store_gib = str(int(int(S) * 1.5) // 2 * 1024); pool_gib = str(int(int(S) * 0.75) * 1024)          # CXL: 1.5x the snapshot over two devices; pool: 0.75x
 os.makedirs(out, exist_ok=True); probe_cpu = "16" if victim == "reader" else "80"
 daemon = None
 if policy == "cxlpath":
     subprocess.run([f"{B}/cxlp_mkstore", "policy", store_gib, pool_gib, "/dev/dax0.0", "/dev/dax1.0"], capture_output=True)
-    dargs = [f"{B}/cxlpathd", "policy", "--cpu", probe_cpu, "--bound", bound, "--log", f"{out}/{tag}-daemon.csv"] + (["--margin", margin] if margin else [])
+    dargs = [f"{B}/cxlpathd", "policy", "--cpu", probe_cpu, "--bound", bound, "--log", f"{out}/{tag}-daemon.csv"] + (["--margin", margin] if margin else []) + (["--guard", guard] if guard else [])
     daemon = subprocess.Popen(dargs)
     for _ in range(300):
         time.sleep(0.1)

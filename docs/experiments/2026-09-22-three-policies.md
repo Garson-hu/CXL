@@ -1,6 +1,6 @@
 # 2026-09-22 — Evaluation phase 2: three simple policies vs cxlpath (the core figure), and the headline of Observation 2
 
-**STATUS: CLOSED 2026-09-22 (verdict below).** 42 runs: 2 victims × 7 policy settings × 3 repetitions, repetitions
+**STATUS: CLOSED 2026-09-22 (verdict below; extended the same day with two more victims and the guard sensitivity).** 42 + 45 runs: 2 victims × 7 policy settings × 3 repetitions, repetitions
 interleaved. Raw: `experimental_results/2026-09-22-three-policies/` (per run: `<tag>-victim.txt`,
 `<tag>-producer.txt`, `<tag>-daemon.csv` for cxlpath). Tools: `benchmarks/policy/`.
 
@@ -91,6 +91,51 @@ Two regimes:
    A curiosity: the throttled-20 writer completes faster (3.2 s) than the unthrottled one (3.4 s) — pacing
    gaps let the source reads through; both are source-bound.
 
+## Extension (same day): two more real victims, and the headroom guard
+Same protocol beside **llama.cpp decoding** (Qwen2.5-7B Q8, 80 threads; 64 GiB copies) and **GAPBS PageRank**
+(2^26 Kronecker, 80 threads; 192 GiB copies so that a copy window holds 3–4 trials of ~1.1 s; the 64 GiB
+runs, whose windows held 1–2 trials, are kept under `pr-64gib-too-short-windows/` and are not used).
+Four-victim figure: `three-policies-4victims.png`.
+
+| victim | policy | copy rate GiB/s | completion s | victim slowdown | DRAM share |
+|---|---|---|---|---|---|
+| llama.cpp | all-DRAM, NT | 65.5 | 0.98 | **33.8%** | 1.00 |
+| llama.cpp | all-CXL | 43.6 | 1.47 | 10.4% | 0 |
+| llama.cpp | DRAM throttled 20 | 20.0 | 3.20 | 11.8% | 1.00 |
+| llama.cpp | cxlpath, bound 1.10, guard 2.0 | 48.0 (44–49) | 1.33 | 13.4% (10.1–13.8) | 0.12 (0.01–0.14) |
+| llama.cpp | cxlpath, bound 1.03 (too tight) | 43.5 (40–54) | 1.47 | 17.3% (9.6–19.6, erratic) | 0.04 |
+| llama.cpp | **cxlpath, bound 1.10, guard 1.3** | 43.0 | 1.48 | 9.7% (9.4–10.6) | 0.00 |
+| PageRank | all-DRAM, NT | 43.1 | 4.45 | **43.7%** (33.7–55.0) | 1.00 |
+| PageRank | all-CXL | 43.8 | 4.71 | 14.4% (12.8–15.7) | 0 |
+| PageRank | DRAM throttled 10 | 10.0 | 19.2 | 7.5% | 1.00 |
+| PageRank | cxlpath, bound 1.10, guard 2.0 | 59.7 (55–61) | 3.21 | **36.1%** (27.5–40.2) | 0.39 (0.23–0.42) |
+| PageRank | **cxlpath, bound 1.10, guard 1.3** | 43.8 | 4.38 | 14.6% (14.0–15.6) | 0.00 |
+| reader | cxlpath, bound 1.09, guard 1.3 | 57.0 (57–63) | 1.12 (1.01–1.13) | 3.5% (3.3–4.3) | 0.23 (0.23–0.31) |
+| Adam | cxlpath, bound 1.05, guard 1.3 (1 rep) | 18.0 | 3.56 | 6.5% | 0.00 |
+
+What happened, and what was changed:
+1. **With the default guard (2.0) cxlpath lent DRAM to PageRank and llama.cpp and hurt them 2–3× more
+   than all-CXL** (PageRank 36% vs 14%). The controller did what it was told: a 1.10× probe bound was
+   honoured in probe units, but the probe's calibration differs per victim — a 10% rise of the probe
+   means a ~7% slowdown of the reader, ~19% of the Adam step and ~30% of PageRank (phase-1 tables) — so a
+   fixed bound is too loose beside a saturated victim. Tightening it to 1.03 (llama.cpp) is below the
+   probe's own scatter (p90/p50 ≈ 1.045 beside a saturated victim) and made the loan erratic.
+2. **The absolute probe level separates the regimes:** with no writer, the probe reads 135 ns on the idle
+   machine and beside the reader or LULESH, 198–200 ns beside PageRank and llama.cpp, 262 ns beside the Adam
+   step (phase-1 zero levels). The design's headroom guard ("no loan when the reference exceeds guard × the
+   unloaded level") does exactly this job; its threshold was 2.0 (chosen from the write-drain cliff) and is
+   now **1.3**, and its denominator is a **2 s calibration of the unloaded level at daemon start** (median of
+   200 probes; `--idle-ns` for a daemon started on a loaded machine) instead of the lowest windowed
+   reference ever seen — one low start-up window had denied the loan to the reader (`guard-lowest-window/`).
+3. With guard 1.3 the loan goes only to the moderate victim (reader: 23–31%, 1.01–1.13 s, 3.3–4.3%) and
+   cxlpath equals all-CXL beside the three saturated ones (Adam 6.5%, llama.cpp 9.7%, PageRank 14.6%) —
+   the same completion time and 2.4–3.5× less harm than today's DRAM staging (15.6 / 33.8 / 43.7%).
+4. **A gap the saturated victims expose:** even all-CXL exceeds a 7% bound beside llama.cpp (10%) and
+   PageRank (14%) because the copy's SOURCE reads compete with a read-saturated victim; under a 7% bound
+   only a throttled writer stays inside (10 GiB/s, 6.4–19 s). cxlpath controls where writes go, not how
+   fast the producer copies; pacing the producer as the last resort (the phase-1 file's "budget of copies
+   into CXL", ~25–27 GiB/s for these victims) is not built. To state in the discussion / future work.
+
 ## Verdict
 - **The core figure works and says what the motivation needs:** the simple policies each fail on one axis,
   cxlpath sits inside the bound at a completion time no throttled writer reaches. The multiple is regime-
@@ -103,11 +148,18 @@ Two regimes:
   costs 7.8% for 6.4 s. This is the real-application version of "keeping it in DRAM is harmful" (O2) and the
   precise form of O3 ("the write half leaves DRAM; the source read remains").
 - **Controller findings for the sensitivity section:** (a) a probe bound maps to victim slowdown with ±2–3
-  points of scatter, and the tight/loose bounds produced nearly the same operating point — the ramp rate and
-  the ≥ 90%-capacity fullness rule limit the loan more than the bound does; (b) per-stream memory keeps
-  ramping across periods, so the operating point drifts upward over a run; (c) beside a saturated victim the
-  fullness signal (not the probe) is what keeps the loan at zero. Items for the sensitivity study: bound,
-  step, fullness threshold, number of periods to steady state.
+  points of scatter beside the reader and by a victim-dependent factor (0.7× for the reader, ~2× for the
+  Adam step, ~3× for PageRank), so the bound alone cannot protect a saturated victim; (b) the headroom
+  guard on the ABSOLUTE probe level (1.3× the calibrated unloaded level) is what decides the regime, and
+  with it cxlpath lends only where lending is safe; (c) the tight/loose bounds produced nearly the same
+  operating point beside the reader — the ramp rate and the ≥ 90%-capacity fullness rule limit the loan
+  more than the bound; (d) per-stream memory keeps ramping across periods, so the operating point drifts
+  upward over a run. Items for the sensitivity study: guard, bound, step, fullness threshold, periods to
+  steady state.
+- **Four victims in one figure (`three-policies-4victims.png`):** moderate reader — cxlpath 1.3–1.5× faster
+  than all-CXL inside the bound, 3× faster than throttling at equal harm; three saturated applications —
+  cxlpath = all-CXL, same completion as today's DRAM staging with 2.4–3.5× less harm; throttling to 7%
+  costs 1.8–4.4× the time.
 - Next: the two further victims (GAPBS PageRank, llama.cpp CPU decoding) through the phase-1 protocol, then
   the same core experiment beside them; the real PyTorch and VeloC clients replace the synthetic producer in
   the real-application section.
