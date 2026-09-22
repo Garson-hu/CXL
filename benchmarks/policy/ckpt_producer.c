@@ -8,7 +8,7 @@
  *   cxlpath       reserve / copy_to / commit through the runtime; the daemon decides per chunk
  * Prints one line per period: COPY <i> START <mono ns> END <mono ns> bytes=<> GiBs=<> dram_share=<0..1>
  * Threads are placed 4 per CCD starting at <first_cpu> (cpus c, c+1, c+2, c+3, c+16, ...).
- * usage: ckpt_producer <policy> <snapshot_GiB> <threads> <first_cpu> <period_s> <periods> [--rate G] [--store NAME] */
+ * usage: ckpt_producer <policy> <snapshot_GiB> <threads> <first_cpu> <period_s> <periods> [--rate G] [--store NAME] [--dax-offset-gib 64] */
 #define _GNU_SOURCE
 #include <fcntl.h>
 #include <immintrin.h>
@@ -61,12 +61,13 @@ static void *worker(void *a) {
 int main(int argc, char **argv) {
     if (argc < 7) { fprintf(stderr, "usage\n"); return 2; }
     const char *pol = argv[1]; S = (size_t)atol(argv[2]) << 30; nthr = atoi(argv[3]); cpu0 = atoi(argv[4]); double period = atof(argv[5]); int periods = atoi(argv[6]); const char *store = "policy";
-    for (int i = 7; i + 1 < argc; i++) { if (!strcmp(argv[i], "--rate")) rate_bps = atof(argv[i + 1]) * 1073741824.0; if (!strcmp(argv[i], "--store")) store = argv[i + 1]; }
+    uint64_t dax_off = 64ul << 30;
+    for (int i = 7; i + 1 < argc; i++) { if (!strcmp(argv[i], "--rate")) rate_bps = atof(argv[i + 1]) * 1073741824.0; if (!strcmp(argv[i], "--store")) store = argv[i + 1]; if (!strcmp(argv[i], "--dax-offset-gib")) dax_off = (uint64_t)atol(argv[i + 1]) << 30; }
     policy = !strcmp(pol, "dram") ? P_DRAM : !strcmp(pol, "dram-plain") ? P_PLAIN : !strcmp(pol, "dram-limited") ? P_LIMITED : !strcmp(pol, "cxl") ? P_CXL : !strcmp(pol, "cxlpath") ? P_CXLPATH : -1;
     if (policy < 0 || (policy == P_LIMITED && rate_bps <= 0)) { fprintf(stderr, "bad policy\n"); return 2; }
     pin(cpu0);
     src = anon(S); for (size_t i = 0; i < S; i += 4096) *(uint64_t *)(src + i) = i * 0x9E3779B97F4A7C15ull;   /* the training state (touched serially) */
-    if (policy == P_CXL) { int fd = open("/dev/dax0.0", O_RDWR); if (fd < 0) { perror("dax"); return 1; } dst = mmap(NULL, S, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 64ul << 30); if (dst == MAP_FAILED) { perror("mmap dax"); return 1; } }
+    if (policy == P_CXL) { int fd = open("/dev/dax0.0", O_RDWR); if (fd < 0) { perror("dax"); return 1; } dst = mmap(NULL, S, PROT_READ | PROT_WRITE, MAP_SHARED, fd, (off_t)dax_off); if (dst == MAP_FAILED) { perror("mmap dax"); return 1; } }
     else if (policy == P_CXLPATH) { if (cxlp_attach(store)) { fprintf(stderr, "no store %s\n", store); return 1; } held = calloc(S / CH + 16, sizeof *held); }
     else { dst = anon(S); for (size_t i = 0; i < S; i += 4096) *(uint64_t *)(dst + i) = 1; }                     /* staging buffer, touched once */
     pthread_barrier_init(&bar, NULL, (unsigned)nthr + 1); pthread_t th[256]; for (long i = 0; i < nthr; i++) pthread_create(&th[i], NULL, worker, (void *)i);

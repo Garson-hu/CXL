@@ -1,0 +1,108 @@
+## rep1 pure dram asked=0 write=0.0 steps=114 median=35.67500 overlap=1
+
+## rep1 pure dram asked=10 write=10.0 steps=118 median=34.51000 overlap=1
+
+## rep1 copy dram asked=10 write=10.0 steps=123 median=33.66000 overlap=1
+
+## rep1 pure dram asked=20 write=20.0 steps=123 median=33.28000 overlap=1
+
+## rep1 copy dram asked=20 write=20.0 steps=132 median=30.73000 overlap=1
+
+## rep1 pure dram asked=30 write=30.0 steps=131 median=31.61000 overlap=1
+
+## rep1 copy dram asked=30 write=30.0 steps=143 median=28.43000 overlap=1
+
+## rep1 pure dram asked=40 write=40.0 steps=136 median=30.02000 overlap=1
+
+## rep1 copy dram asked=40 write=40.0 steps=152 median=26.73500 overlap=1
+
+## rep1 pure dram asked=60 write=45.68 steps=140 median=29.33000 overlap=1
+
+## rep1 copy dram asked=60 write=42.2 steps=153 median=26.45000 overlap=1
+
+## rep1 pure dram asked=80 write=48.41 steps=140 median=29.03500 overlap=1
+
+## rep1 copy dram asked=80 write=42.07 steps=152 median=26.49500 overlap=1
+
+## rep1 pure dram asked=110 write=51.34 steps=141 median=28.74000 overlap=1
+
+## rep1 copy dram asked=110 write=42.26 steps=153 median=26.39000 overlap=1
+
+## rep1 copy /dev/dax0.0 asked=20 write=20.0 steps=120 median=33.98000 overlap=1
+
+## rep1 copy /dev/dax0.0 asked=40 write=39.24 steps=130 median=31.64500 overlap=1
+
+## rep1 pure dram asked=0 write=0.0 steps=115 median=35.52000 overlap=1
+
+## rep2 pure dram asked=0 write=0.0 steps=115 median=35.56000 overlap=1
+
+## rep2 pure dram asked=10 write=10.0 steps=118 median=34.51000 overlap=1
+
+## rep2 copy dram asked=10 write=10.0 steps=123 median=33.56000 overlap=1
+
+## rep2 pure dram asked=20 write=20.0 steps=124 median=33.28500 overlap=1
+
+## rep2 copy dram asked=20 write=20.0 steps=132 median=30.78000 overlap=1
+
+## rep2 pure dram asked=30 write=30.0 steps=129 median=31.72000 overlap=1
+
+## rep2 copy dram asked=30 write=30.0 steps=142 median=28.47500 overlap=1
+
+## rep2 pure dram asked=40 write=40.0 steps=136 median=30.04000 overlap=1
+
+## rep2 copy dram asked=40 write=40.0 steps=152 median=26.75000 overlap=1
+
+## rep2 pure dram asked=60 write=45.71 steps=140 median=29.29000 overlap=1
+
+## rep2 copy dram asked=60 write=42.21 steps=152 median=26.47000 overlap=1
+
+## rep2 pure dram asked=80 write=48.76 steps=141 median=29.10000 overlap=1
+
+## rep2 copy dram asked=80 write=42.1 steps=153 median=26.45000 overlap=1
+
+## rep2 pure dram asked=110 write=50.81 steps=141 median=28.84000 overlap=1
+
+## rep2 copy dram asked=110 write=42.25 steps=154 median=26.33000 overlap=1
+
+## rep2 copy /dev/dax0.0 asked=20 write=20.0 steps=121 median=33.92000 overlap=1
+
+## rep2 copy /dev/dax0.0 asked=40 write=39.45 steps=130 median=31.67500 overlap=1
+
+## rep2 pure dram asked=0 write=0.0 steps=116 median=35.44500 overlap=1
+
+## rep3 pure dram asked=0 write=0.0 steps=115 median=35.58000 overlap=1
+
+## rep3 pure dram asked=10 write=10.0 steps=118 median=34.60000 overlap=1
+
+## rep3 copy dram asked=10 write=10.0 steps=123 median=33.44000 overlap=1
+
+## rep3 pure dram asked=20 write=20.0 steps=124 median=33.29500 overlap=1
+
+## rep3 copy dram asked=20 write=20.0 steps=132 median=30.78500 overlap=1
+
+## rep3 pure dram asked=30 write=30.0 steps=130 median=31.62500 overlap=1
+
+## rep3 copy dram asked=30 write=30.0 steps=142 median=28.48500 overlap=1
+
+## rep3 pure dram asked=40 write=40.0 steps=136 median=30.08500 overlap=1
+
+## rep3 copy dram asked=40 write=40.0 steps=152 median=26.76000 overlap=1
+
+## rep3 pure dram asked=60 write=48.51 steps=141 median=29.03000 overlap=1
+
+## rep3 copy dram asked=60 write=42.19 steps=152 median=26.45500 overlap=1
+
+## rep3 pure dram asked=80 write=51.58 steps=141 median=28.74000 overlap=1
+
+## rep3 copy dram asked=80 write=42.06 steps=152 median=26.46000 overlap=1
+
+## rep3 pure dram asked=110 write=53.17 steps=141 median=28.53000 overlap=1
+
+## rep3 copy dram asked=110 write=42.24 steps=153 median=26.39000 overlap=1
+
+## rep3 copy /dev/dax0.0 asked=20 write=20.0 steps=121 median=33.91000 overlap=1
+
+## rep3 copy /dev/dax0.0 asked=40 write=39.24 steps=129 median=31.76000 overlap=1
+
+## rep3 pure dram asked=0 write=0.0 steps=115 median=35.60000 overlap=1
+
