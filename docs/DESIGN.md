@@ -452,16 +452,28 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
     that level is **calibrated over 2 s at daemon start** (`--idle-ns` overrides it when the daemon
     starts on a loaded machine) instead of being the lowest windowed reference ever seen. Result: the
     loan goes only to victims that leave headroom; beside saturated ones cxlpath = all-CXL.
-15. **Not built — producer pacing.** cxlpath decides WHERE writes go, never how fast the producer copies.
-    Beside a read-saturated victim the source reads of a copy alone exceed a 7% bound (all-CXL costs
-    llama.cpp 10%, PageRank 14%); holding the bound there needs the producer paced to ~25 GiB/s of copies
-    into CXL, which only a throttled writer does today. A future last-resort rule: pace `reserve` when the
-    probe is over the bound while no DRAM is being lent.
+15. **Producer pacing as the last resort (built 2026-09-22, commit 95e4a54).** cxlpath decides WHERE
+    writes go; beside a read-saturated victim the SOURCE reads of a copy alone exceed a 7% bound (all-CXL
+    costs llama.cpp 10%, PageRank 14%), and the only remaining lever is the copy rate. Rule: when no DRAM
+    is being lent and the 50-epoch probe mean has been above bound × the calibrated idle level for two
+    consecutive epochs, the daemon publishes a per-stream token bucket (policy page: `pace_on`,
+    `pace_tokens`, `pace_bps`) at 0.75 × the achieved CXL rate; every further two epochs over the bound
+    multiply the rate by 0.75, calm epochs (below margin × idle) add 1/16 of the CXL capacity, reaching
+    the capacity switches pacing off; floor 1/32 of the capacity. `reserve` waits for tokens (200 µs
+    sleeps); refills are per daemon tick, capped at 100 ms worth. `--no-pace` disables it. Measured
+    (2026-09-22-moderate-pacing-dcp.md): it works where the probe is clean (Adam step on 32 threads:
+    10.2% → 7.4% at 1.27× the completion time) and is marginal beside llama.cpp / PageRank on 80 threads,
+    whose own phases move the probe mean by more than a 1.06× bound — a limitation to state: the probe
+    is a proxy for the victim's slowdown, not a measurement of it.
 16. **Not built:** per-client space quotas (one client's garbage can still
     starve the others of space — the F1 failure made that visible);
     DTensor/ShardedTensor support in the PyTorch plugin; a real
     LMCache integration (E3 is a trace-driven stand-in with the same call
     pattern); compaction; the PM configuration (§10.7).
+17. **Parallel NT copy for CPU tensors in the PyTorch plugin (2026-09-22).** `cxlp_copy_in_par(dst, src,
+    n, nthreads, cpus)` splits a copy over pinned threads; `CxlpathWriter` uses it for CPU-resident
+    tensors (`copy_cpus=` or `CXLPATH_COPY_CPUS`), because one core cannot fill the CXL pair from a
+    Python process the way the C producer's 8 threads do (measured 42 GiB/s with 8 pinned threads).
 
 ## Change history (append-only — never rewrite entries)
 - **2026-05-20** — v1 designed and built: object registry, single-ceiling
@@ -556,3 +568,6 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
 - **2026-09-22 (later)** — §10.11 items 14–15: headroom guard 1.3× a calibrated unloaded probe level
   (was 2.0× the lowest windowed reference), `--idle-ns`; producer pacing recorded as not built.
 - **2026-09-22 (night)** — §10.4 AS BUILT paragraph updated to the revised headroom guard.
+- **2026-09-22 (late night)** — §10.11 item 15 rewritten: producer pacing is BUILT (token bucket in the
+  policy page, daemon pacing controller, `--no-pace`), with its measured reach and limitation; item 17
+  added: parallel NT copy for CPU tensors in the PyTorch plugin.

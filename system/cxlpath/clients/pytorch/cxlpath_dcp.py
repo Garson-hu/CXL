@@ -38,6 +38,7 @@ def _lib():
         L.cxlp_bufset_drained.argtypes = [u64, ci]; L.cxlp_bufset_newest.argtypes = [u64, ctypes.POINTER(u64)]
         L.cxlp_gpu_init.argtypes = [ci, ci]; L.cxlp_gpu_register.argtypes = [vp, sz]
         L.cxlp_gpu_copy_in.argtypes = [vp, vp, sz, ctypes.c_uint32, vp]; L.cxlp_copy_in.argtypes = [vp, vp, sz]
+        L.cxlp_copy_in_par.argtypes = [vp, vp, sz, ci, ctypes.POINTER(ci)]
         L.cxlp_bufset_set_used.argtypes = [u64, ci, u64]
         L.cxlp_bufset_version.argtypes = [u64, ci]; L.cxlp_bufset_version.restype = ctypes.c_int64
         L.cxlp_dev_kind.argtypes = [ci]; L.cxlp_dev_free.argtypes = [ci]; L.cxlp_dev_free.restype = ctypes.c_uint32
@@ -56,8 +57,12 @@ class CxlpathWriter(StorageWriter, AsyncStager):
     _synchronize_after_execute = False            # stage() returns only when the copy is complete
     _gpu_ready = False
 
-    def __init__(self, store, capacity_bytes, client="dcp", rank=0, stream=2, copy_cpu=100):
+    def __init__(self, store, capacity_bytes, client="dcp", rank=0, stream=2, copy_cpu=100, copy_cpus=None):
         L = _lib(); _attach(store)
+        # CPU tensors are copied with NT stores by several pinned threads (one core cannot fill CXL);
+        # CXLPATH_COPY_CPUS="96,97,98,99,112,113,114,115" or the copy_cpus argument
+        cl = copy_cpus or [int(x) for x in os.environ.get("CXLPATH_COPY_CPUS", "").split(",") if x.strip()]
+        self._cpus = (ctypes.c_int * len(cl))(*cl) if cl else None; self._ncopy = len(cl) if cl else 1
         self.store, self.rank, self.stream, self.cap = store, rank, stream, int(capacity_bytes)
         self.client = L.cxlp_key_of(f"{client}:{rank}".encode()); self.version = 0; self.path = None; self.which = -1
         cxl = [d for d in range(L.cxlp_ndev()) if L.cxlp_dev_kind(d) == 0]; dev = max(cxl, key=lambda d: L.cxlp_dev_free(d))
@@ -84,7 +89,7 @@ class CxlpathWriter(StorageWriter, AsyncStager):
             if o + n > self.cap: raise RuntimeError("state_dict larger than the buffer set capacity")
             if n:
                 if src.is_cuda: torch.cuda.current_stream().synchronize(); rc = L.cxlp_gpu_copy_in(base + o, src.data_ptr(), n, self.stream, None)
-                else: rc = 0; L.cxlp_copy_in(base + o, src.data_ptr(), n)
+                else: rc = 0; L.cxlp_copy_in_par(base + o, src.data_ptr(), n, self._ncopy, self._cpus)
                 if rc != 0: raise RuntimeError("cxlpath GPU copy failed")
             off[0] = o + n
             return arena[o:o + n].view(src.dtype).view(src.shape)

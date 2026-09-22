@@ -1,0 +1,41 @@
+# c28, 2026-09-22 evening. Copy/write threads on cpus 96-99,112-115 (4 per CCD), 4 GiB per test, source THP-backed and
+# touched, destination /dev/dax0.0 at offset 64 GiB or a touched THP DRAM buffer. Victim "llama32" = llama.cpp decoding
+# Qwen2.5-7B Q8 with 32 threads on cpus 0-31 (benchmarks/policy/llama_victim.py), started 45 s before the test.
+# Programs: cptest.c (producer-style loop vs cxlp_copy_in_par), datadep.c (pure writes / reads / copies), datadep2.c (patterns).
+
+## 1. How it was found: the PyTorch producer's stage beside llama32 ran at 28.8 GiB/s while the C producer's all-CXL copy
+## ran at 43.4 GiB/s on the same cpus; alone both reach 43.4-43.9.
+cptest 4, alone:                   producer-style 43.5 43.9 43.9   cxlp_copy_in_par 43.9 43.9 43.9 GiB/s   (memset(1) source)
+cptest 4, beside llama32:          producer-style 28.1 29.2 29.2   cxlp_copy_in_par 29.3 29.0 29.5         (memset(1) source)
+cptest 4 sparse, beside llama32:   producer-style 43.6 43.8 43.8   cxlp_copy_in_par 43.8 43.8 43.8         (one 8 B word per 4 KiB, as ckpt_producer.c touched its snapshot)
+ckpt_producer cxl 16 8 96, beside llama32 (its sparse snapshot): 43.84 43.67 43.63 GiB/s   (repeated later: 43.61 43.66)
+Python process, torch tensor (THP) -> raw dax mapping, beside llama32: 20.1 28.6 29.4;  ctypes memset(1) buffer: 27.1 28.9
+THP makes no difference (AnonHugePages 4 GiB in every case; THP_MEM_ALLOC_ENABLE=1 for torch).
+
+## 2. datadep 4: pure NT writes, pure reads, copies (zero-ish = one word per 4 KiB; ones = memset(1))
+alone:
+  NT write ZEROS -> CXL 43.9      NT write ONES -> CXL 43.9
+  read zero-ish source 139.3      read ones source 140.7
+  copy zero-ish -> CXL 43.9       copy ones -> CXL 43.9
+  copy zero-ish -> DRAM 94.6      copy ones -> DRAM 94.6
+beside llama32 (two repetitions):
+  NT write ZEROS -> CXL 40.6 41.3     NT write ONES -> CXL 27.8 27.7
+  read zero-ish source 136.5 135.5    read ones source 136.7 136.7
+  copy zero-ish -> CXL 43.8 43.8      copy ones -> CXL 29.6 29.5
+  copy zero-ish -> DRAM 83.2 82.5     copy ones -> DRAM 18.7 18.3
+
+## 3. datadep2 4: which patterns are cheap (copy source -> destination, two runs each)
+alone:
+  zeros                    -> CXL 43.7 43.9   -> DRAM 94.5 94.4
+  ones                     -> CXL 43.9 43.9   -> DRAM 94.5 94.4
+  random                   -> CXL 43.9 43.9   -> DRAM 94.5 94.1
+  one byte per 64 B line   -> CXL 43.8 43.8   -> DRAM 94.3 94.5
+  one 8 B word per 4 KiB   -> CXL 43.9 43.9   -> DRAM 94.5 94.5
+  one zero line per two    -> CXL 43.9 43.9   -> DRAM 94.4 94.3
+beside llama32:
+  zeros                    -> CXL 43.6 43.7   -> DRAM 82.3 82.3
+  ones                     -> CXL 28.7 29.7   -> DRAM 19.0 18.6
+  random                   -> CXL 28.5 29.1   -> DRAM 18.7 18.6
+  one byte per 64 B line   -> CXL 28.3 29.4   -> DRAM 19.0 19.1
+  one 8 B word per 4 KiB   -> CXL 43.7 43.7   -> DRAM 82.9 82.7
+  one zero line per two    -> CXL 35.3 36.2   -> DRAM 75.1 75.0

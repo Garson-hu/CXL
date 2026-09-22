@@ -28,3 +28,12 @@ invariants with a date; never delete (mark superseded instead).*
   (node-0 quadrant = cpus 0–15 CCD0, 16–31 CCD1). Within-node co-run modes
   (duplex on ONE node) may stay single-process.
 - Planner pressure default = saturated (conservative) for ObjPlace runs.
+- **Write experiments must write data-carrying lines** (added 2026-09-22,
+  `2026-09-22-zero-line-writes.md`): beside a co-running program c28 writes an
+  all-zero 64 B line at near-full speed while any line with a non-zero byte is
+  written at 66% (CXL) / 20% (DRAM) of that rate; alone the two are identical,
+  so the difference only shows in interference experiments. Fill every source
+  buffer with pseudo-random data (never a sparse touch, memset(0) or calloc),
+  and check the pattern of any producer before trusting its write rate or the
+  harm it causes. Copy sources of the phase-2 producer were 98% zero until
+  2026-09-22; `writer.h`, `membench` and the PyTorch producer were not affected.

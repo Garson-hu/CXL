@@ -31,12 +31,18 @@ static void nt_copy(char *d, const char *s, size_t n) { for (size_t i = 0; i < n
 static void plain_copy(char *d, const char *s, size_t n) { for (size_t i = 0; i < n; i += 32) _mm256_store_si256((__m256i *)(d + i), _mm256_load_si256((const __m256i *)(s + i))); }
 
 enum { P_DRAM, P_PLAIN, P_LIMITED, P_CXL, P_CXLPATH };
+static void *fill_thread(void *a);
 static int policy, nthr, cpu0; static size_t S; static double rate_bps; static char *src, *dst;
 static pthread_barrier_t bar; static volatile int quit;
 static _Atomic uint64_t dram_bytes, cxl_bytes; static _Atomic int done_threads;
 static cxlp_res_t *held; static _Atomic uint32_t nheld;      /* cxlpath reservations of the current period */
 static uint64_t t_period_start;
 
+static void *fill_thread(void *a) {
+    long id = (long)a; pin(cpu0 + (int)(id % 4) + 16 * (int)(id / 4)); size_t per = S / 8; uint64_t x = 0x9E3779B97F4A7C15ull * (uint64_t)(id + 1);
+    for (size_t i = (size_t)id * per; i < (size_t)(id + 1) * per; i += 8) { x ^= x << 13; x ^= x >> 7; x ^= x << 17; *(uint64_t *)(src + i) = x; }
+    return NULL;
+}
 static void *worker(void *a) {
     long id = (long)a; pin(cpu0 + (int)(id % 4) + 16 * (int)(id / 4)); size_t per = S / (size_t)nthr, off0 = (size_t)id * per;   /* 4 threads per CCD: one CCD's port caps NT writes at ~65-77 GiB/s */
     cxlp_hints_t h = { 0, 0, -1, 2, 20000 };
@@ -66,7 +72,10 @@ int main(int argc, char **argv) {
     policy = !strcmp(pol, "dram") ? P_DRAM : !strcmp(pol, "dram-plain") ? P_PLAIN : !strcmp(pol, "dram-limited") ? P_LIMITED : !strcmp(pol, "cxl") ? P_CXL : !strcmp(pol, "cxlpath") ? P_CXLPATH : -1;
     if (policy < 0 || (policy == P_LIMITED && rate_bps <= 0)) { fprintf(stderr, "bad policy\n"); return 2; }
     pin(cpu0);
-    src = anon(S); for (size_t i = 0; i < S; i += 4096) *(uint64_t *)(src + i) = i * 0x9E3779B97F4A7C15ull;   /* the training state (touched serially) */
+    /* The training state: pseudo-random fp-like data, filled by the copy threads' cpus. NOT a sparse touch: on c28 a
+     * cache line that is all zeros is written at near-full speed beside a co-running program while any non-zero
+     * line is not (2026-09-22-zero-line-writes.md), so a mostly-zero snapshot measures the wrong thing. */
+    src = anon(S); { pthread_t ft[8]; for (long i = 0; i < 8; i++) pthread_create(&ft[i], NULL, fill_thread, (void *)i); for (int i = 0; i < 8; i++) pthread_join(ft[i], NULL); }
     if (policy == P_CXL) { int fd = open("/dev/dax0.0", O_RDWR); if (fd < 0) { perror("dax"); return 1; } dst = mmap(NULL, S, PROT_READ | PROT_WRITE, MAP_SHARED, fd, (off_t)dax_off); if (dst == MAP_FAILED) { perror("mmap dax"); return 1; } }
     else if (policy == P_CXLPATH) { if (cxlp_attach(store)) { fprintf(stderr, "no store %s\n", store); return 1; } held = calloc(S / CH + 16, sizeof *held); }
     else { dst = anon(S); for (size_t i = 0; i < S; i += 4096) *(uint64_t *)(dst + i) = 1; }                     /* staging buffer, touched once */

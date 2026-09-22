@@ -1,0 +1,16 @@
+READY 1144065650614048 mode=dcp-dram state_GiB=16
+COPY 0 START 1144065650724868 END 1144072317439261 bytes=17179869184 GiBs=2.40 dram_share=1.0
+/home/ghu4/hvac/rlibrary/miniconda3/envs/dpu_torch/lib/python3.10/site-packages/torch/distributed/checkpoint/state_dict_saver.py:143: UserWarning: torch.distributed is unavailable or uninitialized, assuming the intent is to save in a single process.
+  warnings.warn(
+/home/ghu4/hvac/rlibrary/miniconda3/envs/dpu_torch/lib/python3.10/site-packages/torch/distributed/checkpoint/filesystem.py:116: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  if tensor.storage().size() != tensor.numel():
+PERSIST 0 START 1144072317439261 END 1144103072214506 durable_s=30.75
+COPY 1 START 1144103072283035 END 1144104684364385 bytes=17179869184 GiBs=9.93 dram_share=1.0
+PERSIST 1 START 1144104684364385 END 1144135793598813 durable_s=31.11
+COPY 2 START 1144137623369184 END 1144139239060340 bytes=17179869184 GiBs=9.90 dram_share=1.0
+PERSIST 2 START 1144139239060340 END 1144170636271015 durable_s=31.40
+COPY 3 START 1144172463830624 END 1144174046145173 bytes=17179869184 GiBs=10.11 dram_share=1.0
+PERSIST 3 START 1144174046145173 END 1144205154565319 durable_s=31.11
+COPY 4 START 1144206998287945 END 1144208043202462 bytes=17179869184 GiBs=15.31 dram_share=1.0
+PERSIST 4 START 1144208043202462 END 1144239197552214 durable_s=31.15
+DONE 1144241032755370

@@ -15,6 +15,19 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-22 (evening) addendum — PHASE 2 NUMBERS SUPERSEDED; RE-RUN IN PROGRESS.** While replacing the
+synthetic checkpoint copy with the real PyTorch producer, a machine fact surfaced: beside llama.cpp on 32 threads,
+c28 writes an all-zero 64 B line at near-full speed and any data-carrying line at 66% (CXL) / 20% (DRAM) of that
+rate, while alone the two are identical (`docs/experiments/2026-09-22-zero-line-writes.md`). The phase-2 C producer
+copied a 98%-zero snapshot, so every copy rate and harm in `2026-09-22-three-policies.md` (core figure, four
+victims) and in the 32-thread / pacing extension is for zero-line writes. Phase 1, the 2026-09-08 cliff and the
+PyTorch producer wrote data and stand. The producer now fills a pseudo-random snapshot; the whole phase-2
+protocol is re-running (`2026-09-22-three-policies-realdata.md`, ~8 h from 20:05 EDT). **Valid and new: the
+headline with the real producer** (`2026-09-22-moderate-pacing-dcp.md` item 3): beside the saturated Adam step,
+`dcp.async_save` through cxlpath blocks the training thread 0.8 s vs 1.6 s with DCP's stock DRAM stager, 7.2% vs
+12% slowdown, no tail vs 0.4–1.5% for 30 s, durable after 19 s vs 31–33 s. Producer pacing is BUILT (DESIGN
+§10.11 item 15); the daemon's default guard is 1.3.
+
 **2026-09-22 addendum — EVALUATION PHASES 1–2 DONE (branch `evaluation`).** Five victims screened for the
 DRAM write budget under a reader-protection bound; the core figure (three simple policies vs cxlpath) measured
 beside four victims; the Observation-2 headline timeline measured. Two regimes: a moderate victim gets a DRAM
@@ -130,6 +143,36 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-22 (session 26) — three follow-ups to phase 2, the real PyTorch producer, and the zero-line finding
+- The user asked for three things: real applications on 32 threads as moderate victims, producer pacing as a
+  last resort with a check that the bound holds, and the headline with the real `torch.distributed.checkpoint`
+  producer instead of the synthetic copy. Items 1–2 ran overnight (`benchmarks/policy/run_policy.py
+  --vthreads/--scale`; pacing = token bucket in the policy page + daemon controller, commit 95e4a54).
+- Item 3: `benchmarks/policy/torch_ckpt_producer.py`. Two library facts: stock `async_save` does not copy a
+  CPU-resident state dict at all (it hands the live tensors to the serialisation thread), so "today's
+  practice" is DCP's own `BlockingAsyncStager` with a cached pinned copy (`tensor.copy_`, 66 GiB/s alone);
+  and the plugin needed a parallel NT copy (`cxlp_copy_in_par`, 8 pinned threads) to fill CXL from Python.
+  Result beside the saturated Adam step (3 reps, all within 0.3 points): blocked 0.8 vs 1.6 s, 7.2% vs 12%
+  during the stage, 0.0% vs 0.4–1.5% tail during the 30 s of serialisation, durable after 19 vs 31–33 s.
+- The stage into CXL ran at 29 GiB/s beside llama.cpp-32 where the C producer's all-CXL copy ran at 43.
+  Bisected in C (same cpus, same kernel, same destination): only the DATA differed — the C producer's
+  snapshot was touched one word per 4 KiB (98% zero lines). Pattern test: zeros, and one-word-per-4 KiB,
+  copy at 43.7 → CXL / 83 → DRAM beside llama.cpp; ones, random, one-non-zero-byte-per-line copy at 29 / 19;
+  half zero lines land half-way; alone all identical (43.9 / 94.5); reads unaffected; THP irrelevant.
+  Beside the 8-thread reader, random data copies at 92.8 = zeros (93.7): the trigger in llama.cpp is open.
+- Consequence: the phase-2 numbers (three-policies core figure, four victims, 32-thread campaign, pacing) are
+  for zero-line writes and are superseded; `ckpt_producer.c` fills a random snapshot now; the whole protocol
+  is re-running into `experimental_results/2026-09-22-three-policies-realdata/`. Invariant appended to
+  METHODOLOGY.md. Phase 1 (`writer.h`: 0x5a / memset(1)), the 2026-09-08 cliff (`membench`, non-zero) and the
+  PyTorch producer (non-zero tensors; now `torch.rand`) are unaffected.
+- Also: the daemon's default guard is now 1.3 (the documented decision; the campaigns had passed it
+  explicitly); the DCP plugin's buffer sets are outside the DRAM loan (phase-3 item); llama.cpp's token rate
+  drifts with its context over a long run (local reference windows handle it; fixed-length decodes later).
+- Docs: `2026-09-22-moderate-pacing-dcp.md` (item 3 valid, items 1–2 superseded), `2026-09-22-zero-line-writes.md`,
+  `2026-09-22-three-policies-realdata.md` (active), INDEX, METHODOLOGY, DESIGN §10.11 items 15 and 17.
+  Raw item-1–3 files moved from the frozen three-policies directory to `2026-09-22-moderate-pacing-dcp/`
+  (they were untracked; the frozen directory is byte-identical to its commit).
 
 ### 2026-09-21/22 (session 25) — evaluation phases 1 and 2: budgets, the core figure, the guard
 - User decisions: start experiments; OSDI quality regardless of venue; paper in `/home/ghu4/papers/cxlpath`

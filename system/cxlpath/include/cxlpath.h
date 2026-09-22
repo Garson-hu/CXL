@@ -75,6 +75,9 @@ void cxlp_commit(const cxlp_res_t *r);
 void cxlp_abort(const cxlp_res_t *r);            /* reserved but never committed              */
 void cxlp_release(const cxlp_res_t *r);          /* committed data is dead                    */
 void cxlp_copy_in(void *dst, const void *src, size_t n);   /* always NT stores                */
+/* Parallel NT copy for large CPU buffers: `nthreads` threads pinned to cpus[0..nthreads-1] (NULL = unpinned),
+ * each copying a contiguous share. Used by the PyTorch plugin for CPU tensors; one core cannot fill CXL. */
+void cxlp_copy_in_par(void *dst, const void *src, size_t n, int nthreads, const int *cpus);
 /* Timed copy into a reservation: same NT copy, and it feeds the ledger the placement policy
  * reads (bytes and time per device). Writers that fill a reservation by other means (GPU DMA)
  * report with cxlp_account(). Both are plain memory writes: no syscall. */

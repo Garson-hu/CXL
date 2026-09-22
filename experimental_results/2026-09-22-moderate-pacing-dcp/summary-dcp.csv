@@ -1,0 +1,13 @@
+tag,victim,checkpoints,blocked_s,stage_slowdown_pct,persist_first7s_pct,persist_rest_pct,durable_s
+llama32-dcp-cxlpath-s16-rep1,llama,5,0.554,8.76,5.22,6.24,18.24
+llama32-dcp-cxlpath-s16-rep2,llama,5,0.555,8.88,5.22,6.39,18.09
+llama32-dcp-cxlpath-s16-rep3,llama,5,0.557,8.79,4.87,6.04,18.39
+llama32-dcp-dram-s16-rep1,llama,5,0.308,18.15,5.98,6.03,26.84
+llama32-dcp-dram-s16-rep2,llama,5,0.308,18.46,7.85,7.75,27.09
+llama32-dcp-dram-s16-rep3,llama,5,0.308,17.86,5.63,5.63,26.92
+opt-dcp-cxlpath-s16-rep1,opt,5,0.804,7.26,-0.07,-0.07,18.94
+opt-dcp-cxlpath-s16-rep2,opt,5,0.813,7.26,0.00,0.00,18.20
+opt-dcp-cxlpath-s16-rep3,opt,5,0.816,7.12,0.00,0.00,18.31
+opt-dcp-dram-s16-rep1,opt,5,1.582,11.93,1.52,0.41,32.69
+opt-dcp-dram-s16-rep2,opt,5,1.603,12.18,1.59,0.42,30.71
+opt-dcp-dram-s16-rep3,opt,5,1.622,11.97,1.52,0.35,30.91

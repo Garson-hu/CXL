@@ -4,6 +4,7 @@
 #include "internal.h"
 #include <immintrin.h>
 #include <pthread.h>
+#include <sched.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -111,6 +112,16 @@ static void drop(const cxlp_res_t *r) {
 }
 void cxlp_abort(const cxlp_res_t *r)   { drop(r); }
 void cxlp_release(const cxlp_res_t *r) { drop(r); }
+
+typedef struct { char *d; const char *s; size_t n; int cpu; } parcopy_t;
+static void *parcopy_thread(void *a) { parcopy_t *c = a; if (c->cpu >= 0) { cpu_set_t cs; CPU_ZERO(&cs); CPU_SET(c->cpu, &cs); pthread_setaffinity_np(pthread_self(), sizeof cs, &cs); } cxlp_copy_in(c->d, c->s, c->n); return NULL; }
+void cxlp_copy_in_par(void *dst, const void *src, size_t n, int nthreads, const int *cpus) {
+    if (nthreads < 2 || n < (size_t)nthreads * 65536) { cxlp_copy_in(dst, src, n); return; }
+    pthread_t th[64]; parcopy_t c[64]; if (nthreads > 64) nthreads = 64;
+    size_t share = (n / (size_t)nthreads) & ~(size_t)63;
+    for (int i = 0; i < nthreads; i++) { size_t off = share * (size_t)i, len = i == nthreads - 1 ? n - off : share; c[i] = (parcopy_t){ (char *)dst + off, (const char *)src + off, len, cpus ? cpus[i] : -1 }; pthread_create(&th[i], NULL, parcopy_thread, &c[i]); }
+    for (int i = 0; i < nthreads; i++) pthread_join(th[i], NULL);
+}
 
 /* NT-store copy: plain stores to CXL would first READ the destination lines over the link. */
 void cxlp_copy_in(void *dst, const void *src, size_t n) {

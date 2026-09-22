@@ -3,7 +3,7 @@
  *   tick  : 10 ms while writers are active, 200 ms when idle — one DRAM latency probe
  *   epoch : 5 ticks when active, 1 tick when idle — signals, controller, publish, log
  *   1 s   : crash cleanup, DRAM pool trim
- * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--idle-ns N] [--no-pace] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
+ * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 1.3] [--idle-ns N] [--no-pace] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  */
 #define _GNU_SOURCE
 #include "../src/internal.h"
@@ -76,7 +76,7 @@ static void *promoter(void *arg) { (void)arg; while (!quit) { cxlp_promote_pendi
 int main(int argc, char **argv) {
     if (argc < 2) { fprintf(stderr, "usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound X] [--no-calibrate]\n"); return 2; }
     int cpu = atoi(opt(argc, argv, "--cpu", "16")), ccd = atoi(opt(argc, argv, "--ccd-size", "16")), smt = atoi(opt(argc, argv, "--smt-offset", "128"));
-    double bound = atof(opt(argc, argv, "--bound", "1.10")), guard = atof(opt(argc, argv, "--guard", "2.0")), idle_loose = atof(opt(argc, argv, "--idle-bound", "1.5"));
+    double bound = atof(opt(argc, argv, "--bound", "1.10")), guard = atof(opt(argc, argv, "--guard", "1.3")), idle_loose = atof(opt(argc, argv, "--idle-bound", "1.5"));
     double margin = atof(opt(argc, argv, "--margin", "1.05")); int do_trim = flag(argc, argv, "--trim");   /* margin < bound; --trim gives free DRAM-pool pages back (they must then be re-faulted: off by default) */ const char *logp = opt(argc, argv, "--log", NULL);
     for (int i = 0; i < 100 && cxlp_attach(argv[1]) != 0; i++) usleep(100000);
     if (!cxlp_g.meta) { fprintf(stderr, "cxlpathd: store %s not found\n", argv[1]); return 1; }
