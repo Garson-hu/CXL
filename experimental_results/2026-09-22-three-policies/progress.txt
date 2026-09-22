@@ -102,3 +102,184 @@ llama-cxlpath-b1.10-g1.3-rep3: producer rc=0
 pr-cxlpath-b1.10-g1.3-s192-rep3: producer rc=0
 opt-cxlpath-b1.05-g1.3-rep1: producer rc=0
 PHASE2E-DONE
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 10
+    a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26") S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+                                                                                                                                                                                                                                             ^
+SyntaxError: invalid syntax
+PHASE3A-DONE

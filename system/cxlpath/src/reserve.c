@@ -56,6 +56,7 @@ int cxlp_reserve(size_t len, const cxlp_hints_t *h, cxlp_res_t *out) {
     uint32_t align = h->align ? h->align : 64;
     uint64_t deadline = h->wait_ms ? cxlp_now_ns() + (uint64_t)h->wait_ms * 1000000ull : 0;
     atomic_fetch_add(&POL->reserve_seq, 1);
+    if (atomic_load(&POL->pace_on[h->stream % CXLP_NSTREAM])) cxlp_policy_pace_wait(h->stream, len);   /* last resort: paced stream */
     for (;;) {
         uint32_t ev = atomic_load(&POL->free_event);
         /* Placement is consulted when this thread needs a NEW segment; inside an open segment

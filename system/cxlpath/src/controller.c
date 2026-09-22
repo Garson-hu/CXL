@@ -38,6 +38,25 @@ void cxlp_ctl_burst_start(cxlp_ctl_t *c, uint32_t mask, double mean5_ns, double 
     c->cpu = cpu; c->gpu = gpu;
 }
 
+void cxlp_pace_init(cxlp_pace_t *p) { memset(p, 0, sizeof *p); }
+double cxlp_pace_epoch(cxlp_pace_t *p, int lending, double mean5, double idle_ref, double bound, double margin, double achieved, double cap) {
+    if (lending || idle_ref <= 0 || cap <= 0) { p->over_epochs = 0; return p->on ? p->bps : 0; }   /* the loan is taken back first; pacing keeps its rate meanwhile */
+    int over = mean5 > bound * idle_ref, calm = mean5 <= margin * idle_ref;
+    p->over_epochs = over ? p->over_epochs + 1 : 0;
+    if (!p->on) { if (p->over_epochs >= 2) { p->on = 1; p->bps = 0.75 * (achieved > 0 ? achieved : cap); p->over_epochs = 0; } return p->on ? p->bps : 0; }
+    if (over) { if (p->over_epochs >= 2) { p->bps *= 0.75; p->over_epochs = 0; } }
+    else if (calm) { p->bps += cap / 16; if (p->bps >= cap) { p->on = 0; p->bps = 0; } }
+    if (p->on && p->bps < cap / 32) p->bps = cap / 32;                       /* never below 1/32 of the capacity: a paced writer still makes progress */
+    return p->on ? p->bps : 0;
+}
+void cxlp_pace_stream_idle(cxlp_pace_t *p, int s) { p->mem[s] = p->on ? p->bps : 0; }
+void cxlp_pace_burst_start(cxlp_pace_t *p, uint32_t mask) {
+    double m = 0; int any = 0;
+    for (int s = 0; s < CXLP_NSTREAM; s++) if (mask & (1u << s)) { if (p->mem[s] > 0 && (!any || p->mem[s] < m)) m = p->mem[s]; if (p->mem[s] > 0) any = 1; }
+    if (any) { p->on = 1; p->bps = m; } else { p->on = 0; p->bps = 0; }
+    p->over_epochs = 0;
+}
+
 void cxlp_ref_init(cxlp_ref_t *r, uint64_t window_ms) { memset(r, 0, sizeof *r); r->window_ms = window_ms; }
 static int cmp_d(const void *a, const void *b) { double x = *(const double *)a, y = *(const double *)b; return x < y ? -1 : x > y; }
 double cxlp_ref_feed(cxlp_ref_t *r, double mean, uint64_t now_ms) {

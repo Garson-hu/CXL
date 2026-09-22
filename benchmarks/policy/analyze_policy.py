@@ -5,7 +5,7 @@ Prints one line per run (median over the LAST 3 windows) and writes <outdir>/sum
 import glob, os, re, statistics as st, sys
 out = sys.argv[1]; rows = []
 for pf in sorted(glob.glob(f"{out}/*-producer.txt")):
-    tag = os.path.basename(pf)[:-len("-producer.txt")]; victim = tag.split("-")[0]
+    tag = os.path.basename(pf)[:-len("-producer.txt")]; victim = re.sub(r"\d+$", "", tag.split("-")[0])   # "llama32" -> "llama"
     wins = [(int(m[1]), int(m[2]), float(m[3]), float(m[4])) for m in re.findall(r"COPY (\d+) START (\d+) END (\d+) bytes=\d+ GiBs=([\d.]+) dram_share=([\d.]+)", open(pf).read())]
     vt = open(f"{out}/{tag}-victim.txt").read()
     fully_inside = victim == "pr"                        # PageRank trials are ~1 s: count only trials that START and END inside the window

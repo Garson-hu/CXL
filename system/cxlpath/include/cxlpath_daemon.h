@@ -30,6 +30,15 @@ int  cxlp_ctl_probe_b(cxlp_ctl_t *c, double probe_ns, double base_ns, double bou
 /* every epoch while writers are active: +1/16 when the path is full and DRAM is calm;
  * -1/16 when the CXL path has clear slack (cpu_path_full < 0): DRAM is only for the excess. */
 void cxlp_ctl_epoch(cxlp_ctl_t *c, int cpu_path_full, int gpu_path_full, double mean5_ns, double base_ns);
+/* Producer pacing (last resort). Engages only while nothing is lent (cpu == 0 && gpu == 0) and the
+ * epoch mean has been over bound x the IDLE reference (the level with no writer at all, so the stream's
+ * source reads count) for two consecutive epochs. Rate: starts at 0.75 x the achieved CXL rate, x0.75 per
+ * epoch over the bound, +cap/16 per calm epoch, released at the capacity. Returns the rate in B/s, 0 = off. */
+typedef struct { int on; double bps; int over_epochs; double mem[CXLP_NSTREAM]; } cxlp_pace_t;
+void   cxlp_pace_init(cxlp_pace_t *p);
+double cxlp_pace_epoch(cxlp_pace_t *p, int lending, double mean5_ns, double idle_ref_ns, double bound, double margin, double achieved_bps, double cap_bps);
+void   cxlp_pace_stream_idle(cxlp_pace_t *p, int stream);
+void   cxlp_pace_burst_start(cxlp_pace_t *p, uint32_t active_mask);
 /* a stream went idle: remember the ratio its burst ended with */
 void cxlp_ctl_stream_idle(cxlp_ctl_t *c, int stream);
 /* writers resumed after an idle period: start from what the resuming streams remember,

@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
         cxlp_close(); return fr == tot ? 0 : 3;
     }
     cxlp_policy_view_t v; cxlp_policy_view(0, &v);
-    printf("alive=%d spill16=%u staged16=%u dram_ok=%u cxl_full=%u gpu_full=%u probe=%.1f base=%.1f bound=%.2f epoch=%llu\n", v.daemon_alive, v.spill16, v.staged16, v.dram_ok, v.cxl_full, v.gpu_full, v.probe_ns, v.base_ns, v.bound, (unsigned long long)v.epoch);
+    printf("alive=%d spill16=%u staged16=%u dram_ok=%u cxl_full=%u gpu_full=%u pace=%u@%.1fGiBs probe=%.1f base=%.1f bound=%.2f epoch=%llu\n", v.daemon_alive, v.spill16, v.staged16, v.dram_ok, v.cxl_full, v.gpu_full, v.pace_on, v.pace_GiBs, v.probe_ns, v.base_ns, v.bound, (unsigned long long)v.epoch);
     for (int d = 0; d < cxlp_ndev(); d++) printf("dev %d %s free %u/%u written %.2f GiB\n", d, cxlp_dev_kind(d) == CXLP_DEV_CXL ? "CXL " : "DRAM", cxlp_dev_free(d), cxlp_dev_nseg(d), v.dev_bytes[d] / 1073741824.0);
     cxlp_close(); return 0;
 }

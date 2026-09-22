@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x435850415448303Bull   /* "CXPATH0;" */
+#define CXLP_MAGIC   0x435850415448303Cull   /* "CXPATH0<" */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -105,6 +105,13 @@ typedef struct {
     _Atomic uint64_t promoted_bytes, promoted_extents;
 #define CXLP_PROMO_RING 1024
     _Atomic uint32_t promo_tail; _Atomic uint32_t promo_ring[CXLP_PROMO_RING];   /* extent index + 1 */
+    /* Producer pacing, the last resort (§10.11 item 17): when nothing is being lent and the stream's total
+     * effect on DRAM readers (its source reads included) still exceeds the bound, the daemon publishes a
+     * byte rate per stream and refills a token bucket every tick; reserve() waits for tokens. */
+    _Atomic uint32_t pace_on[CXLP_NSTREAM];
+    _Atomic int64_t  pace_tokens[CXLP_NSTREAM];
+    _Atomic uint64_t pace_bps[CXLP_NSTREAM];
+    _Atomic uint64_t paced_waits;              /* how often a reserve had to wait for tokens */
 } cxlp_policy_t;
 
 typedef struct {
@@ -157,4 +164,5 @@ int  cxlp_policy_daemon_alive(void);
 int  cxlp_policy_pick(uint32_t stream, uint32_t nclaim);
 void cxlp_policy_wake(void);
 int  cxlp_policy_wait_free(uint32_t seen_event, int ms);
+void cxlp_policy_pace_wait(uint32_t stream, uint64_t len);
 #endif

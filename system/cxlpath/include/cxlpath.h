@@ -90,6 +90,7 @@ uint64_t cxlp_seg_live(int dev, uint32_t seg);
 typedef struct {
     int      daemon_alive;
     uint32_t spill16, staged16, dram_ok, cxl_full, gpu_full;
+    uint32_t pace_on; double pace_GiBs;               /* last resort: the stream is rate-limited by the daemon */
     double   probe_ns, base_ns, bound;
     uint64_t epoch;
     uint64_t dev_bytes[CXLP_MAX_DEVS];

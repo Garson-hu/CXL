@@ -54,5 +54,18 @@ int main(void) {
     cxlp_ctl_probe(&g, 290, 0); cxlp_ctl_probe(&g, 290, 0); CHECK(g.cpu == 4, "no headroom: every probe counts as over the bound");
     g.cpu = 8; cxlp_ctl_probe_b(&g, 1.4 * 133, 133, 1.5); cxlp_ctl_probe_b(&g, 1.4 * 133, 133, 1.5); CHECK(g.cpu == 8, "idle state, loose bound 1.5: a noisy 1.4x reading does not halve the remembered ratios");
     cxlp_ctl_probe_b(&g, 3 * 133, 133, 1.5); cxlp_ctl_probe_b(&g, 3 * 133, 133, 1.5); CHECK(g.cpu == 4, "idle state: obvious pressure (3x) does");
+    puts("B4.5 producer pacing (last resort)");
+    { cxlp_pace_t pc; cxlp_pace_init(&pc); const double I = 200.0, CAP = 44e9, ACH = 40e9;
+      CHECK(cxlp_pace_epoch(&pc, 1, 1.5 * I, I, 1.045, 1.02, ACH, CAP) == 0, "while DRAM is being lent, pacing stays off (the loan is taken back first)");
+      CHECK(cxlp_pace_epoch(&pc, 0, 1.08 * I, I, 1.045, 1.02, ACH, CAP) == 0, "one epoch over the bound: not yet");
+      double r = cxlp_pace_epoch(&pc, 0, 1.08 * I, I, 1.045, 1.02, ACH, CAP); CHECK(r == 0.75 * ACH, "two consecutive epochs over: pacing engages at 0.75 x the achieved rate");
+      cxlp_pace_epoch(&pc, 0, 1.08 * I, I, 1.045, 1.02, ACH, CAP); r = cxlp_pace_epoch(&pc, 0, 1.08 * I, I, 1.045, 1.02, ACH, CAP); CHECK(r == 0.75 * 0.75 * ACH, "still over after two more epochs: x0.75");
+      for (int i = 0; i < 3; i++) r = cxlp_pace_epoch(&pc, 0, 1.03 * I, I, 1.045, 1.02, ACH, CAP); CHECK(r == 0.75 * 0.75 * ACH, "inside the bound but above the margin: hold");
+      double r2 = cxlp_pace_epoch(&pc, 0, 1.00 * I, I, 1.045, 1.02, ACH, CAP); CHECK(r2 == r + CAP / 16, "calm epoch: +1/16 of the capacity");
+      int n = 0; while (pc.on && n < 100) { cxlp_pace_epoch(&pc, 0, 1.00 * I, I, 1.045, 1.02, ACH, CAP); n++; } CHECK(!pc.on && n < 16, "released at the capacity after a run of calm epochs");
+      cxlp_pace_epoch(&pc, 0, 2 * I, I, 1.045, 1.02, ACH, CAP); cxlp_pace_epoch(&pc, 0, 2 * I, I, 1.045, 1.02, ACH, CAP);
+      for (int i = 0; i < 40; i++) { cxlp_pace_epoch(&pc, 0, 2 * I, I, 1.045, 1.02, ACH, CAP); } CHECK(pc.on && pc.bps == CAP / 32, "floor: never below 1/32 of the capacity");
+      cxlp_pace_stream_idle(&pc, 2); cxlp_pace_init(&pc); cxlp_pace_burst_start(&pc, 1u << 2); CHECK(!pc.on, "a fresh controller has no memory for stream 2");
+    }
     puts(fails ? "FAIL" : "PASS"); return fails != 0;
 }

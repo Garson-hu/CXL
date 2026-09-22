@@ -3,7 +3,7 @@
  *   tick  : 10 ms while writers are active, 200 ms when idle — one DRAM latency probe
  *   epoch : 5 ticks when active, 1 tick when idle — signals, controller, publish, log
  *   1 s   : crash cleanup, DRAM pool trim
- * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--idle-ns N] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
+ * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 2.0] [--idle-ns N] [--no-pace] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  */
 #define _GNU_SOURCE
 #include "../src/internal.h"
@@ -96,9 +96,9 @@ int main(int argc, char **argv) {
     cpu_set_t pc; CPU_ZERO(&pc); CPU_SET(cpu, &pc); sched_setaffinity(0, sizeof pc, &pc);   /* main thread = probe thread */
 
     cxlp_probe_t *pr = cxlp_probe_create(256ul << 20);
-    cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, margin); cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
+    cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, margin); cxlp_pace_t pace; cxlp_pace_init(&pace); int no_pace = flag(argc, argv, "--no-pace"); double pace_bps = 0; cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
     atomic_store(&POL->bound_x1000, (uint32_t)(bound * 1000 + 0.5));
-    double ring[5]; int nring = 0; double base = 0;
+    double ring[5]; int nring = 0; double base = 0; double ring50[50] = { 0 }; int n50 = 0;   /* 500 ms mean for pacing: a read-saturated victim's own phases scatter single probes +-25% */
     for (int i = 0; i < 25; i++) { ring[i % 5] = cxlp_probe_once(pr, 1000); if (i % 5 == 4) { double m = 0; for (int k = 0; k < 5; k++) m += ring[k]; base = cxlp_ref_feed(&ref_idle, m / 5, cxlp_now_ns() / 1000000ull); } usleep(10000); }
     /* The headroom guard compares the reference in use with the UNLOADED level of this machine. That level
      * is calibrated here over 2 s (median of 200 probes; single idle probes scatter 100-160 ns on c28, and
@@ -107,9 +107,9 @@ int main(int argc, char **argv) {
     double idle_ns = atof(opt(argc, argv, "--idle-ns", "0"));
     if (idle_ns <= 0) { double v[200]; for (int i = 0; i < 200; i++) { v[i] = cxlp_probe_once(pr, 1000); usleep(10000); } qsort(v, 200, sizeof *v, cmp_double); idle_ns = v[100]; }
     nring = 5;
-    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f guard=%.2f idle_ns=%.1f solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, guard, idle_ns, solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
+    if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f guard=%.2f idle_ns=%.1f pacing=%s solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, guard, idle_ns, no_pace ? "off" : "on", solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
               if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
-              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns\n"); fflush(lg); }
+              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns,pace_GiBs\n"); fflush(lg); }
 
     atomic_store(&POL->daemon_pid, (uint32_t)getpid());
     uint64_t t_start = cxlp_now_ns(), next = t_start, last_sec = 0, last_epoch_ns = t_start, last_act_ns = 0;
@@ -121,8 +121,9 @@ int main(int argc, char **argv) {
 
     while (!quit) {
         uint64_t now = cxlp_now_ns();
-        double p = cxlp_probe_once(pr, 1000); ring[nring++ % 5] = p;
+        double p = cxlp_probe_once(pr, 1000); ring[nring++ % 5] = p; ring50[n50++ % 50] = p;
         double mean5 = 0; for (int k = 0; k < 5; k++) mean5 += ring[k]; mean5 /= 5;
+        double mean50 = 0; { int m = n50 < 50 ? n50 : 50; for (int k = 0; k < m; k++) mean50 += ring50[k]; mean50 /= m; }
         int forced = atomic_load(&POL->force_spill16);
 
         /* which streams moved bytes in the last 200 ms */
@@ -185,6 +186,9 @@ int main(int argc, char **argv) {
             if (gn != pgd_n && link) gpu_full = (gb - pgd_b) * 1e9 / (double)(gn - pgd_n) < 0.8 * (double)link;
             pgd_b = gb; pgd_n = gn;
             if (mask) cxlp_ctl_epoch(&ctl, cxl_full, gpu_full, mean5, room ? base : 0);   /* slow increase */
+            /* last resort: nothing lent and the stream's total effect (source reads included) still over the bound
+             * relative to the level WITHOUT any writer -> pace the producer */
+            pace_bps = (mask && !no_pace) ? cxlp_pace_epoch(&pace, ctl.cpu > 0 || ctl.gpu > 0, mean50, ref_idle.last, bound, margin, agg, cap) : (no_pace ? 0 : (pace.on ? pace.bps : 0));
             atomic_store(&POL->cxl_full, (uint32_t)(cxl_full > 0)); atomic_store(&POL->gpu_full, (uint32_t)gpu_full);
             atomic_store(&POL->probe_x10, (uint32_t)(mean5 * 10)); atomic_store(&POL->base_x10, (uint32_t)(base * 10));
             /* Component C: promotion thresholds. Pressure makes the copy dearer: k grows with the probe. */
@@ -193,8 +197,8 @@ int main(int argc, char **argv) {
             uint64_t grc = atomic_load(&POL->gpu_rd_cxl_bps), grd = atomic_load(&POL->gpu_rd_dram_bps);
             if (grc && grd) atomic_store(&POL->k_read[CXLP_CONSUMER_GPU], cxlp_k_compute(have_rd ? t_copy : 1.0 / (double)grd, 1.0 / (double)grc, 1.0 / (double)grd, w_press, pressure));
             atomic_fetch_add(&POL->epoch, 1);
-            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f\n", (now - t_start) / 1e6, p, mean5, base,
-                        forced >= 0 ? (uint32_t)forced : ctl.cpu, ctl.gpu, cxl_full, gpu_full, active, agg / 1073741824.0, db / dt / 1073741824.0, per_writer / 1073741824.0, conc, halved_in_epoch, ref_idle.last, ref_a); if (!active) fflush(lg); }
+            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f,%.2f\n", (now - t_start) / 1e6, p, mean5, base,
+                        forced >= 0 ? (uint32_t)forced : ctl.cpu, ctl.gpu, cxl_full, gpu_full, active, agg / 1073741824.0, db / dt / 1073741824.0, per_writer / 1073741824.0, conc, halved_in_epoch, ref_idle.last, ref_a, pace_bps / 1073741824.0); if (!active) fflush(lg); }
             halved_in_epoch = 0;
         }
         if (epoch || halved)                                  /* publish: active streams get the live value, idle ones their memory */
@@ -202,7 +206,17 @@ int main(int argc, char **argv) {
                 int on = (mask >> s) & 1;
                 atomic_store(&POL->spill16[s], forced >= 0 ? (uint32_t)forced : (on ? ctl.cpu : ctl.mem_cpu[s]));
                 atomic_store(&POL->staged16[s], on ? ctl.gpu : ctl.mem_gpu[s]);
+                double r = on ? pace_bps : pace.mem[s];
+                atomic_store(&POL->pace_bps[s], (uint64_t)r);
+                if (r > 0 && !atomic_load(&POL->pace_on[s])) atomic_store(&POL->pace_tokens[s], (int64_t)(r * 0.05));
+                atomic_store(&POL->pace_on[s], r > 0);
             }
+        /* token refill every tick (10 ms active / 200 ms idle), capped at 100 ms worth so a pause cannot bank a burst */
+        for (int s = 0; s < CXLP_NSTREAM; s++) if (atomic_load(&POL->pace_on[s])) {
+            double r = (double)atomic_load(&POL->pace_bps[s]); int64_t add = (int64_t)(r * (active ? 0.010 : 0.200)), capt = (int64_t)(r * 0.100);
+            int64_t t = atomic_load(&POL->pace_tokens[s]), nt = t + add; if (nt > capt) nt = capt;
+            atomic_compare_exchange_strong(&POL->pace_tokens[s], &t, nt);
+        }
         atomic_store(&POL->dram_ok, room && p <= bound * base && mean5 <= bound * base);
         atomic_store(&POL->heartbeat_ns, now);
         if (now / 1000000000ull != last_sec) { last_sec = now / 1000000000ull; cxlp_cleanup_dead(); if (!active && do_trim) cxlp_dram_trim(); }

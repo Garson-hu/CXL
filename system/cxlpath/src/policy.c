@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>
+#include <time.h>
 
 int cxlp_policy_daemon_alive(void) {
     if (atomic_load(&POL->daemon_pid) == 0) return 0;
@@ -52,6 +53,19 @@ int cxlp_policy_wait_free(uint32_t seen_event, int ms) {
     return (int)r;
 }
 
+/* Last resort: a paced stream takes `len` bytes from its token bucket before it may reserve. Waiting
+ * here is the only place a paced writer slows down; unpaced streams never touch this. */
+void cxlp_policy_pace_wait(uint32_t stream, uint64_t len) {
+    uint32_t s = stream % CXLP_NSTREAM; int waited = 0;
+    while (atomic_load(&POL->pace_on[s]) && cxlp_policy_daemon_alive()) {
+        int64_t t = atomic_load(&POL->pace_tokens[s]);
+        if (t >= (int64_t)len && atomic_compare_exchange_weak(&POL->pace_tokens[s], &t, t - (int64_t)len)) break;
+        if (t >= (int64_t)len) continue;
+        if (!waited) { waited = 1; atomic_fetch_add(&POL->paced_waits, 1); }
+        struct timespec ts = { 0, 200000 }; nanosleep(&ts, NULL);
+    }
+}
+
 void cxlp_account(int dev, uint32_t stream, uint64_t bytes, uint64_t ns) {
     atomic_fetch_add(&POL->led[dev].bytes, bytes);
     atomic_fetch_add(&POL->led[dev].ns, ns);
@@ -71,6 +85,7 @@ void cxlp_policy_view(uint32_t stream, cxlp_policy_view_t *o) {
     o->dram_ok = atomic_load(&POL->dram_ok); o->cxl_full = atomic_load(&POL->cxl_full); o->gpu_full = atomic_load(&POL->gpu_full);
     o->probe_ns = atomic_load(&POL->probe_x10) / 10.0; o->base_ns = atomic_load(&POL->base_x10) / 10.0;
     o->bound = atomic_load(&POL->bound_x1000) / 1000.0; o->epoch = atomic_load(&POL->epoch);
+    o->pace_on = atomic_load(&POL->pace_on[stream % CXLP_NSTREAM]); o->pace_GiBs = atomic_load(&POL->pace_bps[stream % CXLP_NSTREAM]) / 1073741824.0;
     for (int d = 0; d < CXLP_MAX_DEVS; d++) o->dev_bytes[d] = atomic_load(&POL->led[d].bytes);
 }
 
