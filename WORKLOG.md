@@ -15,6 +15,16 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-09-23 addendum — PHASE 2 RE-RUN DONE (real data), KV PROMOTION ANALYSED.** 117 runs: beside moderate victims
+(reader, PageRank-32) cxlpath lends 23–34% and is 1.3–1.5× faster than all-CXL inside the bound, 3× faster than
+throttling, 4–10× less harm than DRAM staging; beside saturated victims cxlpath = all-CXL with 2.4–3.4× less harm.
+llama.cpp-32: real-data DRAM copies run at 22 GiB/s < CXL 30; the constant-capacity fullness rule never fires (flaw to
+fix: measure fullness under the co-runner). Advisor's read-path questions answered with a trace analysis
+(`2026-09-23-kv-first-hit-promotion.md`): first-hit promotion moves 59 / 83 / 77% of hits to DRAM with unlimited DRAM,
+20 / 65 / 11% with 80 GiB LRU (oracle 42 / 76 / 25%); 57% of promoted blocks never re-hit; copy traffic ≤ 1.1 GiB/s.
+Decisions pending with the user: implement k-per-stream promotion + calm-time copy + free demotion; set up the real
+LMCache + vLLM experiment. Status deck 2026-09-22 published (25 slides, generators in `scripts/`).
+
 **2026-09-22 (evening) addendum — PHASE 2 NUMBERS SUPERSEDED; RE-RUN IN PROGRESS.** While replacing the
 synthetic checkpoint copy with the real PyTorch producer, a machine fact surfaced: beside llama.cpp on 32 threads,
 c28 writes an all-zero 64 B line at near-full speed and any data-carrying line at 66% (CXL) / 20% (DRAM) of that
@@ -143,6 +153,24 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-09-23 (session 27) — re-run closed, status deck, advisor's read-path questions, first-hit promotion analysis
+- Real-data re-run closed (`2026-09-22-three-policies-realdata.md`): numbers within a few points of the zero-line
+  campaign except beside llama.cpp (DRAM copies 22 GiB/s instead of 86; all policies ≤ 4% harm; no loan because
+  fullness is judged against the constant 43.9 GiB/s while 29 is achievable) and Adam-32 (DRAM harm 93 → 56%).
+- Status deck (English, 25 slides, all data figures matplotlib from raw results) published; generators kept in
+  `scripts/figs_status_2026-09-22.py`, `scripts/deck_status_2026-09-22.py`.
+- User's duplex question: answered that the design uses it only implicitly and that the drain's yield-to-writers rule
+  contradicts it; proposed an observation + drain rule change + read-while-write experiments (user to decide).
+- Advisor's two questions (hits served from CXL; PolyStore-style split at ingest by predicted reuse): the k = 3 rule
+  never promotes KV blocks (0.37–0.64 reads per written block); GPU hits from CXL cost nothing on c28 (12.5 vs 12.3
+  GiB/s), up to 2× on a PCIe-5 GPU, CPU 1.7×. Proposed: CXL as probation tier, promote at first hit when DRAM is
+  calm, free demotion, no value split at ingest (timing argument), optional session prefetch.
+- Trace simulation of first-hit promotion (`scripts/kv_first_hit_promotion.py`): unlimited DRAM 59 / 83 / 77% of hits
+  from DRAM at 0.7–1.1 GiB/s of copies; 80 GiB LRU 20 / 65 / 11% (oracle 42 / 76 / 25%); second hit p50 ~130 s after
+  the first vs ~100 s residency; 57% of first-hit blocks never re-hit; k = 2 halves copies, LFU worse, 30 s copy delay
+  free. Judgement: enough for prompt-dominated workloads, weak for multi-turn chat; predictor ceiling 2×.
+- Feedback recorded: never prescribe how the paper must be written; report results, do the work.
 
 ### 2026-09-22 (session 26) — three follow-ups to phase 2, the real PyTorch producer, and the zero-line finding
 - The user asked for three things: real applications on 32 threads as moderate victims, producer pacing as a

@@ -79,7 +79,18 @@ victim and equals all-CXL beside the three saturated ones (2.4–3.5× less harm
 at the same completion; today's staging costs llama.cpp 34% and PageRank 44%). Limitation to
 state: beside read-saturated victims even all-CXL exceeds a 7% bound (the copy's source reads),
 and cxlpath does not pace the producer; the paper reports it and lists producer pacing as future
-work.** The paragraph below is the phase-1 budget.
+work.** **MEASURED 2026-09-23 with a data-carrying snapshot (`experiments/2026-09-22-three-policies-realdata.md`;
+the 2026-09-22 numbers above came from a 98%-zero snapshot, see `2026-09-22-zero-line-writes.md`):** beside
+the moderate victims (reader, PageRank on 32 threads) cxlpath lends 23–34% of the chunks and finishes in
+1.0–1.1 s / 3.35–3.5 s at 6–8% harm — 1.3–1.5× faster than all-CXL inside the bound, 3× faster than a
+throttled DRAM writer at equal harm, 4–10× less harm than DRAM staging (27.6% / 68.5%); its 57–65 GiB/s is
+0.8–0.9 of CXL capacity + DRAM budget. Beside the saturated victims (Adam, llama.cpp, PageRank on 80 threads)
+cxlpath = all-CXL with 2.4–3.4× less harm than DRAM staging (6.6–6.9 / 8.7 / 12.9–16% vs 16.1 / 31.1 / 42.2%).
+Beside llama.cpp-32, data-carrying DRAM copies run at 22 GiB/s, slower than the CXL copy (30), every policy
+stays inside 4% harm, and the loan never triggers because fullness is judged against a constant capacity
+(flaw recorded; phase-3 fix). Real producer (`2026-09-22-moderate-pacing-dcp.md` item 3): dcp.async_save
+beside Adam-80 blocks the training thread 0.8 s vs 1.6 s, 7.2% vs 12% slowdown, no tail vs 0.4–1.5% for 30 s,
+durable after 19 s vs 31–33 s. The paragraph below is the phase-1 budget.
 **MEASURED 2026-09-22 (`experiments/2026-09-21-dram-write-budget.md`):** under a 7% bound the
 usable DRAM write bandwidth is 40 GiB/s (pure writes) / 28 GiB/s (copies) beside a synthetic
 reader and 17.5 / ~9–30 beside a saturated CPU Adam step — the same order as, or below, the
@@ -574,3 +585,4 @@ Cross-pair E2 still blocked on famfs access. Details:
 - **2026-09-22 (evening)** — Four-victim core figure; the guard (absolute probe level) decides the
   regime; producer pacing recorded as a limitation. Two more victims' budgets in
   `experiments/2026-09-22-budget-more-victims.md`.
+- **2026-09-23** — MEASURED paragraph for the real-data re-run of phase 2 and the real PyTorch producer added to the gain positioning; the 2026-09-22 phase-2 numbers are marked as zero-line numbers (`2026-09-22-zero-line-writes.md`).
