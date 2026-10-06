@@ -1,0 +1,62 @@
+reader-split-d4-rep1: producer rc=0 (victim reader, scale 26)
+pr32-split-d4-s192-rep1: producer rc=0 (victim pr32, scale 25)
+opt-split-d4-rep1: producer rc=0 (victim opt, scale 26)
+llama-split-d4-rep1: producer rc=0 (victim llama, scale 26)
+reader-split-d8-rep1: producer rc=0 (victim reader, scale 26)
+pr32-split-d8-s192-rep1: producer rc=0 (victim pr32, scale 25)
+opt-split-d8-rep1: producer rc=0 (victim opt, scale 26)
+llama-split-d8-rep1: producer rc=0 (victim llama, scale 26)
+reader-split-d4-rep2: producer rc=0 (victim reader, scale 26)
+pr32-split-d4-s192-rep2: producer rc=0 (victim pr32, scale 25)
+opt-split-d4-rep2: producer rc=0 (victim opt, scale 26)
+llama-split-d4-rep2: producer rc=0 (victim llama, scale 26)
+reader-split-d8-rep2: producer rc=0 (victim reader, scale 26)
+pr32-split-d8-s192-rep2: producer rc=0 (victim pr32, scale 25)
+opt-split-d8-rep2: producer rc=0 (victim opt, scale 26)
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 36, in <module>
+    time.sleep(3); v.send_signal(signal.SIGTERM); v.wait(); vlog.close()
+OSError: [Errno 122] Disk quota exceeded
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/reader-split-d4-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/pr32-split-d4-s192-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/opt-split-d4-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/llama-split-d4-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/reader-split-d8-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/pr32-split-d8-s192-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/opt-split-d8-rep3-victim.txt'
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/policy/run_policy.py", line 25, in <module>
+    vlog = open(f"{out}/{tag}-victim.txt", "w")
+OSError: [Errno 122] Disk quota exceeded: '/home/ghu4/CXL/experimental_results/2026-10-06-fixed-split-baseline/llama-split-d8-rep3-victim.txt'
+SPLIT-DONE
+llama-split-d8-rep2: producer rc=0 (victim llama, scale 26)
+reader-split-d4-rep3: producer rc=0 (victim reader, scale 26)
+pr32-split-d4-s192-rep3: producer rc=0 (victim pr32, scale 25)
+opt-split-d4-rep3: producer rc=0 (victim opt, scale 26)
+llama-split-d4-rep3: producer rc=0 (victim llama, scale 26)
+reader-split-d8-rep3: producer rc=0 (victim reader, scale 26)
+pr32-split-d8-s192-rep3: producer rc=0 (victim pr32, scale 25)
+opt-split-d8-rep3: producer rc=0 (victim opt, scale 26)
+Traceback (most recent call last):llama-split-d8-rep3: producer rc=0 (victim llama, scale 26)
+SPLIT-RERUN2-DONE

@@ -59,9 +59,23 @@ related-work pass). No mechanism in this literature moves the traffic to another
 `hardware/scripts/optane-control.sh`, Slurm job 304547 (queued behind other users). Questions: PM write capacity vs
 threads (NT and plain stores); PM read capacity; a 4-thread DRAM reader beside 4/8/16 writers into DRAM vs into PM.
 
-## 6. Fixed-ratio split baseline (the weighted-interleave strawman) — RUNNING on c28
-`ckpt_producer split --split16 4|8`: 25% / 50% of the chunks to DRAM, the rest to CXL, beside the reader, PageRank-32,
-Adam-80 and llama.cpp-80, 3 repetitions (`2026-10-06-fixed-split-baseline/`).
+## 6. Fixed-ratio split baseline (the weighted-interleave strawman) — DONE (24 runs, 3 repetitions)
+`ckpt_producer split --split16 4|8`: a FIXED 25% / 50% of the chunks go to DRAM, the rest to CXL — what a static
+weighted interleave does. Same protocol as the real-data re-run; medians of 3 repetitions (`summary.csv`).
+
+| victim | 25% DRAM | 50% DRAM | cxlpath (adaptive; from `2026-09-22-three-policies-realdata.md`) |
+|---|---|---|---|
+| reader, 8 threads (moderate) | 1.24 s, 6.2% | 1.06 s, 13.7% | 1.07 s at 6.2% (share 0.27); 0.98 s at 6.2% (0.34) |
+| PageRank-32 (moderate), 192 GiB | 3.67 s, 9.4% | 3.15 s, 21.9% | 3.35 s at 7.8% (0.24); 3.49 s at 6.3% (0.23) |
+| Adam-80 (saturated) | 3.50 s, 10.0% | 3.61 s, 12.2% | 3.50 s at 6.6% (0, no loan) |
+| llama.cpp-80 (saturated) | 1.42 s, 16.5% | 1.31 s, 20.9% | 1.65 s at 8.7% (0, no loan) |
+
+Reading: a fixed share cannot be right for both regimes. At 25% it under-uses the headroom beside the reader (1.24 s
+where cxlpath gets 1.07 s at the same harm) and already costs the saturated victims 1.5–1.9× the harm of cxlpath for
+no speed gain (Adam 10.0% vs 6.6%, llama.cpp 16.5% vs 8.7%); at 50% it reaches cxlpath's speed beside the reader but
+at 2.2× the harm (13.7%) and 3.5× beside PageRank-32 (21.9% vs 6.3%). The adaptive share — lend only when CXL is the
+bottleneck and the probe shows headroom, nothing beside a saturated victim — is what the controller contributes over
+interleaving.
 
 ## Verdict
 (pending sections 5 and 6)
