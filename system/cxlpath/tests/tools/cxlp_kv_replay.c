@@ -23,7 +23,14 @@ static void lru_unlink(ent_t *e) { if (e->prev) e->prev->next = e->next; else lr
 static void lru_push(ent_t *e) { e->prev = lru_tail; e->next = NULL; if (lru_tail) lru_tail->next = e; else lru_head = e; lru_tail = e; }
 static void hdel(ent_t *e) { ent_t **pp = &bucket[(e->hash * 0x9E3779B97F4A7C15ull) >> 46]; while (*pp != e) pp = &(*pp)->hnext; *pp = e->hnext; }
 static cxlp_key_t key_of(uint64_t h) { return (h + 1) * 0x9E3779B97F4A7C15ull | 1; }
-static void fill(uint64_t *b, size_t words, uint64_t h) { uint64_t x = h * 0xD6E8FEB86659FD93ull + 1; for (size_t i = 0; i < words; i++) { x ^= x << 13; x ^= x >> 7; x ^= x << 17; b[i] = x; } }
+/* Block content = a random template (made once) with the block hash XOR-ed into one word of every 4 KiB page: every
+ * cache line carries data (2026-09-22-zero-line-writes.md), every hit is still verified, and a block costs one memcpy
+ * instead of a PRNG pass (the PRNG capped a single replay thread at ~3 GB/s, below the 4x / 8x replay rates). */
+static uint64_t *tmpl; static size_t tmpl_words;
+static void fill(uint64_t *b, size_t words, uint64_t h) {
+    if (!tmpl || tmpl_words < words) { tmpl = aligned_alloc(4096, words * 8); tmpl_words = words; uint64_t x = 0xD6E8FEB86659FD93ull; for (size_t i = 0; i < words; i++) { x ^= x << 13; x ^= x >> 7; x ^= x << 17; tmpl[i] = x; } }
+    memcpy(b, tmpl, words * 8); for (size_t i = 0; i < words; i += 512) b[i] ^= h * 0x9E3779B97F4A7C15ull + 1;
+}
 
 int main(int argc, char **argv) {
     if (argc < 5 || cxlp_attach(argv[1])) { fprintf(stderr, "usage / attach\n"); return 2; }
