@@ -45,7 +45,7 @@ def _lib():
         L.cxlp_copy_in_par.argtypes = [vp, vp, sz, ci, ctypes.POINTER(ci)]
         L.cxlp_put_par.argtypes = [u64, ctypes.c_uint32, vp, sz, ctypes.c_char_p, u64, ctypes.c_uint32, u64, u64, ci, ctypes.POINTER(ci)]
         L.cxlp_obj_pin.argtypes = [u64, ci, u64, u64, vp, ci, ctypes.POINTER(u64), vp]; L.cxlp_obj_unpin.argtypes = [vp]
-        L.cxlp_obj_drained.argtypes = [u64]; L.cxlp_obj_release.argtypes = [u64]
+        L.cxlp_obj_drained.argtypes = [u64]; L.cxlp_obj_release.argtypes = [u64]; L.cxlp_bufset_commit.argtypes = [u64, ci]; L.cxlp_bufset_mark_drained.argtypes = [u64, ci]
         L.cxlp_bufset_set_used.argtypes = [u64, ci, u64]
         L.cxlp_bufset_version.argtypes = [u64, ci]; L.cxlp_bufset_version.restype = ctypes.c_int64
         L.cxlp_dev_kind.argtypes = [ci]; L.cxlp_dev_free.argtypes = [ci]; L.cxlp_dev_free.restype = ctypes.c_uint32
@@ -163,7 +163,10 @@ class CxlpathWriter(StorageWriter, AsyncStager):
             with open(tmp, "wb") as fh: pickle.dump(obj, fh); fh.flush(); os.fsync(fh.fileno())
             os.replace(tmp, os.path.join(self.path, name))
         _lib().cxlp_bufset_set_used(self.client, which, used)                     # drain the used prefix, not the whole set
-        if used and _lib().cxlp_bufset_commit_drain(self.client, which, data_file.encode()) != 0: raise RuntimeError("cxlpath: commit failed")
+        if used:
+            if _lib().cxlp_bufset_commit_drain(self.client, which, data_file.encode()) != 0: raise RuntimeError("cxlpath: commit failed")
+        else:                                                                   # no GPU tensors: the set is empty, commit it as already durable so begin() can reuse it
+            _lib().cxlp_bufset_commit(self.client, which); _lib().cxlp_bufset_mark_drained(self.client, which)
         self._staged.pop(self.path, None); self._last_keys = keys
 
     def drained(self, which=None):

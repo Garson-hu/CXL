@@ -1,0 +1,21 @@
+/home/ghu4/hvac/rlibrary/miniconda3/envs/dpu_torch/lib/python3.10/site-packages/torch/distributed/checkpoint/state_dict_saver.py:143: UserWarning: torch.distributed is unavailable or uninitialized, assuming the intent is to save in a single process.
+  warnings.warn(
+    v1: training blocked 0.07 s; staged 1536 MiB in 0.07 s = 21.76 GiB/s; objects 7
+/home/ghu4/hvac/rlibrary/miniconda3/envs/dpu_torch/lib/python3.10/site-packages/torch/distributed/checkpoint/state_dict_loader.py:142: UserWarning: torch.distributed is unavailable or uninitialized, assuming the intent is to load in a single process.
+  warnings.warn(
+  ok   v1 reloaded from CXL in 0.50 s: checkpoint-time values, not the mutated tensors
+    v2: training blocked 0.07 s; staged 1536 MiB in 0.07 s = 21.74 GiB/s; objects 7
+    v3: training blocked 0.16 s; staged 1536 MiB in 0.16 s = 9.61 GiB/s; objects 7
+  ok   v3 durable after 4.1 s of waiting
+    v1 object file on NVMe: 1536 MiB
+    v2 object file on NVMe: 1536 MiB
+    v3 object file on NVMe: 1536 MiB
+  ok   v3 (newest) reloaded from CXL in 0.54 s
+  ok   v1 reloaded from NVME in 0.59 s, byte-exact (its objects may have been reclaimed: then from the file)
+    alive=1 spill16=0 staged16=0 dram_ok=0 cxl_full=0 gpu_full=0 pace=0@0.0GiBs probe=212.7 base=186.2 bound=1.10 epoch=63
+    shadows=0.0MiB/cap 0.0MiB promoted=0 hits=0 drops=0 (never hit 0)
+    dev 0 CXL  free 229/256 written 2.13 GiB
+    dev 1 CXL  free 230/256 written 2.38 GiB
+    dev 2 DRAM free 128/128 written 0.00 GiB
+  ok   after the store is gone (reboot): v3 reloaded from NVME in 0.59 s, byte-exact
+PASS
