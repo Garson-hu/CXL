@@ -1,4 +1,9 @@
-/* cxlp_kv_replay <store> <trace.jsonl> <block_KiB> <max_requests> [capacity_GiB]
+/* cxlp_kv_replay <store> <trace.jsonl> <block_KiB> <max_requests> [capacity_GiB] [--speed X] [--dev D] [--latency] [--stats-every S]
+ *   --speed X   : replay at X times the trace's own request rate (timestamps honoured; 0 = as fast as possible, the default)
+ *   --dev D     : force every block onto device D (the all-DRAM / all-CXL baselines; default: the placement policy)
+ *   --latency   : mark blocks as serving-hit objects (promoted at the first hit, k-latency) and group them by prefix head
+ *   --stats-every S : print a progress line every S seconds (hits, DRAM hits, store rate)
+ * (2026-10-06, for the KV-at-scale experiment)
  * E3: a KV-cache layer in miniature, driven by a Mooncake trace (one request per line, hash_ids =
  * the prefix chain of 512-token blocks). It talks to cxlpath exactly the way an LMCache-like layer
  * would: get (pin/unpin) for every block of the longest matching prefix, allocate + fill + commit
@@ -9,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 typedef struct ent { uint64_t hash; struct ent *prev, *next, *hnext; } ent_t;
 #define HB (1u << 18)
 static ent_t *bucket[HB], *lru_head, *lru_tail; static size_t nlive;
@@ -23,17 +29,31 @@ int main(int argc, char **argv) {
     if (argc < 5 || cxlp_attach(argv[1])) { fprintf(stderr, "usage / attach\n"); return 2; }
     FILE *f = fopen(argv[2], "r"); if (!f) { perror("trace"); return 2; }
     size_t bsz = (size_t)atol(argv[3]) << 10, words = bsz / 8; long maxreq = atol(argv[4]);
-    double cap_gib = argc > 5 ? atof(argv[5]) : 0; size_t cap_blocks = cap_gib > 0 ? (size_t)(cap_gib * 1073741824.0 / bsz) : (size_t)-1;
+    double cap_gib = argc > 5 && argv[5][0] != '-' ? atof(argv[5]) : 0; size_t cap_blocks = cap_gib > 0 ? (size_t)(cap_gib * 1073741824.0 / bsz) : (size_t)-1;
+    double speed = 0, stats_every = 0; int force_dev = -1, latency = 0;
+    for (int i = 5; i < argc; i++) { if (!strcmp(argv[i], "--speed") && i + 1 < argc) speed = atof(argv[++i]); else if (!strcmp(argv[i], "--dev") && i + 1 < argc) force_dev = atoi(argv[++i]); else if (!strcmp(argv[i], "--latency")) latency = 1; else if (!strcmp(argv[i], "--stats-every") && i + 1 < argc) stats_every = atof(argv[++i]); }
+    double t_first = -1; uint64_t next_stats = 0, last_hits = 0, last_hit_dram = 0, last_writes = 0;
     uint64_t *buf = aligned_alloc(4096, bsz), *exp = aligned_alloc(4096, bsz); char *line = malloc(1 << 22);
     uint64_t nreq = 0, nblk = 0, hits = 0, hit_dram = 0, misses = 0, writes = 0, evict = 0, bad = 0, putfail = 0; uint64_t t0 = cxlp_now_ns();
-    cxlp_hints_t hi = { 1, 0, -1, 4, 0 };
+    cxlp_hints_t hi = { 1, 0, force_dev, 4, 0 };
     while (nreq < (uint64_t)maxreq && fgets(line, 1 << 22, f)) {
         char *p = strstr(line, "\"hash_ids\""); if (!p) continue; p = strchr(p, '['); if (!p) continue; p++;
-        int matching = 1; nreq++;
+        if (speed > 0) {                                        /* honour the trace's timestamps, X times faster */
+            char *ts = strstr(line, "\"timestamp\""); double t = ts ? atof(strchr(ts, ':') + 1) / 1000.0 : 0;
+            if (t_first < 0) t_first = t;
+            uint64_t due = t0 + (uint64_t)((t - t_first) / speed * 1e9);
+            while (cxlp_now_ns() < due) { uint64_t left = due - cxlp_now_ns(); struct timespec w = { 0, (long)(left > 2000000 ? 2000000 : left) }; nanosleep(&w, NULL); }
+        }
+        if (stats_every > 0 && cxlp_now_ns() >= next_stats) {
+            double el = (cxlp_now_ns() - t0) / 1e9;
+            printf("KVSTAT t=%.1f hits=%llu dram_hits=%llu stored=%llu hit_rate=%.1f%% store_GiBs=%.2f\n", el, (unsigned long long)hits, (unsigned long long)hit_dram, (unsigned long long)writes, 100.0 * hits / (nblk ? nblk : 1), (writes - last_writes) * (double)bsz / 1073741824.0 / stats_every); fflush(stdout);
+            last_hits = hits; last_hit_dram = hit_dram; last_writes = writes; next_stats = cxlp_now_ns() + (uint64_t)(stats_every * 1e9);
+        }
+        int matching = 1; nreq++; uint64_t head_hash = 0;
         for (;;) {
             while (*p == ' ' || *p == ',') p++;
             if (*p == ']' || !*p) break;
-            uint64_t h = strtoull(p, &p, 10); nblk++;
+            uint64_t h = strtoull(p, &p, 10); nblk++; if (!head_hash) head_hash = h + 1;
             ent_t *e = find(h);
             if (matching && e) {                                   /* prefix hit: read the block in place and check every word */
                 cxlp_res_t x[4]; uint64_t bytes; cxlp_pin_t pin; int n = cxlp_obj_pin(key_of(h), CXLP_CONSUMER_CPU, 0, UINT64_MAX, x, 4, &bytes, &pin);
@@ -51,6 +71,7 @@ int main(int argc, char **argv) {
                 while (nlive >= cap_blocks || attempt) { ent_t *v = lru_head; if (!v) break; lru_unlink(v); hdel(v); while (cxlp_obj_release(key_of(v->hash)) == -2) ; free(v); nlive--; evict++; if (attempt && evict % 8 == 0) break; if (!attempt) continue; }
                 uint32_t oh; cxlp_res_t r; int ok = 0;
                 if (cxlp_obj_begin(key_of(h), 1, &oh) == 0) {
+                    if (latency) { cxlp_obj_set_flags(oh, CXLP_OBJ_LATENCY); cxlp_obj_set_group(oh, (uint32_t)(head_hash * 0x9E3779B97F4A7C15ull >> 33) | 1u); }
                     if (cxlp_reserve(bsz, &hi, &r) == 0) { cxlp_copy_to(&r, 0, buf, bsz); cxlp_commit(&r); ok = cxlp_obj_append(oh, &r) == 0 && cxlp_obj_commit(oh) == 0; if (!ok) cxlp_abort(&r); }
                     if (!ok) { atomic_store(&cxlp_g.obj[oh].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[oh].state, OBJ_TOMB); }
                 }
