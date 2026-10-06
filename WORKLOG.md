@@ -15,6 +15,18 @@ new findings go here in WORKLOG, not into new scattered files.
 puts the socket in drain mode — reads 12×, plain writes 8×, NT writes −20%; CXL-resident work
 immune. Next: Phase 4 real apps framed as co-runner protection (see session 21).
 
+**2026-10-06 addendum — ADVISOR REVIEW ANSWERED, PLAN APPROVED, EXECUTION STARTED.** The advisor (2026-10-04) asked why
+the work exists, what only CXL can do, why not persistent memory, and about multi-tenancy. Line of argument adopted by
+the user: memory-bandwidth interference from bulk writers has only ever been remedied by throttling (MBA, MemGuard,
+PARTIES, MT²); CXL is the first independent, write-capable memory pipe, so the traffic can be redirected instead; DRAM is
+granted to that data only on evidence (bandwidth headroom → loan; observed reuse → promotion) and everything it holds is
+revocable at zero cost. Approved plan (five weeks): why-evidence experiments, four code changes, LMCache + vLLM, read-
+while-write, multi-tenancy, sensitivity. Done today: read path v2 (shadow copies, free demotion, groups, k per class,
+prefetch), measured CXL capacity + loan-must-pay rule, drain no longer yields, CPU tensors as objects in the PyTorch
+plugin (gate written), multi-tenant arbitration designed (DESIGN §10.12), tail-latency and checkpoint-frequency
+analyses, SSD arithmetic, literature check; running: fixed-split baseline (c28), Optane control (queued on cascade),
+LMCache environment install. Files: `docs/experiments/2026-10-06-why-evidence.md`, DESIGN §10.11 items 18–21, §10.12.
+
 **2026-09-23 addendum — PHASE 2 RE-RUN DONE (real data), KV PROMOTION ANALYSED.** 117 runs: beside moderate victims
 (reader, PageRank-32) cxlpath lends 23–34% and is 1.3–1.5× faster than all-CXL inside the bound, 3× faster than
 throttling, 4–10× less harm than DRAM staging; beside saturated victims cxlpath = all-CXL with 2.4–3.4× less harm.
@@ -153,6 +165,25 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-04/06 (session 28) — the advisor's review, the "why", the plan, and the first week of execution
+- 2026-09-30/10-04: the user's duplex question (answered: used only implicitly; the drain's yield rule contradicted it),
+  the advisor's KV read-path questions (first-hit promotion trace analysis, `2026-09-23-kv-first-hit-promotion.md`),
+  the status deck, the English Word pitch (`docs/slides/PITCH_2026-10-04-problem-why-cxl-design.docx`), ChatGPT's
+  "evidence-based DRAM admission" reframing (adopted with two additions: a probation tier must be cheap to leave;
+  the design's invariant is zero-cost revocation), and the advisor's four points. Decided line: redirect instead of
+  throttle; DRAM on evidence; everything revocable.
+- Code (all unit tests pass): promotion copies instead of relocating (DRAM shadows on extents, `cxlp_shadow_trim`,
+  group eviction, read counts reset on drop, `--shadow-cap-gib`, daemon trims when the pool runs low); k per class
+  (`CXLP_OBJ_LATENCY`, `--k-latency`, GPU never while DRAM is not faster); `cxlp_obj_prefetch`; measured CXL capacity
+  (10 s max of active epochs) and the loan-must-pay rule (two epochs of slower DRAM chunks hand the loan back); drain
+  never yields; `cxlp_put_par` + the plugin's CPU tensors as objects (one drain file per checkpoint, reader pins or
+  falls back to the file); producer `split` policy (fixed-ratio baseline).
+- Analyses: llama.cpp per-token p99 1.6× during a DRAM-staged burst vs 1.1× CXL; checkpoint frequency at a 3% budget
+  every 60 s (stock) vs 27 s (cxlpath) for 16 GiB; KV churn 110–340× a QLC drive's daily write budget; MT² confirms
+  "NVM and DRAM share the same memory bus" and throttling as the remedy.
+- Running / queued: fixed-split baseline (24 runs), Optane control (Slurm 304547, cascade nodes busy), LMCache env.
+- Feedback recorded: no invented shorthand as if it were a term; plain sentences a reader can follow without context.
 
 ### 2026-09-23 (session 27) — re-run closed, status deck, advisor's read-path questions, first-hit promotion analysis
 - Real-data re-run closed (`2026-09-22-three-policies-realdata.md`): numbers within a few points of the zero-line
