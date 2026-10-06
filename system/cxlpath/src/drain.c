@@ -69,16 +69,12 @@ static int write_range(fdc_t *f, const char *p, uint64_t len, uint64_t off) {
     return 0;
 }
 
-static int should_yield(void) {
-    static __thread uint64_t last_bytes, last_change_ns;
-    uint64_t b = atomic_load(&POL->gpu_direct.bytes) + atomic_load(&POL->gpu_staged.bytes), now = cxlp_now_ns();
-    uint32_t free_cxl = 0, tot_cxl = 0;
-    for (uint32_t d = 0; d < cxlp_g.meta->ndev; d++) if (cxlp_g.meta->dev[d].kind == CXLP_DEV_CXL) { b += atomic_load(&POL->led[d].bytes); free_cxl += atomic_load(&cxlp_g.meta->dev[d].nfree); tot_cxl += cxlp_g.meta->dev[d].nseg; }
-    if (b != last_bytes) { last_bytes = b; last_change_ns = now; }
-    int writers_active = last_change_ns && now - last_change_ns < 100000000ull;
-    int space_low = tot_cxl && free_cxl * 100u < tot_cxl * atomic_load(&cxlp_g.meta->drain_lowspace_pct);
-    return writers_active && !space_low;
-}
+/* 2026-10-06: the drain no longer yields to active CXL writers. Reading CXL while it is written uses the other
+ * direction of the link (reads + writes together exceed either alone, 2026-08-25) and the drain's NVMe-bound rate
+ * is a few percent of the write direction; yielding only delayed durability (and starved the drain under a
+ * continuous KV writer, which the urgent/overdue rules then had to repair). Kept: priority to buffer sets that gate
+ * a blocked writer, and the low-space rule, both inside cxlp_drain_step. */
+static int should_yield(void) { return 0; }
 
 static __thread int need_reclaim;
 static int64_t drain_object(cxlp_drain_t *d) {

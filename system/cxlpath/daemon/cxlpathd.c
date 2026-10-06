@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     nring = 5;
     if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f guard=%.2f idle_ns=%.1f pacing=%s solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, guard, idle_ns, no_pace ? "off" : "on", solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
               if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
-              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns,pace_GiBs,shadow_MiB,promoted,shadow_drops\n"); fflush(lg); }
+              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns,pace_GiBs,shadow_MiB,promoted,shadow_drops,cap_est_GiBs,cxl_chunk_GiBs,dram_chunk_GiBs,loan_slow\n"); fflush(lg); }
 
     atomic_store(&POL->daemon_pid, (uint32_t)getpid());
     uint64_t t_start = cxlp_now_ns(), next = t_start, last_sec = 0, last_epoch_ns = t_start, last_act_ns = 0;
@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
     for (int s = 0; s < CXLP_NSTREAM; s++) ps[s] = atomic_load(&POL->sled[s].bytes);
     uint64_t p_seq = atomic_load(&POL->reserve_seq), pgd_b = atomic_load(&POL->gpu_direct.bytes), pgd_n = atomic_load(&POL->gpu_direct.ns);
     uint64_t pgs_b = atomic_load(&POL->gpu_staged.bytes), prev_cb = 0; uint32_t prev_mask = 0; int tick = 0, halved_in_epoch = 0, gpu_full = 0, cxl_full = 0;
+    enum { CAP_RING = 256 }; double cap_ring[CAP_RING] = { 0 }; uint64_t cap_ring_t[CAP_RING] = { 0 }; unsigned cap_i = 0; int loan_slow = 0; double cap_est = 0, cxl_chunk = 0, dram_chunk = 0;
 
     while (!quit) {
         uint64_t now = cxlp_now_ns();
@@ -160,10 +161,10 @@ int main(int argc, char **argv) {
         if (epoch) {
             double dt = (now - last_epoch_ns) / 1e9; if (dt <= 0) dt = 1e-3;
             last_epoch_ns = now;
-            uint64_t cb = 0, cn = 0, db = 0;
+            uint64_t cb = 0, cn = 0, db = 0, dn = 0;
             for (uint32_t d = 0; d < cxlp_g.meta->ndev; d++) {
                 uint64_t bb = atomic_load(&POL->led[d].bytes), nn = atomic_load(&POL->led[d].ns);
-                if (cxlp_g.meta->dev[d].kind == CXLP_DEV_CXL) { cb += bb - pb[d]; cn += nn - pn[d]; } else db += bb - pb[d];
+                if (cxlp_g.meta->dev[d].kind == CXLP_DEV_CXL) { cb += bb - pb[d]; cn += nn - pn[d]; } else { db += bb - pb[d]; dn += nn - pn[d]; }
                 pb[d] = bb; pn[d] = nn;
             }
             uint64_t gsb = atomic_load(&POL->gpu_staged.bytes);
@@ -180,7 +181,19 @@ int main(int argc, char **argv) {
             /* The tail of a burst (an epoch only partly covered by the stream) must not count as slack:
              * slack needs bytes in this epoch AND in the previous one (the first smoke test of periodic
              * 8 GiB bursts lost its whole ramp to tail-off decrements and restarted every burst from 0). */
-            cxl_full = cap > 0 ? (agg >= 0.9 * cap ? 1 : ((agg < 0.7 * cap && cb > 0 && prev_cb > 0) ? -1 : 0)) : 0;
+            /* MEASURED capacity (2026-10-06): the rate CXL can take depends on the co-runner (beside llama.cpp data-carrying
+             * writes reach 29 GiB/s, not the calibrated 44, and the constant-capacity rule never saw "full"). The reference is
+             * the highest CXL rate seen in the last 10 s of active epochs; the calibrated capacity only caps it. */
+            if (cb > 0) { cap_ring[cap_i % CAP_RING] = agg; cap_ring_t[cap_i % CAP_RING] = now; cap_i++; }
+            cap_est = 0; for (int i = 0; i < CAP_RING; i++) if (cap_ring_t[i] && now - cap_ring_t[i] <= 10000000000ull && cap_ring[i] > cap_est) cap_est = cap_ring[i];
+            if (cap > 0 && cap_est > cap) cap_est = cap;
+            cxl_full = cap_est > 0 ? (agg >= 0.9 * cap_est ? 1 : ((agg < 0.7 * cap_est && cb > 0 && prev_cb > 0) ? -1 : 0)) : 0;
+            /* The loan must pay: a DRAM chunk has to complete at least as fast as a CXL chunk for the same thread (beside
+             * llama.cpp data-carrying writes into DRAM run at 22 GiB/s against 30 into CXL). Two consecutive epochs in which
+             * DRAM chunks were slower hand the loan back, whatever the probe says. */
+            cxl_chunk = cn ? cb * 1e9 / (double)cn : 0; dram_chunk = dn ? db * 1e9 / (double)dn : 0;
+            if (cb > 0 && db > 0 && cxl_chunk > 0) loan_slow = dram_chunk < 0.95 * cxl_chunk ? loan_slow + 1 : 0; else loan_slow = 0;
+            if (loan_slow >= 2 && cxl_full > 0) cxl_full = -1;
             prev_cb = cb;
             /* GPU sources: the direct path is "full" when it delivers < 80% of what the GPU link can
              * push; sticky, because with everything staged there is no direct sample to look at. */
@@ -202,9 +215,9 @@ int main(int argc, char **argv) {
             /* the loan must never be blocked by promoted copies: when the DRAM pool runs low, drop the least recently hit shadows */
             { uint32_t pf = 0, pt = 0; for (int d = 0; d < cxlp_ndev(); d++) if (cxlp_dev_kind(d) == CXLP_DEV_DRAM) { pf += cxlp_dev_free(d); pt += cxlp_dev_nseg(d); }
               if (pt && pf * 8 < pt && atomic_load(&POL->shadow_bytes)) cxlp_shadow_trim(atomic_load(&POL->shadow_bytes) / 2); }
-            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f,%.2f,%.1f,%llu,%llu\n", (now - t_start) / 1e6, p, mean5, base,
+            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f,%.2f,%.1f,%llu,%llu,%.2f,%.2f,%.2f,%d\n", (now - t_start) / 1e6, p, mean5, base,
                         forced >= 0 ? (uint32_t)forced : ctl.cpu, ctl.gpu, cxl_full, gpu_full, active, agg / 1073741824.0, db / dt / 1073741824.0, per_writer / 1073741824.0, conc, halved_in_epoch, ref_idle.last, ref_a, pace_bps / 1073741824.0,
-                        atomic_load(&POL->shadow_bytes) / 1048576.0, (unsigned long long)atomic_load(&POL->promoted_extents), (unsigned long long)atomic_load(&POL->shadow_drops)); if (!active) fflush(lg); }
+                        atomic_load(&POL->shadow_bytes) / 1048576.0, (unsigned long long)atomic_load(&POL->promoted_extents), (unsigned long long)atomic_load(&POL->shadow_drops), cap_est / 1073741824.0, cxl_chunk / 1073741824.0, dram_chunk / 1073741824.0, loan_slow); if (!active) fflush(lg); }
             halved_in_epoch = 0;
         }
         if (epoch || halved)                                  /* publish: active streams get the live value, idle ones their memory */
