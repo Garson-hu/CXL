@@ -25,6 +25,10 @@ from torch.distributed.checkpoint.storage import StorageReader, StorageWriter, W
 from torch.futures import Future
 from torch.utils._pytree import tree_map
 
+class _Res(ctypes.Structure):           # mirrors cxlp_res_t (include/cxlpath.h)
+    _fields_ = [("ptr", ctypes.c_void_p), ("dev", ctypes.c_int), ("seg", ctypes.c_uint32), ("off", ctypes.c_uint32), ("len", ctypes.c_uint32), ("pad", ctypes.c_uint32)]
+class _Pin(ctypes.Structure): _fields_ = [("slot", ctypes.c_uint32), ("gen", ctypes.c_uint64)]
+
 _LIB = None
 def _lib():
     global _LIB
@@ -39,6 +43,9 @@ def _lib():
         L.cxlp_gpu_init.argtypes = [ci, ci]; L.cxlp_gpu_register.argtypes = [vp, sz]
         L.cxlp_gpu_copy_in.argtypes = [vp, vp, sz, ctypes.c_uint32, vp]; L.cxlp_copy_in.argtypes = [vp, vp, sz]
         L.cxlp_copy_in_par.argtypes = [vp, vp, sz, ci, ctypes.POINTER(ci)]
+        L.cxlp_put_par.argtypes = [u64, ctypes.c_uint32, vp, sz, ctypes.c_char_p, u64, ctypes.c_uint32, u64, u64, ci, ctypes.POINTER(ci)]
+        L.cxlp_obj_pin.argtypes = [u64, ci, u64, u64, vp, ci, ctypes.POINTER(u64), vp]; L.cxlp_obj_unpin.argtypes = [vp]
+        L.cxlp_obj_drained.argtypes = [u64]; L.cxlp_obj_release.argtypes = [u64]
         L.cxlp_bufset_set_used.argtypes = [u64, ci, u64]
         L.cxlp_bufset_version.argtypes = [u64, ci]; L.cxlp_bufset_version.restype = ctypes.c_int64
         L.cxlp_dev_kind.argtypes = [ci]; L.cxlp_dev_free.argtypes = [ci]; L.cxlp_dev_free.restype = ctypes.c_uint32
@@ -83,18 +90,31 @@ class CxlpathWriter(StorageWriter, AsyncStager):
             if w >= 0: break
             time.sleep(0.01)
         t1 = time.time(); self.which = w; off = [0]; base = self.ptr[w]; arena = self.arena[w]
+        # CPU tensors become cxlpath OBJECTS (2026-10-06): segment-sized chunks placed one by one by the policy, so the
+        # DRAM loan applies to them; they drain into one file per checkpoint at increasing offsets. GPU tensors keep the
+        # CUDA-registered buffer set. The staged entry for a CPU tensor is the tensor itself: its bytes are already
+        # copied, and write_data records the object instead of reading it.
+        objs = {}; fo = [0]; obj_file = os.path.join(self.path, f"cxlpath_obj_rank{self.rank}.bin") if self.path else None
+        chain = L.cxlp_key_of(f"hl-chain:{self.rank}".encode())
         def put(x):
             if not torch.is_tensor(x): return copy.deepcopy(x)
-            src = x.detach().contiguous(); n = src.numel() * src.element_size(); o = (off[0] + 63) & ~63
+            src = x.detach().contiguous(); n = src.numel() * src.element_size()
+            if n and not src.is_cuda:
+                key = L.cxlp_key_of(f"{self.path}|{self.version}|{len(objs)}".encode()); foff = (fo[0] + 4095) & ~4095
+                if L.cxlp_put_par(key, 0, src.data_ptr(), n, obj_file.encode() if obj_file else None, foff, self.stream, chain, self.version, self._ncopy, self._cpus) != 0:
+                    raise RuntimeError("cxlpath: object put failed (no space?)")
+                objs[src.data_ptr()] = dict(key=key, nbytes=n, file_off=foff); fo[0] = foff + n
+                return src
+            o = (off[0] + 63) & ~63
             if o + n > self.cap: raise RuntimeError("state_dict larger than the buffer set capacity")
             if n:
-                if src.is_cuda: torch.cuda.current_stream().synchronize(); rc = L.cxlp_gpu_copy_in(base + o, src.data_ptr(), n, self.stream, None)
-                else: rc = 0; L.cxlp_copy_in_par(base + o, src.data_ptr(), n, self._ncopy, self._cpus)
+                torch.cuda.current_stream().synchronize(); rc = L.cxlp_gpu_copy_in(base + o, src.data_ptr(), n, self.stream, None)
                 if rc != 0: raise RuntimeError("cxlpath GPU copy failed")
             off[0] = o + n
             return arena[o:o + n].view(src.dtype).view(src.shape)
         staged = tree_map(put, state_dict)
-        self.stats = dict(wait_s=t1 - t0, stage_s=time.time() - t1, bytes=off[0]); self.used = off[0]
+        self._objs = objs; self.obj_file = obj_file
+        self.stats = dict(wait_s=t1 - t0, stage_s=time.time() - t1, bytes=off[0] + fo[0]); self.used = off[0]
         # async_save calls reset(checkpoint_id) before stage(): remember what belongs to THIS checkpoint, so a
         # later stage() cannot disturb the background save of an earlier one
         self._staged[self.path] = (self.which, self.version, self.used)
@@ -122,8 +142,11 @@ class CxlpathWriter(StorageWriter, AsyncStager):
                 b = data.getvalue(); self.blobs[item.index.fqn] = b
                 res.append(WriteResult(index=item.index, size_in_bytes=len(b), storage_data=dict(kind="blob", fqn=item.index.fqn)))
             else:
-                t = data.detach(); o = t.data_ptr() - base; n = t.numel() * t.element_size()
-                if not (0 <= o and o + n <= self.cap): raise RuntimeError(f"{item.index.fqn}: tensor is not inside the cxlpath buffer set")
+                t = data.detach(); n = t.numel() * t.element_size(); ob = getattr(self, "_objs", {}).get(t.data_ptr())
+                if ob is not None:
+                    res.append(WriteResult(index=item.index, size_in_bytes=n, storage_data=dict(kind="obj", key=ob["key"], nbytes=ob["nbytes"], file_off=ob["file_off"], rank=self.rank))); continue
+                o = t.data_ptr() - base
+                if not (0 <= o and o + n <= self.cap): raise RuntimeError(f"{item.index.fqn}: tensor is neither a cxlpath object nor inside the buffer set")
                 res.append(WriteResult(index=item.index, size_in_bytes=n, storage_data=dict(kind="tensor", offset=o, nbytes=n, rank=self.rank)))
         f = Future(); f.set_result(res); return f
 
@@ -132,16 +155,22 @@ class CxlpathWriter(StorageWriter, AsyncStager):
         metadata.storage_meta = self.storage_meta()
         data_file = os.path.join(self.path, f"cxlpath_data_rank{self.rank}.bin")
         which, version, used = self._mine()
-        info = dict(store=self.store, client=self.client, version=version, which=which, nbytes=self.cap, used=used, data_file=data_file, blobs=self.blobs)
+        objs = getattr(self, "_objs", {}); keys = [o["key"] for o in objs.values()]
+        info = dict(store=self.store, client=self.client, version=version, which=which, nbytes=self.cap, used=used, data_file=data_file, blobs=self.blobs, obj_file=getattr(self, "obj_file", None), obj_keys=keys)
+        self._obj_keys = self._obj_keys + keys if hasattr(self, "_obj_keys") else keys
         for name, obj in ((".metadata", metadata), (f".cxlpath_rank{self.rank}", info)):
             tmp = os.path.join(self.path, name + ".tmp")
             with open(tmp, "wb") as fh: pickle.dump(obj, fh); fh.flush(); os.fsync(fh.fileno())
             os.replace(tmp, os.path.join(self.path, name))
         _lib().cxlp_bufset_set_used(self.client, which, used)                     # drain the used prefix, not the whole set
-        if _lib().cxlp_bufset_commit_drain(self.client, which, data_file.encode()) != 0: raise RuntimeError("cxlpath: commit failed")
-        self._staged.pop(self.path, None)
+        if used and _lib().cxlp_bufset_commit_drain(self.client, which, data_file.encode()) != 0: raise RuntimeError("cxlpath: commit failed")
+        self._staged.pop(self.path, None); self._last_keys = keys
 
-    def drained(self, which=None): return _lib().cxlp_bufset_drained(self.client, self.which if which is None else which) == 1
+    def drained(self, which=None):
+        L = _lib(); keys = getattr(self, "_last_keys", [])
+        if any(L.cxlp_obj_drained(k) != 1 for k in keys): return False
+        if not getattr(self, "used", 0): return True
+        return L.cxlp_bufset_drained(self.client, self.which if which is None else which) == 1
 
 
 class CxlpathReader(StorageReader):
@@ -169,15 +198,34 @@ class CxlpathReader(StorageReader):
         self.source = "nvme"
         return torch.from_file(info["data_file"], shared=False, size=os.path.getsize(info["data_file"]), dtype=torch.uint8)
 
+    def _read_obj(self, sd, md):
+        """A CPU tensor stored as a cxlpath object: pinned and read where it is (CXL, or its DRAM copy); the drained file otherwise."""
+        if self.store is not None:
+            try:
+                L = _lib(); _attach(self.store); n = sd["nbytes"]; ext = (_Res * 64)(); pin = _Pin(); nb = ctypes.c_uint64()
+                m = L.cxlp_obj_pin(sd["key"], 0, 0, n, ctypes.addressof(ext), 64, ctypes.byref(nb), ctypes.addressof(pin))
+                if 0 < m <= 64:
+                    out = torch.empty(n, dtype=torch.uint8); off = 0
+                    for i in range(m):
+                        ln = min(ext[i].len, n - off); ctypes.memmove(out.data_ptr() + off, ext[i].ptr, ln); off += ln
+                    L.cxlp_obj_unpin(ctypes.addressof(pin)); self.source = "cxl"
+                    return out[:n].view(md.properties.dtype).view(md.size)
+            except (RuntimeError, OSError): pass
+        self.source = "nvme"
+        return torch.from_file(self._info["obj_file"], shared=False, size=os.path.getsize(self._info["obj_file"]), dtype=torch.uint8)[sd["file_off"]:sd["file_off"] + sd["nbytes"]].view(md.properties.dtype).view(md.size)
+
     def read_data(self, plan, planner):
         with open(os.path.join(self.path, f".cxlpath_rank{self.rank}"), "rb") as fh: info = pickle.load(fh)
-        arena = self._open(info)
+        self._info = info; arena = None
         for item in plan.items:
             sd = self.meta.storage_data[item.storage_index]
             if item.type == LoadItemType.BYTE_IO:
                 planner.load_bytes(item, io.BytesIO(info["blobs"][sd["fqn"]])); continue
             md = self.meta.state_dict_metadata[item.storage_index.fqn]
-            t = arena[sd["offset"]:sd["offset"] + sd["nbytes"]].view(md.properties.dtype).view(md.size)
+            if sd.get("kind") == "obj": t = self._read_obj(sd, md)
+            else:
+                if arena is None: arena = self._open(info)
+                t = arena[sd["offset"]:sd["offset"] + sd["nbytes"]].view(md.properties.dtype).view(md.size)
             for dim, (o, n) in enumerate(zip(item.storage_offsets, item.lengths)): t = torch.narrow(t, dim, o, n)
             target = planner.resolve_tensor(item).detach(); target.copy_(t); planner.commit_tensor(item, target)
         f = Future(); f.set_result(None); return f

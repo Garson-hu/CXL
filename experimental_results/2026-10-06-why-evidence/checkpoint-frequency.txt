@@ -1,0 +1,15 @@
+# overhead of checkpointing = (training thread blocked + own compute slowed while the checkpoint is written) / period;
+# measured on 2026-09-22 (16 GiB state, PyTorch dcp.async_save beside an 80-thread Adam step); a checkpoint cannot start before the previous one is durable
+16 GiB state (measured)                          period:   20 s    30 s    60 s   120 s   300 s   600 s
+  stock DRAM staging     overhead   n/a     n/a     3.0%    1.5%    0.6%    0.3%
+  cxlpath                overhead   4.0%    2.7%    1.4%    0.7%    0.3%    0.1%
+64 GiB state (stall and persist scaled 4x)       period:   20 s    30 s    60 s   120 s   300 s   600 s
+  stock DRAM staging     overhead   n/a     n/a     n/a     n/a     2.4%    1.2%
+  cxlpath                overhead   n/a     n/a     n/a     2.7%    1.1%    0.5%
+shortest sustainable period for an overhead budget (16 GiB / 64 GiB):
+  stock DRAM staging     budget 1%: every 180 s / 720 s
+  stock DRAM staging     budget 3%: every 60 s / 240 s
+  stock DRAM staging     budget 5%: every 36 s / 144 s
+  cxlpath                budget 1%: every 81 s / 324 s
+  cxlpath                budget 3%: every 27 s / 108 s
+  cxlpath                budget 5%: every 20 s / 79 s

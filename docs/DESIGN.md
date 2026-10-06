@@ -475,6 +475,56 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
     tensors (`copy_cpus=` or `CXLPATH_COPY_CPUS`), because one core cannot fill the CXL pair from a
     Python process the way the C producer's 8 threads do (measured 42 GiB/s with 8 pinned threads).
 
+18. **Read path v2 — promotion is a copy, demotion is free (2026-10-06).** `cxlp_promote_pending` no longer relocates
+    an extent: it copies it into the DRAM pool and records a *shadow* (`sh_dev/sh_seg/sh_off`, last-hit time, hit
+    count) on the extent; `pin`/`lookup` return the shadow while it exists, the drain keeps reading the CXL original.
+    `cxlp_shadow_trim(target)` drops least-recently-hit shadows (object granularity; an object with a `group` takes its
+    whole group — a KV prefix chain is read together) by releasing DRAM space only: no write, and the extent's read
+    counts restart so a dropped shadow needs fresh evidence. Shadows are capped (`--shadow-cap-gib`, default half the
+    pool) and trimmed by the daemon when the pool's free segments fall below 1/8 so the loan is never blocked by
+    copies. k per class: `CXLP_OBJ_LATENCY` objects (serving hits) promote at `--k-latency` (default 1) reads,
+    bulk objects at the measured break-even k, GPU consumers never while DRAM is not faster for them.
+    `cxlp_obj_prefetch(key)` queues an object without a read (the client's guess, e.g. a session's next turn).
+    Reason: the advisor's "later reads are slow reads" question and the trace analysis of 2026-10-06 — with k = 3
+    no KV block was ever promoted, and a relocation could not be undone without a write.
+19. **CXL capacity is measured, not calibrated (2026-10-06).** "Full" compares the epoch's CXL write rate with the
+    highest rate seen in the last 10 s of active epochs (capped by the start-up calibration), because the rate CXL
+    can take depends on the co-runner (29 GiB/s beside llama.cpp, 44 alone); the constant rule never saw "full"
+    beside llama.cpp-32 and lent nothing although the probe showed headroom. **The loan must pay:** the ledger's
+    per-device copy times give a per-chunk rate for DRAM and CXL; two consecutive epochs in which DRAM chunks were
+    slower than CXL chunks (beside llama.cpp: 22 vs 30 GiB/s) hand the loan back, whatever the probe says.
+20. **The drain does not yield to writers (2026-10-06).** The former "give way while CXL writers moved bytes in the
+    last 100 ms" rule was a DRAM habit: reads use the other direction of the link and the drain's NVMe-bound rate is
+    a few percent of the write direction; the rule only delayed durability and had to be repaired by the
+    urgent/overdue rules. Kept: buffer sets that gate a blocked writer first, and the low-space rule.
+21. **PyTorch plugin: CPU tensors are objects (2026-10-06).** `cxlp_put_par` cuts a tensor into segment-sized chunks
+    that pinned threads reserve / NT-copy / commit one by one — placement per chunk, so the DRAM loan applies to the
+    real producer — and the objects drain into one file per checkpoint at increasing offsets (version chain per rank:
+    older versions are reclaimed by the runtime once the newer is durable). The reader pins the object (CXL or its
+    DRAM copy) and falls back to the file. GPU tensors keep the CUDA-registered buffer set. Reason: beside moderate
+    victims the plugin had been "all-CXL" by construction (`2026-09-22-moderate-pacing-dcp.md` item 3).
+
+### 10.12 Multi-tenant arbitration (DESIGNED 2026-10-06, not built)
+A node runs several writers (streams) beside several readers (tenants). A stream carries a class (checkpoint or KV),
+a weight and a space quota; the daemon arbitrates six shared resources:
+1. **Who may still be hurt.** One latency probe per CPU group that hosts a DRAM-reading tenant (each costs ~1.3% of a
+   core); the loan and the promotion copies are bounded by the most sensitive tenant (the lowest headroom over its own
+   idle level); a tenant can declare itself indifferent, and its probe is then ignored.
+2. **The DRAM loan.** The sum of all streams' DRAM write rates stays under what the governing probe allows; inside
+   that budget the streams share by weight (weighted max-min: unused share flows to the others).
+3. **CXL write capacity.** Latency-class streams (KV ingest) have priority: while one is active, bulk streams are paced
+   with the existing token buckets to leave it headroom.
+4. **CXL readers vs writers.** A full write stream costs a CXL reader 41–51% of its bandwidth (2026-08-25,
+   2026-09-02); while latency-class reads (KV hits) are active, bulk writers are held below a measured fraction of the
+   CXL capacity (the curve "writer rate → reader loss" is to be measured first; the working guess is 70%).
+5. **Space.** Per-stream quotas on CXL segments and on the DRAM pool (loan + shadows); a stream over quota evicts its own
+   oldest data (KV: oldest blocks; checkpoints: waits for its previous version to drain) and never another stream's.
+   This replaces the ad-hoc rules that followed the F1 starvation (item 16).
+6. **The drain.** Round-robin over streams, checkpoint versions before KV (durability is what checkpoints are for).
+Evaluation: two producers (a checkpoint burst and a continuous KV ingest) beside two victims (one sensitive, one not);
+the governing probe, the weighted split of the loan, the priority of KV ingest over the burst, and a stream over its
+quota that cannot starve the others.
+
 ## Change history (append-only — never rewrite entries)
 - **2026-05-20** — v1 designed and built: object registry, single-ceiling
   pressure model, benefit-per-byte greedy planner, lazy materialization, no
@@ -571,3 +621,7 @@ output under `experimental_results/2026-09-19-cxlpath-build/`.
 - **2026-09-22 (late night)** — §10.11 item 15 rewritten: producer pacing is BUILT (token bucket in the
   policy page, daemon pacing controller, `--no-pace`), with its measured reach and limitation; item 17
   added: parallel NT copy for CPU tensors in the PyTorch plugin.
+- **2026-10-06** — §10.11 items 18–21: read path v2 (shadow copies, free demotion, groups, k per class, prefetch),
+  measured CXL capacity and the loan-must-pay rule, the drain no longer yields, CPU tensors as objects in the PyTorch
+  plugin; §10.12 multi-tenant arbitration designed (not built). All from the advisor's review of 2026-10-04 and the
+  user's decisions of 2026-10-06.
