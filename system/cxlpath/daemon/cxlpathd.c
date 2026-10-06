@@ -5,6 +5,9 @@
  *   1 s   : crash cleanup, DRAM pool trim
  * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 1.3] [--idle-ns N] [--no-pace] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  *                         [--shadow-cap-gib G] [--k-latency K]   (read path: DRAM copies allowed, default half the pool; k for serving-hit objects, default 1)
+ *                         [--tenant-cpus a,b,c]  one extra probe per DRAM-reading tenant (a spare core of its CPU group); the loan, the
+ *                                                promotion copies and the pacing are governed by the tenant whose probe sits highest
+ *                                                above its own idle level (multi-tenant arbitration, DESIGN §10.12 rule 1)
  */
 #define _GNU_SOURCE
 #include "../src/internal.h"
@@ -72,6 +75,16 @@ static int calibrate_read(double *t_dram, double *t_cxl, double *t_copy) {
  * sustains 0.9 GiB/s whatever the parallelism (measured with 1-16 writers) ---- */
 static void *drainer(void *arg) { (void)arg; while (!quit) { if (cxlp_drain_step(1) <= 0) usleep(20000); } return NULL; }
 
+typedef struct { int cpu; cxlp_probe_t *pr; double idle; _Atomic uint64_t mean5_x10; } tenant_t;   /* a tenant's probe thread */
+static tenant_t tenants[16]; static int ntenants;
+static void *tenant_thread(void *arg) {
+    tenant_t *t = arg; cpu_set_t cs; CPU_ZERO(&cs); CPU_SET(t->cpu, &cs); sched_setaffinity(0, sizeof cs, &cs);
+    double ring[5] = { 0 }; int n = 0; double v[200];
+    for (int i = 0; i < 200; i++) { v[i] = cxlp_probe_once(t->pr, 1000); usleep(10000); }                 /* its own 2 s idle calibration */
+    qsort(v, 200, sizeof *v, cmp_double); t->idle = v[100];
+    while (!quit) { ring[n++ % 5] = cxlp_probe_once(t->pr, 1000); double m = 0; int k = n < 5 ? n : 5; for (int i = 0; i < k; i++) m += ring[i]; atomic_store(&t->mean5_x10, (uint64_t)(m / k * 10)); usleep(10000); }
+    return NULL;
+}
 static void *promoter(void *arg) { (void)arg; while (!quit) { cxlp_promote_pending((int)atomic_load(&POL->dram_ok)); usleep(50000); } return NULL; }
 
 int main(int argc, char **argv) {
@@ -98,6 +111,8 @@ int main(int argc, char **argv) {
 
     cxlp_probe_t *pr = cxlp_probe_create(256ul << 20);
     atomic_store(&POL->shadow_cap, (uint64_t)(atof(opt(argc, argv, "--shadow-cap-gib", "0")) * 1073741824.0)); atomic_store(&POL->k_read_latency, (uint32_t)atoi(opt(argc, argv, "--k-latency", "1")));
+    { const char *tc = opt(argc, argv, "--tenant-cpus", ""); char buf[256]; strncpy(buf, tc, sizeof buf - 1); buf[sizeof buf - 1] = 0;
+      for (char *tok = strtok(buf, ","); tok && ntenants < 16; tok = strtok(NULL, ",")) { tenants[ntenants].cpu = atoi(tok); tenants[ntenants].pr = cxlp_probe_create(64u << 20); pthread_t th; pthread_create(&th, NULL, tenant_thread, &tenants[ntenants]); pthread_detach(th); ntenants++; } }
     cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, margin); cxlp_pace_t pace; cxlp_pace_init(&pace); int no_pace = flag(argc, argv, "--no-pace"); double pace_bps = 0; cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
     atomic_store(&POL->bound_x1000, (uint32_t)(bound * 1000 + 0.5));
     double ring[5]; int nring = 0; double base = 0; double ring50[50] = { 0 }; int n50 = 0;   /* 500 ms mean for pacing: a read-saturated victim's own phases scatter single probes +-25% */
@@ -111,7 +126,7 @@ int main(int argc, char **argv) {
     nring = 5;
     if (lg) { fprintf(lg, "# cxlpathd store=%s probe_cpu=%d bound=%.3f margin=%.3f guard=%.2f idle_ns=%.1f pacing=%s solo_GiBs=%.2f cap_GiBs=%.2f base_ns=%.1f t0_mono_ns=%llu\n", argv[1], cpu, bound, margin, guard, idle_ns, no_pace ? "off" : "on", solo / 1073741824.0, cap / 1073741824.0, base, (unsigned long long)cxlp_now_ns());
               if (have_rd) fprintf(lg, "# read path, CPU consumer: DRAM %.2f GiB/s, CXL %.2f GiB/s (%.2fx), copy CXL->DRAM %.2f GiB/s -> k = %u when DRAM is calm\n", 1 / t_dram / 1073741824.0, 1 / t_cxl / 1073741824.0, t_cxl / t_dram, 1 / t_copy / 1073741824.0, cxlp_k_compute(t_copy, t_cxl, t_dram, w_press, 0));
-              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns,pace_GiBs,shadow_MiB,promoted,shadow_drops,cap_est_GiBs,cxl_chunk_GiBs,dram_chunk_GiBs,loan_slow\n"); fflush(lg); }
+              fprintf(lg, "t_ms,probe_ns,mean5_ns,ref_in_use_ns,spill16,staged16,cxl_full,gpu_full,active,cxl_GiBs,dram_GiBs,per_writer_GiBs,conc,halved,ref_idle_ns,ref_active_ns,pace_GiBs,shadow_MiB,promoted,shadow_drops,cap_est_GiBs,cxl_chunk_GiBs,dram_chunk_GiBs,loan_slow,worst_ratio\n"); fflush(lg); }
 
     atomic_store(&POL->daemon_pid, (uint32_t)getpid());
     uint64_t t_start = cxlp_now_ns(), next = t_start, last_sec = 0, last_epoch_ns = t_start, last_act_ns = 0;
@@ -127,6 +142,10 @@ int main(int argc, char **argv) {
         double p = cxlp_probe_once(pr, 1000); ring[nring++ % 5] = p; ring50[n50++ % 50] = p;
         double mean5 = 0; for (int k = 0; k < 5; k++) mean5 += ring[k]; mean5 /= 5;
         double mean50 = 0; { int m = n50 < 50 ? n50 : 50; for (int k = 0; k < m; k++) mean50 += ring50[k]; mean50 /= m; }
+        /* multi-tenant: the tenant probe that sits highest above ITS idle level governs, expressed on this probe's scale */
+        double worst_ratio = idle_ns > 0 ? mean5 / idle_ns : 1;
+        for (int i = 0; i < ntenants; i++) { if (tenants[i].idle <= 0) continue; double r = atomic_load(&tenants[i].mean5_x10) / 10.0 / tenants[i].idle; if (r > worst_ratio) worst_ratio = r; }
+        if (ntenants && idle_ns > 0 && worst_ratio * idle_ns > mean5) { mean5 = worst_ratio * idle_ns; if (mean5 > mean50) mean50 = mean5; }
         int forced = atomic_load(&POL->force_spill16);
 
         /* which streams moved bytes in the last 200 ms */
@@ -215,9 +234,9 @@ int main(int argc, char **argv) {
             /* the loan must never be blocked by promoted copies: when the DRAM pool runs low, drop the least recently hit shadows */
             { uint32_t pf = 0, pt = 0; for (int d = 0; d < cxlp_ndev(); d++) if (cxlp_dev_kind(d) == CXLP_DEV_DRAM) { pf += cxlp_dev_free(d); pt += cxlp_dev_nseg(d); }
               if (pt && pf * 8 < pt && atomic_load(&POL->shadow_bytes)) cxlp_shadow_trim(atomic_load(&POL->shadow_bytes) / 2); }
-            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f,%.2f,%.1f,%llu,%llu,%.2f,%.2f,%.2f,%d\n", (now - t_start) / 1e6, p, mean5, base,
+            if (lg) { fprintf(lg, "%.1f,%.1f,%.1f,%.1f,%u,%u,%d,%d,%d,%.2f,%.2f,%.2f,%.2f,%d,%.1f,%.1f,%.2f,%.1f,%llu,%llu,%.2f,%.2f,%.2f,%d,%.3f\n", (now - t_start) / 1e6, p, mean5, base,
                         forced >= 0 ? (uint32_t)forced : ctl.cpu, ctl.gpu, cxl_full, gpu_full, active, agg / 1073741824.0, db / dt / 1073741824.0, per_writer / 1073741824.0, conc, halved_in_epoch, ref_idle.last, ref_a, pace_bps / 1073741824.0,
-                        atomic_load(&POL->shadow_bytes) / 1048576.0, (unsigned long long)atomic_load(&POL->promoted_extents), (unsigned long long)atomic_load(&POL->shadow_drops), cap_est / 1073741824.0, cxl_chunk / 1073741824.0, dram_chunk / 1073741824.0, loan_slow); if (!active) fflush(lg); }
+                        atomic_load(&POL->shadow_bytes) / 1048576.0, (unsigned long long)atomic_load(&POL->promoted_extents), (unsigned long long)atomic_load(&POL->shadow_drops), cap_est / 1073741824.0, cxl_chunk / 1073741824.0, dram_chunk / 1073741824.0, loan_slow, worst_ratio); if (!active) fflush(lg); }
             halved_in_epoch = 0;
         }
         if (epoch || halved)                                  /* publish: active streams get the live value, idle ones their memory */
