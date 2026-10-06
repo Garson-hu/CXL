@@ -97,6 +97,7 @@ typedef struct {
     double   probe_ns, base_ns, bound;
     uint64_t epoch;
     uint64_t dev_bytes[CXLP_MAX_DEVS];
+    uint64_t shadow_bytes, shadow_cap, promoted_extents, shadow_hits, shadow_drops, shadow_drops_unhit;   /* the read path's DRAM copies */
 } cxlp_policy_view_t;
 void cxlp_policy_view(uint32_t stream, cxlp_policy_view_t *out);
 void cxlp_policy_force(int spill16);              /* admin/test knob; -1 = controller decides   */
@@ -130,6 +131,10 @@ int  cxlp_obj_release(cxlp_key_t key);
  * cxlp_obj_lookup() above is a peek: no pin, no count (drain, tools). */
 typedef enum { CXLP_CONSUMER_CPU = 0, CXLP_CONSUMER_GPU = 1 } cxlp_consumer_t;
 #define CXLP_OBJ_NOPROMOTE 1u                      /* checkpoints: never promoted */
+#define CXLP_OBJ_LATENCY   2u                      /* serving hits: promoted at the latency k (default: first hit) */
+int  cxlp_obj_set_group(uint32_t h, uint32_t group);   /* objects read together (a KV prefix chain): dropped from DRAM together */
+int  cxlp_obj_prefetch(cxlp_key_t key);                /* queue the object's CXL extents for promotion without a read (the client's guess) */
+uint64_t cxlp_shadow_trim(uint64_t target_bytes);      /* drop least-recently-hit DRAM shadows until <= target; returns bytes dropped (no writes) */
 int  cxlp_obj_set_flags(uint32_t handle, uint32_t flags);
 /* A pin names the OBJECT that was pinned, not the key: if the key is re-written while a reader holds
  * pointers, the reader still unpins the old object (which is then released). */

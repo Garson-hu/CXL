@@ -7,9 +7,9 @@ CPU layout: victims opt / pr / llama = cpus 0-79 (probe 80); victim reader = cpu
 import os, signal, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__)); B = os.path.join(HERE, "..", "..", "system", "cxlpath", "build"); BUDGET = os.path.join(HERE, "..", "budget")
 out, victim, policy, rep = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26"); S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
+a = dict(zip(sys.argv[5::2], sys.argv[6::2])); rate = a.get("--rate"); split16 = a.get("--split16"); bound = a.get("--bound", "1.10"); margin = a.get("--margin"); guard = a.get("--guard"); vthreads = int(a.get("--vthreads", "80")); scale = a.get("--scale", "26"); S = a.get("--snapshot", "64"); P = a.get("--period", "30"); NP = int(a.get("--periods", "6"))
 vname = victim + (str(vthreads) if vthreads != 80 else "")
-tag = f"{vname}-{policy}" + (f"-b{bound}" if policy == "cxlpath" else "") + (f"-g{guard}" if guard else "") + (f"-r{rate}" if rate else "") + (f"-s{S}" if S != "64" else "") + f"-rep{rep}"
+tag = f"{vname}-{policy}" + (f"-b{bound}" if policy == "cxlpath" else "") + (f"-g{guard}" if guard else "") + (f"-r{rate}" if rate else "") + (f"-d{split16}" if split16 else "") + (f"-s{S}" if S != "64" else "") + f"-rep{rep}"
 store_gib = str(int(int(S) * 1.5) // 2 * 1024); pool_gib = str(int(int(S) * 0.75) * 1024)          # CXL: 1.5x the snapshot over two devices; pool: 0.75x
 if policy.startswith("dcp-"): store_gib = str((2 * int(S) + 2) * 1024)                              # CxlpathWriter keeps two buffer sets of S GiB on one device
 os.makedirs(out, exist_ok=True); probe_cpu = "16" if victim == "reader" else "80"
@@ -31,7 +31,7 @@ time.sleep(40 if victim in ("pr", "llama") else 25)                             
 if policy.startswith("dcp-"):
     penv = dict(os.environ, CXLPATH_COPY_CPUS="96,97,98,99,112,113,114,115", OMP_NUM_THREADS="8", OMP_PLACES="{96},{97},{98},{99},{112},{113},{114},{115}", OMP_PROC_BIND="true")
     pargs = ["taskset", "-c", "96-99,112-115", "python3", f"{HERE}/torch_ckpt_producer.py", policy, S, P, str(NP), "/mnt/local/ghu4/cxlpath_test/dcp-headline", "policy"]
-else: pargs = [f"{HERE}/ckpt_producer", policy, S, "8", "96", P, str(NP)] + (["--rate", rate] if rate else []) + (["--store", "policy"] if policy == "cxlpath" else []) + (["--dax-offset-gib", "40"] if policy == "cxl" and int(S) > 128 else [])
+else: pargs = [f"{HERE}/ckpt_producer", policy, S, "8", "96", P, str(NP)] + (["--rate", rate] if rate else []) + (["--split16", split16] if split16 else []) + (["--store", "policy"] if policy == "cxlpath" else []) + (["--dax-offset-gib", "40"] if policy in ("cxl", "split") and int(S) > 128 else [])
 plog = open(f"{out}/{tag}-producer.txt", "w"); p = subprocess.run(pargs, stdout=plog, stderr=subprocess.STDOUT, env=(penv if policy.startswith("dcp-") else None)); plog.close()
 time.sleep(3); v.send_signal(signal.SIGTERM); v.wait(); vlog.close()
 if daemon: daemon.send_signal(signal.SIGTERM); daemon.wait(); subprocess.run([f"{B}/cxlp_admin", "policy", "destroy"], capture_output=True)

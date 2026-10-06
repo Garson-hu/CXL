@@ -87,6 +87,8 @@ void cxlp_policy_view(uint32_t stream, cxlp_policy_view_t *o) {
     o->bound = atomic_load(&POL->bound_x1000) / 1000.0; o->epoch = atomic_load(&POL->epoch);
     o->pace_on = atomic_load(&POL->pace_on[stream % CXLP_NSTREAM]); o->pace_GiBs = atomic_load(&POL->pace_bps[stream % CXLP_NSTREAM]) / 1073741824.0;
     for (int d = 0; d < CXLP_MAX_DEVS; d++) o->dev_bytes[d] = atomic_load(&POL->led[d].bytes);
+    o->shadow_bytes = atomic_load(&POL->shadow_bytes); o->shadow_cap = atomic_load(&POL->shadow_cap); o->promoted_extents = atomic_load(&POL->promoted_extents);
+    o->shadow_hits = atomic_load(&POL->shadow_hits); o->shadow_drops = atomic_load(&POL->shadow_drops); o->shadow_drops_unhit = atomic_load(&POL->shadow_drops_unhit);
 }
 
 void cxlp_policy_force(int spill16) { atomic_store(&POL->force_spill16, spill16); }

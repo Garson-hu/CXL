@@ -30,7 +30,7 @@ int cxlp_obj_begin(cxlp_key_t key, uint32_t klass, uint32_t *handle) {
             atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL); atomic_store(&o->bytes, 0);
             atomic_store(&o->flags, 0); atomic_store(&o->pins, 0); atomic_store(&o->seq, 0);
             atomic_store(&o->drain_idx, CXLP_NIL); atomic_store(&o->drained, 0); o->chain = 0; o->version = 0;
-            atomic_store(&o->gen, 0); atomic_store(&o->superseded, 0); o->drain_whole = 0;
+            atomic_store(&o->gen, 0); atomic_store(&o->superseded, 0); o->drain_whole = 0; o->group = 0;
             atomic_store(&o->key, key);
             /* a new writer of an existing key: the old object's drain stops now (we own the target file) */
             for (uint32_t p2 = 0, j = (uint32_t)mix(key) & mask; p2 <= mask; p2++, j = (j + 1) & mask) {
@@ -50,6 +50,7 @@ int cxlp_obj_append(uint32_t h, const cxlp_res_t *r) {
     cxlp_ext_t *x = &cxlp_g.ext[e];
     x->dev = (uint32_t)r->dev; x->seg = r->seg; x->off = r->off; x->len = r->len; atomic_store(&x->next, CXLP_NIL);
     x->obj = h; x->obj_off = atomic_load(&o->bytes); atomic_store(&x->drain_state, 0); atomic_store(&x->rd_cur, 0); atomic_store(&x->rd_prev, 0); atomic_store(&x->rd_bucket, 0); atomic_store(&x->queued, 0);
+    atomic_store(&x->sh_seg, CXLP_NIL); atomic_store(&x->sh_hits, 0); atomic_store(&x->sh_last_ms, 0);
     uint32_t tail = atomic_load(&o->tail);
     if (tail == CXLP_NIL) atomic_store(&o->head, e); else atomic_store(&cxlp_g.ext[tail].next, e);
     atomic_store(&o->tail, e); atomic_fetch_add(&o->bytes, r->len);
@@ -57,6 +58,7 @@ int cxlp_obj_append(uint32_t h, const cxlp_res_t *r) {
 }
 
 int cxlp_obj_set_flags(uint32_t h, uint32_t flags) { atomic_store(&cxlp_g.obj[h].flags, flags); return 0; }
+int cxlp_obj_set_group(uint32_t h, uint32_t group) { cxlp_g.obj[h].group = group; return 0; }
 
 int cxlp_obj_commit(uint32_t h) {
     cxlp_obj_t *o = &cxlp_g.obj[h]; cxlp_key_t key = atomic_load(&o->key);
@@ -89,8 +91,9 @@ int cxlp_obj_lookup(cxlp_key_t key, cxlp_res_t *ext, int max, uint64_t *bytes) {
     cxlp_obj_t *o = find(key); if (!o) return -1;
     int n = 0;
     for (uint32_t e = atomic_load(&o->head); e != CXLP_NIL; e = atomic_load(&cxlp_g.ext[e].next), n++) {
-        if (n < max) { cxlp_ext_t *x = &cxlp_g.ext[e];
-            ext[n] = (cxlp_res_t){ (char *)cxlp_seg_ptr((int)x->dev, x->seg) + x->off, (int)x->dev, x->seg, x->off, x->len, 0 }; }
+        if (n < max) { cxlp_ext_t *x = &cxlp_g.ext[e]; uint32_t ss = atomic_load(&x->sh_seg);
+            ext[n] = ss != CXLP_NIL ? (cxlp_res_t){ (char *)cxlp_seg_ptr((int)x->sh_dev, ss) + x->sh_off, (int)x->sh_dev, ss, x->sh_off, x->len, 0 }
+                                    : (cxlp_res_t){ (char *)cxlp_seg_ptr((int)x->dev, x->seg) + x->off, (int)x->dev, x->seg, x->off, x->len, 0 }; }
     }
     if (bytes) *bytes = atomic_load(&o->bytes);
     return n;
@@ -100,6 +103,8 @@ static void drop_extents(cxlp_obj_t *o, int fix_live) {
     for (uint32_t e = atomic_load(&o->head); e != CXLP_NIL;) {
         cxlp_ext_t *x = &cxlp_g.ext[e]; uint32_t nx = atomic_load(&x->next);
         if (fix_live) { cxlp_res_t r = { NULL, (int)x->dev, x->seg, x->off, x->len, 0 }; cxlp_release(&r); }
+        uint32_t ss = atomic_exchange(&x->sh_seg, CXLP_NIL);
+        if (ss != CXLP_NIL) { if (fix_live) { cxlp_res_t r = { NULL, (int)x->sh_dev, ss, x->sh_off, x->len, 0 }; cxlp_release(&r); } atomic_fetch_sub(&POL->shadow_bytes, x->len); }
         atomic_store(&x->used, 0); e = nx;
     }
     atomic_store(&o->head, CXLP_NIL); atomic_store(&o->tail, CXLP_NIL);

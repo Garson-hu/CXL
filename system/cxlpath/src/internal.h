@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <time.h>
 
-#define CXLP_MAGIC   0x435850415448303Cull   /* "CXPATH0<" */
+#define CXLP_MAGIC   0x435850415448303Dull   /* "CXPATH0=" (shadow copies in extents, 2026-10-06) */
 #define CXLP_PATHLEN 192
 #define CXLP_NIL      UINT32_MAX
 #define CXLP_KEY_TOMB UINT64_MAX
@@ -39,6 +39,9 @@ typedef struct {                   /* one extent of an object */
     _Atomic uint32_t queued;       /* waiting in the promotion ring */
     _Atomic uint32_t drain_state;  /* 0 pending, 1 being written, 2 on NVMe */
     uint64_t obj_off;              /* offset of this extent inside its object */
+    /* DRAM shadow (promotion = COPY, the CXL original stays): readers are pointed at the shadow while it exists;
+     * dropping it costs nothing. sh_seg == CXLP_NIL: no shadow. Changed under the object's seqlock. */
+    uint32_t sh_dev, sh_off; _Atomic uint32_t sh_seg; _Atomic uint32_t sh_hits; _Atomic uint64_t sh_last_ms;
 } cxlp_ext_t;
 
 typedef struct {                   /* open-addressing hash slot */
@@ -55,6 +58,7 @@ typedef struct {                   /* open-addressing hash slot */
     _Atomic uint64_t gen;          /* commit order: of several committed objects under one key the highest gen is THE object */
     _Atomic uint32_t superseded;   /* a newer writer of the same key exists: drain cancelled, released when unpinned */
     uint32_t drain_whole;          /* the object owns its file: truncate to the object's size when drained */
+    uint32_t group;                /* objects read together (a KV prefix chain): their shadows are dropped together; 0 = none */
 } cxlp_obj_t;
 
 #define CXLP_NDRAIN 1024
@@ -103,6 +107,9 @@ typedef struct {
     _Atomic uint32_t read_bucket_ms;           /* window = two buckets; default 300000 (10 min) */
     _Atomic uint64_t gpu_rd_cxl_bps, gpu_rd_dram_bps;   /* GPU consumer constants (GPU module) */
     _Atomic uint64_t promoted_bytes, promoted_extents;
+    _Atomic uint32_t k_read_latency;           /* k for CXLP_OBJ_LATENCY objects (serving hits): default 1  */
+    _Atomic uint64_t shadow_bytes, shadow_cap;  /* DRAM shadows in use / allowed (0 = half the DRAM pool)     */
+    _Atomic uint64_t shadow_hits, shadow_drops, shadow_drops_unhit;
 #define CXLP_PROMO_RING 1024
     _Atomic uint32_t promo_tail; _Atomic uint32_t promo_ring[CXLP_PROMO_RING];   /* extent index + 1 */
     /* Producer pacing, the last resort (§10.11 item 17): when nothing is being lent and the stream's total
