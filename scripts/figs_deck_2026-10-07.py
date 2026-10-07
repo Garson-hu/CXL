@@ -8,12 +8,12 @@ import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 R = "/home/ghu4/CXL/experimental_results"
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "deck_2026-10-07_figs")
 os.makedirs(OUT, exist_ok=True)
-DRAM, CXL, GRAY, OURS, INK, INK2, LIGHT = "#c8511b", "#1f6f78", "#8a9bb0", "#15202b", "#15202b", "#4a5568", "#f7f6f2"
-plt.rcParams.update({"font.size": 12, "text.color": INK, "axes.edgecolor": INK2, "axes.labelcolor": INK2, "xtick.color": INK2, "ytick.color": INK2,
-                     "figure.facecolor": LIGHT, "axes.facecolor": LIGHT, "savefig.facecolor": LIGHT, "legend.frameon": False, "axes.titlesize": 12, "axes.titleweight": "bold"})
+# matplotlib's default colour cycle: C0 blue, C1 orange, C2 green, C3 red, C4 purple, C7 gray; default white background
+DRAM, CXL, GRAY, OURS, INK, INK2 = "C1", "C0", "C7", "C2", "k", "0.35"
+plt.rcParams.update({"font.size": 12, "axes.titlesize": 12})
 def despine(ax, grid="y"):
     for s in ("top", "right"): ax.spines[s].set_visible(False)
-    if grid: ax.grid(axis=grid, color="#e3e2de", lw=0.8); ax.set_axisbelow(True)
+    if grid: ax.grid(axis=grid, alpha=0.3); ax.set_axisbelow(True)
 def save(fig, name): fig.tight_layout(pad=0.6); fig.savefig(f"{OUT}/{name}.png", dpi=200); plt.close(fig); print("wrote", name)
 def label_bars(ax, bars, fmt, dy, size=11, bold=False):
     for b in bars: ax.text(b.get_x() + b.get_width() / 2, b.get_height() + dy, fmt(b.get_height()), ha="center", fontsize=size, fontweight="bold" if bold else "normal")
@@ -89,7 +89,7 @@ def smed(base, k): return st.median(float(r[k]) for r in sp[base])
 G = [("streaming reader", "reader-split-d4", "reader-split-d8", "reader-cxlpath-b1.09"), ("PageRank, 32 threads", "pr32-split-d4-s192", "pr32-split-d8-s192", "pr32-cxlpath-b1.05-s192"),
      ("training step", "opt-split-d4", "opt-split-d8", "opt-cxlpath-b1.04"), ("llama.cpp", "llama-split-d4", "llama-split-d8", "llama-cxlpath-b1.06")]
 fig, ax = plt.subplots(figsize=(11, 4.6))
-for j, (label, color) in enumerate([("always send a quarter to DRAM", "#d9a77f"), ("always send half to DRAM", DRAM), ("our system decides", OURS)]):
+for j, (label, color) in enumerate([("always send a quarter to DRAM", "C4"), ("always send half to DRAM", "C3"), ("our system decides", OURS)]):
     xs = [i + (j - 1) * w for i in range(4)]
     ys = [(smed(g[1 + j], "slowdown_pct") if j < 2 else med(g[3], "slowdown_pct")) for g in G]; ts = [(smed(g[1 + j], "completion_s") if j < 2 else med(g[3], "completion_s")) for g in G]
     bars = ax.bar(xs, ys, w, color=color, label=label)
@@ -189,7 +189,7 @@ for name, cap, delay, k, ev, share in pat.findall(sim):
     if cap == "inf": continue
     if k in ("", "1") and ev in ("", "lru"): ours[name][int(cap)] = float(share)
     if ev == "oracle": best[name][int(cap)] = float(share)
-NAMES = {"conversation": ("chat service", DRAM), "toolagent": ("agent service", CXL), "synthetic": ("synthetic workload", "#7a4fb0")}
+NAMES = {"conversation": ("chat service", "C0"), "toolagent": ("agent service", "C1"), "synthetic": ("synthetic workload", "C2")}
 fig, ax = plt.subplots(figsize=(10.5, 4.8))
 for name, (lab, color) in NAMES.items():
     cs = sorted(ours[name]); ax.plot(cs, [ours[name][c] for c in cs], "-o", color=color, lw=2.2, label=f"{lab}: copy after the first reuse")
