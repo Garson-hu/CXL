@@ -1,0 +1,10 @@
+llama32-cxlpath-b1.09-rep1: producer rc=0 (victim llama32, scale 26)
+reader-cxlpath-b1.09-rep1: producer rc=0 (victim reader, scale 26)
+llama32-cxlpath-b1.05-rep1: producer rc=0 (victim llama32, scale 26)
+llama32-cxlpath-b1.09-rep2: producer rc=0 (victim llama32, scale 26)
+reader-cxlpath-b1.09-rep2: producer rc=0 (victim reader, scale 26)
+llama32-cxlpath-b1.05-rep2: producer rc=0 (victim llama32, scale 26)
+llama32-cxlpath-b1.09-rep3: producer rc=0 (victim llama32, scale 26)
+reader-cxlpath-b1.09-rep3: producer rc=0 (victim reader, scale 26)
+llama32-cxlpath-b1.05-rep3: producer rc=0 (victim llama32, scale 26)
+FULLNESS-DONE

@@ -1,0 +1,10 @@
+tag,victim,windows,slowdown_pct,completion_s,copy_GiBs,dram_share
+llama32-cxlpath-b1.05-rep1,llama,6,0.67,2.110,30.34,0.003
+llama32-cxlpath-b1.05-rep2,llama,6,0.98,2.325,27.53,0.008
+llama32-cxlpath-b1.05-rep3,llama,6,0.95,2.503,25.57,0.005
+llama32-cxlpath-b1.09-rep1,llama,6,-0.21,2.116,30.25,0.004
+llama32-cxlpath-b1.09-rep2,llama,6,0.06,2.592,24.69,0.017
+llama32-cxlpath-b1.09-rep3,llama,6,0.60,2.712,23.60,0.084
+reader-cxlpath-b1.09-rep1,reader,6,4.98,1.158,55.25,0.205
+reader-cxlpath-b1.09-rep2,reader,6,7.74,1.035,61.86,0.313
+reader-cxlpath-b1.09-rep3,reader,6,8.95,1.002,63.84,0.334

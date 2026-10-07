@@ -5,6 +5,7 @@
  *   1 s   : crash cleanup, DRAM pool trim
  * usage: cxlpathd <store> [--cpu N] [--log FILE] [--bound 1.10] [--margin 1.05] [--guard 1.3] [--idle-ns N] [--no-pace] [--trim] [--no-calibrate] [--ccd-size 16] [--smt-offset 128]
  *                         [--shadow-cap-gib G] [--k-latency K]   (read path: DRAM copies allowed, default half the pool; k for serving-hit objects, default 1)
+ *                         [--loan-block-s S]     after a loan that did not raise the stream's total rate (DRAM chunks slower than CXL), no new trial for S s (default 60)
  *                         [--tenant-cpus a,b,c]  one extra probe per DRAM-reading tenant (a spare core of its CPU group); the loan, the
  *                                                promotion copies and the pacing are governed by the tenant whose probe sits highest
  *                                                above its own idle level (multi-tenant arbitration, DESIGN §10.12 rule 1)
@@ -113,6 +114,7 @@ int main(int argc, char **argv) {
     atomic_store(&POL->shadow_cap, (uint64_t)(atof(opt(argc, argv, "--shadow-cap-gib", "0")) * 1073741824.0)); atomic_store(&POL->k_read_latency, (uint32_t)atoi(opt(argc, argv, "--k-latency", "1")));
     { const char *tc = opt(argc, argv, "--tenant-cpus", ""); char buf[256]; strncpy(buf, tc, sizeof buf - 1); buf[sizeof buf - 1] = 0;
       for (char *tok = strtok(buf, ","); tok && ntenants < 16; tok = strtok(NULL, ",")) { tenants[ntenants].cpu = atoi(tok); tenants[ntenants].pr = cxlp_probe_create(64u << 20); pthread_t th; pthread_create(&th, NULL, tenant_thread, &tenants[ntenants]); pthread_detach(th); ntenants++; } }
+    double loan_block_s = atof(opt(argc, argv, "--loan-block-s", "60"));   /* after a loan that did not raise the total rate: no new trial for this long */
     cxlp_ctl_t ctl; cxlp_ctl_init(&ctl, bound, margin); cxlp_pace_t pace; cxlp_pace_init(&pace); int no_pace = flag(argc, argv, "--no-pace"); double pace_bps = 0; cxlp_ref_t ref_idle, ref_act; cxlp_ref_init(&ref_idle, 60000); cxlp_ref_init(&ref_act, 2000);
     atomic_store(&POL->bound_x1000, (uint32_t)(bound * 1000 + 0.5));
     double ring[5]; int nring = 0; double base = 0; double ring50[50] = { 0 }; int n50 = 0;   /* 500 ms mean for pacing: a read-saturated victim's own phases scatter single probes +-25% */
@@ -135,7 +137,7 @@ int main(int argc, char **argv) {
     for (int s = 0; s < CXLP_NSTREAM; s++) ps[s] = atomic_load(&POL->sled[s].bytes);
     uint64_t p_seq = atomic_load(&POL->reserve_seq), pgd_b = atomic_load(&POL->gpu_direct.bytes), pgd_n = atomic_load(&POL->gpu_direct.ns);
     uint64_t pgs_b = atomic_load(&POL->gpu_staged.bytes), prev_cb = 0; uint32_t prev_mask = 0; int tick = 0, halved_in_epoch = 0, gpu_full = 0, cxl_full = 0;
-    enum { CAP_RING = 256 }; double cap_ring[CAP_RING] = { 0 }; uint64_t cap_ring_t[CAP_RING] = { 0 }; unsigned cap_i = 0; int loan_slow = 0; double cap_est = 0, cxl_chunk = 0, dram_chunk = 0;
+    enum { CAP_RING = 256 }; double cap_ring[CAP_RING] = { 0 }; uint64_t cap_ring_t[CAP_RING] = { 0 }; unsigned cap_i = 0; int loan_slow = 0; double cap_est = 0, cxl_chunk = 0, dram_chunk = 0; uint64_t loan_block_until = 0;
 
     while (!quit) {
         uint64_t now = cxlp_now_ns();
@@ -207,12 +209,16 @@ int main(int argc, char **argv) {
             cap_est = 0; for (int i = 0; i < CAP_RING; i++) if (cap_ring_t[i] && now - cap_ring_t[i] <= 10000000000ull && cap_ring[i] > cap_est) cap_est = cap_ring[i];
             if (cap > 0 && cap_est > cap) cap_est = cap;
             cxl_full = cap_est > 0 ? (agg >= 0.9 * cap_est ? 1 : ((agg < 0.7 * cap_est && cb > 0 && prev_cb > 0) ? -1 : 0)) : 0;
-            /* The loan must pay: a DRAM chunk has to complete at least as fast as a CXL chunk for the same thread (beside
-             * llama.cpp data-carrying writes into DRAM run at 22 GiB/s against 30 into CXL). Two consecutive epochs in which
-             * DRAM chunks were slower hand the loan back, whatever the probe says. */
+            /* The loan must pay (2026-10-06, second form): comparing per-chunk rates misfired (concurrency confounds
+             * them: a thread's CXL chunks look faster while its neighbours are busy with DRAM chunks). The test is
+             * aggregate: while DRAM is being lent, the stream's TOTAL rate (CXL + DRAM) must exceed what CXL alone
+             * achieved (cap_est). Beside the 8-thread reader 43.8 + 6 > 43.9; beside llama.cpp-32 the DRAM chunks
+             * are so slow (data-carrying writes at 22 GiB/s) that the total falls to 20 against 32 alone. Two such
+             * epochs hand the loan back and block it for 2 s, so it cannot oscillate every epoch. */
             cxl_chunk = cn ? cb * 1e9 / (double)cn : 0; dram_chunk = dn ? db * 1e9 / (double)dn : 0;
-            if (cb > 0 && db > 0 && cxl_chunk > 0) loan_slow = dram_chunk < 0.95 * cxl_chunk ? loan_slow + 1 : 0; else loan_slow = 0;
-            if (loan_slow >= 2 && cxl_full > 0) cxl_full = -1;
+            if (db > 0 && cap_est > 0) loan_slow = (agg + db / dt) < cap_est ? loan_slow + 1 : 0; else loan_slow = 0;
+            if (loan_slow >= 2) { loan_block_until = now + (uint64_t)(loan_block_s * 1e9); loan_slow = 0; }
+            if (now < loan_block_until && cxl_full > 0) cxl_full = -1;
             prev_cb = cb;
             /* GPU sources: the direct path is "full" when it delivers < 80% of what the GPU link can
              * push; sticky, because with everything staged there is no direct sample to look at. */
