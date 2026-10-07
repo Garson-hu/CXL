@@ -183,6 +183,18 @@ LULESH version. Each step needs explicit user approval before execution.
   every 60 s (stock) vs 27 s (cxlpath) for 16 GiB; KV churn 110–340× a QLC drive's daily write budget; MT² confirms
   "NVM and DRAM share the same memory bus" and throttling as the remedy.
 - Running / queued: fixed-split baseline (24 runs), Optane control (Slurm 304547, cascade nodes busy), LMCache env.
+- Evening: fixed-split baseline done (24 runs: a fixed 25% / 50% share costs the saturated victims 1.5–3.5× cxlpath's harm
+  or under-uses the headroom; `2026-10-06-why-evidence.md` §6). Controller gates (`2026-10-06-controller-v2-gates.md`):
+  the per-chunk-rate loan test misfired (withdrew a paying loan beside the reader), replaced by an aggregate rule
+  (total rate with the loan must exceed CXL alone) with a 60 s block after a failed trial; reader unchanged (1.06 s,
+  6.4%, share 0.30), llama.cpp-32 one short trial per minute (2.23–2.27 s vs 2.16 all-CXL, 0% harm). E2b plugin gate
+  passes after fixing a back-pressure deadlock for CPU-only state dicts. Per-tenant probe threads added to the daemon.
+  KV replay tool extended (timed replay, forced device, latency/group hints, fast fill). LMCache + vLLM environment:
+  `/mnt/local/ghu4/envs/lmcache` (vllm 0.31.0, lmcache 0.5.5, HF_HOME `/mnt/local/ghu4/hf`); smoke test on the 4060 Ti
+  stores a 1792-token prefix in LMCache's CPU memory and reuses it (`benchmarks/lmcache/smoke_vllm_lmcache.py`).
+- The home directory hit its 40 GB quota three times today (a Rust toolchain pulled by a pip build; old VS Code server
+  builds). Everything new (conda env, pip and HF caches) now lives on `/mnt/local/ghu4`; five old VS Code server builds
+  were removed; ~2.7 GB free at the end of the day. Raw results in the repo are small, but the quota needs watching.
 - Feedback recorded: no invented shorthand as if it were a term; plain sentences a reader can follow without context.
 
 ### 2026-09-23 (session 27) — re-run closed, status deck, advisor's read-path questions, first-hit promotion analysis
