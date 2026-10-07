@@ -1,0 +1,12 @@
+# Time between the FIRST and the SECOND reuse of a key-value block (3rd and 2nd occurrence of its hash), Mooncake traces,
+# and the share of second reuses that arrive within the time an LRU DRAM copy area of a given size keeps a copied block
+# (residency = area / 64 MiB per block / promotion rate measured in the first-hit simulation of 2026-09-23).
+conversation: blocks reused at least twice 18689; first->second reuse gap p50 138 s p90 498 s p99 1437 s; write->first reuse p50 147 s p90 621 s
+  CDF conversation: 1:0.000 2:0.000 5:0.000 10:0.002 20:0.027 30:0.053 60:0.174 90:0.349 120:0.444 180:0.603 240:0.703 300:0.758 450:0.877 600:0.952 900:0.983 1200:0.989 1800:0.998
+  within residency conversation: 20GiB(27s):0.04 40GiB(53s):0.12 80GiB(106s):0.39 160GiB(212s):0.66 320GiB(424s):0.85
+toolagent: blocks reused at least twice 17613; first->second reuse gap p50 126 s p90 426 s p99 594 s; write->first reuse p50 123 s p90 477 s
+  CDF toolagent: 1:0.001 2:0.001 5:0.001 10:0.003 20:0.030 30:0.058 60:0.187 90:0.374 120:0.475 180:0.645 240:0.750 300:0.804 450:0.922 600:0.994 900:0.999 1200:1.000 1800:1.000
+  within residency toolagent: 20GiB(29s):0.05 40GiB(57s):0.16 80GiB(115s):0.46 160GiB(230s):0.73 320GiB(460s):0.93
+synthetic: blocks reused at least twice 15345; first->second reuse gap p50 111 s p90 331 s p99 518 s; write->first reuse p50 153 s p90 454 s
+  CDF synthetic: 1:0.008 2:0.015 5:0.026 10:0.060 20:0.107 30:0.173 60:0.294 90:0.423 120:0.512 180:0.691 240:0.800 300:0.869 450:0.970 600:0.993 900:1.000 1200:1.000 1800:1.000
+  within residency synthetic: 20GiB(18s):0.10 40GiB(36s):0.20 80GiB(72s):0.34 160GiB(143s):0.58 320GiB(287s):0.86

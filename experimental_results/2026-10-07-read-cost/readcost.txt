@@ -1,0 +1,37 @@
+# readcost c28 Tue Oct  6 21:42:46 2026
+LAT rep=1 dram_ns=135.5 cxl_ns=226.6
+BW rep=1 threads=1 dram_GiBs=43.82 cxl_GiBs=24.40
+BW rep=1 threads=2 dram_GiBs=86.24 cxl_GiBs=43.28
+BW rep=1 threads=4 dram_GiBs=164.95 cxl_GiBs=51.46
+BW rep=1 threads=8 dram_GiBs=257.89 cxl_GiBs=48.99
+BW rep=1 threads=16 dram_GiBs=279.38 cxl_GiBs=48.73
+BURST rep=1 read_from=dram copy_into=none reader4_GiBs=165.17 chain_ns=134.0 writers_GiBs=0.00
+BURST rep=1 read_from=dram copy_into=dram reader4_GiBs=85.82 chain_ns=184.8 writers_GiBs=88.64
+BURST rep=1 read_from=dram copy_into=cxl reader4_GiBs=158.34 chain_ns=137.2 writers_GiBs=43.94
+BURST rep=1 read_from=cxl copy_into=none reader4_GiBs=51.41 chain_ns=228.5 writers_GiBs=0.00
+BURST rep=1 read_from=cxl copy_into=dram reader4_GiBs=51.39 chain_ns=227.8 writers_GiBs=94.68
+BURST rep=1 read_from=cxl copy_into=cxl reader4_GiBs=48.25 chain_ns=537.7 writers_GiBs=29.93
+LAT rep=2 dram_ns=134.1 cxl_ns=223.8
+BW rep=2 threads=1 dram_GiBs=44.05 cxl_GiBs=24.46
+BW rep=2 threads=2 dram_GiBs=85.52 cxl_GiBs=43.65
+BW rep=2 threads=4 dram_GiBs=164.41 cxl_GiBs=51.39
+BW rep=2 threads=8 dram_GiBs=258.27 cxl_GiBs=49.06
+BW rep=2 threads=16 dram_GiBs=279.39 cxl_GiBs=48.73
+BURST rep=2 read_from=dram copy_into=none reader4_GiBs=165.09 chain_ns=134.7 writers_GiBs=0.00
+BURST rep=2 read_from=dram copy_into=dram reader4_GiBs=85.72 chain_ns=185.1 writers_GiBs=88.71
+BURST rep=2 read_from=dram copy_into=cxl reader4_GiBs=158.29 chain_ns=136.4 writers_GiBs=43.96
+BURST rep=2 read_from=cxl copy_into=none reader4_GiBs=51.53 chain_ns=228.8 writers_GiBs=0.00
+BURST rep=2 read_from=cxl copy_into=dram reader4_GiBs=51.42 chain_ns=228.3 writers_GiBs=94.71
+BURST rep=2 read_from=cxl copy_into=cxl reader4_GiBs=48.25 chain_ns=541.2 writers_GiBs=29.44
+LAT rep=3 dram_ns=135.7 cxl_ns=224.7
+BW rep=3 threads=1 dram_GiBs=44.15 cxl_GiBs=24.34
+BW rep=3 threads=2 dram_GiBs=86.29 cxl_GiBs=43.82
+BW rep=3 threads=4 dram_GiBs=165.23 cxl_GiBs=51.41
+BW rep=3 threads=8 dram_GiBs=258.40 cxl_GiBs=49.07
+BW rep=3 threads=16 dram_GiBs=279.44 cxl_GiBs=48.73
+BURST rep=3 read_from=dram copy_into=none reader4_GiBs=165.17 chain_ns=134.6 writers_GiBs=0.00
+BURST rep=3 read_from=dram copy_into=dram reader4_GiBs=85.50 chain_ns=184.1 writers_GiBs=88.74
+BURST rep=3 read_from=dram copy_into=cxl reader4_GiBs=157.48 chain_ns=136.9 writers_GiBs=43.93
+BURST rep=3 read_from=cxl copy_into=none reader4_GiBs=51.41 chain_ns=228.6 writers_GiBs=0.00
+BURST rep=3 read_from=cxl copy_into=dram reader4_GiBs=51.47 chain_ns=228.3 writers_GiBs=94.69
+BURST rep=3 read_from=cxl copy_into=cxl reader4_GiBs=48.27 chain_ns=537.0 writers_GiBs=30.11

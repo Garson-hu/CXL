@@ -1,0 +1,10 @@
+# SSD read, /mnt/local (Solidigm D5-P5430 3.84 TB), file of 4 GiB random data, O_DIRECT, Tue Oct  6 21:45:12 EDT 2026
+single stream bs=1M rep=1: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.91936 s, 2.2 GB/s
+single stream bs=1M rep=2: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.90927 s, 2.2 GB/s
+single stream bs=1M rep=3: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.91811 s, 2.2 GB/s
+single stream bs=4M rep=1: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.555 s, 2.8 GB/s
+single stream bs=4M rep=2: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.55274 s, 2.8 GB/s
+single stream bs=4M rep=3: 4294967296 bytes (4.3 GB, 4.0 GiB) copied, 1.55893 s, 2.8 GB/s
+4 parallel streams bs=4M rep=1: 2.91 GiB/s
+4 parallel streams bs=4M rep=2: 2.91 GiB/s
+4 parallel streams bs=4M rep=3: 2.91 GiB/s
