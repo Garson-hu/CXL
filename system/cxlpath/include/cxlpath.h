@@ -160,6 +160,9 @@ int  cxlp_obj_drained(cxlp_key_t key);            /* 1 = complete on NVMe and fs
  * is blocked in reserve() for lack of space cannot release anything (found by the live D2 loop). */
 int  cxlp_obj_set_version(uint32_t handle, uint64_t chain, uint64_t version);
 int  cxlp_put_version(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint32_t wait_ms, uint64_t chain, uint64_t version);
+/* Parallel put: segment-sized chunks reserved / NT-copied / committed by `nthreads` pinned threads (placement per chunk,
+ * so the DRAM loan applies); drains into `path` at `file_off` (NULL = never). Used for the PyTorch plugin's CPU tensors. */
+int  cxlp_put_par(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint64_t file_off, uint32_t stream, uint64_t chain, uint64_t version, int nthreads, const int *cpus);
 int  cxlp_bufset_commit_drain(cxlp_key_t client, int which, const char *path);   /* commit + arm the drain */
 int  cxlp_bufset_set_used(cxlp_key_t client, int which, uint64_t bytes);          /* before commit: drain only this prefix */
 int  cxlp_bufset_drained(cxlp_key_t client, int which);

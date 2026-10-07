@@ -1,6 +1,8 @@
 /* Component A, part 3: shared object index, lookup, crash cleanup (A4). */
 #define _GNU_SOURCE
 #include "internal.h"
+#include <pthread.h>
+#include <sched.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -215,4 +217,33 @@ int cxlp_cleanup_dead(void) {
     }
     free(live);
     return dropped;
+}
+
+/* Parallel put for large CPU buffers (the PyTorch plugin's CPU tensors, 2026-10-06): the buffer is cut into segment-sized
+ * chunks, `nthreads` pinned threads reserve / NT-copy / commit their chunks (placement per chunk: the loan applies), the
+ * extents are appended in order, and the object drains into `path` at `file_off` (NULL path = never drained). */
+typedef struct { const char *buf; size_t len; uint32_t klass, stream, align; int cpu, id, nthreads, err; cxlp_res_t *res; size_t nchunks; } putpar_t;
+static void *putpar_thread(void *a) {
+    putpar_t *w = a;
+    if (w->cpu >= 0) { cpu_set_t cs; CPU_ZERO(&cs); CPU_SET(w->cpu, &cs); pthread_setaffinity_np(pthread_self(), sizeof cs, &cs); }
+    cxlp_hints_t h = { w->klass, w->align, -1, w->stream, 20000 };
+    for (size_t c = (size_t)w->id; c < w->nchunks; c += (size_t)w->nthreads) {
+        size_t off = c * CXLP_SEG_BYTES, n = w->len - off < CXLP_SEG_BYTES ? w->len - off : CXLP_SEG_BYTES;
+        if (cxlp_reserve(n, &h, &w->res[c])) { w->err = 1; break; }
+        cxlp_copy_to(&w->res[c], 0, w->buf + off, n); cxlp_commit(&w->res[c]);
+    }
+    cxlp_thread_seal(); return NULL;
+}
+int cxlp_put_par(cxlp_key_t key, uint32_t klass, const void *buf, size_t len, const char *path, uint64_t file_off, uint32_t stream, uint64_t chain, uint64_t version, int nthreads, const int *cpus) {
+    if (nthreads < 1) nthreads = 1; if (nthreads > 64) nthreads = 64;
+    uint32_t h; if (cxlp_obj_begin(key, klass, &h)) return -1;
+    cxlp_obj_set_version(h, chain, version); if (chain) cxlp_obj_set_flags(h, CXLP_OBJ_NOPROMOTE);
+    if (path && cxlp_obj_set_drain(h, path, file_off)) { atomic_store(&cxlp_g.obj[h].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[h].state, OBJ_TOMB); return -1; }
+    size_t nchunks = (len + CXLP_SEG_BYTES - 1) / CXLP_SEG_BYTES; if (!nchunks) nchunks = 0;
+    cxlp_res_t *res = calloc(nchunks ? nchunks : 1, sizeof *res); putpar_t w[64]; pthread_t th[64]; int err = 0;
+    for (int i = 0; i < nthreads; i++) { w[i] = (putpar_t){ buf, len, klass, stream, path ? 4096u : 0u, cpus ? cpus[i] : -1, i, nthreads, 0, res, nchunks }; pthread_create(&th[i], NULL, putpar_thread, &w[i]); }
+    for (int i = 0; i < nthreads; i++) { pthread_join(th[i], NULL); err |= w[i].err; }
+    for (size_t c = 0; c < nchunks && !err; c++) if (cxlp_obj_append(h, &res[c])) err = 1;
+    if (err) { for (size_t c = 0; c < nchunks; c++) if (res[c].len) cxlp_release(&res[c]); free(res); drop_extents(&cxlp_g.obj[h], 0); atomic_store(&cxlp_g.obj[h].key, CXLP_KEY_TOMB); atomic_store(&cxlp_g.obj[h].state, OBJ_TOMB); return -1; }
+    free(res); return cxlp_obj_commit(h);
 }

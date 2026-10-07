@@ -3,7 +3,7 @@
 import json, os, datetime
 ROOT = os.path.dirname(os.path.abspath(__file__)); SL = f"{ROOT}/project/slides"; os.makedirs(SL, exist_ok=True)
 IMG = dict(cliff="/_blob/ba078b8ace0becf69658ac520641035d", duplex="/_blob/f3876b11f96d0b8801fdf77942f10f1d", o3="/_blob/0d19e94d67f59686fb1d4351659295c0", kv="/_blob/e8e365a62c556e82ec373e8b73b6df0b",
-           budget="/_blob/e6a33ec926517e50c6361da647b48ea6", core="/_blob/de3e9d965e527c013857237257fb26e2", dcp="/_blob/e3267eb86ac9d3eef2b2847df944d1a9", controller="/_blob/a9993f8f69a3bacb6c320797d31d7df9",
+           budget="/_blob/e6a33ec926517e50c6361da647b48ea6", core="/_blob/e36cbe92cf7e24ab0a8c36536837567d", dcp="/_blob/e3267eb86ac9d3eef2b2847df944d1a9", controller="/_blob/a9993f8f69a3bacb6c320797d31d7df9",
            zeroline="/_blob/8242a16cf4a01cfec614b38045793411", guard="/_blob/643bee33f953138d1a97685060ae51bf")
 LIGHT, LIGHT2, DARK, INK, INK2, DRAM, CXL, MUTED = "#f7f6f2", "#eceee9", "#15202b", "#15202b", "#4a5568", "#c8511b", "#1f6f78", "#6a7179"
 HEAD = "font-family:'Source Serif 4', Georgia, serif"; BODY = "font-family:'IBM Plex Sans', Arial, sans-serif"
