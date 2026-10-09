@@ -166,6 +166,24 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-10-07/09 (session 29) — read cost, group-meeting deck, the advisor's unified-pool proposal, topology pilot
+
+- 2026-10-07: read cost of CXL vs DRAM measured (`2026-10-07-read-cost.md`); 27-slide group-meeting deck in plain
+  English, figures from `scripts/figs_deck_2026-10-07.py`, matplotlib default colours by the user's request.
+- 2026-10-09: the user brought a long proposal for a unified DRAM/CXL memory pool (the advisor's idea: promotion with
+  invalidation of the CXL copy, demotion, reclamation). After a critical review (related work checked; one cited
+  INFOCOM paper could not be found; NOMAD already proposed keeping slow-tier copies; LMCache 0.5.5 already has a
+  DRAM-first DRAM+Device-DAX tier) the user chose: one budget for every DRAM write, DRAM capacity as a separate
+  resource, admission-only placement compared against migration before any unified manager is built, topology
+  experiment first, capacity-matched LMCache DRAM-first vs CXL-first, a mixed checkpoint + KV workload.
+- KV capacity characterization closed (`2026-10-09-kv-capacity-characterization.md`): host KV is capacity-bound;
+  DRAM holding other blocks instead of copies adds +3 to +15 points of reuse hits next to the 512 GiB CXL pair.
+- Topology experiment opened (`2026-10-09-cxl-topology-interference.md`, tool `benchmarks/memory/topo.c`): the CXL
+  part is blocked because the 2026-10-07 reboot made /dev/dax* root-only again. DRAM-only pilot: same CCD −71%,
+  paired CCD 5 −21%, any other CCD −10% for 8 DRAM-writing threads beside a CCD-4 reader.
+- Admin requests drafted (device permissions + udev rule, memory-controller counters, dax1.0 system-ram feasibility);
+  nothing changed on the devices.
+
 ### 2026-10-04/06 (session 28) — the advisor's review, the "why", the plan, and the first week of execution
 - 2026-09-30/10-04: the user's duplex question (answered: used only implicitly; the drain's yield rule contradicted it),
   the advisor's KV read-path questions (first-hit promotion trace analysis, `2026-09-23-kv-first-hit-promotion.md`),
