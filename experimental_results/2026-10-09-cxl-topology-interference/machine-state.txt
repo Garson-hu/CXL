@@ -1,0 +1,34 @@
+Fri Oct  9 19:12:32 EDT 2026
+c28
+ 19:12:32 up 2 days, 21 min,  0 users,  load average: 0.22, 0.27, 0.35
+always [madvise] never
+CPU(s):              256
+Model name:          AMD EPYC 9745 128-Core Processor
+NUMA node0 CPU(s):   0-255
+[
+  {
+    "chardev":"dax1.0",
+    "size":289373421568,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax2.0",
+    "size":549755813888,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax0.0",
+    "size":260382392320,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  }
+]
+cpu0 L3: 0-15,128-143
+cpu64 L3: 64-79,192-207
+cpu72 L3: 64-79,192-207
+cpu80 L3: 80-95,208-223
