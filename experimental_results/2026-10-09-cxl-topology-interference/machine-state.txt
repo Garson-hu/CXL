@@ -32,3 +32,31 @@ cpu0 L3: 0-15,128-143
 cpu64 L3: 64-79,192-207
 cpu72 L3: 64-79,192-207
 cpu80 L3: 80-95,208-223
+=== full run Sat Oct 10 11:28:19 EDT 2026 ===
+ 11:28:19 up 2 days, 16:37,  0 users,  load average: 0.16, 0.31, 0.25
+crw-rw---- 1 root kmem 252, 0 Oct  7 18:51 /dev/dax0.0
+crw-rw---- 1 root kmem 252, 1 Oct  7 18:51 /dev/dax1.0
+crw------- 1 root root 252, 2 Oct  7 18:51 /dev/dax2.0
+[
+  {
+    "chardev":"dax1.0",
+    "size":289373421568,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax2.0",
+    "size":549755813888,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax0.0",
+    "size":260382392320,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  }
+]
