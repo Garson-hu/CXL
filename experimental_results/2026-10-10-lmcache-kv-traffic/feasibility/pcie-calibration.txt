@@ -1,0 +1,5 @@
+pinned   D2H: 12.30 GiB/s by wall clock; NVML peak TX 14738 MB/s RX 1 MB/s
+pinned   H2D: 12.48 GiB/s by wall clock; NVML peak TX 1668 MB/s RX 14544 MB/s
+pageable D2H: 12.14 GiB/s by wall clock; NVML peak TX 14577 MB/s RX 3 MB/s
+pageable H2D: 12.28 GiB/s by wall clock; NVML peak TX 1642 MB/s RX 14311 MB/s
+link generations seen: [4]

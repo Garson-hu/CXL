@@ -4,7 +4,9 @@
 100 ms reader also its bandwidth in 100 ms slices with high vs low emulated write rate. Writes <dir>/summary.txt and
 <dir>/summary.csv. (2026-10-10)
 usage: analyze_layer2.py <dir>"""
-import glob, os, re, statistics as st, sys
+import glob, gzip, os, re, statistics as st, sys
+def opn(path, *a, **k):                      # raw files over 500 kB are stored gzip-compressed in the repo
+    return open(path, *a, **k) if os.path.exists(path) else gzip.open(path + ".gz", "rt", errors=k.get("errors"))
 
 D = sys.argv[1]
 out = open(os.path.join(D, "summary.txt"), "w"); csv = open(os.path.join(D, "summary.csv"), "w")
@@ -17,7 +19,7 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
     for l in open(meta):
         f = l.split(); M[f[1]] = int(f[2])
         if f[1] == "config": cfg = dict(x.split("=", 1) for x in f[3:])
-    emu = open(os.path.join(D, f"{tag}-emu.txt")).read()
+    emu = opn(os.path.join(D, f"{tag}-emu.txt")).read()
     start = int(re.search(r"^START (\d+)", emu, re.M)[1])
     W = [tuple(float(x) for x in l.split()[1:]) for l in emu.splitlines() if l.startswith("W ")]
     planned = re.search(r"# planned: .*", emu)[0]; summ = re.search(r"^S .*", emu, re.M)
@@ -35,8 +37,8 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
     say(f"  backlog p99 {q(bl, .99):.2f} GB max {max(bl):.2f} GB; job start lateness p99 {q(late, .99):.1f} ms max {max(late):.1f} ms")
     slow = ""
     nf = os.path.join(D, f"{tag}-neighbor.txt")
-    if os.path.exists(nf) and "before_start" in M:
-        b0, b1 = M["before_start"], M["before_end"]; txt = open(nf).read()
+    if (os.path.exists(nf) or os.path.exists(nf + ".gz")) and "before_start" in M:
+        b0, b1 = M["before_start"], M["before_end"]; txt = opn(nf).read()
         if "[STEP]" in txt:
             s = [(int(t), float(v)) for v, t in re.findall(r"\[STEP\] \d+ ([\d.]+) (\d+)", txt)]
             bef = [v for t, v in s if b0 <= t < b1]; dur = [v for t, v in s if start <= t < end]

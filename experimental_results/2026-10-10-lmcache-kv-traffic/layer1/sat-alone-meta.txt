@@ -1,0 +1,6 @@
+M config 245399634393394 trace=mooncake_conversation_trace.jsonl t0=0 t1=300 speed=0.2 neighbor=none vthreads=80 cpu_gb=100 model=Qwen/Qwen2.5-1.5B-Instruct duration=600
+M clock 245399634427394 wall=1791658856.902844
+M server_ready 245439803214343 
+M serve_start 245441935847396 
+M serve_end 246044921956695 client_rc=0
+M done 246059230310441 

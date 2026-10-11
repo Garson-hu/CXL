@@ -1,0 +1,5 @@
+PM node 3, DRAM node 1 (CPUs of node 1 run reader and writers)
+=== rep 1 10:41:39 ===
+=== rep 2 10:46:37 ===
+=== rep 3 10:51:41 ===
+DONE 10:55:50

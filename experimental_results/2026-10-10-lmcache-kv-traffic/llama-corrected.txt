@@ -1,0 +1,13 @@
+layer1 sat-llama (real serving, saturated): raw +17.1% corrected +0.1%
+layer2 llama-8b-1x-dram: raw +14.5% corrected +3.8%
+layer2 llama-8b-1x-cxl: raw +8.6% corrected -2.3%
+layer2 llama-8b-4x-dram: raw +13.4% corrected +2.7%
+layer2 llama-8b-4x-cxl: raw +9.5% corrected -1.7%
+layer2 llama-8b-8x-dram: raw +13.9% corrected +3.5%
+layer2 llama-8b-8x-cxl: raw +12.5% corrected +1.5%
+layer2 llama-70b-1x-dram: raw +13.0% corrected +2.1%
+layer2 llama-70b-1x-cxl: raw +8.2% corrected -3.0%
+layer2 llama-70b-4x-dram: raw +20.5% corrected +11.2%
+layer2 llama-70b-4x-cxl: raw +8.2% corrected -5.4%
+layer2 llama-70b-8x-dram: raw +30.7% corrected +22.5%
+layer2 llama-70b-8x-cxl: raw +15.9% corrected -2.0%

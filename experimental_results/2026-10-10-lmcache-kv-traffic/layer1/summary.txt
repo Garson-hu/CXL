@@ -1,0 +1,147 @@
+## normal-conv  (serving 2273 s)
+  20 ms throughput counter coverage: TX 35%, RX 35% of the serving time  (v1 sampler: totals below scale with coverage)
+  PCIe GPU->host (KV stores): 48.2 GB payload, mean 0.021 GB/s; 20 ms bins p50 0.002 p90 0.009 p99 2.882 max 3.292 GB/s; bins above 0.5 GB/s: 2.4%
+    bursts: 955; duration p50 20 ms p90 20 ms max 40 ms; bytes p50 0.058 GB p90 0.058 GB max 0.09 GB; peak bin p50 2.88 GB/s max 3.29; start-to-start gap p50 0.55 s p10 0.22 s
+  PCIe host->GPU (KV loads): 14.8 GB payload, mean 0.007 GB/s; 20 ms bins p50 0.004 p90 0.034 p99 0.044 max 13.606 GB/s; bins above 0.5 GB/s: 0.1%
+    bursts: 42; duration p50 20 ms p90 20 ms max 40 ms; bytes p50 0.094 GB p90 0.271 GB max 0.36 GB; peak bin p50 4.69 GB/s max 13.61; start-to-start gap p50 34.61 s p10 0.30 s
+  LMCache stored: 2963 operations, 5165824 tokens, 138.0 GiB; its own per-operation figure p50 9.1 GB/s
+  LMCache retrieved: 87 operations, 855296 tokens, 22.8 GiB; its own per-operation figure p50 22.9 GB/s
+  offered 556 requests; answered 556 (0 errors)
+  achieved: 0.245 requests/s, 2804 prompt tokens/s, 85 output tokens/s (answered requests over the serving window)
+  TTFT p50 3.84 s p90 13.86 p99 34.51 max 42.62; prompt tokens 6374468, vLLM-cached 1138432
+  TTFT p50 by third of the run: 3.33 s / 4.14 s / 4.12 s
+  backlog (requests sent, not yet answered): max 19; at the end of the serving window 0
+
+## normal-conv-v2  (serving 2284 s)
+  20 ms throughput counter coverage: TX 97%, RX 97% of the serving time
+  cumulative counter: 456892 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 198.7 GB payload, mean 0.087 GB/s; 5 ms bins p50 0.021 p90 0.032 p99 1.880 max 11.542 GB/s; bins above 0.5 GB/s: 1.2%
+    bursts: 2823; duration p50 10 ms p90 10 ms max 55 ms; bytes p50 0.058 GB p90 0.058 GB max 0.08 GB; peak bin p50 7.79 GB/s max 11.54; start-to-start gap p50 0.28 s p10 0.20 s
+  PCIe host->GPU (KV loads): 76.3 GB payload, mean 0.033 GB/s; 5 ms bins p50 0.021 p90 0.052 p99 0.066 max 18.902 GB/s; bins above 0.5 GB/s: 0.1%
+    bursts: 86; duration p50 10 ms p90 30 ms max 55 ms; bytes p50 0.094 GB p90 0.342 GB max 0.70 GB; peak bin p50 10.96 GB/s max 18.90; start-to-start gap p50 9.68 s p10 0.69 s
+  retrieves vs counter (90): LMCache GiB p50 0.164, its time p50 7.3 ms; counter bytes within 200 ms before the log line p50 0.105 GB, peak window p50 3.98 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 2957 operations, 5165824 tokens, 138.0 GiB; its own per-operation figure p50 9.1 GB/s
+  LMCache retrieved: 90 operations, 857088 tokens, 22.9 GiB; its own per-operation figure p50 22.9 GB/s
+  offered 556 requests; answered 556 (0 errors)
+  achieved: 0.243 requests/s, 2790 prompt tokens/s, 85 output tokens/s (answered requests over the serving window)
+  TTFT p50 7.00 s p90 47.21 p99 74.41 max 94.72; prompt tokens 6374468, vLLM-cached 1138432
+  TTFT p50 by third of the run: 4.17 s / 5.02 s / 29.54 s
+  backlog (requests sent, not yet answered): max 32; at the end of the serving window 0
+
+## normal-tool  (serving 2271 s)
+  20 ms throughput counter coverage: TX 38%, RX 38% of the serving time  (v1 sampler: totals below scale with coverage)
+  PCIe GPU->host (KV stores): 52.0 GB payload, mean 0.023 GB/s; 20 ms bins p50 0.002 p90 0.010 p99 2.882 max 3.327 GB/s; bins above 0.5 GB/s: 2.4%
+    bursts: 1046; duration p50 20 ms p90 20 ms max 60 ms; bytes p50 0.053 GB p90 0.058 GB max 0.08 GB; peak bin p50 2.57 GB/s max 3.33; start-to-start gap p50 0.47 s p10 0.21 s
+  PCIe host->GPU (KV loads): 18.8 GB payload, mean 0.008 GB/s; 20 ms bins p50 0.004 p90 0.035 p99 0.047 max 13.649 GB/s; bins above 0.5 GB/s: 0.2%
+    bursts: 75; duration p50 20 ms p90 40 ms max 60 ms; bytes p50 0.080 GB p90 0.203 GB max 0.42 GB; peak bin p50 3.97 GB/s max 13.65; start-to-start gap p50 24.21 s p10 0.51 s
+  retrieves vs counter (170): LMCache GiB p50 0.116, its time p50 5.0 ms; counter bytes within 200 ms before the log line p50 0.023 GB, peak window p50 1.09 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 3187 operations, 4937216 tokens, 131.9 GiB; its own per-operation figure p50 9.0 GB/s
+  LMCache retrieved: 170 operations, 1140480 tokens, 30.5 GiB; its own per-operation figure p50 22.5 GB/s
+  offered 1083 requests; answered 1083 (0 errors)
+  achieved: 0.477 requests/s, 4018 prompt tokens/s, 89 output tokens/s (answered requests over the serving window)
+  TTFT p50 3.64 s p90 11.38 p99 33.30 max 42.13; prompt tokens 9125323, vLLM-cached 4067840
+  TTFT p50 by third of the run: 3.31 s / 2.68 s / 4.81 s
+  backlog (requests sent, not yet answered): max 37; at the end of the serving window 0
+
+## normal-tool-v2  (serving 2281 s)
+  20 ms throughput counter coverage: TX 97%, RX 97% of the serving time
+  cumulative counter: 456157 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 192.8 GB payload, mean 0.085 GB/s; 5 ms bins p50 0.021 p90 0.032 p99 1.631 max 11.255 GB/s; bins above 0.5 GB/s: 1.2%
+    bursts: 2985; duration p50 10 ms p90 10 ms max 35 ms; bytes p50 0.058 GB p90 0.058 GB max 0.07 GB; peak bin p50 7.25 GB/s max 11.25; start-to-start gap p50 0.28 s p10 0.14 s
+  PCIe host->GPU (KV loads): 81.9 GB payload, mean 0.036 GB/s; 5 ms bins p50 0.021 p90 0.052 p99 0.067 max 19.439 GB/s; bins above 0.5 GB/s: 0.1%
+    bursts: 179; duration p50 10 ms p90 25 ms max 40 ms; bytes p50 0.072 GB p90 0.260 GB max 0.45 GB; peak bin p50 9.33 GB/s max 19.44; start-to-start gap p50 3.88 s p10 0.08 s
+  retrieves vs counter (195): LMCache GiB p50 0.123, its time p50 5.4 ms; counter bytes within 200 ms before the log line p50 0.091 GB, peak window p50 3.66 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 3156 operations, 4937216 tokens, 131.9 GiB; its own per-operation figure p50 9.0 GB/s
+  LMCache retrieved: 195 operations, 1254656 tokens, 33.5 GiB; its own per-operation figure p50 22.2 GB/s
+  offered 1083 requests; answered 1083 (0 errors)
+  achieved: 0.475 requests/s, 4001 prompt tokens/s, 88 output tokens/s (answered requests over the serving window)
+  TTFT p50 6.57 s p90 69.47 p99 94.15 max 111.73; prompt tokens 9125323, vLLM-cached 4067840
+  TTFT p50 by third of the run: 4.66 s / 4.37 s / 34.73 s
+  backlog (requests sent, not yet answered): max 62; at the end of the serving window 0
+
+## sat-alone  (serving 603 s)
+  20 ms throughput counter coverage: TX 96%, RX 96% of the serving time
+  cumulative counter: 120597 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 81.5 GB payload, mean 0.135 GB/s; 5 ms bins p50 0.022 p90 0.032 p99 5.682 max 11.365 GB/s; bins above 0.5 GB/s: 2.0%
+    bursts: 1254; duration p50 10 ms p90 10 ms max 20 ms; bytes p50 0.058 GB p90 0.058 GB max 0.06 GB; peak bin p50 7.94 GB/s max 11.36; start-to-start gap p50 0.28 s p10 0.22 s
+  PCIe host->GPU (KV loads): 18.7 GB payload, mean 0.031 GB/s; 5 ms bins p50 0.023 p90 0.048 p99 0.059 max 18.135 GB/s; bins above 0.5 GB/s: 0.0%
+    bursts: 17; duration p50 10 ms p90 20 ms max 25 ms; bytes p50 0.029 GB p90 0.201 GB max 0.27 GB; peak bin p50 5.80 GB/s max 18.14; start-to-start gap p50 20.07 s p10 1.35 s
+  retrieves vs counter (17): LMCache GiB p50 0.055, its time p50 2.7 ms; counter bytes within 200 ms before the log line p50 0.039 GB, peak window p50 1.47 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 1334 operations, 2388224 tokens, 63.8 GiB; its own per-operation figure p50 9.2 GB/s
+  LMCache retrieved: 17 operations, 96256 tokens, 2.6 GiB; its own per-operation figure p50 21.3 GB/s
+  offered 918 requests; answered 222, cancelled or never sent 696 (0 errors)
+  achieved: 0.368 requests/s, 4200 prompt tokens/s, 134 output tokens/s (answered requests over the serving window)
+  TTFT p50 122.96 s p90 151.59 p99 189.96 max 192.97; prompt tokens 2532467, vLLM-cached 189952
+  TTFT p50 by third of the run: 41.82 s / 130.95 s / 144.58 s
+  backlog (requests sent, not yet answered): max 97; at the end of the serving window 0
+
+## sat-llama  (serving 603 s)
+  20 ms throughput counter coverage: TX 96%, RX 96% of the serving time
+  cumulative counter: 120680 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 82.4 GB payload, mean 0.137 GB/s; 5 ms bins p50 0.022 p90 0.031 p99 5.778 max 11.342 GB/s; bins above 0.5 GB/s: 2.1%
+    bursts: 1282; duration p50 10 ms p90 10 ms max 20 ms; bytes p50 0.058 GB p90 0.058 GB max 0.06 GB; peak bin p50 7.81 GB/s max 11.34; start-to-start gap p50 0.28 s p10 0.22 s
+  PCIe host->GPU (KV loads): 18.5 GB payload, mean 0.031 GB/s; 5 ms bins p50 0.023 p90 0.048 p99 0.059 max 16.277 GB/s; bins above 0.5 GB/s: 0.0%
+    bursts: 15; duration p50 10 ms p90 20 ms max 20 ms; bytes p50 0.072 GB p90 0.202 GB max 0.27 GB; peak bin p50 9.31 GB/s max 16.28; start-to-start gap p50 21.35 s p10 1.58 s
+  retrieves vs counter (17): LMCache GiB p50 0.055, its time p50 2.6 ms; counter bytes within 200 ms before the log line p50 0.033 GB, peak window p50 1.46 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 1355 operations, 2432512 tokens, 65.0 GiB; its own per-operation figure p50 8.8 GB/s
+  LMCache retrieved: 17 operations, 96000 tokens, 2.6 GiB; its own per-operation figure p50 21.0 GB/s
+  offered 918 requests; answered 226, cancelled or never sent 692 (0 errors)
+  achieved: 0.375 requests/s, 4286 prompt tokens/s, 136 output tokens/s (answered requests over the serving window)
+  TTFT p50 113.47 s p90 142.85 p99 179.63 max 187.77; prompt tokens 2586080, vLLM-cached 206336
+  TTFT p50 by third of the run: 39.63 s / 126.41 s / 130.03 s
+  backlog (requests sent, not yet answered): max 92; at the end of the serving window 0
+  neighbour llama.cpp: before 34.75 tok/s, serving 28.80 tok/s -> +17.11% slower
+    time per token p50 28.7 -> 35.1 ms, p99 30.2 -> 38.1 ms, max 32.0 -> 43.3 ms
+
+## sat-opt  (serving 604 s)
+  20 ms throughput counter coverage: TX 96%, RX 96% of the serving time
+  cumulative counter: 120730 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 84.1 GB payload, mean 0.139 GB/s; 5 ms bins p50 0.022 p90 0.032 p99 5.780 max 11.543 GB/s; bins above 0.5 GB/s: 2.1%
+    bursts: 1309; duration p50 10 ms p90 10 ms max 20 ms; bytes p50 0.058 GB p90 0.058 GB max 0.06 GB; peak bin p50 7.79 GB/s max 11.54; start-to-start gap p50 0.28 s p10 0.21 s
+  PCIe host->GPU (KV loads): 18.9 GB payload, mean 0.031 GB/s; 5 ms bins p50 0.023 p90 0.049 p99 0.060 max 16.009 GB/s; bins above 0.5 GB/s: 0.0%
+    bursts: 16; duration p50 10 ms p90 25 ms max 25 ms; bytes p50 0.087 GB p90 0.202 GB max 0.27 GB; peak bin p50 10.77 GB/s max 16.01; start-to-start gap p50 25.77 s p10 2.81 s
+  retrieves vs counter (22): LMCache GiB p50 0.055, its time p50 2.6 ms; counter bytes within 200 ms before the log line p50 0.034 GB, peak window p50 1.47 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 1398 operations, 2480128 tokens, 66.2 GiB; its own per-operation figure p50 8.9 GB/s
+  LMCache retrieved: 22 operations, 102912 tokens, 2.7 GiB; its own per-operation figure p50 21.0 GB/s
+  offered 918 requests; answered 231, cancelled or never sent 687 (0 errors)
+  achieved: 0.383 requests/s, 4379 prompt tokens/s, 138 output tokens/s (answered requests over the serving window)
+  TTFT p50 106.39 s p90 132.92 p99 186.34 max 187.05; prompt tokens 2643147, vLLM-cached 217088
+  TTFT p50 by third of the run: 39.37 s / 117.57 s / 121.36 s
+  backlog (requests sent, not yet answered): max 86; at the end of the serving window 0
+  neighbour step time: before median 0.1422 s (n=303), serving 0.1423 s (n=4188) -> +0.07% slower; p99 0.1425 -> 0.1426 s, max 0.1429 -> 0.1464 s
+
+## sat-pr  (serving 604 s)
+  20 ms throughput counter coverage: TX 96%, RX 96% of the serving time
+  cumulative counter: 120707 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 82.2 GB payload, mean 0.136 GB/s; 5 ms bins p50 0.022 p90 0.031 p99 5.777 max 11.459 GB/s; bins above 0.5 GB/s: 2.1%
+    bursts: 1280; duration p50 10 ms p90 10 ms max 20 ms; bytes p50 0.058 GB p90 0.058 GB max 0.06 GB; peak bin p50 7.76 GB/s max 11.46; start-to-start gap p50 0.28 s p10 0.22 s
+  PCIe host->GPU (KV loads): 18.3 GB payload, mean 0.030 GB/s; 5 ms bins p50 0.023 p90 0.048 p99 0.059 max 16.392 GB/s; bins above 0.5 GB/s: 0.0%
+    bursts: 12; duration p50 15 ms p90 20 ms max 25 ms; bytes p50 0.121 GB p90 0.202 GB max 0.27 GB; peak bin p50 14.34 GB/s max 16.39; start-to-start gap p50 14.83 s p10 3.69 s
+  retrieves vs counter (13): LMCache GiB p50 0.178, its time p50 7.8 ms; counter bytes within 200 ms before the log line p50 0.124 GB, peak window p50 2.74 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 1364 operations, 2425856 tokens, 64.8 GiB; its own per-operation figure p50 8.9 GB/s
+  LMCache retrieved: 13 operations, 93696 tokens, 2.5 GiB; its own per-operation figure p50 22.6 GB/s
+  offered 918 requests; answered 226, cancelled or never sent 692 (0 errors)
+  achieved: 0.374 requests/s, 4235 prompt tokens/s, 135 output tokens/s (answered requests over the serving window)
+  TTFT p50 117.22 s p90 143.69 p99 181.97 max 184.31; prompt tokens 2556266, vLLM-cached 194048
+  TTFT p50 by third of the run: 41.16 s / 124.25 s / 135.27 s
+  backlog (requests sent, not yet answered): max 94; at the end of the serving window 0
+  neighbour step time: before median 1.0558 s (n=56), serving 1.0542 s (n=565) -> -0.15% slower; p99 1.1085 -> 1.0971 s, max 1.1085 -> 1.1113 s
+
+## sat-reader  (serving 603 s)
+  20 ms throughput counter coverage: TX 96%, RX 96% of the serving time
+  cumulative counter: 120618 bins of 5 ms (100% of the serving time)
+  PCIe GPU->host (KV stores): 84.8 GB payload, mean 0.141 GB/s; 5 ms bins p50 0.022 p90 0.032 p99 5.784 max 11.542 GB/s; bins above 0.5 GB/s: 2.1%
+    bursts: 1305; duration p50 10 ms p90 10 ms max 30 ms; bytes p50 0.058 GB p90 0.058 GB max 0.07 GB; peak bin p50 7.73 GB/s max 11.54; start-to-start gap p50 0.27 s p10 0.21 s
+  PCIe host->GPU (KV loads): 19.1 GB payload, mean 0.032 GB/s; 5 ms bins p50 0.023 p90 0.049 p99 0.060 max 15.884 GB/s; bins above 0.5 GB/s: 0.0%
+    bursts: 15; duration p50 10 ms p90 20 ms max 25 ms; bytes p50 0.087 GB p90 0.202 GB max 0.27 GB; peak bin p50 9.70 GB/s max 15.88; start-to-start gap p50 16.10 s p10 0.88 s
+  retrieves vs counter (16): LMCache GiB p50 0.164, its time p50 7.1 ms; counter bytes within 200 ms before the log line p50 0.091 GB, peak window p50 4.34 GB/s, windows above 1 GB/s p50 1 (x 20 ms)
+  LMCache stored: 1411 operations, 2499328 tokens, 66.8 GiB; its own per-operation figure p50 9.1 GB/s
+  LMCache retrieved: 16 operations, 100608 tokens, 2.7 GiB; its own per-operation figure p50 22.8 GB/s
+  offered 918 requests; answered 237, cancelled or never sent 681 (0 errors)
+  achieved: 0.393 requests/s, 4450 prompt tokens/s, 142 output tokens/s (answered requests over the serving window)
+  TTFT p50 106.17 s p90 144.46 p99 178.92 max 181.68; prompt tokens 2683623, vLLM-cached 220160
+  TTFT p50 by third of the run: 37.31 s / 114.72 s / 121.72 s
+  backlog (requests sent, not yet answered): max 88; at the end of the serving window 0
+  neighbour reader: before 100.36 GiB/s, serving 100.29 GiB/s -> -0.07%; worst 100 ms slices: p1 79.93 -> 79.93, min 79.92 -> 68.75 GiB/s
+    100 ms slices with a store burst (>1 GB/s): 100.21 GiB/s (n=1239); without (<0.1): 100.33 (n=4508) -> -0.12%
+

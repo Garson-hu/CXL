@@ -4,7 +4,9 @@ NVML / calibration factor), its bursts, what LMCache says it stored / retrieved,
 (serving window vs the 60 s BEFORE window), plus, for the 100 ms reader, its bandwidth in 100 ms slices with and without
 a KV store burst. Writes <dir>/summary.txt. (2026-10-10)
 usage: analyze_layer1.py <dir>"""
-import glob, os, re, statistics as st, sys
+import glob, gzip, os, re, statistics as st, sys
+def opn(path, *a, **k):                      # raw files over 500 kB are stored gzip-compressed in the repo
+    return open(path, *a, **k) if os.path.exists(path) else gzip.open(path + ".gz", "rt", errors=k.get("errors"))
 
 D = sys.argv[1]
 TXF, RXF = 1.12, 1.09                     # NVML MB/s per payload MB/s (feasibility/pcie-calibration.txt)
@@ -21,7 +23,7 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
     say(f"## {tag}  (serving {span:.0f} s)")
     # --- PCIe
     P = {"TX": [], "RX": []}; C = []
-    for l in open(os.path.join(D, f"{tag}-pcie.txt")):
+    for l in opn(os.path.join(D, f"{tag}-pcie.txt")):
         if l.startswith("P "):
             _, d, t, v = l.split(); t = int(t)
             if s0 <= t <= s1: P[d].append((t, float(v) / 1000 / (TXF if d == "TX" else RXF)))
@@ -55,7 +57,7 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
                 f"start-to-start gap p50 {q(gaps, .5):.2f} s p10 {q(gaps, .1):.2f} s")
     # --- LMCache log
     stv, rtv = [], []
-    for l in open(os.path.join(D, f"{tag}-server.log"), errors="replace"):
+    for l in opn(os.path.join(D, f"{tag}-server.log"), errors="replace"):
         l = re.sub(r"\x1b\[[0-9;]*m", "", l)
         m = re.search(r"Stored (\d+) out of total (\d+) tokens\. size: ([\d.]+) GB, cost ([\d.]+) ms, throughput: ([\d.]+) GB/s", l)
         if m: stv.append((int(m[1]), float(m[3]), float(m[4]), float(m[5])))
@@ -68,7 +70,7 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
             m = re.match(r"\[(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d,\d{3})\]", line)
             return int((datetime.datetime.strptime(m[1], "%Y-%m-%d %H:%M:%S,%f").timestamp() + off) * 1e9) if m else None
         evs = []
-        for l in open(os.path.join(D, f"{tag}-server.log"), errors="replace"):
+        for l in opn(os.path.join(D, f"{tag}-server.log"), errors="replace"):
             l = re.sub(r"\x1b\[[0-9;]*m", "", l)
             m = re.search(r"Retrieved (\d+) out of (\d+) required tokens.*?size: ([\d.]+) gb, cost ([\d.]+) ms", l, re.I)
             if m and mono_of(l): evs.append((mono_of(l), float(m[3]), float(m[4])))
@@ -86,12 +88,12 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
         else: say(f"  LMCache {name}: none")
     # --- client
     R = []
-    for l in open(os.path.join(D, f"{tag}-client.txt")):
+    for l in opn(os.path.join(D, f"{tag}-client.txt")):
         if l.startswith("REQ "):
             f = l.split(); R.append(dict(send=int(f[3]), first=int(f[4]), end=int(f[5]), ptok=int(f[6]), otok=int(f[7]), cached=int(f[8])))
     ok = [r for r in R if r["first"]]
     ttft = [(r["first"] - r["send"]) / 1e9 for r in ok]
-    ctext = open(os.path.join(D, f"{tag}-client.txt")).read()
+    ctext = opn(os.path.join(D, f"{tag}-client.txt")).read()
     errs = ctext.count("\nERR "); offered = int(re.search(r": (\d+) requests", ctext)[1])
     cancelled = re.search(r"(\d+) requests cancelled or never sent", ctext)
     done = [r for r in R if r["end"] and r["end"] <= s1]
@@ -110,8 +112,8 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
     if back: say(f"  backlog (requests sent, not yet answered): max {mx}; at the end of the serving window {cur}")
     # --- neighbour
     nf = os.path.join(D, f"{tag}-neighbor.txt")
-    if os.path.exists(nf) and "before_start" in M:
-        b0, b1 = M["before_start"], M["before_end"]; txt = open(nf).read()
+    if (os.path.exists(nf) or os.path.exists(nf + ".gz")) and "before_start" in M:
+        b0, b1 = M["before_start"], M["before_end"]; txt = opn(nf).read()
         if re.search(r"^T \d+ [\d.]+$", txt, re.M) and "TOK" not in txt:            # reader: GiB/s every 100 ms
             s = [(int(a), float(b)) for a, b in re.findall(r"^T (\d+) ([\d.]+)$", txt, re.M)]
             bef = [v for t, v in s if b0 <= t < b1]; dur = [v for t, v in s if s0 <= t < s1]
