@@ -166,6 +166,23 @@ LULESH version. Each step needs explicit user approval before execution.
 
 ## Session Log
 
+### 2026-10-10/11 (session 30) — topology, LMCache KV traffic in two layers, Optane
+
+- Topology closed: CXL writes cost a DRAM reader 0–2% from an unrelated CCD, ≈ DRAM writes per byte from the paired
+  CCD (4+5), and are worse than DRAM writes from the same CCD (MIKU's effect). Earlier campaigns were in the safe
+  placement. User: keep it a characterization result, no automatic placement mechanism for now.
+- LMCache KV traffic closed (`2026-10-10-lmcache-kv-traffic.md`). Layer 1 (real vLLM + LMCache, 1.5B on the 4060 Ti):
+  the card carries ~0.08–0.2× of the trace; stores are 2048-token bursts of 0.058 GB at ~9–10 GB/s (LMCache's figure
+  confirmed once the PCIe sampler read NVML's cumulative counters every ~1.4 ms); 0.065–0.14 GB/s on average; no
+  neighbour moves (llama.cpp's raw 17% was its own context-growth drift; corrected +0.1%). Layer 2 (host memory
+  traffic emulation, kvemu, 8B/70B × 1/4/8×): DRAM tier costs neighbours +1–4% up to +17–63% (tails +83%); CXL tier
+  ≤ 1.7% but cannot keep up from 70B 4× and queues bursts — the case for the DRAM loan.
+- Optane control (fixed: PM node detection, PM's socket) closed: PM writes hurt same-socket DRAM readers more per byte
+  than DRAM writes; plain stores to PM cut a reader from 39.9 to 1.9 GiB/s.
+- Incidents: the session restart killed background jobs (now detached with setsid); the c28 Slurm allocation's 3-day
+  limit (2026-10-10 18:51) killed the overnight chain — the current allocation 302913 ends 2026-10-13 18:51. Raw files
+  > 500 kB are stored gzip-compressed.
+
 ### 2026-10-07/09 (session 29) — read cost, group-meeting deck, the advisor's unified-pool proposal, topology pilot
 
 - 2026-10-07: read cost of CXL vs DRAM measured (`2026-10-07-read-cost.md`); 27-slide group-meeting deck in plain
