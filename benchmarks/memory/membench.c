@@ -69,6 +69,7 @@ struct opts {
     int verify_placement;
     int strict_placement;
     int cpu_offset;           /* first node-0 CPU index used for thread 0 */
+    int cpu_node;             /* node whose CPUs the threads run on (default 0; 2026-10-11, for 2-socket machines) */
     const char *tag;          /* CSV label */
     int write_threads;        /* duplex: how many of --threads are NT writers */
     int write_node;           /* duplex: node for writer buffers (-1 = --node) */
@@ -489,7 +490,7 @@ static void usage(const char *argv0) {
     fprintf(stderr,
 "usage: %s --node=N --mode=MODE [--size=BYTES[K|M|G|T]] [--threads=T]\n"
 "          [--rw=R:W] [--duration=SEC] [--tag=NAME] [--csv]\n"
-"          [--verify-placement] [--strict-placement] [--cpu-offset=N]\n"
+"          [--verify-placement] [--strict-placement] [--cpu-offset=N] [--cpu-node=N]\n"
 "          [--write-threads=W] [--write-node=N]\n"
 "          [--aggressor-kind=read|write-nt] [--aggressor-node=N]\n"
 "  modes: latency stream-read stream-write random-read mixed loaded-latency\n"
@@ -535,6 +536,7 @@ int main(int argc, char **argv) {
         else if (!strncmp(a, "--tag=", 6))         o.tag = a + 6;
         else if (!strcmp(a, "--csv"))              o.csv = 1;
         else if (!strncmp(a, "--cpu-offset=", 13)) o.cpu_offset = atoi(a + 13);
+        else if (!strncmp(a, "--cpu-node=", 11)) o.cpu_node = atoi(a + 11);
         else if (!strncmp(a, "--write-threads=", 16)) o.write_threads = atoi(a + 16);
         else if (!strncmp(a, "--write-node=", 13))    o.write_node = atoi(a + 13);
         else if (!strncmp(a, "--aggressor-node=", 17)) o.aggressor_node = atoi(a + 17);
@@ -562,14 +564,14 @@ int main(int argc, char **argv) {
 
     /* Choose CPUs from the CPU-bearing node (node 0 on c28). */
     struct bitmask *cpus_node0 = numa_allocate_cpumask();
-    if (numa_node_to_cpus(0, cpus_node0) != 0) die("numa_node_to_cpus(0) failed");
+    if (numa_node_to_cpus(o.cpu_node, cpus_node0) != 0) die("numa_node_to_cpus(cpu_node) failed");
     int cpu_max = numa_num_configured_cpus();
     int *cpu_list = malloc(sizeof(int) * cpu_max);
     int cpu_count = 0;
     for (int c = 0; c < cpu_max; c++) {
         if (numa_bitmask_isbitset(cpus_node0, c)) cpu_list[cpu_count++] = c;
     }
-    if (cpu_count == 0) die("no CPUs on node 0?");
+    if (cpu_count == 0) die("no CPUs on the CPU node?");
 
     pthread_t *th = calloc(o.threads, sizeof(pthread_t));
     struct thread_ctx *ctx = calloc(o.threads, sizeof(struct thread_ctx));

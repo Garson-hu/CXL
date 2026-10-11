@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "<stdin>", line 9, in <listcomp>
+IndexError: list index out of range
+DRAM node 0, PM node 
+=== rep 1 19:24:50 ===
+=== rep 2 19:27:30 ===
+=== rep 3 19:30:09 ===
+DONE 19:32:49
