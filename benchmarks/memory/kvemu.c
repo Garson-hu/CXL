@@ -13,7 +13,9 @@
  * backlog are logged per 20 ms window.
  *
  * usage: kvemu <trace.jsonl> <block_KiB> <t0_s> <t1_s> <speed> <capacity_GiB> <dram|cxl> <workers> <first_cpu>
- *              [chunk_blocks=4] [link_GBps=2.9] [prefill_tok_s=4600]
+ *              [chunk_blocks=4] [link_GBps=2.9] [prefill_tok_s=4600] [store_cap_GBps=0]
+ *   store_cap_GBps > 0: a global cap on all stores together (2026-10-11, the throttled-DRAM baseline): every 2 MiB piece
+ *   of every store starts no earlier than the previous one + piece / cap, so the aggregate never exceeds the cap.
  *   cxl = /dev/dax0.0 (cards c1+e1) from offset 0; dram = anonymous memory with huge pages.
  *   workers: worker i runs on cpu first_cpu + i%32 (+128 for i in 32..63, the SMT siblings); each block is one job.
  * output: "W <mono_ns> <target_GBps> <store_GBps> <load_GBps> <backlog_GB> <max_late_ms>" every 20 ms, then "S ..." summary.
@@ -42,7 +44,8 @@ typedef struct { uint64_t due_ns; uint32_t slot, nblk; uint8_t store; } job_t;  
 static job_t *jobs; static size_t njobs, jcap;
 static _Atomic size_t next_job;                    /* workers take jobs in due order */
 static char *tier, *src; static size_t bsz;
-static double link_Bps;
+static double link_Bps, cap_Bps;
+static _Atomic uint64_t cap_clock;
 static _Atomic uint64_t st_bytes, ld_bytes, late_max_ns;
 static volatile int stop;
 static volatile long long sink;
@@ -80,6 +83,11 @@ static uint32_t take_slot(uint64_t h) {    /* a free slot, or the LRU one (evict
 static void copy_paced(char *dst, size_t len, uint64_t t0) {           /* nt-store from the cache-resident source */
     for (size_t off = 0; off < len && !stop; off += PIECE) {
         size_t n = len - off < PIECE ? len - off : PIECE;
+        if (cap_Bps > 0) {                                                  /* global cap: reserve a start time for this piece */
+            uint64_t dur = (uint64_t)(n / cap_Bps * 1e9), t = now(), old = atomic_load(&cap_clock), st;
+            do { st = old > t ? old : t; } while (!atomic_compare_exchange_weak(&cap_clock, &old, st + dur));
+            if (st > t) { struct timespec d = { (time_t)((st - t) / 1000000000ull), (long)((st - t) % 1000000000ull) }; nanosleep(&d, NULL); }
+        }
         for (size_t i = 0; i < n; i += 32) _mm256_stream_si256((__m256i *)(dst + off + i), _mm256_load_si256((const __m256i *)(src + ((off + i) & (PIECE - 1)))));
         _mm_sfence(); atomic_fetch_add(&st_bytes, n);
         uint64_t want = t0 + (uint64_t)((off + n) / link_Bps * 1e9), t = now();
@@ -114,7 +122,7 @@ int main(int argc, char **argv) {
     if (argc < 10) { fprintf(stderr, "usage: see the header\n"); return 2; }
     const char *trace = argv[1]; bsz = (size_t)atol(argv[2]) << 10; double t0s = atof(argv[3]), t1s = atof(argv[4]), speed = atof(argv[5]);
     double cap_gib = atof(argv[6]); int use_cxl = !strcmp(argv[7], "cxl"); int W = atoi(argv[8]), cpu0 = atoi(argv[9]);
-    int chunk = argc > 10 ? atoi(argv[10]) : 4; link_Bps = (argc > 11 ? atof(argv[11]) : 2.9) * 1e9; double pf = argc > 12 ? atof(argv[12]) : 4600;
+    int chunk = argc > 10 ? atoi(argv[10]) : 4; link_Bps = (argc > 11 ? atof(argv[11]) : 2.9) * 1e9; double pf = argc > 12 ? atof(argv[12]) : 4600; cap_Bps = (argc > 13 ? atof(argv[13]) : 0) * 1e9;
     nslots = (uint32_t)(cap_gib * GiB / bsz); nfree = nslots; size_t tier_bytes = (size_t)nslots * bsz;
     slots = calloc(nslots, sizeof *slots); for (hcap = 1; hcap < 2ull * nslots; hcap <<= 1) {} htab = malloc(hcap * 4); memset(htab, 0xff, hcap * 4);
     if (use_cxl) {
@@ -162,8 +170,8 @@ int main(int argc, char **argv) {
             if (hi > lo) target[bi] += (hi - lo) * rate;
         }
     }
-    printf("# kvemu %s [%g,%g) s at %gx: %lu requests, %zu jobs, block %zu KiB, tier %s %.1f GiB (%u slots), %d workers on cpus %d.., chunk %d blocks, link %.2f GB/s, prefill %.0f tok/s\n",
-           trace, t0s, t1s, speed, (unsigned long)nreq, njobs, bsz >> 10, use_cxl ? "cxl(dax0.0)" : "dram", cap_gib, nslots, W, cpu0, chunk, link_Bps / 1e9, pf);
+    printf("# kvemu %s [%g,%g) s at %gx: %lu requests, %zu jobs, block %zu KiB, tier %s %.1f GiB (%u slots), %d workers on cpus %d.., chunk %d blocks, link %.2f GB/s, prefill %.0f tok/s, store cap %.1f GB/s\n",
+           trace, t0s, t1s, speed, (unsigned long)nreq, njobs, bsz >> 10, use_cxl ? "cxl(dax0.0)" : "dram", cap_gib, nslots, W, cpu0, chunk, link_Bps / 1e9, pf, cap_Bps / 1e9);
     printf("# planned: store %.1f GB, load %.1f GB over %.1f s -> %.2f + %.2f GB/s average; block hits %lu, stored blocks %lu\n",
            tot_st / 1e9, tot_ld / 1e9, span, tot_st / 1e9 / span, tot_ld / 1e9 / span, (unsigned long)hits, (unsigned long)misses);
     fflush(stdout);
