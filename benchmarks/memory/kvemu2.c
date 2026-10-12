@@ -17,6 +17,8 @@
  *   cxlfirst    every new block to CXL; eviction within CXL (DRAM stays empty: the per-tier capacity loss)
  *   borrowtier  CXL unless the running cxlpathd lends DRAM (n of 16 new blocks, as cxlp_policy_pick); per-tier LRU
  *   borrowglob  same placement; eviction takes the GLOBAL least-recently-used block until the target tier has room
+ *   borrowmig   borrowtier + MIGRATION (2026-10-12): a block read from CXL is MOVED to DRAM (copy, then its CXL slot is
+ *               freed) while the daemon reports DRAM calm (dram_ok), at most 8 moves in flight; the DRAM victim is dropped.
  * The borrow policies attach to a cxlpath store (<store>), read the loan share the daemon publishes and report every
  * copy to the daemon's ledger (cxlp_account), so the existing controller decides exactly as for a checkpoint writer.
  *
@@ -48,8 +50,8 @@ static uint64_t now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t
 static void pin_cpu(int c) { cpu_set_t s; CPU_ZERO(&s); CPU_SET(c, &s); pthread_setaffinity_np(pthread_self(), sizeof s, &s); }
 static void sleep_until(uint64_t t) { uint64_t n = now(); if (t > n) { struct timespec d = { (time_t)((t - n) / 1000000000ull), (long)((t - n) % 1000000000ull) }; nanosleep(&d, NULL); } }
 
-enum { P_DRAM, P_CXL, P_LMCACHE, P_SPLIT, P_CXLFIRST, P_BORROWTIER, P_BORROWGLOB };
-static const char *pnames[] = { "dram", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob" };
+enum { P_DRAM, P_CXL, P_LMCACHE, P_SPLIT, P_CXLFIRST, P_BORROWTIER, P_BORROWGLOB, P_BORROWMIG };
+static const char *pnames[] = { "dram", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob", "borrowmig" };
 static int policy; static double watermark;
 
 /* ---------------- slots, LRU lists, hash ---------------- */
@@ -115,7 +117,7 @@ static uint32_t insert(uint64_t h, int warm) {                /* NIL if no slot 
         { uint32_t s = place(h, t, warm);
           while ((double)(occ[0] + occ[1]) > watermark * nslots && evict_global()) {}
           return s; }
-    default: {                                                /* borrowtier / borrowglob */
+    default: {                                                /* borrowtier / borrowglob / borrowmig */
         uint32_t sp = warm ? 0 : spill_now(); t = (br4((uint32_t)nclaim++) < sp && nslot[0]) ? 0 : 1;
         if (t == 0) borrowed_blocks++;
         if (policy == P_BORROWGLOB) { while (!nfree[t]) if (!evict_global()) return NIL; return place(h, t, warm); }
@@ -125,7 +127,7 @@ static uint32_t insert(uint64_t h, int warm) {                /* NIL if no slot 
 }
 
 /* ---------------- jobs ---------------- */
-typedef struct { uint64_t due; uint64_t hash; uint32_t slot; uint8_t store; } job_t;
+typedef struct { uint64_t due; uint64_t hash; uint32_t slot; uint8_t store; uint32_t dst; } job_t;   /* store 2 = move slot -> dst */
 static job_t *heap; static size_t nheap, hcapj; static pthread_mutex_t hm = PTHREAD_MUTEX_INITIALIZER; static pthread_cond_t hc = PTHREAD_COND_INITIALIZER;
 static void hpush(job_t j) {
     pthread_mutex_lock(&hm);
@@ -139,10 +141,12 @@ static job_t hpop_locked(void) {
     if (nheap) heap[i] = last; return top;
 }
 static double link_Bps, cap_Bps; static _Atomic uint64_t cap_clock;
-static _Atomic uint64_t st_bytes[2], ld_bytes, late_max_ns, busy_workers; static volatile int stop, dispatch_done;
+static _Atomic uint64_t ld_bytes, late_max_ns, busy_workers; static volatile int stop, dispatch_done;
 static volatile long long sink; static char *src;
 static uint64_t t_start;
-static void paced_store(char *dst, uint64_t t0, int dev) {
+static _Atomic uint64_t st_bytes[2];
+static _Atomic uint64_t n_moves, n_moves_aborted, mv_bytes; static _Atomic uint32_t moves_inflight;
+static void paced_store(char *dst, uint64_t t0, int dev, int tier) {
     for (size_t off = 0; off < bsz; off += PIECE) {
         uint64_t p0 = now();
         size_t n = bsz - off < PIECE ? bsz - off : PIECE;
@@ -151,6 +155,7 @@ static void paced_store(char *dst, uint64_t t0, int dev) {
         for (size_t i = 0; i < n; i += 32) _mm256_stream_si256((__m256i *)(dst + off + i), _mm256_load_si256((const __m256i *)(src + ((off + i) & (PIECE - 1)))));
         _mm_sfence();
         if (dev >= 0) cxlp_account(dev, 0, n, now() - p0);   /* per 2 MiB piece, as the cxlpath writers report */
+        atomic_fetch_add(&st_bytes[tier], n);                 /* per piece, so 20 ms rates are right (2026-10-12) */
         sleep_until(t0 + (uint64_t)((off + n) / link_Bps * 1e9));
     }
 }
@@ -175,14 +180,31 @@ static void *worker(void *a) {
         }
         job_t j = hpop_locked(); atomic_fetch_add(&busy_workers, 1); pthread_mutex_unlock(&hm);
         uint64_t t0 = now(), late = t0 - j.due, m = atomic_load(&late_max_ns); while (late > m && !atomic_compare_exchange_weak(&late_max_ns, &m, late)) {}
-        if (j.store) {                                         /* choose slot and tier NOW (loan as of now) */
+        if (j.store == 1) {                                    /* choose slot and tier NOW (loan as of now) */
             pthread_mutex_lock(&cm); pend_del(j.hash);
             uint32_t sl = insert(j.hash, 0); if (sl == NIL) n_noslot++;
             pthread_mutex_unlock(&cm);
             if (sl != NIL) {
                 int t = tier_of(sl); uint64_t c0 = now();
-                paced_store(addr_of(sl), c0, attached ? devidx[t] : -1); atomic_store(&S[sl].ready, 1); atomic_fetch_add(&st_bytes[t], bsz);
+                paced_store(addr_of(sl), c0, attached ? devidx[t] : -1, t); atomic_store(&S[sl].ready, 1);
             }
+        } else if (j.store == 2) {                             /* move CXL slot -> DRAM slot: copy, then switch and free */
+            const char *sp = addr_of(j.slot); char *dp = addr_of(j.dst);
+            for (size_t off = 0; off < bsz; off += PIECE) {
+                for (size_t i = 0; i < PIECE && off + i < bsz; i += 32) _mm256_stream_si256((__m256i *)(dp + off + i), _mm256_stream_load_si256((__m256i *)(sp + off + i)));
+                _mm_sfence(); atomic_fetch_add(&st_bytes[0], PIECE); sleep_until(t0 + (uint64_t)((off + PIECE) / link_Bps * 1e9));
+            }
+            atomic_fetch_add(&mv_bytes, bsz);
+            uint64_t w0 = now(); while (atomic_load(&S[j.slot].readers) > 1 && now() - w0 < 50000000ull) { struct timespec d = { 0, 200000 }; nanosleep(&d, NULL); }
+            pthread_mutex_lock(&cm);
+            atomic_fetch_sub(&S[j.slot].readers, 1);                /* our own pin */
+            if (atomic_load(&S[j.slot].readers) == 0 && S[j.slot].used && S[j.slot].hash == j.hash) {
+                uint32_t src = j.slot, dst = j.dst;
+                g_unlink(src); t_unlink(src); S[src].used = 0; occ[1]--; freel[1][nfree[1]++] = src;
+                S[dst].hash = j.hash; S[dst].used = 1; atomic_store(&S[dst].readers, 0); atomic_store(&S[dst].ready, 1);
+                htab[hfind(j.hash)] = dst; g_push(dst); t_push(dst); occ[0]++; atomic_fetch_add(&n_moves, 1);
+            } else { S[j.dst].used = 0; freel[0][nfree[0]++] = j.dst; atomic_fetch_add(&n_moves_aborted, 1); }
+            pthread_mutex_unlock(&cm); atomic_fetch_sub(&moves_inflight, 1);
         } else { paced_load(addr_of(j.slot), t0); atomic_fetch_sub(&S[j.slot].readers, 1); atomic_fetch_add(&ld_bytes, bsz); }
         atomic_fetch_sub(&busy_workers, 1);
     }
@@ -238,7 +260,7 @@ static char *map_region(int t, size_t bytes) {
 int main(int argc, char **argv) {
     if (argc < 15) { fprintf(stderr, "usage: see the header of kvemu2.c\n"); return 2; }
     const char *trace = argv[1]; bsz = (size_t)atol(argv[2]) << 10; double t0s = atof(argv[3]), t1s = atof(argv[4]), speed = atof(argv[5]);
-    policy = -1; for (int i = 0; i < 7; i++) if (!strcmp(argv[6], pnames[i])) policy = i;
+    policy = -1; for (int i = 0; i < 8; i++) if (!strcmp(argv[6], pnames[i])) policy = i;
     if (policy < 0) { fprintf(stderr, "unknown policy %s\n", argv[6]); return 2; }
     double dram_gib = atof(argv[7]), cxl_gib = atof(argv[8]); watermark = atof(argv[9]);
     int W = atoi(argv[10]), cpu0 = atoi(argv[11]), chunk = atoi(argv[12]); link_Bps = atof(argv[13]) * 1e9; double pf = atof(argv[14]);
@@ -298,7 +320,15 @@ int main(int argc, char **argv) {
             size_t hi = hfind(h[k]); if (htab[hi] == NIL) break;
             uint32_t s = htab[hi]; if (!atomic_load(&S[s].ready)) break;
             touch(s); atomic_fetch_add(&S[s].readers, 1); n_hit++; n_hit_t[tier_of(s)]++;
-            hpush((job_t){ t_start + arr + (uint64_t)k * per_blk, 0, s, 0 }); offer(arr + (uint64_t)k * per_blk);
+            if (policy == P_BORROWMIG && tier_of(s) == 1 && nslot[0] && attached && cxlp_policy_daemon_alive() && atomic_load(&POL->dram_ok)
+                && atomic_load(&moves_inflight) < 8) {             /* move this reused block into DRAM, the DRAM LRU victim is dropped */
+                if (nfree[0] || evict_tier(0)) {
+                    uint32_t d = freel[0][--nfree[0]]; S[d].used = 1; atomic_store(&S[d].ready, 0);   /* reserved: not in hash or lists */
+                    atomic_fetch_add(&S[s].readers, 1); atomic_fetch_add(&moves_inflight, 1);
+                    hpush((job_t){ t_start + arr + (uint64_t)(k + 1) * per_blk, h[k], s, 2, d });
+                }
+            }
+            hpush((job_t){ t_start + arr + (uint64_t)k * per_blk, 0, s, 0, 0 }); offer(arr + (uint64_t)k * per_blk);
         }
         uint64_t comp0 = arr + (uint64_t)k * per_blk;
         for (uint32_t i = k; i < n; i++) {                     /* recomputed: store blocks the cache does not have */
@@ -308,7 +338,7 @@ int main(int argc, char **argv) {
             pend_add(h[i]);
             uint32_t c = (i - k) / chunk, j = (i - k) % chunk; n_stored++;
             uint64_t due = comp0 + (uint64_t)((c + 1) * chunk * 512.0 / pf * 1e9) + (uint64_t)j * per_blk;
-            hpush((job_t){ t_start + due, h[i], NIL, 1 }); offer(due);
+            hpush((job_t){ t_start + due, h[i], NIL, 1, 0 }); offer(due);
         }
         pthread_mutex_unlock(&cm);
     }
@@ -323,6 +353,7 @@ int main(int argc, char **argv) {
            (unsigned long)n_req, (unsigned long)n_access, (unsigned long)reuse_acc, (unsigned long)n_hit, (unsigned long)n_hit_t[0], (unsigned long)n_hit_t[1],
            reuse_acc ? (double)n_hit / reuse_acc : 0, (unsigned long)n_pending, (unsigned long)n_stored, (unsigned long)n_nostore, (unsigned long)n_noslot,
            (unsigned long)evictions, (unsigned long)borrowed_blocks);
+    printf("S moves %lu moves_aborted %lu moved_GB %.2f\n", (unsigned long)n_moves, (unsigned long)n_moves_aborted, atomic_load(&mv_bytes) / 1e9);
     printf("S wall_s %.1f stored_dram_GB %.2f stored_cxl_GB %.2f loaded_GB %.2f occupancy_mean_dram_GiB %.1f occupancy_mean_cxl_GiB %.1f capacity_GiB %.1f utilization %.3f gave_up %d\n",
            wall, atomic_load(&st_bytes[0]) / 1e9, atomic_load(&st_bytes[1]) / 1e9, atomic_load(&ld_bytes) / 1e9,
            occ_n ? occ_sum[0] / occ_n * bsz / GiB : 0, occ_n ? occ_sum[1] / occ_n * bsz / GiB : 0, (double)nslots * bsz / GiB,

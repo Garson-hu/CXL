@@ -26,7 +26,8 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
              offered=st.mean(off), store_dram=st.mean(sd), store_cxl=st.mean(sc), load=st.mean(ld), dram_peak20=max(sd), dram_peak1s=max(sec(sd)) if len(sd) >= 50 else max(sd),
              backlog_max=max(bl), late_max=max(lt), hit_share=float(S1["hit_share_of_reuse"]), hits=int(S1["hits"]), pending=int(S1["pending_misses"]),
              util=float(S2["utilization"]), occ_dram=float(S2["occupancy_mean_dram_GiB"]), occ_cxl=float(S2["occupancy_mean_cxl_GiB"]), cap=float(S2["capacity_GiB"]),
-             loan=st.mean(sp), borrowed=int(S1["borrowed"]), slow=float("nan"), tail=float("nan"))
+             loan=st.mean(sp), borrowed=int(S1["borrowed"]), slow=float("nan"), tail=float("nan"),
+             moved_GB=float(re.search(r"moved_GB ([\d.]+)", emu)[1]) if "moved_GB" in emu else 0.0)
     nf = f"{D}/{tag}-neighbor.txt"
     if os.path.exists(nf) and "before_start" in M:
         txt = rd(nf); b0, b1 = M["before_start"], M["before_end"]
@@ -37,24 +38,24 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
         else:
             s = [(int(t), float(v)) for t, v in re.findall(r"^T (\d+) ([\d.]+)$", txt, re.M)]
             bef = [v for t, v in s if b0 <= t < b1]; dur = [v for t, v in s if start <= t < end]
-            r["slow"] = 100 * (1 - st.mean(dur) / st.mean(bef)); r["tail"] = 100 * (1 - q(dur, .01) / st.mean(bef))
+            r["slow"] = 100 * (1 - st.mean(dur) / st.mean(bef)); r["tail"] = 100 * (1 - q(dur, .01) / q(bef, .01))   # worst 1% of 100 ms slices, during vs before
     rows.append(r)
 keys = list(rows[0].keys()) if rows else []
 with open(f"{D}/summary.csv", "w") as f:
     f.write(",".join(keys) + "\n")
     for r in rows: f.write(",".join(f"{r[k]:.4f}" if isinstance(r[k], float) else str(r[k]) for k in keys) + "\n")
-POL = ["dram", "dramcap48", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob"]
+POL = ["dram", "dramcap48", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob", "borrowmig"]
 out = open(f"{D}/summary.txt", "w")
 def say(s=""): print(s); out.write(s + "\n")
 for model, speed in (("8b", "4x"), ("8b", "8x"), ("70b", "4x")):
     say(f"## {model} {speed}")
-    say(f"  {'policy':11s} {'offered':>7s} {'DRAM wr':>7s} {'CXL wr':>7s} {'DRAM pk':>7s} {'backlog':>8s} {'late ms':>8s} {'hit':>6s} {'pend':>5s} {'util':>5s} {'DRAM GiB':>8s} {'loan':>5s} | reader slow/p1 | Adam slow/p99")
+    say(f"  {'policy':11s} {'offered':>7s} {'DRAM wr':>7s} {'CXL wr':>7s} {'backlog':>8s} {'late ms':>8s} {'hit':>6s} {'pend':>5s} {'util':>5s} {'DRAM GiB':>8s} | reader: slow/p1 DRAMwr loan hit | Adam: slow/p99 DRAMwr loan hit")
     for p in POL:
         base = {n: next((r for r in rows if r["neighbor"] == n and r["policy"] == p and r["model"] == model and r["speed"] == speed), None) for n in ("none", "reader", "opt")}
         r = base["none"]
         if not r: continue
         rd_ = base["reader"]; op = base["opt"]
-        nb = (f" {rd_['slow']:+5.1f}/{rd_['tail']:+5.1f}" if rd_ else "    -     ") + "    | " + (f"{op['slow']:+5.1f}/{op['tail']:+5.1f}" if op else "   -")
-        say(f"  {p:11s} {r['offered']:7.1f} {r['store_dram']:7.1f} {r['store_cxl']:7.1f} {r['dram_peak20']:7.1f} {r['backlog_max']:8.1f} {r['late_max']:8.0f} {r['hit_share']:6.3f} {r['pending']:5d} {r['util']:5.2f} {r['occ_dram']:8.1f} {r['loan']:5.2f} |{nb}")
+        f = lambda x: f"{x['slow']:+5.1f}/{x['tail']:+5.1f} {x['store_dram']:5.1f} {x['loan']:4.2f} {x['hit_share']:.3f} mv{x['moved_GB']:5.0f}" if x else "-"
+        say(f"  {p:11s} {r['offered']:7.1f} {r['store_dram']:7.1f} {r['store_cxl']:7.1f} {r['backlog_max']:8.1f} {r['late_max']:8.0f} {r['hit_share']:6.3f} {r['pending']:5d} {r['util']:5.2f} {r['occ_dram']:8.1f} | {f(rd_)} | {f(op)}")
     say()
 out.close()

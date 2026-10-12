@@ -10,7 +10,7 @@ for nb in none reader opt; do
   vt=80; [ $nb = reader ] && vt=8
   for cfg in 8b:65536:4:1320 8b:65536:8:2040 70b:163840:4:1320; do
     IFS=: read m blk sp t1 <<< "$cfg"
-    for pol in dram:200:0:0 dramcap48:200:0:48 cxl:0:200:0 lmcache:80:170:0 split:64:136:0 cxlfirst:64:136:0 borrowtier:64:136:0 borrowglob:64:136:0; do
+    for pol in dram:200:0:0 dramcap48:200:0:48 cxl:0:200:0 lmcache:80:170:0 split:64:136:0 cxlfirst:64:136:0 borrowtier:64:136:0 borrowglob:64:136:0 borrowmig:64:136:0; do
       IFS=: read p d c cap <<< "$pol"; kp=$p; [ $p = dramcap48 ] && kp=dram
       tag=$nb-$m-${sp}x-$p
       grep -q "^M done" $OUT/$tag-meta.txt 2>/dev/null && continue

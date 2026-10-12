@@ -1,0 +1,5 @@
+M config 381503532495536 trace=mooncake_conversation_trace.jsonl t0=0 t1=180 speed=0.08 cfg=dram total_GiB=40.0 model=Qwen/Qwen2.5-1.5B-Instruct ckpt=None
+M clock 381503532519196 wall=1791794960.800940
+M lmcache_ready 381510607590700 
+M vllm_ready 381538693697895 
+M serve_start 381540827963900 
