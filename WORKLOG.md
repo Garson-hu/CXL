@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-12 addendum — DIRECTION 2 EXPERIMENTS 1–3 CLOSED.** Topology, LMCache KV traffic, throttled DRAM, capacity-matched
+KV tiers and checkpoint + KV mixed are closed (INDEX). CXL-first is the protection; its costs are idle DRAM capacity and,
+above ~46 GB/s or with a second CXL writer, write bandwidth. No unified manager built; next steps to be agreed with the
+user. c28 allocation 302913 ends 2026-10-13 18:51.
+
 **2026-09-14 addendum.** Healthy NPS1 DRAM since the 2026-09-09 reboot; CXL devdax-only
 (dax0.0/dax1.0 usable, dax2.0 root-only). Campaign: 1a/1b/2/3c/4a/B1 done, crippled-DRAM data
 (3b, A1.4) discarded. Key new fact: DRAM write saturation (4 CCDs of NT writers, ~273 GiB/s)
@@ -165,6 +170,26 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-11/12 (session 31) — throttled DRAM baseline, capacity-matched KV tiers, checkpoint + KV mixed
+
+- Throttled DRAM baseline closed (`2026-10-11-throttled-dram-baseline.md`): capping the DRAM tier at CXL's rate does
+  not protect neighbours — the protection is placement.
+- Capacity-matched KV closed (`2026-10-11-capacity-matched-kv.md`). LMCache 0.5.5's hybrid L1 is hard-wired DRAM-first,
+  so CXL-first and borrowing were emulated (new online emulator `kvemu2`: a block is a hit only after its store
+  completes; tier chosen at store start; the cxlpath ledger sees every 2 MiB piece). 81 runs + 2: CXL-first keeps Adam
+  at +0.1% everywhere but idles DRAM capacity (hit share 0.150 vs 0.190); global LRU does not help; a minimal
+  calm-time migration (`borrowmig`) recovers half for ~0.3 GB/s of DRAM writes, nothing next to Adam. Above CXL's
+  ~46 GB/s (70B 4×) loans bound the backlog next to the reader; next to Adam ~6 GB/s of DRAM fits a 7% p99 target (the
+  mean deficit only) and cxlpathd lends none (its guard). Finding: cxlpathd's 60 s loan block stops loans for bursty KV
+  writers; 1 s used. Real LMCache (2a, 4060 Ti): DRAM / hybrid / DAX L1 indistinguishable; the hybrid's watermark
+  slack sits in the CXL part.
+- Checkpoint + KV mixed closed (`2026-10-12-checkpoint-kv-mixed.md`): real KV path unaffected (GPU link-bound), a CPU
+  CXL reader 2.4× slower inside checkpoint bursts; emulated 8B 4× KV priority removes the KV load slowdown, a fixed
+  rate does not; 8B 8× any checkpoint overloads CXL writes (load queueing 53 ms → ~8 s) in every mode.
+- Incidents: the first hybrid run failed (`slot_bytes` required by the DAX adapter; kept in
+  `real/failed-hybrid-no-slot-bytes/`). Launch chains now copied into the repo (`run_chain_2026-10-12.sh`,
+  `run_exp2b_slo_split.sh`).
 
 ### 2026-10-10/11 (session 30) — topology, LMCache KV traffic in two layers, Optane
 

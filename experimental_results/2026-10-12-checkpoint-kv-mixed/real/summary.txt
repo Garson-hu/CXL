@@ -1,0 +1,36 @@
+## 96_8_full  (serving 1475 s)
+  requests 643; achieved 0.436 req/s, 3750 prompt tok/s; TTFT p50 3.15 p90 11.01 p99 27.66 s; vLLM-cached tokens 1892864
+  LMCache: lookups 631, chunks found 7302 of 21032 = 0.347; prefetch time p50 21.2 p99 9032.8 ms; stored 2386 ops 3154432 tokens; retrieved 320000 tokens in 77 ops
+  GPU link: stores 129.4 GB (0.088 GB/s), loads 77.5 GB (0.053 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 23.6 GiB, max 31.8 of 40 GiB
+  checkpoint: 183 bursts of 96 GiB; duration p50 2.19 s max 2.20 s; rate p50 47.1 GB/s; paused per thread p50 0 ms; busy 27% of the serving time
+  CXL reader (one dependent load): inside bursts p50 533 p99 551 ns, outside p50 226 p99 228 ns
+  KV loads on the link (host->GPU bursts): inside checkpoint bursts n=15 duration p50 30 ms p90 55 ms, rate p50 5.9 GB/s; outside n=40 duration p50 30 ms p90 60 ms, rate p50 5.5 GB/s
+  TTFT, requests overlapping a burst: n=420 p50 5.02 p90 12.33 s; not overlapping: n=223 p50 1.35 p90 3.53 s
+
+## 96_8_kvprio  (serving 1475 s)
+  requests 643; achieved 0.436 req/s, 3750 prompt tok/s; TTFT p50 3.27 p90 10.40 p99 28.11 s; vLLM-cached tokens 1873920
+  LMCache: lookups 628, chunks found 7222 of 20769 = 0.348; prefetch time p50 19.8 p99 7444.9 ms; stored 2379 ops 3141632 tokens; retrieved 519424 tokens in 113 ops
+  GPU link: stores 142.7 GB (0.097 GB/s), loads 94.9 GB (0.064 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 23.7 GiB, max 32.0 of 40 GiB
+  checkpoint: 183 bursts of 96 GiB; duration p50 2.19 s max 2.38 s; rate p50 47.1 GB/s; paused per thread p50 0 ms; busy 27% of the serving time
+  CXL reader (one dependent load): inside bursts p50 534 p99 552 ns, outside p50 226 p99 229 ns
+  KV loads on the link (host->GPU bursts): inside checkpoint bursts n=16 duration p50 30 ms p90 75 ms, rate p50 5.7 GB/s; outside n=56 duration p50 30 ms p90 75 ms, rate p50 5.8 GB/s
+  TTFT, requests overlapping a burst: n=433 p50 4.66 p90 11.56 s; not overlapping: n=210 p50 1.99 p90 4.19 s
+
+## 96_8_rate_20  (serving 1475 s)
+  requests 643; achieved 0.436 req/s, 3749 prompt tok/s; TTFT p50 3.00 p90 9.70 p99 26.69 s; vLLM-cached tokens 1889536
+  LMCache: lookups 631, chunks found 7289 of 21032 = 0.347; prefetch time p50 27.4 p99 9900.1 ms; stored 2360 ops 3134464 tokens; retrieved 372992 tokens in 89 ops
+  GPU link: stores 129.1 GB (0.087 GB/s), loads 79.2 GB (0.054 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 23.6 GiB, max 32.0 of 40 GiB
+  checkpoint: 183 bursts of 96 GiB; duration p50 5.15 s max 5.15 s; rate p50 20.0 GB/s; paused per thread p50 0 ms; busy 64% of the serving time
+  CXL reader (one dependent load): inside bursts p50 271 p99 278 ns, outside p50 226 p99 229 ns
+  KV loads on the link (host->GPU bursts): inside checkpoint bursts n=36 duration p50 20 ms p90 60 ms, rate p50 5.5 GB/s; outside n=25 duration p50 30 ms p90 75 ms, rate p50 5.4 GB/s
+  TTFT, requests overlapping a burst: n=560 p50 3.38 p90 10.54 s; not overlapping: n=83 p50 1.18 p90 3.08 s
+
+## none  (serving 1475 s)
+  requests 643; achieved 0.436 req/s, 3749 prompt tok/s; TTFT p50 3.66 p90 9.08 p99 26.93 s; vLLM-cached tokens 1892864
+  LMCache: lookups 631, chunks found 7302 of 21032 = 0.347; prefetch time p50 208.7 p99 6824.2 ms; stored 2381 ops 3131904 tokens; retrieved 300800 tokens in 73 ops
+  GPU link: stores 128.8 GB (0.087 GB/s), loads 77.2 GB (0.052 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 23.9 GiB, max 32.0 of 40 GiB
+

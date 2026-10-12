@@ -30,7 +30,7 @@ if cfg == "dram": srv += ["--l1-size-gb", f"{total:g}"]
 elif cfg == "dax": srv += ["--l1-size-gb", f"{total:g}", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", ""]
 elif cfg == "hybrid":
     srv += ["--l1-size-gb", f"{total / 2:g}", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", "",
-            "--l2-adapter", json.dumps({"type": "dax", "devices": [{"device_path": "/dev/dax1.0", "max_dax_size_gb": total / 2}]})]
+            "--l2-adapter", json.dumps({"type": "dax", "devices": [{"device_path": "/dev/dax1.0", "max_dax_size_gb": total / 2}], "slot_bytes": 256 * 28672})]   # slot = one 256-token chunk of Qwen2.5-1.5B
 else: sys.exit(f"unknown cfg {cfg}")
 lm = subprocess.Popen(["taskset", "-c", "120-126"] + srv, stdout=open(f"{out}/{tag}-lmcache.log", "w"), stderr=subprocess.STDOUT, env=env, start_new_session=True)
 for _ in range(600):

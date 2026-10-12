@@ -1,0 +1,8 @@
+M config 390757443421153 trace=mooncake_toolagent_trace.jsonl t0=0 t1=120 speed=0.08 cfg=dax total_GiB=40.0 model=Qwen/Qwen2.5-1.5B-Instruct ckpt=96:8:kvprio
+M clock 390757443442323 wall=1791804214.711863
+M lmcache_ready 390763594229537 
+M vllm_ready 390787703685946 
+M ckpt_started 390802433871751 96:8:kvprio
+M serve_start 390804435934448 
+M serve_end 392279308804948 client_rc=0
+M done 392289905288008 

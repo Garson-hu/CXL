@@ -1,0 +1,53 @@
+[32;20m[2026-10-12 05:28:12,709] LMCache INFO:[0m torch_dev=<module 'torch.cuda' from '/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/torch/cuda/__init__.py'>, torch_device_type=cuda [3m(_device_detect.py:312:lmcache.v1.platform._device_detect)[0m
+[32;20m[2026-10-12 05:28:12,709] LMCache INFO:[0m Auto-selected backend [cuda] for accelerator 'cuda' from candidate backends [cuda, rocm]. [3m(__init__.py:148:lmcache.v1.platform)[0m
+[32;20m[2026-10-12 05:28:13,251] LMCache INFO:[0m multi_layer_block_kv_transfer mode: ptr [3m(base.py:95:lmcache.v1.multiprocess.transfer_context.base)[0m
+[32;20m[2026-10-12 05:28:14,643] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,644] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,670] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,686] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,704] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,720] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,745] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,772] LMCache INFO:[0m Discovered API module: common_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,787] LMCache INFO:[0m Discovered API module: config_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,829] LMCache INFO:[0m Discovered API module: info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,854] LMCache INFO:[0m Discovered API module: quota_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-12 05:28:14,888] LMCache INFO:[0m Discovered API module: reconfigure_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[31;20m[2026-10-12 05:28:14,918] LMCache ERROR:[0m Error parsing --l2-adapter #1 (type 'dax'): slot_bytes must be a positive integer [3m(config.py:501:lmcache.v1.distributed.l2_adapters.config)[0m
+[31;20m[2026-10-12 05:28:14,923] LMCache ERROR:[0m Adapter config help for dax adapter:
+---------------------
+DAX L2 adapter config fields:
+- device_path (str): legacy single mmap-able DAX path or file path
+- max_dax_size_gb (float): legacy single-device mapped size in GiB
+- devices (list): optional multi-device entries with device_path and max_dax_size_gb
+- hotplug_enabled (bool): enables runtime /reconfigure/dax/* management APIs
+- slot_bytes (int): fixed slot size in bytes (required, >0)
+- num_store_workers (int): store worker threads (optional, default 1)
+- num_lookup_workers (int): lookup worker threads (optional, default 1)
+- num_load_workers (int): load worker threads (optional, default min(4, cpu_count))
+---------------------
+
+ [3m(config.py:507:lmcache.v1.distributed.l2_adapters.config)[0m
+[31;20m[2026-10-12 05:28:14,940] LMCache ERROR:[0m Command failed [3m(main.py:43:lmcache.cli.main)[0m
+Traceback (most recent call last):
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/v1/distributed/l2_adapters/config.py", line 494, in parse_args_to_l2_adapters_config
+    adapter_cfg = config_cls.from_dict(d)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/v1/distributed/l2_adapters/dax_l2_adapter.py", line 199, in from_dict
+    raise ValueError("slot_bytes must be a positive integer")
+ValueError: slot_bytes must be a positive integer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/cli/main.py", line 39, in main
+    args.func(args)
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/cli/commands/server.py", line 106, in execute
+    storage_manager_config=parse_args_to_config(args),
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/v1/distributed/config.py", line 669, in parse_args_to_config
+    l2_adapter_config = parse_args_to_l2_adapters_config(args)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/lmcache/v1/distributed/l2_adapters/config.py", line 515, in parse_args_to_l2_adapters_config
+    raise ValueError(f"--l2-adapter #{i + 1} ({type_name!r}): {e}") from e
+ValueError: --l2-adapter #1 ('dax'): slot_bytes must be a positive integer

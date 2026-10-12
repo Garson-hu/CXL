@@ -1,0 +1,19 @@
+## dax  (serving 2273 s)
+  requests 556; achieved 0.245 req/s, 2805 prompt tok/s; TTFT p50 4.27 p90 15.54 p99 34.85 s; vLLM-cached tokens 500992
+  LMCache: lookups 546, chunks found 1939 of 24188 = 0.080; prefetch time p50 150.2 p99 13270.6 ms; stored 3512 ops 5100544 tokens; retrieved 216832 tokens in 20 ops
+  GPU link: stores 205.4 GB (0.090 GB/s), loads 112.1 GB (0.049 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 25.8 GiB, max 32.1 of 40 GiB
+
+## dram  (serving 2273 s)
+  requests 556; achieved 0.245 req/s, 2805 prompt tok/s; TTFT p50 4.33 p90 14.33 p99 34.62 s; vLLM-cached tokens 492032
+  LMCache: lookups 546, chunks found 1904 of 24188 = 0.079; prefetch time p50 195.4 p99 10557.8 ms; stored 3492 ops 5103872 tokens; retrieved 207872 tokens in 21 ops
+  GPU link: stores 206.3 GB (0.091 GB/s), loads 113.7 GB (0.050 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 25.9 GiB, max 32.1 of 40 GiB
+
+## hybrid  (serving 2272 s)
+  requests 556; achieved 0.245 req/s, 2805 prompt tok/s; TTFT p50 4.15 p90 14.43 p99 33.76 s; vLLM-cached tokens 503040
+  LMCache: lookups 546, chunks found 1947 of 24188 = 0.080; prefetch time p50 179.2 p99 9014.6 ms; stored 3499 ops 5104128 tokens; retrieved 218880 tokens in 20 ops
+  GPU link: stores 206.0 GB (0.091 GB/s), loads 113.0 GB (0.050 GB/s) incl. ~0.02 GB/s background each
+  L1 used: mean 26.0 GiB, max 31.9 of 40 GiB
+  hybrid pools after the first quarter: DRAM mean 18.2 max 20.0 GiB, DAX mean 10.8 max 12.2 GiB
+
