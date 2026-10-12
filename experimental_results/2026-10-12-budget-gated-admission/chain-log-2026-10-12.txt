@@ -1,0 +1,119 @@
+calibration start Mon Oct 12 11:30:19 EDT 2026
+opt-8b-4x-split8: kvemu2 rc=0
+opt-8b-4x-split16: kvemu2 rc=0
+opt-8b-4x-split24: kvemu2 rc=0
+opt-8b-4x-split32: kvemu2 rc=0
+opt-8b-4x-split48: kvemu2 rc=0
+opt-8b-4x-budget2: kvemu2 rc=0
+opt-8b-4x-budget4: kvemu2 rc=0
+opt-8b-4x-budget8: kvemu2 rc=0
+opt-8b-4x-budget12: kvemu2 rc=0
+opt-8b-4x-budget16: kvemu2 rc=0
+opt-8b-4x-budget24: kvemu2 rc=0
+opt-8b-4x-budget32: kvemu2 rc=0
+opt-8b-8x-split8: kvemu2 rc=0
+opt-8b-8x-split16: kvemu2 rc=0
+opt-8b-8x-split24: kvemu2 rc=0
+opt-8b-8x-split32: kvemu2 rc=0
+opt-8b-8x-split48: kvemu2 rc=0
+opt-8b-8x-budget2: kvemu2 rc=0
+opt-8b-8x-budget4: kvemu2 rc=0
+opt-8b-8x-budget8: kvemu2 rc=0
+opt-8b-8x-budget12: kvemu2 rc=0
+opt-8b-8x-budget16: kvemu2 rc=0
+opt-8b-8x-budget24: kvemu2 rc=0
+opt-8b-8x-budget32: kvemu2 rc=0
+opt-70b-4x-split8: kvemu2 rc=0
+opt-70b-4x-split16: kvemu2 rc=0
+opt-70b-4x-split24: kvemu2 rc=0
+opt-70b-4x-split32: kvemu2 rc=0
+opt-70b-4x-split48: kvemu2 rc=0
+opt-70b-4x-budget2: kvemu2 rc=0
+opt-70b-4x-budget4: kvemu2 rc=0
+opt-70b-4x-budget8: kvemu2 rc=0
+opt-70b-4x-budget12: kvemu2 rc=0
+opt-70b-4x-budget16: kvemu2 rc=0
+opt-70b-4x-budget24: kvemu2 rc=0
+opt-70b-4x-budget32: kvemu2 rc=0
+reader-8b-4x-split8: kvemu2 rc=0
+reader-8b-4x-split16: kvemu2 rc=0
+reader-8b-4x-split24: kvemu2 rc=0
+reader-8b-4x-split32: kvemu2 rc=0
+reader-8b-4x-split48: kvemu2 rc=0
+reader-8b-4x-budget2: kvemu2 rc=0
+reader-8b-4x-budget4: kvemu2 rc=0
+reader-8b-4x-budget8: kvemu2 rc=0
+reader-8b-4x-budget12: kvemu2 rc=0
+reader-8b-4x-budget16: kvemu2 rc=0
+reader-8b-4x-budget24: kvemu2 rc=0
+reader-8b-4x-budget32: kvemu2 rc=0
+reader-8b-8x-split8: kvemu2 rc=0
+reader-8b-8x-split16: kvemu2 rc=0
+reader-8b-8x-split24: kvemu2 rc=0
+reader-8b-8x-split32: kvemu2 rc=0
+reader-8b-8x-split48: kvemu2 rc=0
+reader-8b-8x-budget2: kvemu2 rc=0
+reader-8b-8x-budget4: kvemu2 rc=0
+reader-8b-8x-budget8: kvemu2 rc=0
+reader-8b-8x-budget12: kvemu2 rc=0
+reader-8b-8x-budget16: kvemu2 rc=0
+reader-8b-8x-budget24: kvemu2 rc=0
+reader-8b-8x-budget32: kvemu2 rc=0
+reader-70b-4x-split8: kvemu2 rc=0
+reader-70b-4x-split16: kvemu2 rc=0
+reader-70b-4x-split24: kvemu2 rc=0
+reader-70b-4x-split32: kvemu2 rc=0
+reader-70b-4x-split48: kvemu2 rc=0
+reader-70b-4x-budget2: kvemu2 rc=0
+reader-70b-4x-budget4: kvemu2 rc=0
+reader-70b-4x-budget8: kvemu2 rc=0
+reader-70b-4x-budget12: kvemu2 rc=0
+reader-70b-4x-budget16: kvemu2 rc=0
+reader-70b-4x-budget24: kvemu2 rc=0
+reader-70b-4x-budget32: kvemu2 rc=0
+opt    70b-4x  budget -> 12   (2: p99 +3.3% hit 0.137, 4: p99 +4.0% hit 0.133, 8: p99 +5.2% hit 0.130, 12: p99 +6.6% hit 0.129, 16: p99 +7.3% hit 0.128, 24: p99 +8.9% hit 0.128, 32: p99 +10.7% hit 0.128)
+opt    70b-4x  split  -> 0.16   (0.08: p99 +4.2% hit 0.131, 0.16: p99 +6.4% hit 0.129, 0.24: p99 +9.2% hit 0.128, 0.32: p99 +13.5% hit 0.128, 0.48: p99 +21.7% hit 0.123)
+opt    8b-4x   budget -> 32   (2: p99 +1.0% hit 0.163, 4: p99 +1.3% hit 0.165, 8: p99 +2.1% hit 0.167, 12: p99 +2.9% hit 0.182, 16: p99 +2.9% hit 0.185, 24: p99 +3.1% hit 0.188, 32: p99 +3.4% hit 0.190)
+opt    8b-4x   split  -> 0.32   (0.08: p99 +1.2% hit 0.166, 0.16: p99 +2.6% hit 0.172, 0.24: p99 +4.1% hit 0.185, 0.32: p99 +5.6% hit 0.204, 0.48: p99 +7.7% hit 0.167)
+opt    8b-8x   budget -> 32   (2: p99 +1.7% hit 0.147, 4: p99 +2.2% hit 0.150, 8: p99 +3.1% hit 0.153, 12: p99 +3.5% hit 0.157, 16: p99 +4.5% hit 0.159, 24: p99 +5.8% hit 0.166, 32: p99 +6.8% hit 0.167)
+opt    8b-8x   split  -> 0.16   (0.08: p99 +2.4% hit 0.151, 0.16: p99 +4.3% hit 0.159, 0.24: p99 +7.0% hit 0.168, 0.32: p99 +9.3% hit 0.179, 0.48: p99 +14.7% hit 0.149)
+reader 70b-4x  budget -> 32   (2: p99 +2.6% hit 0.136, 4: p99 +2.0% hit 0.133, 8: p99 +2.6% hit 0.130, 12: p99 +2.0% hit 0.129, 16: p99 +2.0% hit 0.128, 24: p99 +2.0% hit 0.128, 32: p99 +3.5% hit 0.128)
+reader 70b-4x  split  -> 0.32   (0.08: p99 +3.9% hit 0.131, 0.16: p99 +2.0% hit 0.129, 0.24: p99 +2.6% hit 0.128, 0.32: p99 +4.0% hit 0.128, 0.48: p99 +8.3% hit 0.123)
+reader 8b-4x   budget -> 32   (2: p99 +2.5% hit 0.163, 4: p99 +0.6% hit 0.165, 8: p99 +1.3% hit 0.167, 12: p99 +1.3% hit 0.182, 16: p99 +2.6% hit 0.184, 24: p99 +2.0% hit 0.189, 32: p99 +2.6% hit 0.190)
+reader 8b-4x   split  -> 0.48   (0.08: p99 +0.7% hit 0.166, 0.16: p99 +1.9% hit 0.172, 0.24: p99 +1.9% hit 0.185, 0.32: p99 +1.4% hit 0.204, 0.48: p99 +2.6% hit 0.167)
+reader 8b-8x   budget -> 32   (2: p99 +1.3% hit 0.147, 4: p99 +1.3% hit 0.150, 8: p99 +2.6% hit 0.153, 12: p99 +3.9% hit 0.157, 16: p99 +2.6% hit 0.159, 24: p99 +2.6% hit 0.166, 32: p99 +2.6% hit 0.166)
+reader 8b-8x   split  -> 0.48   (0.08: p99 +2.6% hit 0.151, 0.16: p99 +3.9% hit 0.159, 0.24: p99 +2.0% hit 0.168, 0.32: p99 +3.9% hit 0.179, 0.48: p99 +5.3% hit 0.149)
+any    70b-4x  offbudget -> 2 (hit 0.137)
+any    8b-4x   offbudget -> 32 (hit 0.190)
+any    8b-8x   offbudget -> 32 (hit 0.167)
+evaluation start Mon Oct 12 17:08:10 EDT 2026
+opt-8b-4x-split-r1: kvemu2 rc=0
+opt-8b-4x-budget-r1: kvemu2 rc=0
+opt-8b-4x-borrowtier-r1: kvemu2 rc=0
+opt-8b-4x-borrowmig-r1: kvemu2 rc=0
+opt-8b-4x-cxlfirst-r1: kvemu2 rc=0
+opt-8b-8x-split-r1: kvemu2 rc=0
+opt-8b-8x-budget-r1: kvemu2 rc=0
+opt-8b-8x-borrowtier-r1: kvemu2 rc=0
+opt-8b-8x-borrowmig-r1: kvemu2 rc=0
+opt-8b-8x-cxlfirst-r1: kvemu2 rc=0
+opt-70b-4x-split-r1: kvemu2 rc=0
+opt-70b-4x-budget-r1: kvemu2 rc=0
+opt-70b-4x-borrowtier-r1: kvemu2 rc=0
+opt-70b-4x-borrowmig-r1: kvemu2 rc=0
+opt-70b-4x-cxlfirst-r1: kvemu2 rc=0
+reader-8b-4x-split-r1: kvemu2 rc=0
+reader-8b-4x-budget-r1: kvemu2 rc=0
+reader-8b-4x-borrowtier-r1: kvemu2 rc=0
+reader-8b-4x-borrowmig-r1: kvemu2 rc=0
+reader-8b-4x-cxlfirst-r1: kvemu2 rc=0
+reader-8b-8x-split-r1: kvemu2 rc=0
+reader-8b-8x-budget-r1: kvemu2 rc=0
+reader-8b-8x-borrowtier-r1: kvemu2 rc=0
+reader-8b-8x-borrowmig-r1: kvemu2 rc=0
+reader-8b-8x-cxlfirst-r1: kvemu2 rc=0
+reader-70b-4x-split-r1: kvemu2 rc=0
+reader-70b-4x-budget-r1: kvemu2 rc=0
+reader-70b-4x-borrowtier-r1: kvemu2 rc=0
+reader-70b-4x-borrowmig-r1: kvemu2 rc=0
+# chain script stopped 2026-10-12 19:25 by the user's request (node released); the run in flight finished at 19:27; nothing interrupted

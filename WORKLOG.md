@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-12 19:30 addendum — BUDGET-GATED ADMISSION EXPERIMENT PAUSED, c28 RELEASED.** Open file
+`docs/experiments/2026-10-12-budget-gated-admission.md`: calibration and evaluation rep 1 done, 76 runs (≈ 8.5 h) remain;
+resume = re-launch `benchmarks/memory/run_bga_chain.sh 60` detached in a new c28 allocation (≥ 12 h) after the checks
+listed in the file's "Progress" section (dax permissions, no leftovers, binaries). No controller / manager changes.
+
 **2026-10-12 addendum — DIRECTION 2 EXPERIMENTS 1–3 CLOSED.** Topology, LMCache KV traffic, throttled DRAM, capacity-matched
 KV tiers and checkpoint + KV mixed are closed (INDEX). CXL-first is the protection; its costs are idle DRAM capacity and,
 above ~46 GB/s or with a second CXL writer, write bandwidth. No unified manager built; next steps to be agreed with the
@@ -170,6 +175,27 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-12 (session 32) — budget-gated admission: tools, calibration, evaluation rep 1; PAUSED (node released)
+
+- Experiments 2 and 3 of the plan closed and the contribution assessed (session 31 entry, INDEX). User's next step
+  (option 1): budget-gated admission vs the best safe static split, the existing controller and CXL-first + migration,
+  under a 7% p99 neighbour-slowdown SLO; no change to cxlpathd, no cross-writer admission, no unified manager.
+- Tools (2026-10-12): kvemu2 `budget` policy (one-block token bucket, budget fixed or read from a file = oracle),
+  `KV2_SPLIT_SHARE`, common warm-up; run_exp2b phases (neighbour SIGSTOP/SIGCONT) + oracle phase budgets; the reader
+  victim counts progress every 64 MiB (1 GiB counting quantized 100 ms samples to ~10% steps — all earlier reader p99
+  figures are not measurable); `quiet_baseline.py`, `analyze_bga.py`, `select_settings.py`, `run_bga_chain.sh`.
+- Quiet baselines: Adam and reader p99 stable to ≤ 1.3% across 60 s windows. Calibration (72 runs, trace from 2040 s):
+  the budget's smoother writes buy SLO room (8B 8×: 8.9 GB/s at +6.8% p99 vs the split's 9.0 at +7.0%; 20 ms peaks 20
+  vs 40–50 GB/s at 8B 4×) but the one-block bucket caps DRAM's share of writes at ~25% (chunks of 4 blocks fall due
+  together), and the hit share peaks when DRAM's share of new blocks equals its 32% share of capacity. Selection rule
+  fixed (rule 2: best hit inside the SLO; largest feasible when overloaded; oracle off-budget = largest swept) before
+  any affected run. Evaluation rep 1 (29 runs): next to Adam the controller lends nothing (hit .157–.161, 70B 4×
+  backlog > 700 GB); budget .180 vs best safe split .164 at 8B 8×, equal elsewhere; migration recovers hits cheaply
+  next to the reader but never beats admission and breaks the SLO at 70B 4× (+7.5%).
+- 19:25: chain stopped between runs at the user's request (node to be released); the run in flight finished; nothing
+  interrupted. Remaining: 49 evaluation runs, 24 varying-load, 3 long runs ≈ 8.5 h; resume steps in the experiment
+  file (`2026-10-12-budget-gated-admission.md`, "Progress"). Pending user decision: a one-chunk-bucket sweep (~1.5 h).
 
 ### 2026-10-11/12 (session 31) — throttled DRAM baseline, capacity-matched KV tiers, checkpoint + KV mixed
 
