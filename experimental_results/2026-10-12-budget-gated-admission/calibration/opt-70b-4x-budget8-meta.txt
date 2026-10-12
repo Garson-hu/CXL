@@ -1,0 +1,5 @@
+M config 414325939081618 trace=mooncake_conversation_trace.jsonl block_KiB=163840 t0=2040 t1=2760 speed=4 policy=budget dram=64 cxl=136 watermark=0.8 store_cap=0 neighbor=opt vthreads=80 loan_block_s=1 before_s=60 reader_chunk=64 phases=None phase_budgets=None KV2_BUDGET_GBPS=8 KV2_WARM=common
+M before_start 414350991544631 
+M before_end 414411052116776 
+M emu_end 414606034243752 rc=0
+M done 414606678290043 

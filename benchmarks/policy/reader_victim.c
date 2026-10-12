@@ -1,5 +1,7 @@
 /* reader_victim — the synthetic DRAM-bound victim as a standalone process: N streaming readers on cpus
- * <first_cpu>.., 1 GiB each; the main thread prints "T <mono ns> <GiB/s over the last 100 ms>" until SIGTERM. */
+ * <first_cpu>.., 1 GiB each; the main thread prints "T <mono ns> <GiB/s over the last 100 ms>" until SIGTERM.
+ * usage: reader_victim [N=8] [first_cpu=0] [chunk_MiB=1024]. Progress is counted every chunk_MiB; the default (one 1 GiB
+ * pass) quantizes a 100 ms sample to ~10% steps — use 64 for per-sample tails (2026-10-12). */
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -10,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/mman.h>
-static volatile int stop, go; static uint64_t done[64]; static int cpu0;
+static volatile int stop, go; static uint64_t done[64]; static int cpu0; static size_t chunk = 1ul << 30;
 static void on_term(int sig) { (void)sig; stop = 1; }
 static uint64_t now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return (uint64_t)t.tv_sec * 1000000000ull + (uint64_t)t.tv_nsec; }
 static void *reader(void *a) {
@@ -19,12 +21,13 @@ static void *reader(void *a) {
     for (size_t i = 0; i < n; i++) b[i] = i;
     __sync_fetch_and_add(&go, 1); while (go < 100) usleep(1000);
     uint64_t acc = 0;
-    while (!stop) { for (size_t i = 0; i < n; i++) acc += b[i]; __atomic_fetch_add(&done[id], 1ul << 30, __ATOMIC_RELAXED); }   /* atomic: a plain += was hoisted out of the loop by the compiler */
+    size_t ce = chunk / 8;
+    while (!stop) for (size_t c = 0; c < n && !stop; c += ce) { for (size_t i = c; i < c + ce; i++) acc += b[i]; __atomic_fetch_add(&done[id], chunk, __ATOMIC_RELAXED); }   /* atomic: a plain += was hoisted out of the loop by the compiler */
     if (acc == 42) puts("");
     return NULL;
 }
 int main(int argc, char **argv) {
-    int n = argc > 1 ? atoi(argv[1]) : 8; cpu0 = argc > 2 ? atoi(argv[2]) : 0; signal(SIGTERM, on_term);
+    int n = argc > 1 ? atoi(argv[1]) : 8; cpu0 = argc > 2 ? atoi(argv[2]) : 0; if (argc > 3) chunk = (size_t)atoi(argv[3]) << 20; signal(SIGTERM, on_term);
     pthread_t th[64]; for (long i = 0; i < n; i++) pthread_create(&th[i], NULL, reader, (void *)i);
     while (go < n) usleep(1000);
     go = 100; uint64_t prev = 0, tp = now(); printf("READY %llu\n", (unsigned long long)tp); fflush(stdout);

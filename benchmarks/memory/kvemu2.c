@@ -19,6 +19,13 @@
  *   borrowglob  same placement; eviction takes the GLOBAL least-recently-used block until the target tier has room
  *   borrowmig   borrowtier + MIGRATION (2026-10-12): a block read from CXL is MOVED to DRAM (copy, then its CXL slot is
  *               freed) while the daemon reports DRAM calm (dram_ok), at most 8 moves in flight; the DRAM victim is dropped.
+ *   budget      BUDGET-GATED ADMISSION (2026-10-12): a new block goes to DRAM when a token bucket refilled at B GB/s holds a
+ *               whole block (depth = one block: unused budget is lost, DRAM writes stay smooth), else to CXL; per-tier LRU.
+ *               B = $KV2_BUDGET_GBPS, or re-read every 10 ms from the file $KV2_BUDGET_FILE (text, GB/s; an oracle signal).
+ * Options by environment (2026-10-12; unset = the behaviour of experiment 2b):
+ *   KV2_SPLIT_SHARE=f  split sends the share f of the blocks (by hash) to DRAM, whatever DRAM's share of the capacity
+ *   KV2_WARM=common    every tiered policy is warmed with the same placement (split by capacity share: both tiers full,
+ *                      same blocks), so all policies start from the same state (budget always warms this way)
  * The borrow policies attach to a cxlpath store (<store>), read the loan share the daemon publishes and report every
  * copy to the daemon's ledger (cxlp_account), so the existing controller decides exactly as for a checkpoint writer.
  *
@@ -26,7 +33,7 @@
  *               <workers> <first_cpu> <chunk_blocks> <link_GBps> <prefill_tok_s> [store_cap_GBps=0] [cxlpath_store]
  *   The cache is warmed with the trace from 0 to t0 (no traffic, placement by the same policy, no loan).
  * output: "W <mono_ns> <offered_GBps> <store_dram_GBps> <store_cxl_GBps> <load_GBps> <backlog_GB> <late_max_ms>
- *          <occ_dram_GiB> <occ_cxl_GiB> <spill16>" every 20 ms, then "S ..." summary lines. */
+ *          <occ_dram_GiB> <occ_cxl_GiB> <spill16> <budget_GBps>" every 20 ms, then "S ..." summary lines. */
 #define _GNU_SOURCE
 #include "../../system/cxlpath/src/internal.h"
 #include <fcntl.h>
@@ -50,8 +57,8 @@ static uint64_t now(void) { struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t
 static void pin_cpu(int c) { cpu_set_t s; CPU_ZERO(&s); CPU_SET(c, &s); pthread_setaffinity_np(pthread_self(), sizeof s, &s); }
 static void sleep_until(uint64_t t) { uint64_t n = now(); if (t > n) { struct timespec d = { (time_t)((t - n) / 1000000000ull), (long)((t - n) % 1000000000ull) }; nanosleep(&d, NULL); } }
 
-enum { P_DRAM, P_CXL, P_LMCACHE, P_SPLIT, P_CXLFIRST, P_BORROWTIER, P_BORROWGLOB, P_BORROWMIG };
-static const char *pnames[] = { "dram", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob", "borrowmig" };
+enum { P_DRAM, P_CXL, P_LMCACHE, P_SPLIT, P_CXLFIRST, P_BORROWTIER, P_BORROWGLOB, P_BORROWMIG, P_BUDGET, NPOL };
+static const char *pnames[] = { "dram", "cxl", "lmcache", "split", "cxlfirst", "borrowtier", "borrowglob", "borrowmig", "budget" };
 static int policy; static double watermark;
 
 /* ---------------- slots, LRU lists, hash ---------------- */
@@ -105,12 +112,26 @@ static void pend_del(uint64_t h) { size_t i = ppos(h); while (pend[i]) { if (pen
 static int attached; static int devidx[2] = { -1, -1 }; static uint64_t nclaim, borrowed_blocks, n_noslot;
 static uint32_t br4(uint32_t k) { k &= 15; return ((k & 1) << 3) | ((k & 2) << 1) | ((k & 4) >> 1) | ((k & 8) >> 3); }
 static uint32_t spill_now(void) { return attached && cxlp_policy_daemon_alive() ? atomic_load(&POL->spill16[0]) : 0; }
+static double split_share = -1; static int common_warm;
+static double bud_Bps, bud_tokens; static uint64_t bud_last, bud_read_ns; static int bud_fd = -1;
+static double budget_now(uint64_t t) {                      /* caller holds cm */
+    if (bud_fd >= 0 && t - bud_read_ns >= 10000000ull) { char b[64]; ssize_t r = pread(bud_fd, b, sizeof b - 1, 0); if (r > 0) { b[r] = 0; bud_Bps = atof(b) * 1e9; } bud_read_ns = t; }
+    return bud_Bps;
+}
+static int cap_share_tier(uint64_t h) { return ((h * 0xD6E8FEB86659FD93ull) >> 40) % (nslot[0] + nslot[1]) < nslot[0] ? 0 : 1; }
 static uint32_t insert(uint64_t h, int warm) {                /* NIL if no slot can be freed (everything busy) */
     int t;
+    if (warm && nslot[0] && nslot[1] && policy != P_LMCACHE && (common_warm || policy == P_BUDGET)) { t = cap_share_tier(h); if (!nfree[t] && !evict_tier(t)) return NIL; return place(h, t, warm); }
     switch (policy) {
     case P_DRAM: t = 0; break;
     case P_CXL: case P_CXLFIRST: t = 1; break;
-    case P_SPLIT: t = ((h * 0xD6E8FEB86659FD93ull) >> 40) % (nslot[0] + nslot[1]) < nslot[0] ? 0 : 1; break;
+    case P_SPLIT: t = split_share < 0 ? cap_share_tier(h) : (((h * 0xD6E8FEB86659FD93ull) >> 40) / 16777216.0 < split_share ? 0 : 1); break;
+    case P_BUDGET: {                                          /* token bucket of one block, refilled at the current budget */
+        uint64_t tn = now(); double B = budget_now(tn);
+        if (bud_last) bud_tokens += (tn - bud_last) / 1e9 * B; bud_last = tn; if (bud_tokens > (double)bsz) bud_tokens = (double)bsz;
+        t = 1;
+        if (nslot[0] && bud_tokens >= (double)bsz && (nfree[0] || evict_tier(0))) { t = 0; bud_tokens -= (double)bsz; }
+        break; }
     case P_LMCACHE:
         if (!nfree[0] && !nfree[1] && !evict_global()) return NIL;
         t = nfree[0] ? 0 : 1;
@@ -240,8 +261,9 @@ static void *logger(void *a) {
         double backlog = ((double)cum_off - (double)(s0 + s1 + l)) / 1e9;
         uint32_t o0 = occ[0], o1 = occ[1];                    /* racy reads of dispatcher counters: fine for logging */
         occ_sum[0] += o0; occ_sum[1] += o1; occ_n++;
-        printf("W %lu %.3f %.3f %.3f %.3f %.3f %.1f %.1f %.1f %u\n", (unsigned long)tw, off / 0.02 / 1e9, (s0 - ls[0]) / 0.02 / 1e9, (s1 - ls[1]) / 0.02 / 1e9,
-               (l - ll) / 0.02 / 1e9, backlog > 0 ? backlog : 0, atomic_exchange(&late_max_ns, 0) / 1e6, (double)o0 * bsz / GiB, (double)o1 * bsz / GiB, spill_now());
+        printf("W %lu %.3f %.3f %.3f %.3f %.3f %.1f %.1f %.1f %u %.2f\n", (unsigned long)tw, off / 0.02 / 1e9, (s0 - ls[0]) / 0.02 / 1e9, (s1 - ls[1]) / 0.02 / 1e9,
+               (l - ll) / 0.02 / 1e9, backlog > 0 ? backlog : 0, atomic_exchange(&late_max_ns, 0) / 1e6, (double)o0 * bsz / GiB, (double)o1 * bsz / GiB, spill_now(),
+               policy == P_BUDGET ? bud_Bps / 1e9 : 0.0);   /* racy read of the budget: fine for logging */
         ls[0] = s0; ls[1] = s1; ll = l;
         if (log_end_ns && tw >= log_end_ns) return NULL;
     }
@@ -260,13 +282,17 @@ static char *map_region(int t, size_t bytes) {
 int main(int argc, char **argv) {
     if (argc < 15) { fprintf(stderr, "usage: see the header of kvemu2.c\n"); return 2; }
     const char *trace = argv[1]; bsz = (size_t)atol(argv[2]) << 10; double t0s = atof(argv[3]), t1s = atof(argv[4]), speed = atof(argv[5]);
-    policy = -1; for (int i = 0; i < 8; i++) if (!strcmp(argv[6], pnames[i])) policy = i;
+    policy = -1; for (int i = 0; i < NPOL; i++) if (!strcmp(argv[6], pnames[i])) policy = i;
     if (policy < 0) { fprintf(stderr, "unknown policy %s\n", argv[6]); return 2; }
     double dram_gib = atof(argv[7]), cxl_gib = atof(argv[8]); watermark = atof(argv[9]);
     int W = atoi(argv[10]), cpu0 = atoi(argv[11]), chunk = atoi(argv[12]); link_Bps = atof(argv[13]) * 1e9; double pf = atof(argv[14]);
     cap_Bps = (argc > 15 ? atof(argv[15]) : 0) * 1e9; const char *store = argc > 16 ? argv[16] : NULL;
     if (policy == P_DRAM) cxl_gib = 0; if (policy == P_CXL) dram_gib = 0;
     if (policy != P_LMCACHE) watermark = 1.0;
+    if (getenv("KV2_SPLIT_SHARE")) split_share = atof(getenv("KV2_SPLIT_SHARE"));
+    common_warm = getenv("KV2_WARM") && !strcmp(getenv("KV2_WARM"), "common");
+    if (getenv("KV2_BUDGET_GBPS")) bud_Bps = atof(getenv("KV2_BUDGET_GBPS")) * 1e9;
+    if (getenv("KV2_BUDGET_FILE")) { bud_fd = open(getenv("KV2_BUDGET_FILE"), O_RDONLY); if (bud_fd < 0) { perror(getenv("KV2_BUDGET_FILE")); return 1; } bud_read_ns = 0; budget_now(now()); }
     nslot[0] = (uint32_t)(dram_gib * GiB / bsz); nslot[1] = (uint32_t)(cxl_gib * GiB / bsz); nslots = nslot[0] + nslot[1];
     S = calloc(nslots, sizeof *S); for (int t = 0; t < 2; t++) { freel[t] = malloc((nslot[t] + 1) * 4); nfree[t] = 0; }
     for (uint32_t s = nslots; s-- > 0;) { int t = tier_of(s); freel[t][nfree[t]++] = s; }      /* lowest index popped first */
@@ -301,9 +327,12 @@ int main(int argc, char **argv) {
     double span = nrq ? (rq[nrq - 1].ts - t0s) / speed + 60 : 60;   /* stores of the last requests trail by their prefill */
     nbins = (size_t)(span / 0.02) + 1; offered = calloc(nbins, 8);
     printf("# kvemu2 %s [%g,%g) s at %gx: %zu requests; block %zu KiB; policy %s; DRAM %.1f GiB (%u slots) + CXL %.1f GiB (%u slots), watermark %.2f; "
-           "%d workers on cpus %d..; chunk %d blocks, link %.2f GB/s, prefill %.0f tok/s, store cap %.1f GB/s; cxlpath store %s (dev DRAM %d, CXL %d)\n",
+           "%d workers on cpus %d..; chunk %d blocks, link %.2f GB/s, prefill %.0f tok/s, store cap %.1f GB/s; cxlpath store %s (dev DRAM %d, CXL %d); "
+           "split share %s; warm-up %s; budget %s\n",
            trace, t0s, t1s, speed, nrq, bsz >> 10, pnames[policy], dram_gib, nslot[0], cxl_gib, nslot[1], watermark, W, cpu0, chunk, link_Bps / 1e9, pf, cap_Bps / 1e9,
-           store ? store : "-", devidx[0], devidx[1]);
+           store ? store : "-", devidx[0], devidx[1], getenv("KV2_SPLIT_SHARE") ? getenv("KV2_SPLIT_SHARE") : "capacity",
+           common_warm || policy == P_BUDGET ? "common (capacity-share split)" : "by policy",
+           policy != P_BUDGET ? "-" : getenv("KV2_BUDGET_FILE") ? getenv("KV2_BUDGET_FILE") : getenv("KV2_BUDGET_GBPS") ? getenv("KV2_BUDGET_GBPS") : "0");
     printf("# after warm-up: occupancy DRAM %u CXL %u of %u slots\n", occ[0], occ[1], nslots); fflush(stdout);
 
     pthread_t th[256], lg; t_start = now() + 200000000ull;
