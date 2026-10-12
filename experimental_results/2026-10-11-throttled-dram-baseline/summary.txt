@@ -1,0 +1,225 @@
+## llama-70b-1x-dramcap48  (dram, 1x, block 160 MiB, tier 200 GiB, 245 s)
+  planned: store 3188.7 GB, load 143.1 GB over 245.4 s -> 12.99 + 0.58 GB/s average; block hits 853, stored blocks 19006
+  planned_s 245.4 wall_s 245.9 stored_GB 3188.68 loaded_GB 143.11 planned_store_GB 3188.68 planned_load_GB 143.11
+  target  mean 13.58 GB/s; 20 ms p50 5.22 p99 101.47 max 169.04; 1 s max 35.45
+  stores  mean 12.99 GB/s; 20 ms p50 5.24 p99 48.13 max 48.34; 1 s max 30.74
+  loads   mean 0.58 GB/s; 20 ms p50 0.00 p99 9.44 max 151.00; 1 s max 9.77
+  backlog p99 2.93 GB max 6.48 GB; job start lateness p99 0.1 ms max 67.5 ms
+  neighbour llama.cpp: before 32.90 tok/s, during 28.56 tok/s -> +13.19% slower
+
+## llama-70b-4x-dramcap48  (dram, 4x, block 160 MiB, tier 200 GiB, 266 s)
+  planned: store 12701.5 GB, load 578.5 GB over 250.4 s -> 50.73 + 2.31 GB/s average; block hits 3448, stored blocks 75707
+  planned_s 250.4 wall_s 265.9 stored_GB 12701.53 loaded_GB 578.48 planned_store_GB 12701.53 planned_load_GB 578.48
+  target  mean 49.94 GB/s; 20 ms p50 45.42 p99 152.00 max 252.57; 1 s max 83.87
+  stores  mean 47.77 GB/s; 20 ms p50 48.02 p99 48.23 max 49.07; 1 s max 48.01
+  loads   mean 2.18 GB/s; 20 ms p50 0.00 p99 57.78 max 112.30; 1 s max 10.74
+  backlog p99 1099.40 GB max 1111.50 GB; job start lateness p99 21660.6 ms max 22060.8 ms
+  neighbour llama.cpp: before 32.90 tok/s, during 25.36 tok/s -> +22.91% slower
+
+## llama-8b-1x-dramcap48  (dram, 1x, block 64 MiB, tier 200 GiB, 245 s)
+  planned: store 1251.4 GB, load 81.3 GB over 245.4 s -> 5.10 + 0.33 GB/s average; block hits 1212, stored blocks 18647
+  planned_s 245.4 wall_s 245.9 stored_GB 1251.38 loaded_GB 81.34 planned_store_GB 1251.38 planned_load_GB 81.34
+  target  mean 5.43 GB/s; 20 ms p50 0.00 p99 62.20 max 105.43; 1 s max 16.37
+  stores  mean 5.10 GB/s; 20 ms p50 0.00 p99 48.02 max 48.23; 1 s max 12.42
+  loads   mean 0.33 GB/s; 20 ms p50 0.00 p99 9.54 max 66.58; 1 s max 4.76
+  backlog p99 0.70 GB max 2.34 GB; job start lateness p99 0.1 ms max 0.1 ms
+  neighbour llama.cpp: before 32.73 tok/s, during 29.14 tok/s -> +10.99% slower
+
+## llama-8b-4x-dramcap48  (dram, 4x, block 64 MiB, tier 200 GiB, 250 s)
+  planned: store 4965.4 GB, load 346.6 GB over 250.3 s -> 19.84 + 1.38 GB/s average; block hits 5165, stored blocks 73990
+  planned_s 250.3 wall_s 250.8 stored_GB 4965.38 loaded_GB 346.62 planned_store_GB 4965.38 planned_load_GB 346.62
+  target  mean 21.22 GB/s; 20 ms p50 9.39 p99 113.03 max 212.10; 1 s max 36.71
+  stores  mean 19.84 GB/s; 20 ms p50 14.26 p99 48.13 max 48.34; 1 s max 32.01
+  loads   mean 1.38 GB/s; 20 ms p50 0.00 p99 36.91 max 78.54; 1 s max 8.05
+  backlog p99 1.93 GB max 4.37 GB; job start lateness p99 0.1 ms max 65.9 ms
+  neighbour llama.cpp: before 32.92 tok/s, during 27.90 tok/s -> +15.24% slower
+
+## llama-8b-8x-dramcap48  (dram, 8x, block 64 MiB, tier 200 GiB, 249 s)
+  planned: store 9681.9 GB, load 727.7 GB over 248.9 s -> 38.90 + 2.92 GB/s average; block hits 10843, stored blocks 144271
+  planned_s 248.9 wall_s 249.4 stored_GB 9681.86 loaded_GB 727.66 planned_store_GB 9681.86 planned_load_GB 727.66
+  target  mean 41.82 GB/s; 20 ms p50 17.01 p99 185.37 max 301.41; 1 s max 64.40
+  stores  mean 38.90 GB/s; 20 ms p50 47.92 p99 48.23 max 48.55; 1 s max 48.01
+  loads   mean 2.92 GB/s; 20 ms p50 0.00 p99 43.62 max 75.18; 1 s max 10.05
+  backlog p99 18.46 GB max 26.68 GB; job start lateness p99 340.6 ms max 496.5 ms
+  neighbour llama.cpp: before 32.86 tok/s, during 26.18 tok/s -> +20.35% slower
+
+## none-70b-1x-dramcap48  (dram, 1x, block 160 MiB, tier 200 GiB, 245 s)
+  planned: store 3188.7 GB, load 143.1 GB over 245.4 s -> 12.99 + 0.58 GB/s average; block hits 853, stored blocks 19006
+  planned_s 245.4 wall_s 245.9 stored_GB 3188.68 loaded_GB 143.11 planned_store_GB 3188.68 planned_load_GB 143.11
+  target  mean 13.58 GB/s; 20 ms p50 5.22 p99 101.47 max 169.04; 1 s max 35.45
+  stores  mean 12.99 GB/s; 20 ms p50 5.24 p99 48.02 max 48.34; 1 s max 30.74
+  loads   mean 0.58 GB/s; 20 ms p50 0.00 p99 9.44 max 151.00; 1 s max 9.77
+  backlog p99 2.93 GB max 6.48 GB; job start lateness p99 0.1 ms max 67.6 ms
+
+## none-70b-4x-dramcap48  (dram, 4x, block 160 MiB, tier 200 GiB, 266 s)
+  planned: store 12701.5 GB, load 578.5 GB over 250.4 s -> 50.73 + 2.31 GB/s average; block hits 3448, stored blocks 75707
+  planned_s 250.4 wall_s 265.9 stored_GB 12701.53 loaded_GB 578.48 planned_store_GB 12701.53 planned_load_GB 578.48
+  target  mean 49.94 GB/s; 20 ms p50 45.42 p99 152.00 max 252.57; 1 s max 83.87
+  stores  mean 47.77 GB/s; 20 ms p50 48.02 p99 48.13 max 197.03; 1 s max 48.00
+  loads   mean 2.18 GB/s; 20 ms p50 0.00 p99 57.78 max 124.05; 1 s max 10.74
+  backlog p99 1099.39 GB max 1111.50 GB; job start lateness p99 21625.8 ms max 22060.7 ms
+
+## none-8b-1x-dramcap48  (dram, 1x, block 64 MiB, tier 200 GiB, 245 s)
+  planned: store 1251.4 GB, load 81.3 GB over 245.4 s -> 5.10 + 0.33 GB/s average; block hits 1212, stored blocks 18647
+  planned_s 245.4 wall_s 245.9 stored_GB 1251.38 loaded_GB 81.34 planned_store_GB 1251.38 planned_load_GB 81.34
+  target  mean 5.43 GB/s; 20 ms p50 0.00 p99 62.20 max 105.43; 1 s max 16.37
+  stores  mean 5.10 GB/s; 20 ms p50 0.00 p99 48.02 max 48.13; 1 s max 12.42
+  loads   mean 0.33 GB/s; 20 ms p50 0.00 p99 9.54 max 66.48; 1 s max 4.76
+  backlog p99 0.70 GB max 2.34 GB; job start lateness p99 0.1 ms max 0.1 ms
+
+## none-8b-4x-dramcap48  (dram, 4x, block 64 MiB, tier 200 GiB, 250 s)
+  planned: store 4965.4 GB, load 346.6 GB over 250.3 s -> 19.84 + 1.38 GB/s average; block hits 5165, stored blocks 73990
+  planned_s 250.3 wall_s 250.8 stored_GB 4965.38 loaded_GB 346.62 planned_store_GB 4965.38 planned_load_GB 346.62
+  target  mean 21.22 GB/s; 20 ms p50 9.39 p99 113.03 max 212.10; 1 s max 36.71
+  stores  mean 19.84 GB/s; 20 ms p50 14.16 p99 48.13 max 48.23; 1 s max 32.01
+  loads   mean 1.38 GB/s; 20 ms p50 0.00 p99 36.91 max 78.54; 1 s max 8.05
+  backlog p99 1.93 GB max 4.38 GB; job start lateness p99 0.1 ms max 65.8 ms
+
+## none-8b-8x-dramcap48  (dram, 8x, block 64 MiB, tier 200 GiB, 249 s)
+  planned: store 9681.9 GB, load 727.7 GB over 248.9 s -> 38.90 + 2.92 GB/s average; block hits 10843, stored blocks 144271
+  planned_s 248.9 wall_s 249.4 stored_GB 9681.86 loaded_GB 727.66 planned_store_GB 9681.86 planned_load_GB 727.66
+  target  mean 41.82 GB/s; 20 ms p50 17.01 p99 185.37 max 301.41; 1 s max 64.40
+  stores  mean 38.90 GB/s; 20 ms p50 47.92 p99 48.13 max 48.34; 1 s max 48.00
+  loads   mean 2.92 GB/s; 20 ms p50 0.00 p99 43.62 max 75.29; 1 s max 10.05
+  backlog p99 18.46 GB max 26.68 GB; job start lateness p99 340.6 ms max 497.1 ms
+
+## opt-70b-1x-dramcap48  (dram, 1x, block 160 MiB, tier 200 GiB, 245 s)
+  planned: store 3188.7 GB, load 143.1 GB over 245.4 s -> 12.99 + 0.58 GB/s average; block hits 853, stored blocks 19006
+  planned_s 245.4 wall_s 245.9 stored_GB 3188.68 loaded_GB 143.11 planned_store_GB 3188.68 planned_load_GB 143.11
+  target  mean 13.58 GB/s; 20 ms p50 5.22 p99 101.47 max 169.04; 1 s max 35.45
+  stores  mean 12.99 GB/s; 20 ms p50 5.24 p99 48.13 max 48.34; 1 s max 30.74
+  loads   mean 0.58 GB/s; 20 ms p50 0.00 p99 9.44 max 151.00; 1 s max 9.79
+  backlog p99 2.93 GB max 6.48 GB; job start lateness p99 0.1 ms max 67.7 ms
+  neighbour step: before 0.1428 s (n=405), during 0.1484 s (n=1546) -> +3.92% slower
+
+## opt-70b-4x-dramcap48  (dram, 4x, block 160 MiB, tier 200 GiB, 266 s)
+  planned: store 12701.5 GB, load 578.5 GB over 250.4 s -> 50.73 + 2.31 GB/s average; block hits 3448, stored blocks 75707
+  planned_s 250.4 wall_s 265.9 stored_GB 12701.53 loaded_GB 578.48 planned_store_GB 12701.53 planned_load_GB 578.48
+  target  mean 49.94 GB/s; 20 ms p50 45.42 p99 152.00 max 252.57; 1 s max 83.87
+  stores  mean 47.77 GB/s; 20 ms p50 48.02 p99 48.23 max 49.28; 1 s max 48.01
+  loads   mean 2.18 GB/s; 20 ms p50 0.00 p99 50.23 max 114.30; 1 s max 10.74
+  backlog p99 1099.39 GB max 1111.50 GB; job start lateness p99 21584.0 ms max 22071.4 ms
+  neighbour step: before 0.1428 s (n=362), during 0.1729 s (n=1458) -> +21.08% slower
+
+## opt-8b-1x-dramcap48  (dram, 1x, block 64 MiB, tier 200 GiB, 245 s)
+  planned: store 1251.4 GB, load 81.3 GB over 245.4 s -> 5.10 + 0.33 GB/s average; block hits 1212, stored blocks 18647
+  planned_s 245.4 wall_s 245.9 stored_GB 1251.38 loaded_GB 81.34 planned_store_GB 1251.38 planned_load_GB 81.34
+  target  mean 5.43 GB/s; 20 ms p50 0.00 p99 62.20 max 105.43; 1 s max 16.37
+  stores  mean 5.10 GB/s; 20 ms p50 0.00 p99 48.02 max 48.23; 1 s max 12.42
+  loads   mean 0.33 GB/s; 20 ms p50 0.00 p99 9.54 max 66.48; 1 s max 4.76
+  backlog p99 0.70 GB max 2.34 GB; job start lateness p99 0.1 ms max 0.1 ms
+  neighbour step: before 0.1428 s (n=385), during 0.1449 s (n=1446) -> +1.47% slower
+
+## opt-8b-4x-dramcap48  (dram, 4x, block 64 MiB, tier 200 GiB, 250 s)
+  planned: store 4965.4 GB, load 346.6 GB over 250.3 s -> 19.84 + 1.38 GB/s average; block hits 5165, stored blocks 73990
+  planned_s 250.3 wall_s 250.8 stored_GB 4965.38 loaded_GB 346.62 planned_store_GB 4965.38 planned_load_GB 346.62
+  target  mean 21.22 GB/s; 20 ms p50 9.39 p99 113.03 max 212.10; 1 s max 36.71
+  stores  mean 19.84 GB/s; 20 ms p50 14.16 p99 48.13 max 48.34; 1 s max 32.01
+  loads   mean 1.38 GB/s; 20 ms p50 0.00 p99 36.91 max 78.43; 1 s max 8.05
+  backlog p99 1.93 GB max 4.38 GB; job start lateness p99 0.1 ms max 65.8 ms
+  neighbour step: before 0.1428 s (n=389), during 0.1542 s (n=1519) -> +7.98% slower
+
+## opt-8b-8x-dramcap48  (dram, 8x, block 64 MiB, tier 200 GiB, 249 s)
+  planned: store 9681.9 GB, load 727.7 GB over 248.9 s -> 38.90 + 2.92 GB/s average; block hits 10843, stored blocks 144271
+  planned_s 248.9 wall_s 249.4 stored_GB 9681.86 loaded_GB 727.66 planned_store_GB 9681.86 planned_load_GB 727.66
+  target  mean 41.82 GB/s; 20 ms p50 17.01 p99 185.37 max 301.41; 1 s max 64.40
+  stores  mean 38.90 GB/s; 20 ms p50 47.92 p99 48.23 max 49.18; 1 s max 48.01
+  loads   mean 2.92 GB/s; 20 ms p50 0.00 p99 43.10 max 73.82; 1 s max 10.05
+  backlog p99 18.46 GB max 26.68 GB; job start lateness p99 340.3 ms max 498.5 ms
+  neighbour step: before 0.1428 s (n=387), during 0.1681 s (n=1357) -> +17.72% slower
+
+## pr-70b-1x-dramcap48  (dram, 1x, block 160 MiB, tier 200 GiB, 245 s)
+  planned: store 3188.7 GB, load 143.1 GB over 245.4 s -> 12.99 + 0.58 GB/s average; block hits 853, stored blocks 19006
+  planned_s 245.4 wall_s 245.9 stored_GB 3188.68 loaded_GB 143.11 planned_store_GB 3188.68 planned_load_GB 143.11
+  target  mean 13.58 GB/s; 20 ms p50 5.22 p99 101.47 max 169.04; 1 s max 35.45
+  stores  mean 12.99 GB/s; 20 ms p50 5.14 p99 48.13 max 48.23; 1 s max 30.74
+  loads   mean 0.58 GB/s; 20 ms p50 0.00 p99 9.44 max 151.00; 1 s max 9.80
+  backlog p99 2.93 GB max 6.48 GB; job start lateness p99 0.1 ms max 67.6 ms
+  neighbour step: before 1.1000 s (n=54), during 1.1481 s (n=211) -> +4.37% slower
+
+## pr-70b-4x-dramcap48  (dram, 4x, block 160 MiB, tier 200 GiB, 266 s)
+  planned: store 12701.5 GB, load 578.5 GB over 250.4 s -> 50.73 + 2.31 GB/s average; block hits 3448, stored blocks 75707
+  planned_s 250.4 wall_s 265.9 stored_GB 12701.53 loaded_GB 578.48 planned_store_GB 12701.53 planned_load_GB 578.48
+  target  mean 49.94 GB/s; 20 ms p50 45.42 p99 152.00 max 252.57; 1 s max 83.87
+  stores  mean 47.77 GB/s; 20 ms p50 48.02 p99 48.13 max 49.18; 1 s max 48.01
+  loads   mean 2.18 GB/s; 20 ms p50 0.00 p99 56.94 max 94.69; 1 s max 10.74
+  backlog p99 1099.39 GB max 1111.49 GB; job start lateness p99 21624.5 ms max 22061.4 ms
+  neighbour step: before 1.0974 s (n=54), during 1.2946 s (n=202) -> +17.97% slower
+
+## pr-8b-1x-dramcap48  (dram, 1x, block 64 MiB, tier 200 GiB, 245 s)
+  planned: store 1251.4 GB, load 81.3 GB over 245.4 s -> 5.10 + 0.33 GB/s average; block hits 1212, stored blocks 18647
+  planned_s 245.4 wall_s 245.9 stored_GB 1251.38 loaded_GB 81.34 planned_store_GB 1251.38 planned_load_GB 81.34
+  target  mean 5.43 GB/s; 20 ms p50 0.00 p99 62.20 max 105.43; 1 s max 16.37
+  stores  mean 5.10 GB/s; 20 ms p50 0.00 p99 48.02 max 48.23; 1 s max 12.42
+  loads   mean 0.33 GB/s; 20 ms p50 0.00 p99 9.54 max 66.48; 1 s max 4.76
+  backlog p99 0.70 GB max 2.34 GB; job start lateness p99 0.1 ms max 0.9 ms
+  neighbour step: before 1.0890 s (n=55), during 1.1148 s (n=218) -> +2.37% slower
+
+## pr-8b-4x-dramcap48  (dram, 4x, block 64 MiB, tier 200 GiB, 250 s)
+  planned: store 4965.4 GB, load 346.6 GB over 250.3 s -> 19.84 + 1.38 GB/s average; block hits 5165, stored blocks 73990
+  planned_s 250.3 wall_s 250.8 stored_GB 4965.38 loaded_GB 346.62 planned_store_GB 4965.38 planned_load_GB 346.62
+  target  mean 21.22 GB/s; 20 ms p50 9.39 p99 113.03 max 212.10; 1 s max 36.71
+  stores  mean 19.84 GB/s; 20 ms p50 14.26 p99 48.13 max 48.23; 1 s max 32.01
+  loads   mean 1.38 GB/s; 20 ms p50 0.00 p99 36.91 max 78.54; 1 s max 8.05
+  backlog p99 1.93 GB max 4.38 GB; job start lateness p99 0.1 ms max 65.8 ms
+  neighbour step: before 1.0888 s (n=55), during 1.1737 s (n=211) -> +7.80% slower
+
+## pr-8b-8x-dramcap48  (dram, 8x, block 64 MiB, tier 200 GiB, 249 s)
+  planned: store 9681.9 GB, load 727.7 GB over 248.9 s -> 38.90 + 2.92 GB/s average; block hits 10843, stored blocks 144271
+  planned_s 248.9 wall_s 249.4 stored_GB 9681.86 loaded_GB 727.66 planned_store_GB 9681.86 planned_load_GB 727.66
+  target  mean 41.82 GB/s; 20 ms p50 17.01 p99 185.37 max 301.41; 1 s max 64.40
+  stores  mean 38.90 GB/s; 20 ms p50 47.92 p99 48.13 max 48.76; 1 s max 48.00
+  loads   mean 2.92 GB/s; 20 ms p50 0.00 p99 43.62 max 74.97; 1 s max 10.05
+  backlog p99 18.46 GB max 26.68 GB; job start lateness p99 340.3 ms max 497.6 ms
+  neighbour step: before 1.1184 s (n=54), during 1.2789 s (n=194) -> +14.35% slower
+
+## reader-70b-1x-dramcap48  (dram, 1x, block 160 MiB, tier 200 GiB, 245 s)
+  planned: store 3188.7 GB, load 143.1 GB over 245.4 s -> 12.99 + 0.58 GB/s average; block hits 853, stored blocks 19006
+  planned_s 245.4 wall_s 245.9 stored_GB 3188.68 loaded_GB 143.11 planned_store_GB 3188.68 planned_load_GB 143.11
+  target  mean 13.58 GB/s; 20 ms p50 5.22 p99 101.47 max 169.04; 1 s max 35.45
+  stores  mean 12.99 GB/s; 20 ms p50 5.24 p99 48.02 max 48.13; 1 s max 30.74
+  loads   mean 0.58 GB/s; 20 ms p50 0.00 p99 9.44 max 151.00; 1 s max 9.77
+  backlog p99 2.93 GB max 6.48 GB; job start lateness p99 0.1 ms max 67.6 ms
+  neighbour reader: before 100.21 GiB/s, during 98.80 GiB/s -> +1.41% slower
+    100 ms slices in the top 10% of emulated traffic (>= 48.0 GB/s): 97.84 GiB/s; bottom 25% (<= 9.5): 99.46 GiB/s
+
+## reader-70b-4x-dramcap48  (dram, 4x, block 160 MiB, tier 200 GiB, 266 s)
+  planned: store 12701.5 GB, load 578.5 GB over 250.4 s -> 50.73 + 2.31 GB/s average; block hits 3448, stored blocks 75707
+  planned_s 250.4 wall_s 265.9 stored_GB 12701.53 loaded_GB 578.48 planned_store_GB 12701.53 planned_load_GB 578.48
+  target  mean 49.94 GB/s; 20 ms p50 45.42 p99 152.00 max 252.57; 1 s max 83.87
+  stores  mean 47.77 GB/s; 20 ms p50 48.02 p99 48.13 max 48.34; 1 s max 48.00
+  loads   mean 2.18 GB/s; 20 ms p50 0.00 p99 57.67 max 124.05; 1 s max 10.74
+  backlog p99 1099.39 GB max 1111.49 GB; job start lateness p99 21626.1 ms max 22061.6 ms
+  neighbour reader: before 100.25 GiB/s, during 95.54 GiB/s -> +4.70% slower
+    100 ms slices in the top 10% of emulated traffic (>= 86.4 GB/s): 94.46 GiB/s; bottom 25% (<= 48.0): 95.74 GiB/s
+
+## reader-8b-1x-dramcap48  (dram, 1x, block 64 MiB, tier 200 GiB, 245 s)
+  planned: store 1251.4 GB, load 81.3 GB over 245.4 s -> 5.10 + 0.33 GB/s average; block hits 1212, stored blocks 18647
+  planned_s 245.4 wall_s 245.9 stored_GB 1251.38 loaded_GB 81.34 planned_store_GB 1251.38 planned_load_GB 81.34
+  target  mean 5.43 GB/s; 20 ms p50 0.00 p99 62.20 max 105.43; 1 s max 16.37
+  stores  mean 5.10 GB/s; 20 ms p50 0.00 p99 48.02 max 48.13; 1 s max 12.42
+  loads   mean 0.33 GB/s; 20 ms p50 0.00 p99 9.54 max 66.58; 1 s max 4.76
+  backlog p99 0.70 GB max 2.34 GB; job start lateness p99 0.1 ms max 0.1 ms
+  neighbour reader: before 99.90 GiB/s, during 99.13 GiB/s -> +0.77% slower
+    100 ms slices in the top 10% of emulated traffic (>= 47.9 GB/s): 98.26 GiB/s; bottom 25% (<= 0.0): 99.31 GiB/s
+
+## reader-8b-4x-dramcap48  (dram, 4x, block 64 MiB, tier 200 GiB, 250 s)
+  planned: store 4965.4 GB, load 346.6 GB over 250.3 s -> 19.84 + 1.38 GB/s average; block hits 5165, stored blocks 73990
+  planned_s 250.3 wall_s 250.8 stored_GB 4965.38 loaded_GB 346.62 planned_store_GB 4965.38 planned_load_GB 346.62
+  target  mean 21.22 GB/s; 20 ms p50 9.39 p99 113.03 max 212.10; 1 s max 36.71
+  stores  mean 19.84 GB/s; 20 ms p50 14.16 p99 48.13 max 48.23; 1 s max 32.01
+  loads   mean 1.38 GB/s; 20 ms p50 0.00 p99 36.91 max 78.54; 1 s max 8.05
+  backlog p99 1.93 GB max 4.37 GB; job start lateness p99 0.1 ms max 65.8 ms
+  neighbour reader: before 99.88 GiB/s, during 97.87 GiB/s -> +2.01% slower
+    100 ms slices in the top 10% of emulated traffic (>= 57.0 GB/s): 97.64 GiB/s; bottom 25% (<= 44.0): 97.77 GiB/s
+
+## reader-8b-8x-dramcap48  (dram, 8x, block 64 MiB, tier 200 GiB, 249 s)
+  planned: store 9681.9 GB, load 727.7 GB over 248.9 s -> 38.90 + 2.92 GB/s average; block hits 10843, stored blocks 144271
+  planned_s 248.9 wall_s 249.4 stored_GB 9681.86 loaded_GB 727.66 planned_store_GB 9681.86 planned_load_GB 727.66
+  target  mean 41.82 GB/s; 20 ms p50 17.01 p99 185.37 max 301.41; 1 s max 64.40
+  stores  mean 38.90 GB/s; 20 ms p50 47.92 p99 48.13 max 48.44; 1 s max 48.00
+  loads   mean 2.92 GB/s; 20 ms p50 0.00 p99 43.62 max 75.29; 1 s max 10.05
+  backlog p99 18.46 GB max 26.68 GB; job start lateness p99 340.5 ms max 496.7 ms
+  neighbour reader: before 99.95 GiB/s, during 96.18 GiB/s -> +3.76% slower
+    100 ms slices in the top 10% of emulated traffic (>= 81.6 GB/s): 94.09 GiB/s; bottom 25% (<= 48.0): 96.59 GiB/s
+
