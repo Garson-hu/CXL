@@ -381,13 +381,16 @@ def f_bga_varying():
     if not (os.path.exists(pv) and os.path.exists(pl)): print("varying / long run not available yet"); return False
     V = list(csv.DictReader(open(pv))); L = {r["tag"]: r for r in csv.DictReader(open(pl))}
     pols = [("static split", "split", C["split"], None), ("budget, fixed", "budget", C["budget"], None), ("budget, oracle", "oracle", C["budget"], "//"), ("controller", "borrowtier", C["ctrl"], None), ("+ migration", "borrowmig", C["ctrl"], "//"), ("CXL-first", "cxlfirst", C["cxl"], None)]
-    fig, axs = plt.subplots(1, 3, figsize=(11.5, 4.2))
+    fig, axs = plt.subplots(1, 3, figsize=(11.5, 4.6))
     def agg(cfg, pol, key):
         v = [float(r[key]) for r in V if re.match(rf"{cfg}-{pol}-r\d+$", r["tag"])]; return (st.mean(v), (max(v) - min(v)) / 2 if len(v) > 1 else 0) if v else (float("nan"), 0)
     for ax, (key, yl, fmt) in zip(axs[:2], [("hit_share", "hit share of reuses", "{:.3f}"), ("slow_p99", "Adam p99 slowdown (on phases), %", "{:.1f}")]):
         series = {nm: [agg(c, pol, key)[0] for c in ["8b-8x", "70b-4x"]] for nm, pol, _, _ in pols}; errs = {nm: [agg(c, pol, key)[1] for c in ["8b-8x", "70b-4x"]] for nm, pol, _, _ in pols}
-        bars(ax, ["8B 8×", "70B 4×"], series, [p[2] for p in pols], [p[3] for p in pols], fmt=fmt, label_fs=8, legend="upper right" if key == "hit_share" else False, yerr=errs); ax.set_ylabel(yl)
-        if key == "slow_p99": ax.axhline(7, color=C["pm"], ls=":", lw=1.2)
+        bars(ax, ["8B 8×", "70B 4× (overloaded)"], series, [p[2] for p in pols], [p[3] for p in pols], fmt=fmt, label_fs=8, legend=False, yerr=errs, vlabels=(key == "hit_share")); ax.set_ylabel(yl)
+        if key == "slow_p99": ax.axhline(7, color=C["pm"], ls=":", lw=1.2); ax.set_ylim(0, 9.5)
+        else: ax.set_ylim(0, 0.215)
+    axs[0].set_title("Adam 30 s on / 30 s off: hit share", fontsize=11.5); axs[1].set_title("Adam 30 s on / 30 s off: p99 on the on phases", fontsize=11.5)
+    h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc="lower center", ncol=6, fontsize=10, bbox_to_anchor=(0.5, 0.06)); fig._note_rect = 0.15
     ax = axs[2]
     for nm, tag, col in [("budget 12 GB/s", "70b-4x-budget", C["budget"]), ("split 16%", "70b-4x-split", C["split"]), ("CXL-first", "70b-4x-cxlfirst", C["cxl"])]:
         if tag in L:

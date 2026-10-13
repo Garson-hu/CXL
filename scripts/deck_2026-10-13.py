@@ -249,12 +249,12 @@ SLIDES.append(S("Calibration: smoother DRAM writes buy SLO room, but a one-block
     "quantized every 100 ms sample to ~10% steps); a 600 s quiet run showed both neighbours' p99 stable to ≤ 1.3% across 60 s windows, so the per-run 60 s quiet "
     "window is a valid baseline. 70B 4× is overloaded in every setting inside the SLO (backlog ≥ 100 GB), so its hit shares are not used for selection; the chosen "
     "settings there are budget 12 GB/s and split 16%."))
-SLIDES.append(S("Evaluation under the same 7% SLO: budget-gated admission ties or beats the best safe split; both beat the controller", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f17_bga_evaluation",
-    ["Evaluation segment of the trace; settings fixed in advance by the rule from the calibration (the family's best hit share inside the SLO).",
-     "Next to Adam: 8B 4× split 0.190 vs budget 0.185 (both inside the SLO). 8B 8× budget 0.180 vs split 0.164 — the split's 24% failed the SLO by 0.04 points. 70B 4×: equal; backlog bounded at ~140 GB; Adam +6.2%.",
-     "The controller lends nothing next to Adam (hit share 0.157–0.161). Migration helps only next to the reader and breaks the SLO at 70B 4× (+7.5%).",
-     (f"Bars show the mean of {REPS} independent runs per cell." if REPS > 1 else "Bars show one run per cell; two more independent repeats are running today.")],
-    "Inside the same SLO, a bandwidth budget is as good as the best static split and better where the split's bursts break the SLO.",
+SLIDES.append(S("Evaluation under the same 7% SLO: budget-gated admission ties the best safe split; both beat the controller", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f17_bga_evaluation",
+    ["Evaluation segment; settings fixed in advance by the calibration rule.",
+     "Next to Adam: 8B 4× split 0.190 at +5.8%, budget 0.185 at +3.7%. 8B 8× budget 0.180 at +7.1% [6.6..7.6] — on the SLO — vs split 0.164 at +4.6%; held to 7%, a 24 GB/s budget ties the split. 70B 4×: a tie.",
+     "The controller lends nothing next to Adam (0.157–0.161). Migration matches the split next to the reader at 0.2–1.9 GB/s of DRAM writes but breaks the SLO at 70B 4×.",
+     (f"{REPS} runs per cell: hit shares reproduce to ±0.001, the p99 to ±0.5 points." if REPS > 1 else "One run per cell; two more independent repeats are running today.")],
+    "Inside the same SLO a bandwidth budget ties the best static split: smoother writes, no extra hits. Both beat the current controller beside a DRAM-heavy neighbour.",
     "2026-10-12-budget-gated-admission/evaluation/summary.csv (2026-10-12/13)",
     "The evaluation uses the windows of Part V (8B 4× and 70B 4×: trace seconds 600–1320 at 4×; 8B 8×: 600–2040 at 8×). The calibration and evaluation segments do "
     "not overlap. Each configuration ran with the split at its chosen share, the budget at its chosen value, the controller, the controller plus migration, and CXL-first. "
@@ -280,7 +280,18 @@ else:
         "a chunk of four blocks can be admitted whole at d = 4. The cost is in the 20 ms peaks, which is what the Adam step's p99 reacts to. The sweep answers whether "
         "a depth exists that reaches the split's hit share inside the SLO. This slide is replaced by the data slide when the runs finish."))
 if HAVE_VARY:
-    SLIDES.append(S("Varying load: see the data", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f19_bga_varying", ["(filled in from the varying-load and long runs)"], "", "2026-10-12-budget-gated-admission/varying, longrun", ""))
+    SLIDES.append(S("Adapting the budget to the neighbour drains the backlog; 70B 4× next to Adam stays marginal", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f19_bga_varying",
+        ["Adam runs 30 s, pauses 30 s. At 70B 4× an oracle budget (12 GB/s while Adam runs, 32 while it pauses) cuts the peak backlog from 137–145 GB to 60 GB at the same Adam p99 (+6.8%). The controller lends only in the pauses: 201 GB.",
+     "At 8B 8× the oracle equals the fixed budget (32 GB/s is already the largest swept); its +7.6% confirms 32 GB/s is above the SLO next to Adam.",
+     "Long run, 12 min of 70B 4× next to Adam: stores reach 51.5 GB/s against 54 offered; the backlog swings between 38 and 280 GB; Adam's p99 sits at the SLO (budget +6.9%, split +7.3%). CXL-first grows to 1.2 TB."],
+        "Dynamic adaptation buys backlog, not hits. A steady 70B 4× load next to Adam exceeds CXL plus the safe DRAM budget: capacity is insufficient, not merely tight.",
+        "2026-10-12-budget-gated-admission/varying (24 runs, 2 per cell) and longrun (3 runs), 2026-10-13",
+        "The neighbour is paused with SIGSTOP and resumed with SIGCONT every 30 s; Adam's p99 is computed over steps inside the on phases only. The oracle switches the "
+        "budget file at each phase change; it is an upper bound for any online estimator, not a mechanism. At 70B 4× the oracle's mean DRAM rate rises from 8.5 to 12.2 "
+        "GB/s and the peak backlog falls to 60 GB (two runs: 58 and 61); hit shares are unchanged because the configuration is overloaded. The controller does react to "
+        "the pauses (6.1 GB/s lent on average) but lends nothing while Adam runs, so its backlog (201 GB) stays above the fixed policies'. Long run: offered 54.0 GB/s "
+        "mean with minutes up to 58; achieved DRAM 8.1–8.7 plus CXL 42.8–43.4 = 51.5 GB/s; per-minute backlog 38–280 GB; the run drains in its last minute because the "
+        "trace segment ends. Any sustained offered rate above ~52 GB/s would grow the backlog without bound; this is reported as insufficient capacity, not as stable."))
 else:
     pending_fig("f19_pending", "Dynamic workload changes and long runs — PENDING",
                 ["Varying load: Adam step 30 s on / 30 s off (SIGSTOP), 8B 8× and 70B 4×, 2 runs per cell:", "   static split and budget at their Adam-safe settings · ORACLE budget (switches with Adam)",
@@ -307,12 +318,12 @@ SLIDES.append(S("Checkpoint writes and KV reads on the same CXL cards: KV priori
     "its latency to 271 ns but keeps CXL busy 64% of the time instead of 27%. Emulated part: kvemu3 adds the checkpoint writer and a per-load queue to the online emulator; "
     "the 8B 8× queue wait goes from 53 ms to ~8 s. Limits: one small GPU, CPU copies, one run per cell."))
 SLIDES.append(dict(kind="cards", title="What we have learned", part="Part VIII · Current conclusions", tags=["Summary"], cards=[
-    ("DRAM bulk writes can slow neighbours severely", "A 4-thread reader keeps 8% under saturating writers; server-scale KV writes cost neighbours up to 63%. (Slides 2, 11)"),
-    ("CXL writes remove the harm under a placement condition", "≤ 2% for every neighbour when the writer's threads sit on an unrelated core group; the paired or own group gives no protection. (Slides 6, 11)"),
-    ("CXL write bandwidth limits high-rate workloads", "~46 GB/s on the two cards; 70B 4× falls 1.4 TB behind; two writers on one pipe push KV load queueing to ~8 s. (Slides 12, 21)"),
-    ("DRAM provides useful extra KV capacity", "+3 to +15 points of reuse hits in the trace simulation; idle DRAM costs a fifth of the hits in emulation. (Slides 13, 15)"),
-    ("Static admission can outperform current migration policies", "A 32% split beat every controller policy inside the SLO; budget-gated admission ties or beats the split. (Slides 15, 18, 19)"),
-    ("DRAM budget estimation and cross-writer coordination remain open", "The guard lends nothing beside DRAM-heavy neighbours; KV priority cannot share the write pipe. (Slides 16, 21)")],
+    ("DRAM bulk writes can slow neighbours severely", "A 4-thread reader keeps 8% under saturating writers; server-scale KV writes cost neighbours up to 63%. (Slides 2, 12)"),
+    ("CXL writes remove the harm under a placement condition", "≤ 2% for every neighbour when the writer's threads sit on an unrelated core group; the paired or own group gives no protection. (Slides 7, 12)"),
+    ("CXL write bandwidth limits high-rate workloads", "~46 GB/s on the two cards; 70B 4× falls 1.4 TB behind; two writers on one pipe push KV load queueing to ~8 s. (Slides 13, 23)"),
+    ("DRAM provides useful extra KV capacity", "+3 to +15 points of reuse hits in the trace simulation; idle DRAM costs a fifth of the hits in emulation. (Slides 14, 16)"),
+    ("Static admission can outperform current migration policies", "A 32% split beat every controller policy inside the SLO; a bandwidth budget ties it with smoother writes; an adaptive budget halves the 70B backlog. (Slides 16, 20, 22)"),
+    ("DRAM budget estimation and cross-writer coordination remain open", "The guard lends nothing beside DRAM-heavy neighbours; KV priority cannot share the write pipe. (Slides 17, 23)")],
     notes="Each card names the slide that carries its evidence. Items 1–3 are hardware measurements and emulation; item 4 is a trace simulation plus emulation; item 5 "
           "is emulation with calibration-chosen settings (repeats in progress); item 6 names the two open problems that the next phase must address."))
 SLIDES.append(S("Proposed direction: interference-aware capacity and bandwidth management for DRAM/CXL memory", "Part VIII · Current conclusions", ["Proposal (not implemented)"], "f23_direction",
