@@ -263,9 +263,9 @@ SLIDES.append(S("Evaluation under the same 7% SLO: budget-gated admission ties t
     "show whether that is noise."))
 if HAVE_DEPTH:
     SLIDES.append(S("A deeper bucket uses the budget fully, but on the evaluation segment it earns no extra hits", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f18_bga_depth",
-        ["Sweep next to Adam, calibration segment: depth 1, 2, 4, 8 × budget 8, 16, 32 GB/s. At 8 GB/s the utilization rises from 0.31 to 0.91 and the admitted rate from 2.5 to 7.3 GB/s; 20 ms peaks grow from 20 to 31–52 GB/s.",
-         "The hit share follows the admitted share, not the depth: it peaks when DRAM gets ~32% of the new blocks (0.201 at depth 4 / 16 GB/s; the 32% split: 0.204) and falls beyond. Adam's p99 follows the mean DRAM rate.",
-         "Evaluation of depth 4 / 16 GB/s (3 runs): 0.187 at +5.3% — +0.002 over depth 1 for +1.6 points of p99, below the split's 0.190. At 8B 8× no deeper bucket beats depth 1 inside the SLO."],
+        ["Sweep next to Adam, calibration segment: depth 1, 2, 4, 8 × budget 8, 16, 32 GB/s. At 8 GB/s the utilization rises from 0.31 to 0.91; 20 ms peaks grow from 20 to 31–52 GB/s.",
+         "The hit share follows the admitted share, not the depth: it peaks when DRAM gets ~32% of the new blocks (0.201 at depth 4 / 16 GB/s; the 32% split: 0.204). Adam's p99 follows the mean DRAM rate.",
+         "Evaluation of depth 4 / 16 GB/s (3 runs): 0.187 at +5.3% — +0.002 over depth 1 for +1.6 points of p99, below the split's 0.190."],
         "With the right depth the budget policy is a smoother way to express the same static split, not a way to beat it.",
         "2026-10-12-budget-gated-admission/depth (18 runs) and depth-eval (3 runs), 2026-10-13",
         "Depth d lets the bucket bank d blocks of credit, so a chunk of four blocks can be admitted whole. Utilization = DRAM writes / budget; at depth 1 it is 0.15–0.31 "
