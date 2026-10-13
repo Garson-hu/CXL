@@ -181,3 +181,83 @@ budgets 8 / 16 / 32 GB/s next to Adam at 8B 4× and 8B 8× on the calibration se
 runs; 18 runs); then the (depth, budget) pair with the highest hit share inside the SLO per configuration
 (`select_depth.py`) × 3 runs on the evaluation segment next to Adam (`depth-eval/`), comparable with `evaluation/`.
 Reported per run: hit share, DRAM write rate and 20 ms peak, budget utilization, Adam p99.
+
+## Evaluation results (78 runs, 2026-10-12 17:08 – 2026-10-13 14:17; 3 independent runs per cell except CXL-first ×1)
+Hit shares, DRAM rates and backlogs reproduce across repeats (hit ±0.001, backlog ±1 GB); the neighbour's p99 moves by
+about ±0.5 points. Mean over the runs, [min..max] for the p99. Settings as chosen by rule 2.
+
+| config, policy | next to Adam: hit | Adam p99 | DRAM GB/s | backlog GB | next to the reader: hit | reader p99 | DRAM GB/s | backlog GB |
+|---|---|---|---|---|---|---|---|---|
+| 8B 4× split 32% | 0.190 | +5.8 [5.3..6.1] | 6.2 | 2 | 0.190 | +2.2 [1.3..2.6] | 6.2 | 2 |
+| 8B 4× budget 32 GB/s | 0.185 | +3.7 [3.5..4.0] | 5.2 | 3 | 0.185 | +1.7 [1.3..2.6] | 5.2 | 3 |
+| 8B 4× controller | 0.161 | +1.0 | 0.00 (lends nothing) | 3 | 0.161 | +1.3 | 0.07 | 3 |
+| 8B 4× controller + migration | 0.161 | +1.1 | 0.00 (no moves) | 3 | 0.188 [0.187..0.190] | +1.1 | 0.17 | 2 |
+| 8B 4× CXL-first | 0.161 | +0.9 | 0 | 3 | 0.161 | +0.6 | 0 | 3 |
+| 8B 8× split 16% / 32% | 0.164 | +4.6 [4.3..4.9] | 5.4 | 7 | 32%: 0.192 | +2.6 [2.0..3.3] | 11.6 | 6 |
+| 8B 8× budget 32 GB/s | 0.180 | **+7.1 [6.6..7.6]** | 8.8 | 6 | 0.179 | +2.6 [2.0..3.3] | 8.8 | 6 |
+| 8B 8× controller | 0.157 | +1.1 | 0.00 | 26 | 0.161 | +2.2 | 1.8 | 11 |
+| 8B 8× controller + migration | 0.157 | +1.0 | 0.00 | 27 | 0.180 [0.176..0.182] | +2.2 | 1.9 | 3 |
+| 8B 8× CXL-first | 0.157 | +1.1 | 0 | 26 | 0.157 | +3.2 | 0 | 26 |
+| 70B 4× split 16% / 32% | 0.118* | +6.8 [6.2..7.1] | 7.9 | 146 | 32%: 0.122* | +4.7 [4.0..5.4] | 16.0 | 25 |
+| 70B 4× budget 12 / 32 GB/s | 0.118* | +6.6 [6.2..6.9] | 8.5 | 138 | 32: 0.120* | +3.7 [3.3..4.0] | 15.9 | 34 |
+| 70B 4× controller | 0.131* | +2.3 | 0.00 | 709 (growing) | 0.118* | +6.8 [6.1..7.6] | 9.4 | 41 |
+| 70B 4× controller + migration | 0.131* | +2.1 | 0.00 | 710 (growing) | 0.119* | **+7.2 [6.9..7.5]** | 9.2 | 41 |
+| 70B 4× CXL-first | 0.132* | +1.7 | 0 | 707 (growing) | 0.131* | +3.3 | 0 | 709 (growing) |
+
+\* overloaded: hit shares inflated by the backlog, not comparable between policies that keep up and ones that do not.
+
+- Both admission policies beat the existing controller next to Adam at every load (0.180–0.190 vs 0.157–0.161; the
+  controller lends nothing beside Adam in any run), and both bound the 70B 4× backlog (138–146 GB) where the
+  controller's grows past 700 GB.
+- Static split vs budget: 8B 4× — the split has slightly more hits (0.190 vs 0.185), the budget is clearly safer (+3.7
+  vs +5.8) and cannot use its margin (one-block cap). 8B 8× — the budget's 0.180 vs 0.164 comes at +7.1% p99 [6.6..7.6],
+  ON the SLO, not inside it; held strictly to 7%, the safe budget is 24 GB/s (calibration +5.8%, hit 0.166), which ties the
+  split. 70B 4× — a tie. So far dynamic admission's advantage is smoothness (lower p99 at the same mean DRAM rate), not
+  more hits.
+- Next to the reader, migration is the cheapest way to the full hit share (0.188 / 0.180 for 0.2 / 1.9 GB/s of DRAM
+  writes vs 6–12 GB/s for the split and the budget), but at 70B 4× the controller's bursty loans put the reader at
+  +6.8% and migration at +7.2%, above the SLO, while the split and the budget move 16 GB/s at +4.7 / +3.7%.
+- Method note: rule 2 takes the largest feasible value, so several chosen settings straddle the SLO in the independent
+  evaluation (p99 noise ±0.5 points). A selection margin (e.g. ≤ 6% in calibration) would avoid that; not applied here,
+  since changing the rule after seeing the evaluation would be tuning on it.
+
+## Varying neighbour load (24 runs, 2026-10-13 14:17–16:13; Adam 30 s on / 30 s off; 2 runs per cell; p99 over on phases)
+| config, policy | hit | Adam p99 | DRAM GB/s (mean) | budget on / off | backlog GB |
+|---|---|---|---|---|---|
+| 8B 8× split 16% | 0.164 | +4.9 [4.7..5.0] | 5.4 | — | 7 |
+| 8B 8× budget 32 fixed | 0.179 | +7.6 [7.5..7.6] | 8.8 | 32 / 32 | 7 |
+| 8B 8× budget oracle | 0.179 | +7.3 [7.0..7.5] | 8.8 | 32 / 32 (identical: the Adam-safe budget is already the largest swept) | 6 |
+| 8B 8× controller | 0.159 | +1.2 | 0.7 (lends in off phases) | — | 26 |
+| 8B 8× controller + migration | 0.169 | +2.0 | 0.7 | — | 26 |
+| 8B 8× CXL-first | 0.157 | +1.3 | 0 | — | 26 |
+| 70B 4× split 16% | 0.118 | +6.6 [6.5..6.7] | 7.9 | — | 145 |
+| 70B 4× budget 12 fixed | 0.118 | +6.8 [6.6..7.0] | 8.5 | 12 / 12 | 137 |
+| 70B 4× budget oracle | 0.118 | +6.8 [6.7..6.9] | 12.2 | 12 / 32 | **60 [58..61]** |
+| 70B 4× controller | 0.120 | +2.2 | 6.1 (lends in off phases) | — | 201 |
+| 70B 4× controller + migration | 0.121 | +2.4 | 6.1 | — | 199 |
+| 70B 4× CXL-first | 0.132 | +2.1 | 0 | — | 702 |
+
+- At 70B 4× the oracle, which raises the budget to 32 GB/s while Adam is paused, drains the backlog in the off phases:
+  peak backlog 60 GB against 137 (fixed budget) and 145 (split) at the same Adam p99 on the on phases (+6.8 vs +6.8 /
+  +6.6). That is the value of adapting the budget to the neighbour: not more hits, but a backlog that empties whenever
+  DRAM is free. The controller also lends in the off phases (6.1 GB/s mean) but nothing in the on phases, so its backlog
+  (201 GB) stays above the fixed policies'.
+- At 8B 8× the oracle test is degenerate (the Adam-safe budget equals the no-neighbour budget, 32 GB/s), and the fixed
+  budget's +7.6% confirms the evaluation: 32 GB/s is above the SLO next to Adam. Migration gains 0.169 vs 0.159 from
+  moves during the off phases.
+
+## Long run (70B 4× next to Adam, 720 s of traffic, 2026-10-13 16:13–16:54, one run each)
+| policy | offered GB/s | achieved stores | hit | Adam p99 (whole run) | per-minute backlog GB | per-minute Adam p99 % |
+|---|---|---|---|---|---|---|
+| budget 12 GB/s | 54.0 | DRAM 8.7 + CXL 42.8 = 51.5; all bytes done by the end | 0.122 | +6.9 (median +4.1) | 138 46 95 94 67 38 84 87 105 151 240 142 117 | 6.5 6.5 6.7 7.1 6.9 6.9 6.9 6.9 7.3 7.1 7.3 7.5 5.8 |
+| split 16% | 54.0 | DRAM 8.1 + CXL 43.4 = 51.5 | 0.122 | +7.3 (median +3.9) | 146 53 99 109 69 38 89 90 106 163 279 145 123 | 6.9 7.2 7.8 7.6 7.3 6.9 7.3 7.4 7.4 6.8 8.2 7.5 6.3 |
+| CXL-first | 49.4 | CXL 46.6 | 0.139* | +2.5 | 400 501 708 906 889 831 820 871 866 886 1096 1211 1189 (growing) | 1.9–2.9 |
+
+- **Capacity is marginal, not comfortable.** With ~8 GB/s of DRAM writes the stores reach ~51.5 GB/s against 54.0
+  offered over 12 minutes; the backlog does not grow without bound (it drains in the minutes when the offered rate drops
+  below ~50 GB/s and empties by the end), but it swings between 38 and 240–280 GB (up to ~5 s of CXL writing) and Adam's
+  p99 sits at the SLO for the budget (+6.9; 5 of 13 minutes ≥ 7.0) and above it for the split (+7.3; 10 of 13 minutes).
+  Any sustained offered rate above ~52 GB/s would grow the backlog without bound; the offered rate of this trace segment
+  (54.0 mean, minutes up to 58) is already above the safe total. Reported as insufficient capacity for a steady 70B 4×
+  load next to Adam: a 7% SLO leaves ~6–8 GB/s of DRAM for this writer, and that only just covers the mean deficit.
+- CXL-first alone: the backlog grows from 400 GB to 1.2 TB over the run (Adam +2.5%).
