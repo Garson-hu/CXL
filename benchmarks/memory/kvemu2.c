@@ -22,6 +22,8 @@
  *   budget      BUDGET-GATED ADMISSION (2026-10-12): a new block goes to DRAM when a token bucket refilled at B GB/s holds a
  *               whole block (depth = one block: unused budget is lost, DRAM writes stay smooth), else to CXL; per-tier LRU.
  *               B = $KV2_BUDGET_GBPS, or re-read every 10 ms from the file $KV2_BUDGET_FILE (text, GB/s; an oracle signal).
+ *               KV2_BUCKET_BLOCKS=d (2026-10-13, bucket-depth sweep): the bucket holds d blocks of credit (default 1 — the
+ *               behaviour of every run before 2026-10-13); deeper = more of a burst admitted, higher 20 ms peaks.
  * Options by environment (2026-10-12; unset = the behaviour of experiment 2b):
  *   KV2_SPLIT_SHARE=f  split sends the share f of the blocks (by hash) to DRAM, whatever DRAM's share of the capacity
  *   KV2_WARM=common    every tiered policy is warmed with the same placement (split by capacity share: both tiers full,
@@ -113,7 +115,7 @@ static int attached; static int devidx[2] = { -1, -1 }; static uint64_t nclaim, 
 static uint32_t br4(uint32_t k) { k &= 15; return ((k & 1) << 3) | ((k & 2) << 1) | ((k & 4) >> 1) | ((k & 8) >> 3); }
 static uint32_t spill_now(void) { return attached && cxlp_policy_daemon_alive() ? atomic_load(&POL->spill16[0]) : 0; }
 static double split_share = -1; static int common_warm;
-static double bud_Bps, bud_tokens; static uint64_t bud_last, bud_read_ns; static int bud_fd = -1;
+static double bud_Bps, bud_tokens, bud_cap; static uint64_t bud_last, bud_read_ns; static int bud_fd = -1;
 static double budget_now(uint64_t t) {                      /* caller holds cm */
     if (bud_fd >= 0 && t - bud_read_ns >= 10000000ull) { char b[64]; ssize_t r = pread(bud_fd, b, sizeof b - 1, 0); if (r > 0) { b[r] = 0; bud_Bps = atof(b) * 1e9; } bud_read_ns = t; }
     return bud_Bps;
@@ -128,7 +130,7 @@ static uint32_t insert(uint64_t h, int warm) {                /* NIL if no slot 
     case P_SPLIT: t = split_share < 0 ? cap_share_tier(h) : (((h * 0xD6E8FEB86659FD93ull) >> 40) / 16777216.0 < split_share ? 0 : 1); break;
     case P_BUDGET: {                                          /* token bucket of one block, refilled at the current budget */
         uint64_t tn = now(); double B = budget_now(tn);
-        if (bud_last) bud_tokens += (tn - bud_last) / 1e9 * B; bud_last = tn; if (bud_tokens > (double)bsz) bud_tokens = (double)bsz;
+        if (bud_last) bud_tokens += (tn - bud_last) / 1e9 * B; bud_last = tn; if (bud_tokens > bud_cap) bud_tokens = bud_cap;
         t = 1;
         if (nslot[0] && bud_tokens >= (double)bsz && (nfree[0] || evict_tier(0))) { t = 0; bud_tokens -= (double)bsz; }
         break; }
@@ -292,6 +294,7 @@ int main(int argc, char **argv) {
     if (getenv("KV2_SPLIT_SHARE")) split_share = atof(getenv("KV2_SPLIT_SHARE"));
     common_warm = getenv("KV2_WARM") && !strcmp(getenv("KV2_WARM"), "common");
     if (getenv("KV2_BUDGET_GBPS")) bud_Bps = atof(getenv("KV2_BUDGET_GBPS")) * 1e9;
+    bud_cap = (getenv("KV2_BUCKET_BLOCKS") ? atof(getenv("KV2_BUCKET_BLOCKS")) : 1.0) * (double)bsz;
     if (getenv("KV2_BUDGET_FILE")) { bud_fd = open(getenv("KV2_BUDGET_FILE"), O_RDONLY); if (bud_fd < 0) { perror(getenv("KV2_BUDGET_FILE")); return 1; } bud_read_ns = 0; budget_now(now()); }
     nslot[0] = (uint32_t)(dram_gib * GiB / bsz); nslot[1] = (uint32_t)(cxl_gib * GiB / bsz); nslots = nslot[0] + nslot[1];
     S = calloc(nslots, sizeof *S); for (int t = 0; t < 2; t++) { freel[t] = malloc((nslot[t] + 1) * 4); nfree[t] = 0; }
@@ -328,11 +331,11 @@ int main(int argc, char **argv) {
     nbins = (size_t)(span / 0.02) + 1; offered = calloc(nbins, 8);
     printf("# kvemu2 %s [%g,%g) s at %gx: %zu requests; block %zu KiB; policy %s; DRAM %.1f GiB (%u slots) + CXL %.1f GiB (%u slots), watermark %.2f; "
            "%d workers on cpus %d..; chunk %d blocks, link %.2f GB/s, prefill %.0f tok/s, store cap %.1f GB/s; cxlpath store %s (dev DRAM %d, CXL %d); "
-           "split share %s; warm-up %s; budget %s\n",
+           "split share %s; warm-up %s; budget %s; bucket %.0f blocks\n",
            trace, t0s, t1s, speed, nrq, bsz >> 10, pnames[policy], dram_gib, nslot[0], cxl_gib, nslot[1], watermark, W, cpu0, chunk, link_Bps / 1e9, pf, cap_Bps / 1e9,
            store ? store : "-", devidx[0], devidx[1], getenv("KV2_SPLIT_SHARE") ? getenv("KV2_SPLIT_SHARE") : "capacity",
            common_warm || policy == P_BUDGET ? "common (capacity-share split)" : "by policy",
-           policy != P_BUDGET ? "-" : getenv("KV2_BUDGET_FILE") ? getenv("KV2_BUDGET_FILE") : getenv("KV2_BUDGET_GBPS") ? getenv("KV2_BUDGET_GBPS") : "0");
+           policy != P_BUDGET ? "-" : getenv("KV2_BUDGET_FILE") ? getenv("KV2_BUDGET_FILE") : getenv("KV2_BUDGET_GBPS") ? getenv("KV2_BUDGET_GBPS") : "0", bud_cap / (double)bsz);
     printf("# after warm-up: occupancy DRAM %u CXL %u of %u slots\n", occ[0], occ[1], nslots); fflush(stdout);
 
     pthread_t th[256], lg; t_start = now() + 200000000ull;

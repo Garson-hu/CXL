@@ -38,6 +38,7 @@ for meta in sorted(glob.glob(os.path.join(D, "*-meta.txt"))):
     act = [i for i in range(len(W)) if sd[i] + sc[i] > 0]
     moved = float(re.search(r"moved_GB ([\d.]+)", emu)[1]) if "moved_GB" in emu else 0.0
     r = dict(tag=tag, neighbor=cfg.get("neighbor"), policy=cfg.get("policy"), share=cfg.get("KV2_SPLIT_SHARE", ""), budget_set=cfg.get("KV2_BUDGET_GBPS", cfg.get("phase_budgets", "")),
+             depth=cfg.get("KV2_BUCKET_BLOCKS", "1"),
              window=f"{cfg.get('t0')}-{cfg.get('t1')}@{cfg.get('speed')}", block_KiB=cfg.get("block_KiB"), phases=cfg.get("phases"),
              span_s=len(W) * 0.02, offered=st.mean(off), store_dram=st.mean(sd), store_cxl=st.mean(sc), load=st.mean(ld), moved_GB=moved,
              achieved_frac=(sum(sd) + sum(sc) + sum(ld)) / max(1e-9, sum(off)),

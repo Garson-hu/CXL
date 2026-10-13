@@ -172,3 +172,12 @@ Read so far (to be confirmed by the repeats):
   .190 for 6.2 GB/s), but does not exceed the admission policies, and does nothing next to Adam.
 - The budget's one-minute p99 at 8B 8× next to Adam touched +7.1% — the SLO is met on the whole window, not in every
   minute; the repeats will show whether that is noise.
+
+## Resumed 2026-10-13 10:22 (allocation 311690; dax0.0/dax1.0 still kmem-rw, no reboot; binaries unchanged; HEAD 3762292)
+The chain skipped the 101 finished runs, re-derived the same `chosen.txt` and continued with `reader-70b-4x-cxlfirst-r1`
+(log `chain-log-2026-10-13.txt`). **Added at the user's request: a bucket-depth sweep** (`run_bga_depth.sh`, waits for the
+main chain, then rebuilds kvemu2 with `KV2_BUCKET_BLOCKS`, default 1 = the old behaviour): depths 2 / 4 / 8 blocks ×
+budgets 8 / 16 / 32 GB/s next to Adam at 8B 4× and 8B 8× on the calibration segment (depth 1 = the existing calibration
+runs; 18 runs); then the (depth, budget) pair with the highest hit share inside the SLO per configuration
+(`select_depth.py`) × 3 runs on the evaluation segment next to Adam (`depth-eval/`), comparable with `evaluation/`.
+Reported per run: hit share, DRAM write rate and 20 ms peak, budget utilization, Adam p99.
