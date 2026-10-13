@@ -9,6 +9,12 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-13 18:45 addendum — BUDGET-GATED ADMISSION CLOSED; DECK DELIVERED.** 196 runs: budget-gated admission equals the
+best safe static split inside the SLO (smoother writes, no extra hits); both beat the controller next to Adam; an
+adaptive (oracle) budget halves the 70B backlog; 70B 4× next to Adam is marginal. Deck: `docs/slides/SLIDES_2026-10-13-
+progress-report.pptx`. Next: user decides on online budget estimation / cross-writer admission. No controller or
+manager changes made.
+
 **2026-10-12 19:30 addendum — BUDGET-GATED ADMISSION EXPERIMENT PAUSED, c28 RELEASED.** Open file
 `docs/experiments/2026-10-12-budget-gated-admission.md`: calibration and evaluation rep 1 done, 76 runs (≈ 8.5 h) remain;
 resume = re-launch `benchmarks/memory/run_bga_chain.sh 60` detached in a new c28 allocation (≥ 12 h) after the checks
@@ -175,6 +181,26 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-13 (session 33) — budget-gated admission campaign finished and closed; progress deck for Dr. Mueller
+
+- Resumed on allocation 311690 at 10:22 (dax permissions intact, binaries unchanged, HEAD = pushed state); the chain
+  skipped the 101 finished runs. Done today: 49 evaluation repeats, 24 varying-load runs (Adam 30 s on / off, oracle
+  budget), 3 long runs (70B 4× × 720 s), 18 bucket-depth runs + 3 depth-evaluation repeats; 196 runs in all, none failed.
+- Verdict (`2026-10-12-budget-gated-admission.md`, CLOSED): under the same 7% SLO budget-gated admission equals the best
+  safe static split (hits and backlog), with smoother DRAM writes; a deeper bucket raises utilization (0.3 → 0.9) but
+  not the evaluation hit share; both beat the existing controller next to Adam (0.180–0.190 vs 0.157–0.161; it lends
+  nothing there, 70B backlog > 700 GB); the oracle budget that rises while Adam pauses cuts the 70B 4× backlog peak
+  137–145 → 60 GB; the long run shows 70B 4× next to Adam is marginal (CXL + 6–8 GB/s safe DRAM < 54 GB/s offered);
+  migration matches the split next to the reader for 5–30× fewer DRAM writes but breaks the SLO at 70B 4×. Method
+  notes: chosen settings straddle the SLO (rule 2 takes the largest feasible value; p99 noise ±0.5 points) — a
+  selection margin is needed next time; calibration-segment optima (depth 4 / 16 GB/s: 0.201) did not transfer.
+- Research-progress deck for Dr. Mueller: `docs/slides/SLIDES_2026-10-13-progress-report.pptx` (26 slides, STE style,
+  every data figure from the raw results; sources in `docs/slides/2026-10-13-progress-report/`; generators tracked as
+  `scripts/figs_deck_2026-10-13.py` and `scripts/deck_2026-10-13.py`). First built in a top-level `presentation/` dir
+  by mistake, moved to `docs/slides/` (local-only by the 2026-09 rule) at the user's reminder.
+- Pending user decisions: online estimation of the safe DRAM budget (the probe guard finds none beside Adam);
+  cross-writer admission for checkpoint + KV; whether to track the deck in git (`git add -f`).
 
 ### 2026-10-12 (session 32) — budget-gated admission: tools, calibration, evaluation rep 1; PAUSED (node released)
 

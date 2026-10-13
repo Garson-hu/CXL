@@ -369,11 +369,12 @@ def f_bga_depth():
             bs = sorted(b for (c, dd, b) in rows if c == cfg and dd == depth and b in (8, 16, 32))
             if not bs: continue
             rs = [rows[(cfg, depth, b)] for b in bs]
-            for j, (key, yl) in enumerate([("hit_share", "hit share"), ("budget_util_active", "budget utilization"), ("dram_peak20", "DRAM 20 ms peak, GB/s"), ("slow_p99", "Adam p99 slowdown, %")]):
+            for j, (key, yl) in enumerate([("hit_share", "hit share"), ("budget_util", "budget utilization (whole run)"), ("dram_peak20", "DRAM 20 ms peak, GB/s"), ("slow_p99", "Adam p99 slowdown, %")]):
                 ax = axs[i][j]; ax.plot(bs, [float(r[key]) for r in rs], marker="o", color=cols[depth], label=f"depth {depth}")
                 ax.set_xticks([8, 16, 32]); ax.set_xlabel("budget, GB/s" if i == 1 else ""); ax.set_title(f"{cfg.replace('b-', 'B ').replace('x', '×')}: {yl}", fontsize=11)
                 if key == "slow_p99": ax.axhline(7, color=C["pm"], ls=":", lw=1.2)
-    axs[0][0].legend(loc="lower right", fontsize=9)
+                if key == "budget_util": ax.set_ylim(0, 1.05)
+    h, l = axs[0][0].get_legend_handles_labels(); fig.legend(h, l, loc="lower center", ncol=4, fontsize=10, bbox_to_anchor=(0.5, 0.05)); fig._note_rect = 0.12
     save(fig, "f18_bga_depth", [f"{d}/calibration/summary.csv", pd], "Host memory traffic emulation, c28, calibration segment next to the Adam step, one run per point (depth 1 = calibration runs), 2026-10-12/13")
     return True
 def f_bga_varying():

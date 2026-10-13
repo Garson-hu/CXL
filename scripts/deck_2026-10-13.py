@@ -262,7 +262,18 @@ SLIDES.append(S("Evaluation under the same 7% SLO: budget-gated admission ties t
     "the budget move three times the DRAM rate at +1.3 to +4.0%. The budget's per-minute p99 at 8B 8× next to Adam touched +7.1% in one minute of rep 1; the repeats "
     "show whether that is noise."))
 if HAVE_DEPTH:
-    SLIDES.append(S("Bucket depth: see the data", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f18_bga_depth", ["(filled in from the depth sweep)"], "", "2026-10-12-budget-gated-admission/depth", ""))
+    SLIDES.append(S("A deeper bucket uses the budget fully, but on the evaluation segment it earns no extra hits", "Part VI · Budget-gated admission", ["Trace-driven emulation"], "f18_bga_depth",
+        ["Sweep next to Adam, calibration segment: depth 1, 2, 4, 8 × budget 8, 16, 32 GB/s. At 8 GB/s the utilization rises from 0.31 to 0.91 and the admitted rate from 2.5 to 7.3 GB/s; 20 ms peaks grow from 20 to 31–52 GB/s.",
+         "The hit share follows the admitted share, not the depth: it peaks when DRAM gets ~32% of the new blocks (0.201 at depth 4 / 16 GB/s; the 32% split: 0.204) and falls beyond. Adam's p99 follows the mean DRAM rate.",
+         "Evaluation of depth 4 / 16 GB/s (3 runs): 0.187 at +5.3% — +0.002 over depth 1 for +1.6 points of p99, below the split's 0.190. At 8B 8× no deeper bucket beats depth 1 inside the SLO."],
+        "With the right depth the budget policy is a smoother way to express the same static split, not a way to beat it.",
+        "2026-10-12-budget-gated-admission/depth (18 runs) and depth-eval (3 runs), 2026-10-13",
+        "Depth d lets the bucket bank d blocks of credit, so a chunk of four blocks can be admitted whole. Utilization = DRAM writes / budget; at depth 1 it is 0.15–0.31 "
+        "because the three remaining blocks of each chunk go to CXL. The selection rule picked depth 4 / 16 GB/s for 8B 4× (0.201 on the calibration segment) and kept "
+        "depth 1 / 32 GB/s for 8B 8×; the calibration optimum did not transfer to the evaluation segment (0.187), which has a different reuse structure. The point of "
+        "depth for a future controller: a budget in GB/s that is actually used, so an online estimate of the safe budget maps directly to the admitted DRAM rate — "
+        "depth 8 at 8 GB/s runs at 97% utilization and equals the 16% split (0.164 at +4.9%) with a margin to the SLO. 20 ms peaks: depth 1 ~20 GB/s, depth 4 27–36, "
+        "depth 8 31–52, the split 40–50; Adam's p99 tracks the mean DRAM rate more than the peaks."))
 else:
     pending_fig("f18_pending", "Bucket depth sensitivity — PENDING",
                 ["Sweep next to the Adam step, 8B 4× and 8B 8×, calibration segment:", "   depth 1, 2, 4, 8 blocks  ×  budget 8, 16, 32 GB/s  (depth 1 = existing calibration runs)",
@@ -322,7 +333,7 @@ SLIDES.append(dict(kind="cards", title="What we have learned", part="Part VIII �
     ("CXL writes remove the harm under a placement condition", "≤ 2% for every neighbour when the writer's threads sit on an unrelated core group; the paired or own group gives no protection. (Slides 7, 12)"),
     ("CXL write bandwidth limits high-rate workloads", "~46 GB/s on the two cards; 70B 4× falls 1.4 TB behind; two writers on one pipe push KV load queueing to ~8 s. (Slides 13, 23)"),
     ("DRAM provides useful extra KV capacity", "+3 to +15 points of reuse hits in the trace simulation; idle DRAM costs a fifth of the hits in emulation. (Slides 14, 16)"),
-    ("Static admission can outperform current migration policies", "A 32% split beat every controller policy inside the SLO; a bandwidth budget ties it with smoother writes; an adaptive budget halves the 70B backlog. (Slides 16, 20, 22)"),
+    ("Static admission can outperform current migration policies", "A 32% split beat every controller policy inside the SLO; a bandwidth budget ties it at any bucket depth; only an adaptive budget adds value, by halving the 70B backlog. (Slides 16, 20–22)"),
     ("DRAM budget estimation and cross-writer coordination remain open", "The guard lends nothing beside DRAM-heavy neighbours; KV priority cannot share the write pipe. (Slides 17, 23)")],
     notes="Each card names the slide that carries its evidence. Items 1–3 are hardware measurements and emulation; item 4 is a trace simulation plus emulation; item 5 "
           "is emulation with calibration-chosen settings (repeats in progress); item 6 names the two open problems that the next phase must address."))
@@ -338,12 +349,12 @@ SLIDES.append(S("Proposed direction: interference-aware capacity and bandwidth m
     "controller's hardest part is estimating the safe budget, not moving data. Colours in the figure: green = emulated and measured, orange = minimal policy, red = "
     "proposal only."))
 SLIDES.append(dict(kind="cards", title="Next steps and open questions", part="Part VIII · Current conclusions", tags=["Proposal (not implemented)"], cards=[
-    ("Can dynamic admission beat the best static split?", "Pending today: the evaluation repeats, the varying-load runs with an oracle budget, and the bucket-depth sweep. If the gain is small, a complex controller is not justified."),
+    ("Can dynamic admission beat the best static split?", "For a fixed budget: no, it ties the split at any depth (slides 20–21). It pays only by adapting to the neighbour (slide 22), which needs an online estimate of the safe budget."),
     ("Can we estimate the safe DRAM bandwidth online?", "The probe-based guard fails beside DRAM-heavy neighbours. Candidate: a write-rate probe calibrated against the measured SLO curve."),
     ("When are promotion or demotion necessary?", "So far only next to calm DRAM, and never better than admission. Decide after the repeats; keep migration minimal."),
     ("How should checkpoint writes and KV reads share CXL bandwidth?", "Cross-writer admission on one budget; pace the checkpoint below the residual CXL capacity; protect latency-sensitive CXL readers."),
     ("What minimal unified manager do the data justify?", "Admission with a budget, per-tier capacity management, calm-time migration. Nothing more until it is measured."),
-    ("Priorities for the next phase", "1. Finish the budget-gated campaign and report it. 2. Online budget estimation. 3. Cross-writer admission prototype. 4. CXL-first patch for real LMCache.")],
+    ("Priorities for the next phase", "1. Online estimation of the safe DRAM write budget (the current guard finds none beside Adam). 2. Cross-writer admission prototype for checkpoint + KV. 3. A selection rule with an SLO margin. 4. CXL-first patch for real LMCache.")],
     notes="Priorities follow the evidence: the first item is already running; items 2 and 3 address the two open problems; item 4 brings the real system back into the "
           "loop once the emulated policies have shown which one to build. No controller or unified-manager change is started without the measured gain."))
 

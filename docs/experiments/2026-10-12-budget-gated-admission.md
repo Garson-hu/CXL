@@ -1,7 +1,7 @@
 # 2026-10-12 — Budget-gated admission vs the best safe static split, the current controller and migration
 
-**STATUS: ACTIVE.** Raw: `experimental_results/2026-10-12-budget-gated-admission/` (`quiet/`, `calibration/`, `evaluation/`,
-`varying/`, `longrun/`). Agreed with the user 2026-10-12 (option 1 after `2026-10-11-capacity-matched-kv.md`); no change to
+**STATUS: CLOSED 2026-10-13** (opened 2026-10-12; paused 2026-10-12 19:27 – 2026-10-13 10:22). Raw: `experimental_results/2026-10-12-budget-gated-admission/`
+(`quiet/`, `calibration/`, `evaluation/`, `varying/`, `longrun/`, `depth/`, `depth-eval/`; 196 runs). Agreed with the user 2026-10-12 (option 1 after `2026-10-11-capacity-matched-kv.md`); no change to
 cxlpathd, no cross-writer admission.
 
 ## Question
@@ -261,3 +261,58 @@ about ±0.5 points. Mean over the runs, [min..max] for the p99. Settings as chos
   (54.0 mean, minutes up to 58) is already above the safe total. Reported as insufficient capacity for a steady 70B 4×
   load next to Adam: a 7% SLO leaves ~6–8 GB/s of DRAM for this writer, and that only just covers the mean deficit.
 - CXL-first alone: the backlog grows from 400 GB to 1.2 TB over the run (Adam +2.5%).
+
+## Bucket-depth sweep (18 runs, 2026-10-13 16:55–18:20, calibration segment, next to Adam; depth 1 = the calibration runs)
+hit / Adam p99 / DRAM writes GB/s (20 ms peak) / budget utilization. X = fails the SLO.
+
+**8B 4×**
+| depth \ budget | 8 GB/s | 16 GB/s | 32 GB/s |
+|---|---|---|---|
+| 1 | 0.167 / +2.1 / 2.5 (11) / 0.31 | 0.185 / +2.9 / 4.1 (18) / 0.26 | 0.190 / +3.4 / 4.8 (20) / 0.15 |
+| 2 | 0.179 / +3.1 / 3.8 (18) / 0.47 | 0.200 / +4.2 / 6.0 (24) / 0.38 | 0.194 / +5.2 / 8.0 (40) / 0.25 |
+| 4 | 0.190 / +3.6 / 5.1 (27) / 0.64 | **0.201 / +5.4 / 7.5 (36) / 0.47** | 0.195 / +7.7 X / 11.2 (47) / 0.35 |
+| 8 | 0.197 / +5.5 / 7.3 (31) / 0.91 | 0.175 / +6.8 / 10.0 (45) / 0.62 | 0.172 / +9.1 X / 13.1 (52) / 0.41 |
+
+**8B 8×**
+| depth \ budget | 8 GB/s | 16 GB/s | 32 GB/s |
+|---|---|---|---|
+| 1 | 0.153 / +3.1 / 3.8 (17) / 0.48 | 0.159 / +4.5 / 6.1 (26) / 0.38 | **0.167 / +6.8 / 8.9 (43) / 0.28** (24 GB/s: 0.166 / +5.8) |
+| 2 | 0.154 / +4.2 / 5.0 (23) / 0.62 | 0.164 / +6.8 / 8.2 (41) / 0.51 | 0.180 / +10.1 X / 13.0 (57) / 0.40 |
+| 4 | 0.159 / +4.3 / 6.2 (25) / 0.78 | 0.168 / +7.6 X / 9.7 (46) / 0.60 | 0.172 / +11.4 X |
+| 8 | 0.164 / +4.9 / 7.8 (32) / 0.97 | 0.178 / +8.6 X / 12.2 (48) / 0.76 | 0.165 / +12.8 X |
+
+Chosen by rule 2 (best hit inside the SLO): 8B 4× depth 4 / 16 GB/s; 8B 8× depth 1 / 32 GB/s (unchanged).
+**Depth evaluation** (evaluation segment, next to Adam, 3 runs, `depth-eval/`): 8B 4× depth 4 / 16 GB/s → hit 0.187
+[0.185..0.188], Adam p99 +5.3 [5.2..5.4], DRAM 7.9 GB/s (20 ms peak 29), utilization 0.72, backlog 3 GB — against depth 1 /
+32 GB/s 0.185 at +3.7 and the 32% split 0.190 at +5.8 on the same segment.
+
+- Depth does what it was meant to: at 8 GB/s the budget's utilization goes from 0.31 to 0.91 (8B 4×) and 0.48 to 0.97
+  (8B 8×) between depth 1 and 8, and the admitted DRAM rate from 2.5 to 7.3 and 3.8 to 7.8 GB/s.
+- The hit share follows the admitted share, not the depth: it peaks when DRAM gets about its 32% share of the new blocks
+  (8B 4×: 0.201 at 7.5 GB/s, split 32%: 0.204 at 6.1) and falls when DRAM gets more (depth 8 / 16 GB/s: 0.175).
+- The neighbour's p99 follows the mean DRAM rate more than the depth (≈ +5.5% at 7.3–7.5 GB/s for depth 4 and 8; the
+  split's 6.1 GB/s: +5.6%); the 20 ms peaks grow with depth (20 → 31–36 → 45–52 GB/s).
+- On the evaluation segment the chosen depth gains +0.002 over depth 1 (0.187 vs 0.185) for +1.6 points of p99 and still
+  trails the split (0.190 at +5.8): the calibration-segment optimum (0.201 vs 0.190) did not transfer. At 8B 8× no deeper
+  bucket beats depth 1 inside the SLO; with a safety margin, depth 8 / 8 GB/s (0.164 at +4.9, utilization 0.97) equals
+  the 16% split (0.164 at +4.6 in the evaluation).
+
+## Verdict (CLOSED 2026-10-13)
+**Under the same 7% neighbour-slowdown SLO, budget-gated admission does not get more hits or a lower backlog than
+the best safe static split; it equals it.** Its measurable advantages are smoother DRAM writes (lower p99 at the same mean
+rate: 20 ms peaks 20–36 GB/s vs 40–50 for the split) and a knob expressed in GB/s, which an online SLO estimator could
+set; its disadvantage, the one-block cap (~25% of the writes), is removed by a deeper bucket at the cost of higher peaks,
+after which hit share and p99 are those of the equivalent split. Where dynamic admission does pay is adaptation to the
+neighbour: with an oracle budget that rises while Adam pauses, the 70B 4× backlog peak falls from 137–145 GB to 60 GB
+at the same p99. Both admission policies beat the existing controller next to a DRAM-heavy neighbour (hit share
+0.180–0.190 vs 0.157–0.161; the controller lends nothing there and lets the 70B backlog grow past 700 GB); next to a
+calm neighbour the controller's migration reaches the split's hit share for 5–30× fewer DRAM writes but its bursty
+loans break the SLO at 70B 4×. The 70B 4× long run shows that CXL plus the safe DRAM budget (~46 + 6–8 GB/s) is
+insufficient for a steady 54 GB/s load next to Adam: the backlog stays bounded only because the offered rate dips.
+Consequences: (1) a complex controller is not justified by hit rate; a static split or a fixed budget with the right
+depth gets the same hits inside the SLO; (2) what would justify dynamic management is online estimation of the safe
+DRAM write budget (the current probe-based guard finds none beside Adam) and its adaptation to the neighbour's phases;
+(3) the selection rule needs a safety margin (chosen settings straddle the SLO with ±0.5-point p99 noise).
+Limits: host memory traffic emulation (CPU non-temporal copies on CCDs 6–7, not GPU DMA); one trace (conversation);
+200 GiB effective capacity; 70B 4× is a multi-server aggregate; calibration and evaluation segments differ in reuse
+structure; 2–3 runs per cell; the oracle is an upper bound, not a mechanism.

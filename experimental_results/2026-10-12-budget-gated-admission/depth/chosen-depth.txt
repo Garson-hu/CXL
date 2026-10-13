@@ -1,0 +1,3 @@
+opt 70b-4x depth 1 budget 2
+opt 8b-4x depth 4 budget 16
+opt 8b-8x depth 1 budget 32
