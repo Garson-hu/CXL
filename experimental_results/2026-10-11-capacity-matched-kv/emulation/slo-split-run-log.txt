@@ -1,0 +1,3 @@
+opt-70b-4x-split24: kvemu2 rc=0
+opt-70b-4x-split40: kvemu2 rc=0
+ALLDONE

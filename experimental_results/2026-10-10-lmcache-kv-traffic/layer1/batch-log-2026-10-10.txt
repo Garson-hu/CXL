@@ -1,0 +1,7 @@
+normal-conv: client rc=0
+normal-tool: client rc=0
+sat-alone: client rc=0
+sat-reader: client rc=0
+sat-pr: client rc=0
+sat-opt: client rc=0
+sat-llama: client rc=0

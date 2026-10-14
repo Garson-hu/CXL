@@ -1,0 +1,14 @@
+chain start Sat Oct 10 16:42:02 EDT 2026
+normal-conv-v2: client rc=0
+normal-tool-v2: client rc=0
+llama control start Sat Oct 10 18:00:03 EDT 2026
+layer 2 start Sat Oct 10 18:12:03 EDT 2026
+none-8b-1x-dram: kvemu rc=0
+none-8b-1x-cxl: kvemu rc=0
+none-8b-4x-dram: kvemu rc=0
+none-8b-4x-cxl: kvemu rc=0
+none-8b-8x-dram: kvemu rc=0
+none-8b-8x-cxl: kvemu rc=0
+none-70b-1x-dram: kvemu rc=0
+none-70b-1x-cxl: kvemu rc=0
+none-70b-4x-dram: kvemu rc=0

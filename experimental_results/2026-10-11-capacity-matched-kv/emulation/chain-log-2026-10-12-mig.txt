@@ -1,0 +1,9 @@
+none-8b-4x-borrowmig: kvemu2 rc=0
+none-8b-8x-borrowmig: kvemu2 rc=0
+none-70b-4x-borrowmig: kvemu2 rc=0
+reader-8b-4x-borrowmig: kvemu2 rc=0
+reader-8b-8x-borrowmig: kvemu2 rc=0
+reader-70b-4x-borrowmig: kvemu2 rc=0
+opt-8b-4x-borrowmig: kvemu2 rc=0
+opt-8b-8x-borrowmig: kvemu2 rc=0
+opt-70b-4x-borrowmig: kvemu2 rc=0

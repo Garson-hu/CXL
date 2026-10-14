@@ -1,0 +1,96 @@
+calibration start Tue Oct 13 10:22:23 EDT 2026
+opt    70b-4x  budget -> 12 (overloaded family: largest feasible)   (2: p99 +3.3% hit 0.137 backlog 386, 4: p99 +4.0% hit 0.133 backlog 255, 8: p99 +5.2% hit 0.130 backlog 149, 12: p99 +6.6% hit 0.129 backlog 103, 16: p99 +7.3% hit 0.128 backlog 88, 24: p99 +8.9% hit 0.128 backlog 66, 32: p99 +10.7% hit 0.128 backlog 54)
+opt    70b-4x  split  -> 0.16 (overloaded family: largest feasible)   (0.08: p99 +4.2% hit 0.131 backlog 251, 0.16: p99 +6.4% hit 0.129 backlog 106, 0.24: p99 +9.2% hit 0.128 backlog 70, 0.32: p99 +13.5% hit 0.128 backlog 40, 0.48: p99 +21.7% hit 0.123 backlog 14)
+opt    8b-4x   budget -> 32   (2: p99 +1.0% hit 0.163 backlog 4, 4: p99 +1.3% hit 0.165 backlog 4, 8: p99 +2.1% hit 0.167 backlog 4, 12: p99 +2.9% hit 0.182 backlog 4, 16: p99 +2.9% hit 0.185 backlog 4, 24: p99 +3.1% hit 0.188 backlog 4, 32: p99 +3.4% hit 0.190 backlog 4)
+opt    8b-4x   split  -> 0.32   (0.08: p99 +1.2% hit 0.166 backlog 4, 0.16: p99 +2.6% hit 0.172 backlog 4, 0.24: p99 +4.1% hit 0.185 backlog 4, 0.32: p99 +5.6% hit 0.204 backlog 4, 0.48: p99 +7.7% hit 0.167 backlog 3)
+opt    8b-8x   budget -> 32   (2: p99 +1.7% hit 0.147 backlog 21, 4: p99 +2.2% hit 0.150 backlog 14, 8: p99 +3.1% hit 0.153 backlog 8, 12: p99 +3.5% hit 0.157 backlog 7, 16: p99 +4.5% hit 0.159 backlog 7, 24: p99 +5.8% hit 0.166 backlog 7, 32: p99 +6.8% hit 0.167 backlog 7)
+opt    8b-8x   split  -> 0.16   (0.08: p99 +2.4% hit 0.151 backlog 16, 0.16: p99 +4.3% hit 0.159 backlog 6, 0.24: p99 +7.0% hit 0.168 backlog 6, 0.32: p99 +9.3% hit 0.179 backlog 5, 0.48: p99 +14.7% hit 0.149 backlog 5)
+reader 70b-4x  budget -> 32 (overloaded family: largest feasible)   (2: p99 +2.6% hit 0.136 backlog 388, 4: p99 +2.0% hit 0.133 backlog 254, 8: p99 +2.6% hit 0.130 backlog 149, 12: p99 +2.0% hit 0.129 backlog 105, 16: p99 +2.0% hit 0.128 backlog 90, 24: p99 +2.0% hit 0.128 backlog 68, 32: p99 +3.5% hit 0.128 backlog 52)
+reader 70b-4x  split  -> 0.32 (overloaded family: largest feasible)   (0.08: p99 +3.9% hit 0.131 backlog 251, 0.16: p99 +2.0% hit 0.129 backlog 107, 0.24: p99 +2.6% hit 0.128 backlog 70, 0.32: p99 +4.0% hit 0.128 backlog 39, 0.48: p99 +8.3% hit 0.123 backlog 11)
+reader 8b-4x   budget -> 32   (2: p99 +2.5% hit 0.163 backlog 4, 4: p99 +0.6% hit 0.165 backlog 4, 8: p99 +1.3% hit 0.167 backlog 4, 12: p99 +1.3% hit 0.182 backlog 4, 16: p99 +2.6% hit 0.184 backlog 4, 24: p99 +2.0% hit 0.189 backlog 4, 32: p99 +2.6% hit 0.190 backlog 4)
+reader 8b-4x   split  -> 0.32   (0.08: p99 +0.7% hit 0.166 backlog 4, 0.16: p99 +1.9% hit 0.172 backlog 4, 0.24: p99 +1.9% hit 0.185 backlog 4, 0.32: p99 +1.4% hit 0.204 backlog 4, 0.48: p99 +2.6% hit 0.167 backlog 4)
+reader 8b-8x   budget -> 32   (2: p99 +1.3% hit 0.147 backlog 21, 4: p99 +1.3% hit 0.150 backlog 14, 8: p99 +2.6% hit 0.153 backlog 9, 12: p99 +3.9% hit 0.157 backlog 7, 16: p99 +2.6% hit 0.159 backlog 7, 24: p99 +2.6% hit 0.166 backlog 7, 32: p99 +2.6% hit 0.166 backlog 7)
+reader 8b-8x   split  -> 0.32   (0.08: p99 +2.6% hit 0.151 backlog 15, 0.16: p99 +3.9% hit 0.159 backlog 6, 0.24: p99 +2.0% hit 0.168 backlog 6, 0.32: p99 +3.9% hit 0.179 backlog 5, 0.48: p99 +5.3% hit 0.149 backlog 5)
+any    70b-4x  offbudget -> 32 (largest swept budget)
+any    8b-4x   offbudget -> 32 (largest swept budget)
+any    8b-8x   offbudget -> 32 (largest swept budget)
+evaluation start Tue Oct 13 10:22:29 EDT 2026
+reader-70b-4x-cxlfirst-r1: kvemu2 rc=0
+opt-8b-4x-split-r2: kvemu2 rc=0
+opt-8b-4x-budget-r2: kvemu2 rc=0
+opt-8b-4x-borrowtier-r2: kvemu2 rc=0
+opt-8b-4x-borrowmig-r2: kvemu2 rc=0
+opt-8b-8x-split-r2: kvemu2 rc=0
+opt-8b-8x-budget-r2: kvemu2 rc=0
+opt-8b-8x-borrowtier-r2: kvemu2 rc=0
+opt-8b-8x-borrowmig-r2: kvemu2 rc=0
+opt-70b-4x-split-r2: kvemu2 rc=0
+opt-70b-4x-budget-r2: kvemu2 rc=0
+opt-70b-4x-borrowtier-r2: kvemu2 rc=0
+opt-70b-4x-borrowmig-r2: kvemu2 rc=0
+reader-8b-4x-split-r2: kvemu2 rc=0
+reader-8b-4x-budget-r2: kvemu2 rc=0
+reader-8b-4x-borrowtier-r2: kvemu2 rc=0
+reader-8b-4x-borrowmig-r2: kvemu2 rc=0
+reader-8b-8x-split-r2: kvemu2 rc=0
+reader-8b-8x-budget-r2: kvemu2 rc=0
+reader-8b-8x-borrowtier-r2: kvemu2 rc=0
+reader-8b-8x-borrowmig-r2: kvemu2 rc=0
+reader-70b-4x-split-r2: kvemu2 rc=0
+reader-70b-4x-budget-r2: kvemu2 rc=0
+reader-70b-4x-borrowtier-r2: kvemu2 rc=0
+reader-70b-4x-borrowmig-r2: kvemu2 rc=0
+opt-8b-4x-split-r3: kvemu2 rc=0
+opt-8b-4x-budget-r3: kvemu2 rc=0
+opt-8b-4x-borrowtier-r3: kvemu2 rc=0
+opt-8b-4x-borrowmig-r3: kvemu2 rc=0
+opt-8b-8x-split-r3: kvemu2 rc=0
+opt-8b-8x-budget-r3: kvemu2 rc=0
+opt-8b-8x-borrowtier-r3: kvemu2 rc=0
+opt-8b-8x-borrowmig-r3: kvemu2 rc=0
+opt-70b-4x-split-r3: kvemu2 rc=0
+opt-70b-4x-budget-r3: kvemu2 rc=0
+opt-70b-4x-borrowtier-r3: kvemu2 rc=0
+opt-70b-4x-borrowmig-r3: kvemu2 rc=0
+reader-8b-4x-split-r3: kvemu2 rc=0
+reader-8b-4x-budget-r3: kvemu2 rc=0
+reader-8b-4x-borrowtier-r3: kvemu2 rc=0
+reader-8b-4x-borrowmig-r3: kvemu2 rc=0
+reader-8b-8x-split-r3: kvemu2 rc=0
+reader-8b-8x-budget-r3: kvemu2 rc=0
+reader-8b-8x-borrowtier-r3: kvemu2 rc=0
+reader-8b-8x-borrowmig-r3: kvemu2 rc=0
+reader-70b-4x-split-r3: kvemu2 rc=0
+reader-70b-4x-budget-r3: kvemu2 rc=0
+reader-70b-4x-borrowtier-r3: kvemu2 rc=0
+reader-70b-4x-borrowmig-r3: kvemu2 rc=0
+varying start Tue Oct 13 14:17:26 EDT 2026
+8b-8x-split-r1: kvemu2 rc=0
+8b-8x-budget-r1: kvemu2 rc=0
+8b-8x-oracle-r1: kvemu2 rc=0
+8b-8x-borrowtier-r1: kvemu2 rc=0
+8b-8x-borrowmig-r1: kvemu2 rc=0
+8b-8x-cxlfirst-r1: kvemu2 rc=0
+70b-4x-split-r1: kvemu2 rc=0
+70b-4x-budget-r1: kvemu2 rc=0
+70b-4x-oracle-r1: kvemu2 rc=0
+70b-4x-borrowtier-r1: kvemu2 rc=0
+70b-4x-borrowmig-r1: kvemu2 rc=0
+70b-4x-cxlfirst-r1: kvemu2 rc=0
+8b-8x-split-r2: kvemu2 rc=0
+8b-8x-budget-r2: kvemu2 rc=0
+8b-8x-oracle-r2: kvemu2 rc=0
+8b-8x-borrowtier-r2: kvemu2 rc=0
+8b-8x-borrowmig-r2: kvemu2 rc=0
+8b-8x-cxlfirst-r2: kvemu2 rc=0
+70b-4x-split-r2: kvemu2 rc=0
+70b-4x-budget-r2: kvemu2 rc=0
+70b-4x-oracle-r2: kvemu2 rc=0
+70b-4x-borrowtier-r2: kvemu2 rc=0
+70b-4x-borrowmig-r2: kvemu2 rc=0
+70b-4x-cxlfirst-r2: kvemu2 rc=0
+long run start Tue Oct 13 16:13:08 EDT 2026
+70b-4x-budget: kvemu2 rc=0
+70b-4x-split: kvemu2 rc=0
+70b-4x-cxlfirst: kvemu2 rc=0
+ALLDONE Tue Oct 13 16:54:37 EDT 2026

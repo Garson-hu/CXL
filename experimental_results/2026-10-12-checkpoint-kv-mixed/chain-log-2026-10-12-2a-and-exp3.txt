@@ -1,0 +1,11 @@
+chain start Mon Oct 12 04:49:20 EDT 2026
+dram: client rc=0
+hybrid: lmcache server exited rc=1
+dax: client rc=0
+exp3 real start Mon Oct 12 06:06:49 EDT 2026
+none: client rc=0
+96_8_full: client rc=0
+96_8_rate_20: client rc=0
+96_8_kvprio: client rc=0
+exp3 emulation start Mon Oct 12 07:49:07 EDT 2026
+chain end Mon Oct 12 08:16:49 EDT 2026

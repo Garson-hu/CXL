@@ -1,0 +1,359 @@
+Collecting package metadata (current_repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /mnt/local/ghu4/envs/lmcache
+
+  added / updated specs:
+    - python=3.12
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    _openmp_mutex-4.5          |           20_gnu          28 KB  conda-forge
+    bzip2-1.0.8                |      hda65f42_10         252 KB  conda-forge
+    ca-certificates-2026.7.22  |       hbd8a1cb_0         129 KB  conda-forge
+    ld_impl_linux-64-2.46.1    |default_hbd61a6d_102         728 KB  conda-forge
+    libexpat-2.8.5             |       hd2095e1_0          76 KB  conda-forge
+    libffi-3.7.0               |       h81df57d_1          66 KB  conda-forge
+    libgcc-16.2.0              |       ha9f2e26_7         1.0 MB  conda-forge
+    libgomp-16.2.0             |       he0feb66_7         626 KB  conda-forge
+    liblzma-5.8.3              |       hb03c661_1         110 KB  conda-forge
+    libnsl-2.0.1               |       hb9d3cd8_1          33 KB  conda-forge
+    libpython-3.12.15          |h0c77377_0_cpython         8.4 MB  conda-forge
+    libsqlite-3.53.4           |     h0737f62_103         945 KB  conda-forge
+    libstdcxx-16.2.0           |       h934c35e_7         6.3 MB  conda-forge
+    libuuid-2.42.4             |       hcfc3c73_0          34 KB  conda-forge
+    libxcrypt-4.4.38           |       h280c20c_0         100 KB  conda-forge
+    libzlib-1.3.2              |       h25fd6f3_3          62 KB  conda-forge
+    ncurses-6.6                |       hdb14827_1         890 KB  conda-forge
+    openssl-3.6.5              |       h781a0a9_0         3.0 MB  conda-forge
+    packaging-26.3             |     pyhc364b38_0         114 KB  conda-forge
+    pip-26.2.1                 |     pyh8b19718_0         1.1 MB  conda-forge
+    python-3.12.15             |h5f976f7_0_cpython        22.0 MB  conda-forge
+    readline-8.3               |       hd6e31c0_1         341 KB  conda-forge
+    setuptools-84.0.0          |     pyh332efcf_0         512 KB  conda-forge
+    tk-8.6.13                  | noxft_h1df4ec4_4         3.4 MB  conda-forge
+    tzdata-2026c               |       h151e31d_0         116 KB  conda-forge
+    wheel-0.48.0               |     pyhd8ed1ab_0          34 KB  conda-forge
+    zstd-1.5.7                 |       hb78ec9c_7         587 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:        51.0 MB
+
+The following NEW packages will be INSTALLED:
+
+  _openmp_mutex      conda-forge/linux-64::_openmp_mutex-4.5-20_gnu
+  bzip2              conda-forge/linux-64::bzip2-1.0.8-hda65f42_10
+  ca-certificates    conda-forge/noarch::ca-certificates-2026.7.22-hbd8a1cb_0
+  ld_impl_linux-64   conda-forge/linux-64::ld_impl_linux-64-2.46.1-default_hbd61a6d_102
+  libexpat           conda-forge/linux-64::libexpat-2.8.5-hd2095e1_0
+  libffi             conda-forge/linux-64::libffi-3.7.0-h81df57d_1
+  libgcc             conda-forge/linux-64::libgcc-16.2.0-ha9f2e26_7
+  libgomp            conda-forge/linux-64::libgomp-16.2.0-he0feb66_7
+  liblzma            conda-forge/linux-64::liblzma-5.8.3-hb03c661_1
+  libnsl             conda-forge/linux-64::libnsl-2.0.1-hb9d3cd8_1
+  libpython          conda-forge/linux-64::libpython-3.12.15-h0c77377_0_cpython
+  libsqlite          conda-forge/linux-64::libsqlite-3.53.4-h0737f62_103
+  libstdcxx          conda-forge/linux-64::libstdcxx-16.2.0-h934c35e_7
+  libuuid            conda-forge/linux-64::libuuid-2.42.4-hcfc3c73_0
+  libxcrypt          conda-forge/linux-64::libxcrypt-4.4.38-h280c20c_0
+  libzlib            conda-forge/linux-64::libzlib-1.3.2-h25fd6f3_3
+  ncurses            conda-forge/linux-64::ncurses-6.6-hdb14827_1
+  openssl            conda-forge/linux-64::openssl-3.6.5-h781a0a9_0
+  packaging          conda-forge/noarch::packaging-26.3-pyhc364b38_0
+  pip                conda-forge/noarch::pip-26.2.1-pyh8b19718_0
+  python             conda-forge/linux-64::python-3.12.15-h5f976f7_0_cpython
+  readline           conda-forge/linux-64::readline-8.3-hd6e31c0_1
+  setuptools         conda-forge/noarch::setuptools-84.0.0-pyh332efcf_0
+  tk                 conda-forge/linux-64::tk-8.6.13-noxft_h1df4ec4_4
+  tzdata             conda-forge/noarch::tzdata-2026c-h151e31d_0
+  wheel              conda-forge/noarch::wheel-0.48.0-pyhd8ed1ab_0
+  zstd               conda-forge/linux-64::zstd-1.5.7-hb78ec9c_7
+
+
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+Collecting vllm
+  Downloading vllm-0.31.0-cp38-abi3-manylinux_2_28_x86_64.whl.metadata (11 kB)
+Collecting lmcache
+  Downloading lmcache-0.5.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (13 kB)
+Collecting regex (from vllm)
+  Downloading regex-2026.9.29-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+Collecting cachetools (from vllm)
+  Downloading cachetools-7.2.1-py3-none-any.whl.metadata (5.5 kB)
+Collecting psutil (from vllm)
+  Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+Collecting sentencepiece (from vllm)
+  Downloading sentencepiece-0.2.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (33 kB)
+Collecting numpy (from vllm)
+  Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting requests>=2.26.0 (from vllm)
+  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting tqdm (from vllm)
+  Downloading tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting blake3 (from vllm)
+  Downloading blake3-1.0.10-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+Collecting py-cpuinfo (from vllm)
+  Downloading py_cpuinfo-9.0.0-py3-none-any.whl.metadata (794 bytes)
+Collecting transformers<5.18.0,>=5.10.4 (from vllm)
+  Downloading transformers-5.17.0-py3-none-any.whl.metadata (32 kB)
+Collecting huggingface_hub>=1.31.0 (from vllm)
+  Downloading huggingface_hub-2.1.1-py3-none-any.whl.metadata (16 kB)
+Collecting tokenizers>=0.21.1 (from vllm)
+  Downloading tokenizers-0.23.2-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.8 kB)
+Collecting safetensors>=0.6.2 (from vllm)
+  Downloading safetensors-0.8.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.2 kB)
+Collecting protobuf!=6.30.*,!=6.31.*,!=6.32.*,!=6.33.0.*,!=6.33.1.*,!=6.33.2.*,!=6.33.3.*,!=6.33.4.*,>=5.29.6 (from vllm)
+  Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting fastapi<0.137.0,>=0.133.0 (from fastapi[standard]<0.137.0,>=0.133.0->vllm)
+  Downloading fastapi-0.136.3-py3-none-any.whl.metadata (27 kB)
+Collecting starlette>=1.0.1 (from vllm)
+  Downloading starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting aiohttp>=3.13.3 (from vllm)
+  Downloading aiohttp-3.14.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+Collecting openai>=2.25.0 (from vllm)
+  Downloading openai-3.26.0-py3-none-any.whl.metadata (44 kB)
+Collecting pydantic>=2.12.0 (from vllm)
+  Downloading pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+Collecting prometheus_client>=0.18.0 (from vllm)
+  Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+Collecting pillow (from vllm)
+  Downloading pillow-12.3.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Collecting prometheus-fastapi-instrumentator>=8.0.0 (from vllm)
+  Downloading prometheus_fastapi_instrumentator-8.1.0-py3-none-any.whl.metadata (13 kB)
+Collecting tiktoken>=0.6.0 (from vllm)
+  Downloading tiktoken-0.14.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (6.7 kB)
+Collecting lm-format-enforcer==0.11.3 (from vllm)
+  Downloading lm_format_enforcer-0.11.3-py3-none-any.whl.metadata (17 kB)
+Collecting llguidance<1.8.0,>=1.7.0 (from vllm)
+  Downloading llguidance-1.7.6.tar.gz (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 25.8 MB/s  0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): finished with status 'error'
+  error: subprocess-exited-with-error
+  
+  × Preparing metadata (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> [185 lines of output]
+      Python reports SOABI: cpython-312-x86_64-linux-gnu
+      Computed rustc target triple: x86_64-unknown-linux-gnu
+      Installation directory: /home/ghu4/.cache/puccinialin
+      Rustup already downloaded
+      Installing rust to /home/ghu4/.cache/puccinialin/rustup
+      warn: it looks like you have an existing rustup settings file at:
+      warn: /home/ghu4/.cache/puccinialin/rustup/settings.toml
+      info: profile set to minimal
+      info: setting default host tuple to x86_64-unknown-linux-gnu
+      warn: Updating existing toolchain, profile choice will be ignored
+      info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+      info: default toolchain set to stable-x86_64-unknown-linux-gnu
+      Checking if cargo is installed
+      cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+       Downloading crates ...
+        Downloaded ahash v0.8.12
+        Downloaded anes v0.1.6
+        Downloaded futures-sink v0.3.31
+        Downloaded option-ext v0.2.0
+        Downloaded ref-cast-impl v1.0.24
+        Downloaded tokio-macros v2.5.0
+        Downloaded wasm-bindgen-macro v0.2.100
+        Downloaded windows-strings v0.4.2
+        Downloaded wasm-bindgen v0.2.100
+        Downloaded walkdir v2.5.0
+        Downloaded writeable v0.6.1
+        Downloaded zerofrom v0.1.6
+        Downloaded reqwest v0.12.22
+        Downloaded rayon v1.10.0
+        Downloaded unicode-segmentation v1.12.0
+        Downloaded openssl v0.10.80
+        Downloaded regex-syntax v0.8.5
+        Downloaded object v0.36.7
+        Downloaded unicode-normalization-alignments v0.1.12
+        Downloaded windows_i686_gnullvm v0.52.6
+        Downloaded tracing v0.1.41
+        Downloaded tower v0.5.2
+        Downloaded toml_edit v0.22.27
+        Downloaded windows_aarch64_gnullvm v0.53.0
+        Downloaded zerotrie v0.2.2
+        Downloaded zerovec v0.11.2
+        Downloaded zerocopy v0.8.26
+        Downloaded zerocopy-derive v0.8.26
+        Downloaded windows_i686_msvc v0.52.6
+        Downloaded windows_i686_gnu v0.53.0
+        Downloaded windows_i686_gnu v0.52.6
+        Downloaded regex-automata v0.4.9
+        Downloaded windows_x86_64_gnullvm v0.52.6
+        Downloaded windows_x86_64_msvc v0.53.0
+        Downloaded libc v0.2.174
+        Downloaded winnow v0.7.12
+        Downloaded windows_x86_64_gnu v0.53.0
+        Downloaded windows_aarch64_gnullvm v0.52.6
+        Downloaded regex v1.11.1
+        Downloaded portable-atomic v1.11.1
+        Downloaded itertools v0.14.0
+        Downloaded wit-bindgen-rt v0.39.0
+        Downloaded spm_precompiled v0.1.4
+        Downloaded plotters v0.3.7
+        Downloaded itertools v0.13.0
+        Downloaded iri-string v0.7.8
+        Downloaded idna v1.0.3
+        Downloaded icu_properties_data v2.0.1
+        Downloaded serde_json v1.0.140
+        Downloaded rand v0.9.4
+        Downloaded web-sys v0.3.77
+        Downloaded num-bigint v0.4.6
+        Downloaded nom v7.1.3
+        Downloaded mio v1.0.4
+        Downloaded pyo3 v0.28.2
+        Downloaded jsonschema v0.29.1
+        Downloaded vsimd v0.8.0
+        Downloaded version_check v0.9.5
+        Downloaded uuid-simd v0.8.0
+        Downloaded uuid v1.17.0
+        Downloaded tokio v1.46.0
+        Downloaded utf8parse v0.2.2
+        Downloaded utf8_iter v1.0.4
+        Downloaded untrusted v0.9.0
+        Downloaded unicode-ident v1.0.18
+        Downloaded try-lock v0.2.5
+        Downloaded windows_aarch64_msvc v0.53.0
+        Downloaded tracing-core v0.1.34
+        Downloaded tokio-native-tls v0.3.1
+        Downloaded ring v0.17.14
+        Downloaded serde v1.0.219
+        Downloaded security-framework v2.11.1
+        Downloaded rustls-webpki v0.103.13
+        Downloaded rustls v0.23.28
+        Downloaded rstest_macros v0.25.0
+        Downloaded minimal-lexical v0.2.1
+        Downloaded windows_x86_64_gnullvm v0.53.0
+        Downloaded winapi v0.3.9
+        Downloaded windows_aarch64_msvc v0.52.6
+        Downloaded memchr v2.7.5
+        Downloaded windows_i686_msvc v0.53.0
+        Downloaded windows_x86_64_msvc v0.52.6
+        Downloaded windows_i686_gnullvm v0.53.0
+        Downloaded windows_x86_64_gnu v0.52.6
+        Downloaded io-uring v0.7.8
+        Downloaded icu_locale_core v2.0.0
+        Downloaded hyper-util v0.1.14
+        Downloaded tower-service v0.3.3
+        Downloaded tower-layer v0.3.3
+        Downloaded toml_datetime v0.6.11
+        Downloaded tokio-rustls v0.26.2
+        Downloaded strsim v0.11.1
+        Downloaded rustix v1.0.7
+        Downloaded pyo3-macros-backend v0.28.2
+        Downloaded pyo3-ffi v0.28.2
+        Downloaded openssl-sys v0.9.116
+        Downloaded indicatif v0.17.11
+        Downloaded indexmap v2.10.0
+        Downloaded encoding_rs v0.8.35
+        Downloaded windows-result v0.3.4
+        Downloaded windows-registry v0.5.3
+        Downloaded windows-link v0.1.3
+        Downloaded winapi-util v0.1.11
+        Downloaded web-time v1.1.0
+        Downloaded wasm-bindgen-futures v0.4.50
+        Downloaded wasm-bindgen-backend v0.2.100
+        Downloaded wasi v0.11.1+wasi-snapshot-preview1
+        Downloaded want v0.3.1
+        Downloaded tinystr v0.8.1
+        Downloaded thiserror-impl v2.0.12
+        Downloaded thiserror v2.0.12
+        Downloaded tempfile v3.20.0
+        Downloaded system-configuration v0.6.1
+        Downloaded synstructure v0.13.2
+        Downloaded sync_wrapper v1.0.2
+        Downloaded subtle v2.6.1
+        Downloaded strum_macros v0.28.0
+        Downloaded strum v0.28.0
+        Downloaded socks v0.3.4
+        Downloaded socket2 v0.5.10
+        Downloaded smallvec v1.15.1
+        Downloaded slab v0.4.11
+        Downloaded serde_derive v1.0.219
+        Downloaded rayon-core v1.12.1
+        Downloaded proc-macro2 v1.0.95
+        Downloaded parking_lot_core v0.9.11
+        Downloaded parking_lot v0.12.4
+        Downloaded num-traits v0.2.19
+        Downloaded miniz_oxide v0.8.9
+        Downloaded js-sys v0.3.77
+        Downloaded ipnet v2.11.0
+        Downloaded icu_provider v2.0.0
+        Downloaded icu_properties v2.0.1
+        Downloaded icu_normalizer v2.0.0
+        Downloaded gimli v0.31.1
+        Downloaded bstr v1.12.0
+        Downloaded tinytemplate v1.2.1
+        Downloaded static_assertions v1.1.0
+        Downloaded stable_deref_trait v1.2.0
+        Downloaded smartstring v1.0.1
+        Downloaded shlex v1.3.0
+        Downloaded serde_urlencoded v0.7.1
+        Downloaded semver v1.0.26
+        Downloaded security-framework-sys v2.14.0
+        Downloaded windows-sys v0.59.0
+        Downloaded schannel v0.1.27
+        Downloaded ryu v1.0.20
+        Downloaded rustversion v1.0.21
+        Downloaded rustls-pki-types v1.12.0
+        Downloaded rstest v0.25.0
+        Downloaded referencing v0.29.1
+        Downloaded redox_syscall v0.5.13
+        Downloaded windows-sys v0.60.2
+      error: failed to unpack package `windows-sys v0.60.2`
+      
+      Caused by:
+        failed to unpack entry at `windows-sys-0.60.2/src/Windows/Win32/Storage/Vhd/mod.rs`
+      
+      Caused by:
+        failed to create `/home/ghu4/.cache/puccinialin/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-sys-0.60.2/src/Windows/Win32/Storage/Vhd`
+      
+      Caused by:
+        Disk quota exceeded (os error 122)
+      💥 maturin failed
+        Caused by: Cargo metadata failed. Does your crate compile with `cargo build`?
+        Caused by: `cargo metadata` exited with an error:
+      Error running maturin: Command '['maturin', 'pep517', 'write-dist-info', '--metadata-directory', '/mnt/local/ghu4/tmp/pip-modern-metadata-otj5vc2t', '--interpreter', '/mnt/local/ghu4/envs/lmcache/bin/python3.1']' returned non-zero exit status 1.
+      Checking for Rust toolchain....
+      Rust not found, installing into a temporary directory
+      Running `maturin pep517 write-dist-info --metadata-directory /mnt/local/ghu4/tmp/pip-modern-metadata-otj5vc2t --interpreter /mnt/local/ghu4/envs/lmcache/bin/python3.1`
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: metadata-generation-failed
+
+× Encountered error while generating package metadata.
+╰─> llguidance
+
+note: This is an issue with the package mentioned above, not pip.
+hint: See above for details.

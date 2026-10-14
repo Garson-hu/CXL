@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-13 20:45 addendum — c28 RELEASED; RESEARCH RE-FOCUS PROPOSED.** All progress saved and pushed; the deck is
+tracked in git. Proposal to the user: one core problem (SLO-safe DRAM write budget + joint DRAM/CXL bandwidth
+arbitration for bulk writers), RQ1 as motivation, RQ4 demoted to a supporting mechanism; decisive next experiments =
+online estimator vs oracle (gate), cross-writer arbitration, ablations. No new design or experiment started.
+
 **2026-10-13 18:45 addendum — BUDGET-GATED ADMISSION CLOSED; DECK DELIVERED.** 196 runs: budget-gated admission equals the
 best safe static split inside the SLO (smoother writes, no extra hits); both beat the controller next to Adam; an
 adaptive (oracle) budget halves the 70B backlog; 70B 4× next to Adam is marginal. Deck: `docs/slides/SLIDES_2026-10-13-
@@ -181,6 +186,36 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-13 evening (session 33, closing) — progress saved, c28 released, research re-focus proposed
+
+- Saved: every raw file of the budget-gated campaign (quiet, calibration, evaluation ×3, varying, longrun, depth,
+  depth-eval; large files gzipped), the checkpoint + KV runs, the node-local chain/install logs copied into the repo
+  (`/mnt/local/ghu4` is node-local and not durable), the deck and its figures now TRACKED in git by the user's request
+  (`docs/slides/SLIDES_2026-10-13-progress-report.pptx` + `docs/slides/2026-10-13-progress-report/`; the three
+  older decks in `docs/slides/` stay local-only). Nothing was running when the allocation was released.
+- Research re-focus (proposal, to be decided by the user; details in the chat of 2026-10-13 and
+  `memory/project_direction.md`): one core problem — how much DRAM write bandwidth bulk writers may use beside
+  latency-sensitive readers, estimated online under a p99 SLO, and how one host shares it with CXL's write capacity
+  among writers and readers; RQ1 (characterization) = motivation; RQ2 + RQ3 = one mechanism (budget estimator +
+  budgeted admission + cross-writer arbitration); RQ4 (unified capacity management) = supporting mechanism +
+  negative-result ablation, not a contribution. Decisive experiments: the online estimator vs oracle / static splits
+  (go/no-go gate), cross-writer arbitration (checkpoint + KV), SLO/neighbour/depth ablations.
+- Open problems carried forward: online safe-budget estimation (the probe-based guard finds none beside Adam);
+  cross-writer admission (8B 8× + checkpoint collapse); evaluation realism for KV (emulation, small GPU);
+  single machine / two CXL cards; the selection rule's SLO margin.
+
+**Resume notes (2026-10-13).** Allocation 311690 released 2026-10-13 ~20:45 (the user's queued job 311691 "cxl" is a
+re-request). c28: `/dev/dax0.0`, `/dev/dax1.0` = `root:kmem 0660` by a manual admin fix — a reboot resets them (ask the
+admin; no udev rule); `dax2.0` reserved. Node-local (`/mnt/local/ghu4`, lost on reimage): `envs/lmcache` (vLLM 0.31.0 +
+LMCache 0.5.5, python 3.12), `hf/` (HF_HOME; Qwen/Qwen2.5-1.5B-Instruct), `cache/`; rebuild from
+`hardware/results/2026-10-06-lmcache-install*.log`. Untracked binaries to rebuild from source if missing:
+`benchmarks/memory/{kvemu,kvemu2,kvemu3,topo,readcost,gpuread}` (gcc lines in the experiment files),
+`benchmarks/policy/{reader_victim,ckpt_producer}` (`make -C benchmarks/policy`), `benchmarks/lmcache/ckpt_cxl`,
+`system/cxlpath/build/*` (see `memory/project_cxlpath_build.md`). Start: `salloc -p turin128 -w c28 -t 3-00:00:00`,
+then `ls -l /dev/dax0.0 /dev/dax1.0`, `pgrep -fa "kvemu|cxlpathd|opt_step|reader_victim"`,
+`system/cxlpath/build/cxlp_admin kvemu view` (expect "no such store"). No experiment is queued: the next one follows
+the user's decision on the re-focus.
 
 ### 2026-10-13 (session 33) — budget-gated admission campaign finished and closed; progress deck for Dr. Mueller
 
