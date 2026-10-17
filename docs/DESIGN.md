@@ -525,6 +525,36 @@ Evaluation: two producers (a checkpoint burst and a continuous KV ingest) beside
 the governing probe, the weighted split of the loan, the priority of KV ingest over the burst, and a stream over its
 quota that cannot starve the others.
 
+## 11. Unified DRAM/CXL manager — design SKETCH after Phase 1 of the charter (2026-10-17; nothing implemented)
+*Source: `docs/research/CHARTER.md`, `docs/research/decision-2026-10-17.md`, `docs/experiments/2026-10-17-kv-reuse-oracle-study.md`.
+Gate 1 passed (future reuse information is worth > 5× the capacity), Gate 2 failed (not predictable from trace features),
+so this sketch keeps only mechanisms with demonstrated or directly testable value.*
+
+**Components (K = keep from `cxlpath`, N = new, T = testable only after the session-hint study).**
+- K1 Segment store on raw CXL, node-owned index, CXL-first write path (§10.3, §10.6) — unchanged.
+- K2 Exclusive two-tier placement: each KV block in exactly one tier; per-tier LRU; a DRAM admission share equal to DRAM's
+  share of capacity (the static split; the best capacity-matched policy measured) — replaces the inclusive copy-on-read
+  path of §10.5 for KV blocks.
+- N1 Retention order: segmented LRU (new blocks in probation, protected on first hit, protected share ~1/3), kept LOGICAL —
+  no data moves between tiers for hit rate (measured: equals reactive migration's gain, +1–3 points, at zero movement).
+- T1 Block-lifetime interface: at `reserve`, the client passes a lifetime hint {no-reuse, continues, unknown}; admission
+  bypasses no-reuse blocks (or stores them with a short TTL in CXL) and stores the rest. This is the only path by which the
+  oracle's value (−70–80% writes, 3–5× effective capacity) can enter the system; it exists only if the session-hint oracle
+  study (decision report, experiment 1) passes.
+- N2 Write scheduler (RQ3): one DRAM write budget bounded by the neighbours' SLO (estimator to be built; the probe-vs-idle
+  guard is replaced by a signal that separates the neighbour's own pressure from the harm we add), spent by the DRAM
+  admission share through a token bucket (depth = one chunk) and, when calm, by protected-segment moves; CXL write capacity
+  accounting (ledger, ~46 GB/s) and the bulk-write hold while latency-sensitive CXL reads run; cross-writer arbitration
+  (checkpoint + KV) with priorities and backpressure (§10.12 reduced to these rules).
+- Metadata: cxlpath's object table gains per block: tier, lifetime hint, last use, reuse count, protected flag.
+
+**Left out (no demonstrated benefit):** promotion/demotion engine for hit rate; predictive prefetch; ML reuse prediction;
+global-LRU unification; a general page-tiering layer.
+
+**Data path of a KV store:** client `reserve(size, hint)` → admission (hint → bypass / TTL / store; share → DRAM or CXL;
+budget → DRAM only if the bucket has credit, else CXL) → writer fills the segment → `commit` (protected flag on first hit).
+Checkpoint chunks use the same scheduler with their own lifetime (version) and priority, no hint, no retention order.
+
 ## Change history (append-only — never rewrite entries)
 - **2026-05-20** — v1 designed and built: object registry, single-ceiling
   pressure model, benefit-per-byte greedy planner, lazy materialization, no
@@ -625,3 +655,4 @@ quota that cannot starve the others.
   measured CXL capacity and the loan-must-pay rule, the drain no longer yields, CPU tensors as objects in the PyTorch
   plugin; §10.12 multi-tenant arbitration designed (not built). All from the advisor's review of 2026-10-04 and the
   user's decisions of 2026-10-06.
+- 2026-10-17 — §11 added: unified DRAM/CXL manager design SKETCH after Phase 1 of the research charter (keep cxlpath store + CXL-first path + exclusive tiers + static admission share; new logical segmented retention and the RQ3 write scheduler; lifetime-hint interface conditional on the session-hint study; promotion/demotion, prefetch and ML prediction left out). Nothing implemented.

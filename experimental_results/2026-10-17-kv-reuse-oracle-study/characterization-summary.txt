@@ -1,0 +1,54 @@
+## conversation: 12031 requests over 3537 s, 288500 block accesses, 182790 distinct blocks, 105710 reuses
+  never reused: 75.8% of blocks (72.6% of blocks created in the first half of the span)
+  reuse-count classes: 1 (never reused): 75.8% of blocks, 0.0% of reuses; 2: 13.9% of blocks, 24.1% of reuses; 3–4: 7.3% of blocks, 28.9% of reuses; 5–9: 2.2% of blocks, 18.6% of reuses; 10–99: 0.7% of blocks, 17.0% of reuses; 100+: 0.0% of blocks, 11.4% of reuses
+  concentration: top 0.1% of blocks carry 15.2% of reuses, top 1% 31.6%, top 10% 75.1%
+  time between uses p10/p50/p90: 0 / 114 / 519 s; creation to second use p50 147 s; lifetime of reused blocks p50 276 s, p90 1317 s
+  share of reuses whose next use is within 60 s: 28%, 300 s: 79%, 900 s: 97%, 1800 s: 99%, 3600 s: 100%
+  stack distance of reuses (8B, GiB) p10/p50/p90: 3 / 522 / 1974; within 200 GiB: 18.6%
+  P(reused later | position in request) first half -> second half: 1–3: 35% -> 27% (n 9815/10145); 4–15: 31% -> 23% (n 28698/28313); 16–63: 25% -> 18% (n 40865/37112); 64+: 23% -> 18% (n 15810/12031)
+  P(reused later | request length (blocks)) first half -> second half: ≤8: 26% -> 21% (n 4066/5188); 9–32: 29% -> 24% (n 29926/30549); 33–64: 29% -> 21% (n 27332/24828); 65+: 25% -> 16% (n 33865/27036)
+  P(reused later | continuation depth (leading old blocks)) first half -> second half: 1–7: 29% -> 22% (n 86934/78012); 8–31: 11% -> 10% (n 6005/7620); 32+: 19% -> 20% (n 2236/1969)
+  P(reused later | new blocks in the request) first half -> second half: 1: 1% -> 2% (n 1018/1276); 2–4: 31% -> 27% (n 3515/4490); 5–16: 31% -> 24% (n 13795/16028); 17+: 27% -> 20% (n 76861/65807)
+  P(new blocks reused later | turns so far) first half -> second half [within 300 s]: 0 (fresh): 30% -> 23% [17%] (n 80672/70335); 1: 13% -> 12% [10%] (n 10178/10559); 2: 14% -> 12% [10%] (n 2945/3109); 3–4: 17% -> 13% [12%] (n 1134/2277); 5+: 42% -> 26% [22%] (n 260/1321)
+  P(new blocks reused later | time since previous turn) first half -> second half [within 300 s]: <30 s: 12% -> 27% [26%] (n 267/229); 30–120 s: 10% -> 13% [12%] (n 5523/6456); 120–300 s: 13% -> 14% [13%] (n 4629/5388); 300–900 s: 20% -> 10% [9%] (n 3762/4126); >900 s: 13% -> 13% [10%] (n 336/1067)
+  P(new blocks reused later | answer length (tokens; known after the request)) first half -> second half [within 300 s]: ≤50: 35% -> 19% [9%] (n 15448/14463); 51–200: 23% -> 23% [20%] (n 9351/8126); 201–500: 23% -> 20% [18%] (n 47615/47074); 500+: 33% -> 22% [15%] (n 22775/17938)
+  P(new blocks reused later | prompt length (tokens)) first half -> second half [within 300 s]: ≤2k: 17% -> 15% [12%] (n 1893/2286); 2–8k: 34% -> 26% [22%] (n 11138/13354); 8–16k: 27% -> 23% [19%] (n 20025/19259); 16k+: 27% -> 19% [14%] (n 62133/52702)
+  P(used again | past reuse count): 0: 24% (n 182790); 1: 42% (n 44144); 2: 50% (n 18689); 3–4: 61% (n 14669); 5+: 88% (n 28208)
+  P(used again | time since last use): <60 s: 33% (n 268866); 60–300 s: 18% (n 207387); 300–900 s: 4% (n 151953); 900–1800 s: 2% (n 109596); >1800 s: 0% (n 40911)
+
+## toolagent: 23608 requests over 3537 s, 409616 block accesses, 183300 distinct blocks, 226316 reuses
+  never reused: 78.5% of blocks (76.2% of blocks created in the first half of the span)
+  reuse-count classes: 1 (never reused): 78.5% of blocks, 0.0% of reuses; 2: 11.9% of blocks, 9.7% of reuses; 3–4: 6.7% of blocks, 12.6% of reuses; 5–9: 2.2% of blocks, 8.6% of reuses; 10–99: 0.7% of blocks, 8.0% of reuses; 100+: 0.0% of blocks, 61.2% of reuses
+  concentration: top 0.1% of blocks carry 62.9% of reuses, top 1% 70.7%, top 10% 90.7%
+  time between uses p10/p50/p90: 0 / 0 / 243 s; creation to second use p50 123 s; lifetime of reused blocks p50 234 s, p90 963 s
+  share of reuses whose next use is within 60 s: 69%, 300 s: 93%, 900 s: 100%, 1800 s: 100%, 3600 s: 100%
+  stack distance of reuses (8B, GiB) p10/p50/p90: 1 / 4 / 1003; within 200 GiB: 64.8%
+  P(reused later | position in request) first half -> second half: 1–3: 35% -> 29% (n 8653/9088); 4–15: 22% -> 18% (n 36090/36801); 16–63: 24% -> 19% (n 36359/32873); 64+: 22% -> 16% (n 13638/9794)
+  P(reused later | request length (blocks)) first half -> second half: ≤8: 16% -> 14% (n 6704/7886); 9–32: 22% -> 20% (n 34639/36376); 33–64: 29% -> 23% (n 24063/22127); 65+: 23% -> 16% (n 29338/22167)
+  P(reused later | continuation depth (leading old blocks)) first half -> second half: 1–7: 27% -> 22% (n 79176/71238); 8–31: 6% -> 6% (n 13358/15575); 32+: 20% -> 22% (n 2165/1743)
+  P(reused later | new blocks in the request) first half -> second half: 1: 1% -> 1% (n 3417/3860); 2–4: 11% -> 10% (n 11171/12521); 5–16: 30% -> 24% (n 13299/15367); 17+: 26% -> 21% (n 66857/56808)
+  P(new blocks reused later | turns so far) first half -> second half [within 300 s]: 0 (fresh): 29% -> 24% [20%] (n 69568/60551); 1: 7% -> 7% [6%] (n 20531/21206); 2: 12% -> 11% [10%] (n 3249/3241); 3–4: 17% -> 13% [12%] (n 1136/2242); 5+: 42% -> 26% [22%] (n 260/1316)
+  P(new blocks reused later | time since previous turn) first half -> second half [within 300 s]: <30 s: 8% -> 26% [25%] (n 439/233); 30–120 s: 9% -> 13% [11%] (n 6063/6551); 120–300 s: 11% -> 14% [12%] (n 5903/5432); 300–900 s: 11% -> 11% [9%] (n 7090/3732); >900 s: 3% -> 3% [2%] (n 5681/12057)
+  P(new blocks reused later | answer length (tokens; known after the request)) first half -> second half [within 300 s]: ≤50: 13% -> 10% [9%] (n 14871/15339); 51–200: 23% -> 23% [19%] (n 9483/8205); 201–500: 23% -> 20% [18%] (n 47615/47074); 500+: 33% -> 22% [15%] (n 22775/17938)
+  P(new blocks reused later | prompt length (tokens)) first half -> second half [within 300 s]: ≤2k: 17% -> 15% [13%] (n 1731/2098); 2–8k: 18% -> 15% [13%] (n 20487/23023); 8–16k: 26% -> 24% [20%] (n 18220/18394); 16k+: 26% -> 19% [16%] (n 54306/45041)
+  P(used again | past reuse count): 0: 22% (n 183300); 1: 45% (n 39481); 2: 52% (n 17613); 3–4: 61% (n 14505); 5+: 98% (n 154717)
+  P(used again | time since last use): <60 s: 31% (n 263395); 60–300 s: 15% (n 202318); 300–900 s: 2% (n 149712); 900–1800 s: 0% (n 110171); >1800 s: 0% (n 41885)
+
+## synthetic: 3993 requests over 1022 s, 121877 block accesses, 43924 distinct blocks, 77953 reuses
+  never reused: 58.4% of blocks (55.9% of blocks created in the first half of the span)
+  reuse-count classes: 1 (never reused): 58.4% of blocks, 0.0% of reuses; 2: 6.6% of blocks, 3.7% of reuses; 3–4: 14.9% of blocks, 20.9% of reuses; 5–9: 17.2% of blocks, 54.2% of reuses; 10–99: 2.9% of blocks, 21.2% of reuses; 100+: 0.0% of blocks, 0.0% of reuses
+  concentration: top 0.1% of blocks carry 1.3% of reuses, top 1% 10.1%, top 10% 49.6%
+  time between uses p10/p50/p90: 5 / 59 / 282 s; creation to second use p50 153 s; lifetime of reused blocks p50 448 s, p90 808 s
+  share of reuses whose next use is within 60 s: 50%, 300 s: 91%, 900 s: 100%, 1800 s: 100%, 3600 s: 100%
+  stack distance of reuses (8B, GiB) p10/p50/p90: 44 / 392 / 1274; within 200 GiB: 30.6%
+  P(reused later | position in request) first half -> second half: 0: 20% -> 15% (n 1596/615); 1–3: 38% -> 32% (n 2309/822); 4–15: 40% -> 33% (n 7929/2978); 16–63: 47% -> 35% (n 16998/5741); 64+: 54% -> 46% (n 3516/1420)
+  P(reused later | request length (blocks)) first half -> second half: ≤8: 12% -> 12% (n 1370/776); 9–32: 26% -> 21% (n 5825/2670); 33–64: 35% -> 29% (n 13314/4974); 65+: 67% -> 59% (n 11839/3156)
+  P(reused later | continuation depth (leading old blocks)) first half -> second half: 0 (fresh): 44% -> 39% (n 31770/9860); 1–7: 87% -> 17% (n 137/192); 8–31: 10% -> 12% (n 81/435); 32+: 4% -> 5% (n 360/1089)
+  P(reused later | new blocks in the request) first half -> second half: 1: 4% -> 9% (n 946/1281); 2–4: 3% -> 3% (n 558/856); 5–16: 55% -> 43% (n 814/339); 17+: 46% -> 41% (n 30030/9100)
+  P(new blocks reused later | turns so far) first half -> second half [within 300 s]: 0 (fresh): 44% -> 39% [38%] (n 31770/9860); 1: 24% -> 8% [8%] (n 578/1698)
+  P(new blocks reused later | time since previous turn) first half -> second half [within 300 s]: 120–300 s: 7% -> 3% [3%] (n 201/342); 300–900 s: 55% -> 11% [10%] (n 216/1138)
+  P(new blocks reused later | answer length (tokens; known after the request)) first half -> second half [within 300 s]: ≤50: 83% -> 66% [65%] (n 15243/5080); 51–200: 19% -> 12% [12%] (n 5597/2027); 201–500: 5% -> 8% [8%] (n 11008/4314)
+  P(new blocks reused later | prompt length (tokens)) first half -> second half [within 300 s]: ≤2k: 2% -> 2% [2%] (n 1070/477); 2–8k: 56% -> 31% [31%] (n 797/634); 8–16k: 25% -> 18% [18%] (n 4622/1988); 16k+: 49% -> 40% [40%] (n 25859/8477)
+  P(used again | past reuse count): 0: 42% (n 43924); 1: 84% (n 18251); 2: 78% (n 15345); 3–4: 74% (n 20806); 5+: 72% (n 23551)
+  P(used again | time since last use): <60 s: 55% (n 93602); 60–300 s: 33% (n 50106); 300–900 s: 4% (n 17412)
+

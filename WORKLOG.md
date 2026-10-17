@@ -9,6 +9,12 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-17 addendum — CHARTER WRITTEN, PHASE 1 DONE: GATE 1 PASS, GATE 2 FAIL.** Future reuse information is worth > 5×
+the capacity (oracle 80 / 94 / 70% of reuses vs 17 / 65 / 34%, writes −70–83%) but is not predictable from anything in
+the traces (online rules ≤ 6% of the ceiling). Migration adds no hits at equal capacity. Phase 2 blocked by the charter's
+rule; proposed next: session-hint oracle study (offline), then hint-driven admission in emulation; RQ3 budget estimator
+independent. Files: `docs/research/CHARTER.md`, `docs/research/decision-2026-10-17.md`, `docs/DESIGN.md` §11.
+
 **2026-10-13 20:45 addendum — c28 RELEASED; RESEARCH RE-FOCUS PROPOSED.** All progress saved and pushed; the deck is
 tracked in git. Proposal to the user: one core problem (SLO-safe DRAM write budget + joint DRAM/CXL bandwidth
 arbitration for bulk writers), RQ1 as motivation, RQ4 demoted to a supporting mechanism; decisive next experiments =
@@ -186,6 +192,27 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-17 (session 34) — research charter, Phase 1 oracle study (offline), decision report
+
+- The user fixed the research direction (reuse- and interference-aware unified DRAM/CXL memory management; core hypothesis
+  H1 future value / H2 value × cost; RQ1 future information, RQ2 joint placement/retention/movement, RQ3 movement under
+  interference; gates before experiments). Written as `docs/research/CHARTER.md` (evidence classified by RQ, assumptions
+  A1–A7, Gates 1–4 with criteria and rationale) BEFORE the analysis, as required.
+- Phase 1 (trace simulation, no node time): `scripts/kv_reuse_characterization.py`, `scripts/kv_oracle_study.py`,
+  `scripts/kv_oracle_figs.py`; `docs/experiments/2026-10-17-kv-reuse-oracle-study.md` (CLOSED). Gate 1 PASS: the oracle
+  (Belady MIN with bypass) at 200 GiB serves 80 / 94 / 70% of reuses vs 17 / 65 / 34% for the best baseline; recompute
+  −26–43%; host writes −70–83%; the gain is "do not store the 58–79% never-reused blocks" (worth > 5× capacity; 300 s of
+  foresight gives 94%). Gate 2 FAIL: no creation-time or reconstructed-session feature separates dead from live blocks in
+  the two real traces; online rules (segmented LRU, reactive promotion, admission filters, frequency eviction) recover
+  ≤ 6% of the ceiling. Migration adds no hits at equal capacity (oracle + ideal tiers = oracle; reactive migration's +3
+  points = a logical SLRU with zero movement).
+- Decision report `docs/research/decision-2026-10-17.md`; design sketch `docs/DESIGN.md` §11 (keep cxlpath store,
+  CXL-first path, exclusive tiers + static admission share; add logical segmented retention and the RQ3 write scheduler;
+  a block-lifetime hint interface only if a session-hint oracle study passes; drop promotion/demotion for hits, prefetch,
+  ML prediction). Phase 2 not started (charter rule). Next, pending the user: session-hint oracle (offline), hint-driven
+  admission in emulation, the online safe-budget estimator (RQ3).
+- Node: on c28 under allocation 313660, idle; nothing queued; no cxlpathd or manager code touched.
 
 ### 2026-10-13 evening (session 33, closing) — progress saved, c28 released, research re-focus proposed
 
