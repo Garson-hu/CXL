@@ -65,8 +65,11 @@ prefill) p50 5.6–7.9 s, p90 9–21 s. At the 0.2× overload point of 2026-10-1
   is deferred past the request end (LMCache's lazy offload) and dropped on the event; otherwise the KV has been written
   during prefill and the event cannot undo it. The replay does not model the lazy-offload timing.
 - Honest limit of the trace: the tool-agent trace has no task ids or loop decisions; "session continues" is reconstructed
-  from prefix chains and stands in for the agent loop's decision. If part of that trace is human-driven, the 41% is an
-  upper bound for the agent-loop signal.
+  from prefix chains, so the replay's task-end event is TAKEN FROM THE TRACE (the session's last turn, i.e. derived from
+  later accesses). It is a stand-in for the event an agent runtime emits at its final output — which the source
+  inspection shows is structural — not an online hint obtained from the trace. If part of that trace is human-driven,
+  the 41% is an upper bound for the agent-loop signal. Only a real agent run with logged loop decisions (item 7 below)
+  turns this into an online measurement.
 
 ## Task D — minimal application modifications (the two schemes worth building, if any)
 1. **Agent-runtime lifecycle channel (the one to pursue).** Where: the agent runtime's loop decision (OpenAI Agents SDK
