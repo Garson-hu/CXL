@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-17 night addendum — RQ1-B ANSWERED: NO FOR CHAT, PARTLY FOR AGENTS.** The scheduler queue knows exact next
+reads 0.2 s ahead (worthless against 2-minute reuse gaps); the agent loop's continue/end decision is the one realistic
+early signal (41–48% of the oracle's gain on the agent trace, +12 points). Recommended next: a small real agent run to
+verify the loop signal, then the lifecycle channel as a mechanism. No predictor, no RQ2/RQ3 work started.
+
 **2026-10-17 evening addendum — SESSION-HINT STUDY: NO-GO FOR PREDICTION-AWARE MANAGEMENT.** Perfect session hints
 recover ~half of the block oracle (74% with a 300 s bound on chat); realistic chat signals recover nothing; prompt
 task-end events in agent workloads 28–41%. Decision: stop reuse prediction as a contribution; keep an explicit
@@ -198,6 +203,18 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-17 night (session 34, continued) — RQ1-B: application-level reuse signals
+
+- Inventory from source (vLLM 0.31: `Request.block_hashes` at creation, `on_new_request` at arrival, `request_finished`,
+  per-request `cache_salt` / `kv_transfer_params`; LMCache 0.5.5: eager-prefetch lookup at arrival, `end_session`, pin/unpin,
+  lazy offload buffering stores past request end, per-salt isolated LRU; OpenAI Agents SDK / LangGraph loops: tool calls →
+  call again, final → end). Lead times measured on the c28 runs: queue wait p50 0.19–0.26 s, p90 2.6–6 s.
+- Replay (`kv_session_hint_study.py` queue policies): queued-request protection ≤ 0.3% of the oracle's gain at W ≤ 10 s,
+  2–5% at 30–60 s; the agent task-end event 41% (+12 points), 48% with a 60 s queue; chat has no realistic early signal.
+  `docs/experiments/2026-10-17-rq1b-application-reuse-signals.md` (CLOSED); decision report updated; Gate 2 FAIL chat /
+  PARTIAL agents. Recommended: an agent-runtime lifecycle channel, verified by one small real agent run; no predictor,
+  no queue-pin project. Nothing implemented; node idle.
 
 ### 2026-10-17 evening (session 34, continued) — session-level hint study (the last predictability experiment)
 

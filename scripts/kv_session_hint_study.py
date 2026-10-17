@@ -24,6 +24,13 @@ Policies (all over one global LRU on 200 GiB unless noted; a new block takes the
       delay=<s>               EVENTS-ONLY mode: no positive hints; every session is assumed live; a termination event
                               arrives <s> seconds after a session's last request and marks its blocks evict-first
       shared blocks (referenced by >= 2 sessions so far) are never marked dead by a hint
+  queue<W>         SCHEDULER QUEUE signal (2026-10-17, RQ1-B): blocks referenced by requests that have ARRIVED but are not yet
+                   served are protected from eviction (evicted last). The trace records arrival times and our replay serves
+                   at arrival, so the queueing delay W is a scenario parameter: at time t the requests with arrival in
+                   (t, t+W] are the ones a server with queueing delay W would hold in its waiting queue. W = 0 is what the
+                   trace guarantees; the real c28 runs give W = lookup-to-first-token times (measured separately). Positive
+                   signal only (it cannot mark a block dead); no bypass. Variants: queue<W>+slru (protected first, then
+                   the segmented LRU order), queue<W>+end0 (plus the termination event at delay 0: the agent-loop signal).
   Oracle hints use the future of the trace and are labelled as such; session_ttl uses only the past.
 Metrics on the test half: reuse-hit share, overall hit rate, recomputed tokens, host writes (GB, DRAM / CXL), bypassed
 blocks, useful occupancy (resident blocks with a future use, sampled), occupancy-seconds spent on dead blocks (share),
@@ -109,6 +116,12 @@ def parse_spec(spec):
 def run(policy, D, rng):
     reqs, acc, nu, sess, nxt_turn, creator, half = D["reqs"], D["acc"], D["next_use"], D["sess"], D["nxt_turn"], D["creator"], D["half"]
     is_hint = policy.startswith("hint:"); P = parse_spec(policy[5:]) if is_hint else {}
+    qW = None; q_slru = False; q_end = False
+    if policy.startswith("queue"):
+        parts = policy[5:].split("+"); qW = float(parts[0]); q_slru = "slru" in parts[1:]; q_end = "end0" in parts[1:]
+        if q_end: is_hint = True; P = parse_spec("delay=0")
+    req_times = [r[0] for r in reqs]; pend = collections.defaultdict(int); q_hi = 0; q_lo = 0
+    prob = collections.OrderedDict(); prot = collections.OrderedDict()                   # slru segments for the queue+slru variant
     ttl = float(policy[len("session_ttl"):]) if policy.startswith("session_ttl") else None
     where = {}; n = {0: 0, 1: 0}; lru = collections.OrderedDict(); tier_lru = {0: collections.OrderedDict(), 1: collections.OrderedDict()}
     dead = set(); dead_lru = collections.OrderedDict()                                 # evict-first set, LRU inside
@@ -122,9 +135,10 @@ def run(policy, D, rng):
     seen = set(); test = False; last_t = None
     def place(h, t_tier, i):
         where[h] = t_tier; n[t_tier] += 1; lru[h] = True; tier_lru[t_tier][h] = True; st["st_bytes"][t_tier] += BLOCK; stored_at[h] = acc[i][0]
+        if q_slru: prob[h] = True
         if policy == "oracle_min": nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
     def remove(h, now, i_next):
-        t_tier = where.pop(h); n[t_tier] -= 1; lru.pop(h, None); tier_lru[t_tier].pop(h, None); dead.discard(h); dead_lru.pop(h, None); nuv.pop(h, None)
+        t_tier = where.pop(h); n[t_tier] -= 1; lru.pop(h, None); tier_lru[t_tier].pop(h, None); dead.discard(h); dead_lru.pop(h, None); nuv.pop(h, None); prob.pop(h, None); prot.pop(h, None)
         st["evict"] += 1; st["premature"] += (i_next < INF)
         r = now - stored_at.pop(h, now)
         if h in hit_since_store: st["res_hit"][0] += r; st["res_hit"][1] += 1; hit_since_store.discard(h)
@@ -132,6 +146,14 @@ def run(policy, D, rng):
         return t_tier
     def victim(now):
         if policy == "oracle_min": return None
+        if qW is not None:
+            for cand_src in ((dead_lru,) if dead_lru else ()) + ((prob, prot) if q_slru else (lru,)):
+                scanned = 0
+                for b in cand_src:
+                    if pend.get(b, 0) == 0: return b
+                    scanned += 1
+                    if scanned > 256: break
+            return next(iter(lru))                                                          # everything pending: plain LRU
         if dead_lru: return next(iter(dead_lru))
         if ttl is not None:
             for h in lru:                                                              # scan a bounded number of LRU candidates for an idle session
@@ -168,6 +190,13 @@ def run(policy, D, rng):
                     if cont and rng.random() < P["fn"]: rep = False
                     if (not cont) and rng.random() < P["fp"]: rep = True
                 sess_hint[ri] = rep if rep is not None else True
+        if qW is not None:
+            while q_hi < len(reqs) and req_times[q_hi] <= t + qW:
+                for b in reqs[q_hi][1]: pend[b] += 1
+                q_hi += 1
+            while q_lo < len(reqs) and req_times[q_lo] <= t:
+                for b in reqs[q_lo][1]: pend[b] -= 1
+                q_lo += 1
         last_idx[h] = i; s_here = sess[ri]
         if h in D["sess_of_block"] and s_here not in getattr(run, "_dummy", ()): pass
         # count sessions that reference the block so far (shared detection)
@@ -188,6 +217,11 @@ def run(policy, D, rng):
                 if sess[creator[h]] == s_here: st["hit_within"] += 1
                 else: st["hit_cross"] += 1
             hit_since_store.add(h); lru.move_to_end(h); tier_lru[where[h]].move_to_end(h)
+            if q_slru:
+                if h in prot: prot.move_to_end(h)
+                else:
+                    prob.pop(h, None); prot[h] = True
+                    while len(prot) > NTOT // 3: d_, _ = prot.popitem(last=False); prob[d_] = True
             if policy == "oracle_min": nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
             if h in dead_lru: dead_lru.move_to_end(h)
             if is_hint and P["delay"] is None and P["mode"] in ("both", "evict") and sess_hint.get(ri, True): mark_live(h)
