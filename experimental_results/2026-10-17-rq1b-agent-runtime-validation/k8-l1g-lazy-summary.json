@@ -1,0 +1,88 @@
+{
+ "tag": "k8-l1g-lazy",
+ "tasks": 400,
+ "calls": 400,
+ "outcomes": {
+  "abort:error": 400
+ },
+ "calls_per_task": {
+  "n": 400,
+  "p10": 1,
+  "p50": 1,
+  "p90": 1,
+  "mean": 1.0
+ },
+ "decisions": {
+  "continue_": 0,
+  "end": 0
+ },
+ "queue_wait_s": {
+  "n": 8,
+  "p10": 0.3484532833099365,
+  "p50": 0.5294532775878906,
+  "p90": 0.6363625526428223,
+  "mean": 0.509200394153595
+ },
+ "tool_duration_s": {
+  "n": 0
+ },
+ "lookup_to_response_s": {
+  "n": 0
+ },
+ "continue_lead_to_next_submit_s": {
+  "n": 0
+ },
+ "continue_lead_to_next_lookup_s": {
+  "n": 0
+ },
+ "continue_context_block_age_s": {
+  "n": 0
+ },
+ "continue_precision": {
+  "n": 0
+ },
+ "continue_recall_of_next": {
+  "n": 0
+ },
+ "continue_context_evicted_before_next": {
+  "n": 0
+ },
+ "continue_next_full_hit": {
+  "n": 0
+ },
+ "end_private_chunks": 0,
+ "end_private_dead": 0,
+ "end_private_alive": 0,
+ "end_shared_chunks": 0,
+ "end_shared_alive": 0,
+ "end_last_call_new_chunks": 0,
+ "end_last_call_new_chunks_share_of_writes": 0.0,
+ "end_private_block_age_s": {
+  "n": 0
+ },
+ "end_minus_last_write_s": {
+  "n": 0
+ },
+ "end_minus_store_end_s": {
+  "n": 0
+ },
+ "end_minus_last_lookup_s": {
+  "n": 0
+ },
+ "dead_residence_after_end_s": {
+  "n": 0
+ },
+ "l1_turnover_write_to_evict_s": {
+  "n": 0
+ },
+ "write_to_next_reuse_s": {
+  "n": 0
+ },
+ "chunks_lookedup": 32,
+ "reuse_chunks": 24,
+ "reuse_chunks_hit": 0,
+ "reuse_hit_share_real": 0.0,
+ "evictions": 0,
+ "writes": 0,
+ "unique_chunks": 8
+}

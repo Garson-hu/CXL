@@ -1,0 +1,6 @@
+M config 856950057707585 wall=1792270407.326135 {"n_tasks": 400, "workers": 8, "l1_gb": 1.0, "gpu_blocks": 2048, "max_turns": 6, "seed": 11, "latency_scale": "1.0", "max_model_len": 8192, "model": "Qwen/Qwen2.5-3B-Instruct-AWQ"}
+M lmcache_ready 856960197073901 wall=1792270417.465501 
+M vllm_ready 856986426405164 wall=1792270443.694832 
+M serve_start 856988594164816 wall=1792270445.862592 
+M serve_end 857308331988012 wall=1792270765.600415 client_rc=0
+M done 857331503530132 wall=1792270788.771958 

@@ -1,0 +1,89 @@
+{"ev": "kvevt.start", "t": 1792271384.292111, "pid": 2352207}
+{"ev": "l1.eviction.loop_tick", "t": 1792271385.510286, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271386.5104501, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271387.5105505, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271388.5106473, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271389.5107443, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271390.510855, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271391.5109587, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271392.5110579, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271393.5111609, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271394.5112612, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271395.5113604, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271396.5114605, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271397.5115528, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271398.5116472, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271399.5117414, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271400.51184, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271401.5119386, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271402.5120363, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271403.512112, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271404.5121832, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271405.5122566, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271406.5123322, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271407.51245, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271408.5125546, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271409.5126467, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271410.512851, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271411.5129476, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271412.5130482, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "mp.request.start", "t": 1792271413.2266445, "sid": "chatcmpl-agt0000c01-82c47319"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2266505, "sid": "chatcmpl-agt0000c01-82c47319"}
+{"ev": "mp.lookup", "t": 1792271413.2267761, "sid": "chatcmpl-agt0000c01-82c47319", "request_id": "chatcmpl-agt0000c01-82c47319", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "b514cd07ab66f549eeda782b38633bd5cc9089ee2e8ecdb94fcfa4336b09e3dd"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1055}
+{"ev": "l1.read.reserved", "t": 1792271413.2268717, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.22718, "sid": "chatcmpl-agt0002c01-b58feb6e"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.227184, "sid": "chatcmpl-agt0002c01-b58feb6e"}
+{"ev": "mp.lookup", "t": 1792271413.227241, "sid": "chatcmpl-agt0002c01-b58feb6e", "request_id": "chatcmpl-agt0002c01-b58feb6e", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "f0a16c88c176bb27daa4ee547ae568ae5756138580290abf56dfec6ca22ee65a"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1048}
+{"ev": "l1.read.reserved", "t": 1792271413.2272756, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2274096, "sid": "chatcmpl-agt0001c01-87758198"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2274115, "sid": "chatcmpl-agt0001c01-87758198"}
+{"ev": "mp.lookup", "t": 1792271413.2274547, "sid": "chatcmpl-agt0001c01-87758198", "request_id": "chatcmpl-agt0001c01-87758198", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "b514cd07ab66f549eeda782b38633bd5cc9089ee2e8ecdb94fcfa4336b09e3dd"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1055}
+{"ev": "l1.read.reserved", "t": 1792271413.227477, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2275527, "sid": "chatcmpl-agt0004c01-a0051942"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2275543, "sid": "chatcmpl-agt0004c01-a0051942"}
+{"ev": "mp.lookup", "t": 1792271413.227586, "sid": "chatcmpl-agt0004c01-a0051942", "request_id": "chatcmpl-agt0004c01-a0051942", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "b514cd07ab66f549eeda782b38633bd5cc9089ee2e8ecdb94fcfa4336b09e3dd"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1056}
+{"ev": "l1.read.reserved", "t": 1792271413.2276027, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2276669, "sid": "chatcmpl-agt0003c01-9e3e15b4"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2276685, "sid": "chatcmpl-agt0003c01-9e3e15b4"}
+{"ev": "mp.lookup", "t": 1792271413.2276993, "sid": "chatcmpl-agt0003c01-9e3e15b4", "request_id": "chatcmpl-agt0003c01-9e3e15b4", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "f36e3a2cd291892e9a4556b1a5cdd79dcf62a5538976173541d16863f01e3a3c"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1056}
+{"ev": "l1.read.reserved", "t": 1792271413.2277184, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2278018, "sid": "chatcmpl-agt0005c01-9f6562bc"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2278035, "sid": "chatcmpl-agt0005c01-9f6562bc"}
+{"ev": "mp.lookup", "t": 1792271413.2278337, "sid": "chatcmpl-agt0005c01-9f6562bc", "request_id": "chatcmpl-agt0005c01-9f6562bc", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "f4b68c44b292d5c68a665938725ea6f88c61acf07028c56f6b923b8dd2df5db7"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1057}
+{"ev": "l1.read.reserved", "t": 1792271413.2278504, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2279067, "sid": "chatcmpl-agt0006c01-8f8c1a3c"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2279081, "sid": "chatcmpl-agt0006c01-8f8c1a3c"}
+{"ev": "mp.lookup", "t": 1792271413.2279372, "sid": "chatcmpl-agt0006c01-8f8c1a3c", "request_id": "chatcmpl-agt0006c01-8f8c1a3c", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "f0a16c88c176bb27daa4ee547ae568ae5756138580290abf56dfec6ca22ee65a"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1048}
+{"ev": "l1.read.reserved", "t": 1792271413.227953, "sid": "", "keys": []}
+{"ev": "mp.request.start", "t": 1792271413.2280116, "sid": "chatcmpl-agt0007c01-a06ac0b7"}
+{"ev": "mp.lookup_prefetch.start", "t": 1792271413.2280128, "sid": "chatcmpl-agt0007c01-a06ac0b7"}
+{"ev": "mp.lookup", "t": 1792271413.2280416, "sid": "chatcmpl-agt0007c01-a06ac0b7", "request_id": "chatcmpl-agt0007c01-a06ac0b7", "hashes": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "900e5f8c850fcb8680745b79f10f3d058519fed21fa33de5490a9687567a9584"], "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "chunk_size": 256, "seq_len": 1058}
+{"ev": "l1.read.reserved", "t": 1792271413.2280548, "sid": "", "keys": []}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2286956, "sid": "chatcmpl-agt0000c01-82c47319", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2287464, "sid": "chatcmpl-agt0002c01-b58feb6e", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2287917, "sid": "chatcmpl-agt0001c01-87758198", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2288253, "sid": "chatcmpl-agt0004c01-a0051942", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2288594, "sid": "chatcmpl-agt0003c01-9e3e15b4", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2296777, "sid": "chatcmpl-agt0005c01-9f6562bc", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2297068, "sid": "chatcmpl-agt0006c01-8f8c1a3c", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "mp.lookup_prefetch.end", "t": 1792271413.2297466, "sid": "chatcmpl-agt0007c01-a06ac0b7", "found_count": 0, "requested_tokens": 1024, "hit_tokens": 0, "l1_hit_tokens": 0, "l2_hit_tokens": 0, "early_exit_reason": "", "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ", "cache_salt": ""}
+{"ev": "l1.eviction.loop_tick", "t": 1792271413.5131574, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "mp.vllm.end_session", "t": 1792271414.0274906, "sid": "", "request_id": "chatcmpl-agt0003c01-9e3e15b4"}
+{"ev": "mp.request.end", "t": 1792271414.027504, "sid": "chatcmpl-agt0003c01-9e3e15b4"}
+{"ev": "l1.keys.accessed", "t": 1792271414.0276132, "sid": "", "keys": ["5ad81de7f33a0a47327b5fcaf8efeda76f8167dc7e0dbb7324611b08de2cdf94", "ca2053d3177e008a945ce2f0168e6f497bb5df994a784545597bd0ee1a175071", "222c09c53fcdfebdd6077fd3daaa654e3cc4b43e3e9200039ac8cad9b9c068bc", "f36e3a2cd291892e9a4556b1a5cdd79dcf62a5538976173541d16863f01e3a3c"]}
+{"ev": "l1.eviction.loop_tick", "t": 1792271414.5132644, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271415.513365, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271416.51345, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271417.5135298, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271418.5137556, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271419.513838, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271420.5139208, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271421.5140204, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271422.5142026, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271423.5144022, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271424.5146139, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271425.514823, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271426.5150216, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271427.5150998, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "l1.eviction.loop_tick", "t": 1792271428.5151782, "sid": "", "usage": 0.0, "watermark": 0.8, "triggered": false}
+{"ev": "kvevt.stop", "t": 1792271429.0732234}

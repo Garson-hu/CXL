@@ -9,6 +9,12 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-17 late addendum — RQ1-B AGENT VALIDATION DONE (REAL RUNS).** Real agent runtime events are timely and
+block-exact, but at a host cache ≥ the live working set plain LRU already serves 96.5–98.6% of the reuses; the events
+clear Gate 2 only under capacity pressure (≤ 0.3 GB with 16 agents) and their robust value is write avoidance (−49%
+with deferred stores, simulated) and releasing dead occupancy (74–86% of cache-time). Gate 2 agents: PARTIAL.
+Recommendation: lifecycle event as a release + deferred-store interface for RQ3, not hit-rate prediction.
+
 **2026-10-17 night addendum — RQ1-B ANSWERED: NO FOR CHAT, PARTLY FOR AGENTS.** The scheduler queue knows exact next
 reads 0.2 s ahead (worthless against 2-minute reuse gaps); the agent loop's continue/end decision is the one realistic
 early signal (41–48% of the oracle's gain on the agent trace, +12 points). Recommended next: a small real agent run to
@@ -203,6 +209,21 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-17 late (session 34, continued) — RQ1-B real agent runtime validation
+
+- Built a minimal real agent workflow: OpenAI Agents SDK 0.24 (separate venv `/mnt/local/ghu4/envs/agent`, loop unmodified)
+  with three local tools over a seeded report corpus (`benchmarks/agent/agent_tasks.py`), 400 tasks; vLLM 0.31 + LMCache
+  0.5.5 MP with Qwen2.5-3B-Instruct-AWQ (1.5B fp16 collapsed to one-shot tool calls); logging-only instrumentation:
+  SDK RunHooks + per-call X-Request-Id, and LMCache's event bus mirrored to JSONL through a `sitecustomize.py`
+  (`benchmarks/agent/kvevt/`). Runs k8-l1g / k16-l1g / k8-l4g (5.2 / 2.9 / 5.2 min serving); lazy-offload run crashed
+  LMCache's FIFO policy (ValueError in `mark_req_finished`), kept as a limit.
+- Analysis `scripts/kv_agent_events.py` (join, timing, semantics, figures) and replay `scripts/kv_agent_replay.py`
+  (capacity sweep with the real events, deferred-store variants); tables `scripts/kv_agent_tables.py`.
+- Results: continue/end known with no delay; continue → 100% context re-read 1.3 s later; end → 84–85% private chunks
+  dead, 92% shared chunks live, event 0.4 s after the last write; real reuse-hit 0.965–0.986 under plain LRU; events
+  ≥ 50% of the oracle gain only below the live working set; writes −49% only with deferred stores (simulated).
+  Gate 2 agents PARTIAL. Experiment file CLOSED, decision report and INDEX updated. Node: allocation 313660 idle.
 
 ### 2026-10-17 night (session 34, continued) — RQ1-B: application-level reuse signals
 
