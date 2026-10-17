@@ -9,6 +9,12 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-17 evening addendum — SESSION-HINT STUDY: NO-GO FOR PREDICTION-AWARE MANAGEMENT.** Perfect session hints
+recover ~half of the block oracle (74% with a 300 s bound on chat); realistic chat signals recover nothing; prompt
+task-end events in agent workloads 28–41%. Decision: stop reuse prediction as a contribution; keep an explicit
+lifetime-release interface as a mechanism; refocus on placement, admission, lifecycle, cross-application coordination
+(design discussion next, nothing implemented).
+
 **2026-10-17 addendum — CHARTER WRITTEN, PHASE 1 DONE: GATE 1 PASS, GATE 2 FAIL.** Future reuse information is worth > 5×
 the capacity (oracle 80 / 94 / 70% of reuses vs 17 / 65 / 34%, writes −70–83%) but is not predictable from anything in
 the traces (online rules ≤ 6% of the ceiling). Migration adds no hits at equal capacity. Phase 2 blocked by the charter's
@@ -192,6 +198,19 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-17 evening (session 34, continued) — session-level hint study (the last predictability experiment)
+
+- `scripts/kv_session_hint_study.py` + `kv_session_hint_figs.py`; `docs/experiments/2026-10-17-kv-session-hint-study.md`
+  (CLOSED). Sessions reconstructed from prefix chains; reuse is within-session (89–100%); the next turn re-reads ~80% of
+  a turn's blocks. A perfect "session continues" hint (oracle) recovers 40–54% of the block oracle's gain (74 / 51 / 41%
+  with a 300 s bound), from retention (eviction-only = admission + eviction); writes −45–66% with admission. Realistic
+  signals: recency / idle TTL = LRU (0%); termination events 60 s late = 0%; within ~10 s = 28–41% (agent frameworks).
+  False positives cost most (30% halves the benefit); false negatives are cheap; delay > 10 s kills it.
+- Decision (decision report updated, Gate 2: FAIL for chat, borderline for agents): NO-GO for a prediction-aware unified
+  manager; stop the reuse-prediction direction; keep an immediate "lifetime release" event as an optional interface;
+  refocus the unified manager on capacity-aware placement, interference-aware admission, lifecycle management and
+  cross-application coordination — to be discussed with the user, not implemented.
 
 ### 2026-10-17 (session 34) — research charter, Phase 1 oracle study (offline), decision report
 

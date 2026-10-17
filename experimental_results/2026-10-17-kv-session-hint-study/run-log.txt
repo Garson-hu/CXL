@@ -1,0 +1,76 @@
+## conversation: 7373 sessions; turns/session mean 1.63 p50 1 p90 3; single-turn sessions 69%; requests with a next turn 39%
+   reuses within-session 89% / cross-session 11%; blocks shared by >= 2 sessions 0.0%
+   next turn re-reads 81% of the turn's blocks on average (p50 92%), 56% of its NEW blocks; gap to the next turn p50 123 s p90 480 s; within 60 / 300 / 900 s: 22 / 79 / 97%
+   split                              reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18041 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 74/41 s
+   global_lru                         reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18042 GB bypass      0 useful-occ 0.31 dead-occ 0.70 residence hit/no-hit 74/41 s
+   session_ttl300                     reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18042 GB bypass      0 useful-occ 0.31 dead-occ 0.70 residence hit/no-hit 74/41 s
+   session_ttl60                      reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18042 GB bypass      0 useful-occ 0.31 dead-occ 0.70 residence hit/no-hit 74/41 s
+   oracle_min                         reuse-hit 0.797 overall 0.311 within-session hits 86% recompute  47.8 Mtok writes   3186 GB bypass  74066 useful-occ 0.91 dead-occ 0.09 residence hit/no-hit 274/36 s
+   hint:mode=both                     reuse-hit 0.513 overall 0.200 within-session hits 78% recompute  55.5 Mtok writes   6074 GB bypass  70912 useful-occ 0.74 dead-occ 0.26 residence hit/no-hit 143/109 s
+   hint:mode=admit                    reuse-hit 0.450 overall 0.175 within-session hits 75% recompute  57.2 Mtok writes   6280 GB bypass  72663 useful-occ 0.65 dead-occ 0.35 residence hit/no-hit 180/95 s
+   hint:mode=evict                    reuse-hit 0.513 overall 0.200 within-session hits 78% recompute  55.5 Mtok writes  15781 GB bypass      0 useful-occ 0.74 dead-occ 0.26 residence hit/no-hit 144/34 s
+   hint:mode=both,bound=300           reuse-hit 0.633 overall 0.247 within-session hits 82% recompute  52.3 Mtok writes   3897 GB bypass  75606 useful-occ 0.68 dead-occ 0.32 residence hit/no-hit 188/189 s
+   hint:mode=both,bound=900           reuse-hit 0.519 overall 0.202 within-session hits 78% recompute  55.3 Mtok writes   5763 GB bypass  71369 useful-occ 0.74 dead-occ 0.26 residence hit/no-hit 147/116 s
+   hint:mode=both,bound=60            reuse-hit 0.305 overall 0.119 within-session hits 63% recompute  61.1 Mtok writes   1028 GB bypass 111635 useful-occ 0.16 dead-occ 0.84 residence hit/no-hit 399/2901 s
+   hint:mode=both,fp=0.1              reuse-hit 0.438 overall 0.171 within-session hits 74% recompute  57.5 Mtok writes   7359 GB bypass  65247 useful-occ 0.64 dead-occ 0.37 residence hit/no-hit 129/92 s
+   hint:mode=both,fp=0.3              reuse-hit 0.323 overall 0.126 within-session hits 65% recompute  60.6 Mtok writes   9816 GB bypass  51224 useful-occ 0.50 dead-occ 0.50 residence hit/no-hit 110/72 s
+   hint:mode=both,fn=0.1              reuse-hit 0.502 overall 0.196 within-session hits 77% recompute  55.8 Mtok writes   5449 GB bypass  76162 useful-occ 0.73 dead-occ 0.28 residence hit/no-hit 144/127 s
+   hint:mode=both,fn=0.3              reuse-hit 0.494 overall 0.193 within-session hits 77% recompute  56.0 Mtok writes   4264 GB bypass  83063 useful-occ 0.70 dead-occ 0.30 residence hit/no-hit 160/174 s
+   hint:mode=both,fp=0.3,fn=0.3       reuse-hit 0.316 overall 0.123 within-session hits 64% recompute  60.8 Mtok writes   7827 GB bypass  63882 useful-occ 0.43 dead-occ 0.58 residence hit/no-hit 113/93 s
+   hint:mode=both,miss=0.3            reuse-hit 0.339 overall 0.132 within-session hits 66% recompute  60.2 Mtok writes   9702 GB bypass  53827 useful-occ 0.52 dead-occ 0.48 residence hit/no-hit 110/72 s
+   hint:mode=both,miss=0.6            reuse-hit 0.230 overall 0.090 within-session hits 50% recompute  63.2 Mtok writes  13470 GB bypass  31435 useful-occ 0.40 dead-occ 0.60 residence hit/no-hit 91/54 s
+   hint:delay=0                       reuse-hit 0.506 overall 0.197 within-session hits 77% recompute  55.7 Mtok writes  15834 GB bypass      0 useful-occ 0.73 dead-occ 0.27 residence hit/no-hit 143/34 s
+   hint:delay=10                      reuse-hit 0.413 overall 0.161 within-session hits 72% recompute  58.2 Mtok writes  16449 GB bypass      0 useful-occ 0.61 dead-occ 0.40 residence hit/no-hit 125/38 s
+   hint:delay=60                      reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18042 GB bypass      0 useful-occ 0.31 dead-occ 0.70 residence hit/no-hit 74/41 s
+   hint:delay=300                     reuse-hit 0.174 overall 0.068 within-session hits 35% recompute  64.7 Mtok writes  18042 GB bypass      0 useful-occ 0.31 dead-occ 0.70 residence hit/no-hit 74/41 s
+## toolagent: 6554 sessions; turns/session mean 3.60 p50 1 p90 3; single-turn sessions 68%; requests with a next turn 72%
+   reuses within-session 95% / cross-session 5%; blocks shared by >= 2 sessions 0.0%
+   next turn re-reads 82% of the turn's blocks on average (p50 86%), 14% of its NEW blocks; gap to the next turn p50 0 s p90 150 s; within 60 / 300 / 900 s: 80 / 96 / 100%
+   split                              reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+   global_lru                         reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+   session_ttl300                     reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+   session_ttl60                      reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+   oracle_min                         reuse-hit 0.940 overall 0.537 within-session hits 95% recompute  46.7 Mtok writes   2971 GB bypass  72687 useful-occ 0.91 dead-occ 0.09 residence hit/no-hit 278/40 s
+   hint:mode=both                     reuse-hit 0.771 overall 0.441 within-session hits 94% recompute  56.5 Mtok writes   7371 GB bypass  60942 useful-occ 0.60 dead-occ 0.40 residence hit/no-hit 123/93 s
+   hint:mode=admit                    reuse-hit 0.748 overall 0.428 within-session hits 93% recompute  57.8 Mtok writes   7517 GB bypass  62477 useful-occ 0.56 dead-occ 0.45 residence hit/no-hit 157/84 s
+   hint:mode=evict                    reuse-hit 0.771 overall 0.441 within-session hits 94% recompute  56.5 Mtok writes  15825 GB bypass      0 useful-occ 0.60 dead-occ 0.40 residence hit/no-hit 123/37 s
+   hint:mode=both,bound=300           reuse-hit 0.797 overall 0.455 within-session hits 94% recompute  55.0 Mtok writes   5936 GB bypass  65964 useful-occ 0.55 dead-occ 0.45 residence hit/no-hit 135/119 s
+   hint:mode=both,bound=900           reuse-hit 0.773 overall 0.442 within-session hits 94% recompute  56.3 Mtok writes   7313 GB bypass  61016 useful-occ 0.60 dead-occ 0.40 residence hit/no-hit 123/94 s
+   hint:mode=both,bound=60            reuse-hit 0.693 overall 0.396 within-session hits 93% recompute  60.9 Mtok writes   2711 GB bypass  99599 useful-occ 0.08 dead-occ 0.92 residence hit/no-hit 83/385 s
+   hint:mode=both,fp=0.1              reuse-hit 0.745 overall 0.426 within-session hits 93% recompute  57.9 Mtok writes   8416 GB bypass  56043 useful-occ 0.55 dead-occ 0.46 residence hit/no-hit 116/82 s
+   hint:mode=both,fp=0.3              reuse-hit 0.705 overall 0.403 within-session hits 93% recompute  60.2 Mtok writes  10608 GB bypass  43709 useful-occ 0.46 dead-occ 0.54 residence hit/no-hit 99/67 s
+   hint:mode=both,fn=0.1              reuse-hit 0.757 overall 0.433 within-session hits 94% recompute  57.2 Mtok writes   6839 GB bypass  65930 useful-occ 0.59 dead-occ 0.41 residence hit/no-hit 109/108 s
+   hint:mode=both,fn=0.3              reuse-hit 0.722 overall 0.413 within-session hits 93% recompute  59.3 Mtok writes   5894 GB bypass  77083 useful-occ 0.55 dead-occ 0.45 residence hit/no-hit 95/144 s
+   hint:mode=both,fp=0.3,fn=0.3       reuse-hit 0.644 overall 0.368 within-session hits 92% recompute  63.8 Mtok writes   9127 GB bypass  61272 useful-occ 0.39 dead-occ 0.61 residence hit/no-hit 61/89 s
+   hint:mode=both,miss=0.3            reuse-hit 0.710 overall 0.406 within-session hits 93% recompute  59.9 Mtok writes  10396 GB bypass  45630 useful-occ 0.47 dead-occ 0.53 residence hit/no-hit 104/68 s
+   hint:mode=both,miss=0.6            reuse-hit 0.671 overall 0.383 within-session hits 93% recompute  62.2 Mtok writes  13682 GB bypass  26534 useful-occ 0.38 dead-occ 0.62 residence hit/no-hit 90/53 s
+   hint:delay=0                       reuse-hit 0.766 overall 0.438 within-session hits 94% recompute  56.7 Mtok writes  15894 GB bypass      0 useful-occ 0.60 dead-occ 0.40 residence hit/no-hit 122/37 s
+   hint:delay=10                      reuse-hit 0.730 overall 0.417 within-session hits 93% recompute  58.8 Mtok writes  16421 GB bypass      0 useful-occ 0.52 dead-occ 0.49 residence hit/no-hit 112/40 s
+   hint:delay=60                      reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+   hint:delay=300                     reuse-hit 0.647 overall 0.370 within-session hits 92% recompute  63.6 Mtok writes  17644 GB bypass      0 useful-occ 0.30 dead-occ 0.70 residence hit/no-hit 75/42 s
+## synthetic: 2211 sessions; turns/session mean 1.81 p50 1 p90 4; single-turn sessions 82%; requests with a next turn 45%
+   reuses within-session 100% / cross-session 0%; blocks shared by >= 2 sessions 0.0%
+   next turn re-reads 94% of the turn's blocks on average (p50 97%), 26% of its NEW blocks; gap to the next turn p50 55 s p90 280 s; within 60 / 300 / 900 s: 52 / 92 / 100%
+   split                              reuse-hit 0.344 overall 0.292 within-session hits 100% recompute  26.3 Mtok writes   6571 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+   global_lru                         reuse-hit 0.342 overall 0.291 within-session hits 100% recompute  26.3 Mtok writes   6579 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+   session_ttl300                     reuse-hit 0.342 overall 0.291 within-session hits 100% recompute  26.3 Mtok writes   6579 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+   session_ttl60                      reuse-hit 0.342 overall 0.291 within-session hits 100% recompute  26.3 Mtok writes   6579 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+   oracle_min                         reuse-hit 0.696 overall 0.592 within-session hits 100% recompute  15.1 Mtok writes   1982 GB bypass  14391 useful-occ 0.91 dead-occ 0.08 residence hit/no-hit 129/24 s
+   hint:mode=both                     reuse-hit 0.486 overall 0.414 within-session hits 100% recompute  21.8 Mtok writes   3590 GB bypass  13725 useful-occ 0.89 dead-occ 0.10 residence hit/no-hit 66/54 s
+   hint:mode=admit                    reuse-hit 0.440 overall 0.375 within-session hits 100% recompute  23.2 Mtok writes   3746 GB bypass  14308 useful-occ 0.80 dead-occ 0.18 residence hit/no-hit 71/50 s
+   hint:mode=evict                    reuse-hit 0.486 overall 0.414 within-session hits 100% recompute  21.8 Mtok writes   5828 GB bypass      0 useful-occ 0.89 dead-occ 0.10 residence hit/no-hit 65/28 s
+   hint:mode=both,bound=300           reuse-hit 0.488 overall 0.415 within-session hits 100% recompute  21.7 Mtok writes   3085 GB bypass  13815 useful-occ 0.89 dead-occ 0.10 residence hit/no-hit 74/60 s
+   hint:mode=both,bound=900           reuse-hit 0.486 overall 0.414 within-session hits 100% recompute  21.8 Mtok writes   3590 GB bypass  13725 useful-occ 0.89 dead-occ 0.10 residence hit/no-hit 66/54 s
+   hint:mode=both,bound=60            reuse-hit 0.576 overall 0.491 within-session hits 100% recompute  18.9 Mtok writes   1268 GB bypass  21925 useful-occ 0.73 dead-occ 0.26 residence hit/no-hit 128/297 s
+   hint:mode=both,fp=0.1              reuse-hit 0.474 overall 0.403 within-session hits 100% recompute  22.1 Mtok writes   3899 GB bypass  12361 useful-occ 0.84 dead-occ 0.15 residence hit/no-hit 62/50 s
+   hint:mode=both,fp=0.3              reuse-hit 0.441 overall 0.375 within-session hits 100% recompute  23.2 Mtok writes   4463 GB bypass  10105 useful-occ 0.78 dead-occ 0.21 residence hit/no-hit 56/44 s
+   hint:mode=both,fn=0.1              reuse-hit 0.497 overall 0.423 within-session hits 100% recompute  21.4 Mtok writes   3074 GB bypass  18144 useful-occ 0.88 dead-occ 0.11 residence hit/no-hit 69/63 s
+   hint:mode=both,fn=0.3              reuse-hit 0.473 overall 0.402 within-session hits 100% recompute  22.2 Mtok writes   2447 GB bypass  23841 useful-occ 0.86 dead-occ 0.12 residence hit/no-hit 77/89 s
+   hint:mode=both,fp=0.3,fn=0.3       reuse-hit 0.410 overall 0.349 within-session hits 100% recompute  24.1 Mtok writes   3318 GB bypass  20832 useful-occ 0.70 dead-occ 0.29 residence hit/no-hit 60/65 s
+   hint:mode=both,miss=0.3            reuse-hit 0.433 overall 0.368 within-session hits 100% recompute  23.4 Mtok writes   4648 GB bypass   9822 useful-occ 0.77 dead-occ 0.22 residence hit/no-hit 53/43 s
+   hint:mode=both,miss=0.6            reuse-hit 0.373 overall 0.318 within-session hits 100% recompute  25.3 Mtok writes   5418 GB bypass   6207 useful-occ 0.69 dead-occ 0.30 residence hit/no-hit 48/37 s
+   hint:delay=0                       reuse-hit 0.485 overall 0.412 within-session hits 100% recompute  21.8 Mtok writes   5834 GB bypass      0 useful-occ 0.88 dead-occ 0.10 residence hit/no-hit 65/29 s
+   hint:delay=10                      reuse-hit 0.419 overall 0.357 within-session hits 100% recompute  23.9 Mtok writes   6160 GB bypass      0 useful-occ 0.77 dead-occ 0.22 residence hit/no-hit 56/30 s
+   hint:delay=60                      reuse-hit 0.342 overall 0.291 within-session hits 100% recompute  26.3 Mtok writes   6579 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+   hint:delay=300                     reuse-hit 0.342 overall 0.291 within-session hits 100% recompute  26.3 Mtok writes   6579 GB bypass      0 useful-occ 0.61 dead-occ 0.38 residence hit/no-hit 43/31 s
+wrote /home/ghu4/CXL/experimental_results/2026-10-17-kv-session-hint-study/session-hints-8b-200GiB.csv
