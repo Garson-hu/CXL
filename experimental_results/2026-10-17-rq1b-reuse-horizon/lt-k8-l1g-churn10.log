@@ -1,0 +1,110 @@
+trace: 2606 requests (2072 synthetic churn), 200 tasks, 4525 chunk accesses, 2236 unique chunks, test half from request 1303
+live working set (agent chunks of unfinished tasks): mean 13 p90 18 max 22; agent production 0.79 chunks/s + real background 0.00 + synthetic churn 10.00; reuse horizon p50 3.1 s p90 4.9 s (n=129)
+cap   24 (0.23 GB) churn 10.0 split            reuse-hit 0.927 overall 0.858 recompute    40.7 ktok written   2371 dead-occ 0.78 evict-live 0.06 res    1.5 s
+cap   24 (0.23 GB) churn 10.0 lru              reuse-hit 0.910 overall 0.842 recompute    45.3 ktok written   2397 dead-occ 0.78 evict-live 0.07 res    1.8 s
+cap   24 (0.23 GB) churn 10.0 slru             reuse-hit 0.927 overall 0.858 recompute    40.7 ktok written   2371 dead-occ 0.79 evict-live 0.06 res    1.4 s hits+18
+cap   24 (0.23 GB) churn 10.0 ttl10            reuse-hit 0.910 overall 0.842 recompute    45.3 ktok written   2397 dead-occ 0.78 evict-live 0.07 res    1.8 s hits+0
+cap   24 (0.23 GB) churn 10.0 ttl30            reuse-hit 0.910 overall 0.842 recompute    45.3 ktok written   2397 dead-occ 0.78 evict-live 0.07 res    1.8 s hits+0
+cap   24 (0.23 GB) churn 10.0 event_end        reuse-hit 0.910 overall 0.842 recompute    45.3 ktok written   2395 dead-occ 0.78 evict-live 0.07 res    1.8 s hits+0
+cap   24 (0.23 GB) churn 10.0 event_cont       reuse-hit 0.984 overall 0.910 recompute    25.9 ktok written   2273 dead-occ 0.73 evict-live 0.02 res    1.4 s hits+76
+cap   24 (0.23 GB) churn 10.0 event_both       reuse-hit 0.984 overall 0.910 recompute    25.9 ktok written   2273 dead-occ 0.73 evict-live 0.02 res    1.5 s hits+76
+cap   24 (0.23 GB) churn 10.0 event_both+slru  reuse-hit 0.985 overall 0.911 recompute    25.3 ktok written   2265 dead-occ 0.72 evict-live 0.01 res    1.4 s hits+78
+cap   24 (0.23 GB) churn 10.0 event_end+defer  reuse-hit 0.900 overall 0.833 recompute    47.9 ktok written   2240 dead-occ 0.78 evict-live 0.06 res    1.9 s hits+-10
+cap   24 (0.23 GB) churn 10.0 event_both+defer reuse-hit 0.985 overall 0.911 recompute    25.6 ktok written   2177 dead-occ 0.72 evict-live 0.01 res    1.5 s hits+77
+cap   24 (0.23 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.67 evict-live 0.00 res   14.8 s hits+93
+cap   32 (0.30 GB) churn 10.0 split            reuse-hit 0.946 overall 0.875 recompute    35.8 ktok written   2343 dead-occ 0.82 evict-live 0.05 res    1.9 s
+cap   32 (0.30 GB) churn 10.0 lru              reuse-hit 0.941 overall 0.870 recompute    37.1 ktok written   2354 dead-occ 0.82 evict-live 0.05 res    2.5 s
+cap   32 (0.30 GB) churn 10.0 slru             reuse-hit 0.952 overall 0.880 recompute    34.3 ktok written   2336 dead-occ 0.82 evict-live 0.04 res    2.0 s hits+11
+cap   32 (0.30 GB) churn 10.0 ttl10            reuse-hit 0.941 overall 0.870 recompute    37.1 ktok written   2354 dead-occ 0.82 evict-live 0.05 res    2.5 s hits+0
+cap   32 (0.30 GB) churn 10.0 ttl30            reuse-hit 0.941 overall 0.870 recompute    37.1 ktok written   2354 dead-occ 0.82 evict-live 0.05 res    2.5 s hits+0
+cap   32 (0.30 GB) churn 10.0 event_end        reuse-hit 0.940 overall 0.869 recompute    37.4 ktok written   2355 dead-occ 0.82 evict-live 0.05 res    2.6 s hits+-1
+cap   32 (0.30 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.78 evict-live 0.01 res    2.1 s hits+57
+cap   32 (0.30 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.78 evict-live 0.01 res    2.2 s hits+56
+cap   32 (0.30 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.78 evict-live 0.01 res    2.2 s hits+56
+cap   32 (0.30 GB) churn 10.0 event_end+defer  reuse-hit 0.938 overall 0.868 recompute    37.9 ktok written   2224 dead-occ 0.82 evict-live 0.05 res    2.7 s hits+-3
+cap   32 (0.30 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.79 evict-live 0.00 res    2.2 s hits+56
+cap   32 (0.30 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.76 evict-live 0.00 res   18.6 s hits+61
+cap   48 (0.45 GB) churn 10.0 split            reuse-hit 0.964 overall 0.892 recompute    31.0 ktok written   2311 dead-occ 0.87 evict-live 0.03 res    2.9 s
+cap   48 (0.45 GB) churn 10.0 lru              reuse-hit 0.973 overall 0.900 recompute    28.7 ktok written   2293 dead-occ 0.87 evict-live 0.03 res    3.9 s
+cap   48 (0.45 GB) churn 10.0 slru             reuse-hit 0.968 overall 0.895 recompute    30.0 ktok written   2301 dead-occ 0.87 evict-live 0.03 res    2.9 s hits+-5
+cap   48 (0.45 GB) churn 10.0 ttl10            reuse-hit 0.973 overall 0.900 recompute    28.7 ktok written   2293 dead-occ 0.87 evict-live 0.03 res    3.9 s hits+0
+cap   48 (0.45 GB) churn 10.0 ttl30            reuse-hit 0.973 overall 0.900 recompute    28.7 ktok written   2293 dead-occ 0.87 evict-live 0.03 res    3.9 s hits+0
+cap   48 (0.45 GB) churn 10.0 event_end        reuse-hit 0.978 overall 0.904 recompute    27.4 ktok written   2287 dead-occ 0.87 evict-live 0.02 res    4.1 s hits+5
+cap   48 (0.45 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.86 evict-live 0.01 res    3.6 s hits+24
+cap   48 (0.45 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.86 evict-live 0.01 res    3.7 s hits+23
+cap   48 (0.45 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.86 evict-live 0.01 res    3.7 s hits+23
+cap   48 (0.45 GB) churn 10.0 event_end+defer  reuse-hit 0.979 overall 0.905 recompute    27.1 ktok written   2183 dead-occ 0.87 evict-live 0.02 res    4.2 s hits+6
+cap   48 (0.45 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.86 evict-live 0.00 res    3.8 s hits+23
+cap   48 (0.45 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.84 evict-live 0.00 res   40.5 s hits+28
+cap   64 (0.60 GB) churn 10.0 split            reuse-hit 0.983 overall 0.909 recompute    26.1 ktok written   2278 dead-occ 0.90 evict-live 0.02 res    4.0 s
+cap   64 (0.60 GB) churn 10.0 lru              reuse-hit 0.988 overall 0.914 recompute    24.6 ktok written   2261 dead-occ 0.90 evict-live 0.01 res    5.4 s
+cap   64 (0.60 GB) churn 10.0 slru             reuse-hit 0.985 overall 0.911 recompute    25.6 ktok written   2264 dead-occ 0.90 evict-live 0.01 res    4.0 s hits+-4
+cap   64 (0.60 GB) churn 10.0 ttl10            reuse-hit 0.988 overall 0.914 recompute    24.6 ktok written   2261 dead-occ 0.90 evict-live 0.01 res    5.4 s hits+0
+cap   64 (0.60 GB) churn 10.0 ttl30            reuse-hit 0.988 overall 0.914 recompute    24.6 ktok written   2261 dead-occ 0.90 evict-live 0.01 res    5.4 s hits+0
+cap   64 (0.60 GB) churn 10.0 event_end        reuse-hit 0.988 overall 0.914 recompute    24.6 ktok written   2261 dead-occ 0.90 evict-live 0.01 res    5.7 s hits+0
+cap   64 (0.60 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.89 evict-live 0.01 res    5.1 s hits+8
+cap   64 (0.60 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.89 evict-live 0.01 res    5.3 s hits+7
+cap   64 (0.60 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.89 evict-live 0.01 res    5.3 s hits+7
+cap   64 (0.60 GB) churn 10.0 event_end+defer  reuse-hit 0.992 overall 0.918 recompute    23.6 ktok written   2165 dead-occ 0.90 evict-live 0.00 res    5.8 s hits+4
+cap   64 (0.60 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.89 evict-live 0.00 res    5.4 s hits+7
+cap   64 (0.60 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.87 evict-live 0.00 res   71.9 s hits+12
+cap   96 (0.91 GB) churn 10.0 split            reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2253 dead-occ 0.93 evict-live 0.01 res    6.0 s
+cap   96 (0.91 GB) churn 10.0 lru              reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.93 evict-live 0.01 res    8.3 s
+cap   96 (0.91 GB) churn 10.0 slru             reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2248 dead-occ 0.93 evict-live 0.01 res    6.1 s hits+0
+cap   96 (0.91 GB) churn 10.0 ttl10            reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.93 evict-live 0.01 res    8.3 s hits+0
+cap   96 (0.91 GB) churn 10.0 ttl30            reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.93 evict-live 0.01 res    8.3 s hits+0
+cap   96 (0.91 GB) churn 10.0 event_end        reuse-hit 0.993 overall 0.919 recompute    23.3 ktok written   2252 dead-occ 0.93 evict-live 0.01 res    8.9 s hits+-1
+cap   96 (0.91 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.93 evict-live 0.01 res    8.1 s hits+2
+cap   96 (0.91 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.93 evict-live 0.01 res    8.5 s hits+1
+cap   96 (0.91 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.93 evict-live 0.01 res    8.5 s hits+1
+cap   96 (0.91 GB) churn 10.0 event_end+defer  reuse-hit 0.993 overall 0.919 recompute    23.3 ktok written   2160 dead-occ 0.93 evict-live 0.00 res    8.9 s hits+-1
+cap   96 (0.91 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.93 evict-live 0.00 res    8.6 s hits+1
+cap   96 (0.91 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.88 evict-live 0.00 res    inf s hits+6
+cap  128 (1.21 GB) churn 10.0 split            reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2248 dead-occ 0.94 evict-live 0.01 res    8.1 s
+cap  128 (1.21 GB) churn 10.0 lru              reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.95 evict-live 0.01 res   11.3 s
+cap  128 (1.21 GB) churn 10.0 slru             reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2247 dead-occ 0.95 evict-live 0.01 res    8.7 s hits+1
+cap  128 (1.21 GB) churn 10.0 ttl10            reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.95 evict-live 0.01 res   11.3 s hits+0
+cap  128 (1.21 GB) churn 10.0 ttl30            reuse-hit 0.994 overall 0.919 recompute    23.0 ktok written   2251 dead-occ 0.95 evict-live 0.01 res   11.3 s hits+0
+cap  128 (1.21 GB) churn 10.0 event_end        reuse-hit 0.993 overall 0.919 recompute    23.3 ktok written   2252 dead-occ 0.95 evict-live 0.01 res   12.1 s hits+-1
+cap  128 (1.21 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.95 evict-live 0.01 res   11.0 s hits+2
+cap  128 (1.21 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.95 evict-live 0.01 res   11.7 s hits+1
+cap  128 (1.21 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.95 evict-live 0.01 res   11.7 s hits+1
+cap  128 (1.21 GB) churn 10.0 event_end+defer  reuse-hit 0.993 overall 0.919 recompute    23.3 ktok written   2160 dead-occ 0.95 evict-live 0.00 res   12.1 s hits+-1
+cap  128 (1.21 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.95 evict-live 0.00 res   11.7 s hits+1
+cap  128 (1.21 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.88 evict-live 0.00 res    inf s hits+6
+cap  192 (1.81 GB) churn 10.0 split            reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2248 dead-occ 0.96 evict-live 0.01 res   12.2 s
+cap  192 (1.81 GB) churn 10.0 lru              reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.96 evict-live 0.01 res   17.1 s
+cap  192 (1.81 GB) churn 10.0 slru             reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.96 evict-live 0.00 res   14.6 s hits+0
+cap  192 (1.81 GB) churn 10.0 ttl10            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.96 evict-live 0.01 res   17.1 s hits+0
+cap  192 (1.81 GB) churn 10.0 ttl30            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.96 evict-live 0.01 res   17.1 s hits+0
+cap  192 (1.81 GB) churn 10.0 event_end        reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.96 evict-live 0.01 res   18.5 s hits+-1
+cap  192 (1.81 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.96 evict-live 0.01 res   17.0 s hits+0
+cap  192 (1.81 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.96 evict-live 0.01 res   18.1 s hits+-1
+cap  192 (1.81 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.96 evict-live 0.01 res   18.1 s hits+-1
+cap  192 (1.81 GB) churn 10.0 event_end+defer  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.96 evict-live 0.00 res   18.5 s hits+-1
+cap  192 (1.81 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.96 evict-live 0.00 res   18.1 s hits+-1
+cap  192 (1.81 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.88 evict-live 0.00 res    inf s hits+4
+cap  256 (2.42 GB) churn 10.0 split            reuse-hit 0.997 overall 0.922 recompute    22.3 ktok written   2246 dead-occ 0.97 evict-live 0.00 res   16.3 s
+cap  256 (2.42 GB) churn 10.0 lru              reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.97 evict-live 0.01 res   23.0 s
+cap  256 (2.42 GB) churn 10.0 slru             reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.97 evict-live 0.01 res   20.6 s hits+0
+cap  256 (2.42 GB) churn 10.0 ttl10            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.97 evict-live 0.01 res   23.0 s hits+0
+cap  256 (2.42 GB) churn 10.0 ttl30            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.97 evict-live 0.01 res   23.0 s hits+0
+cap  256 (2.42 GB) churn 10.0 event_end        reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.97 evict-live 0.01 res   24.9 s hits+-1
+cap  256 (2.42 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2249 dead-occ 0.97 evict-live 0.01 res   23.0 s hits+0
+cap  256 (2.42 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.97 evict-live 0.01 res   24.5 s hits+-1
+cap  256 (2.42 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.97 evict-live 0.01 res   24.5 s hits+-1
+cap  256 (2.42 GB) churn 10.0 event_end+defer  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.97 evict-live 0.00 res   24.9 s hits+-1
+cap  256 (2.42 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.97 evict-live 0.00 res   24.5 s hits+-1
+cap  256 (2.42 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.88 evict-live 0.00 res    inf s hits+4
+cap  384 (3.62 GB) churn 10.0 split            reuse-hit 0.997 overall 0.922 recompute    22.3 ktok written   2245 dead-occ 0.98 evict-live 0.00 res   24.5 s
+cap  384 (3.62 GB) churn 10.0 lru              reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.98 evict-live 0.01 res   34.8 s
+cap  384 (3.62 GB) churn 10.0 slru             reuse-hit 0.997 overall 0.922 recompute    22.3 ktok written   2242 dead-occ 0.98 evict-live 0.00 res   32.3 s hits+1
+cap  384 (3.62 GB) churn 10.0 ttl10            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.98 evict-live 0.01 res   34.8 s hits+0
+cap  384 (3.62 GB) churn 10.0 ttl30            reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.98 evict-live 0.01 res   34.8 s hits+0
+cap  384 (3.62 GB) churn 10.0 event_end        reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.98 evict-live 0.01 res   37.7 s hits+-1
+cap  384 (3.62 GB) churn 10.0 event_cont       reuse-hit 0.996 overall 0.921 recompute    22.5 ktok written   2246 dead-occ 0.98 evict-live 0.01 res   34.8 s hits+0
+cap  384 (3.62 GB) churn 10.0 event_both       reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.98 evict-live 0.01 res   37.3 s hits+-1
+cap  384 (3.62 GB) churn 10.0 event_both+slru  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2250 dead-occ 0.98 evict-live 0.01 res   37.3 s hits+-1
+cap  384 (3.62 GB) churn 10.0 event_end+defer  reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.98 evict-live 0.00 res   37.7 s hits+-1
+cap  384 (3.62 GB) churn 10.0 event_both+defer reuse-hit 0.995 overall 0.920 recompute    22.8 ktok written   2158 dead-occ 0.98 evict-live 0.00 res   37.3 s hits+-1
+cap  384 (3.62 GB) churn 10.0 oracle           reuse-hit 1.000 overall 0.925 recompute    21.5 ktok written     86 dead-occ 0.88 evict-live 0.00 res    inf s hits+4

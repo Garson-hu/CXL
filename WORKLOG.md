@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-17 final-round addendum — RQ1-B CLOSED (reuse horizon vs residence).** Real agent lifecycle signals help only
+when the cache turns over within ~2 reuse horizons while still holding the live contexts (90–91% of the oracle gain with
+real steady churn, +3–7 pts) or when the cache is below the live set (51–70%); everywhere else 0–4%. A 200 GiB tier with
+≤ 64 agents sits in the LRU regime. Gate 2 PARTIAL. RQ1 answered: not a basis for reuse-prediction-driven design.
+
 **2026-10-17 late addendum — RQ1-B AGENT VALIDATION DONE (REAL RUNS).** Real agent runtime events are timely and
 block-exact, but at a host cache ≥ the live working set plain LRU already serves 96.5–98.6% of the reuses; the events
 clear Gate 2 only under capacity pressure (≤ 0.3 GB with 16 agents) and their robust value is write avoidance (−49%
@@ -209,6 +214,22 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-17 (session 34, final RQ1-B round) — reuse horizon vs cache residence
+
+- Public trace with real timestamps: Exgentic/agent-llm-traces (HF, CDLA-2.0; 39 parquet shards, kept outside the repo;
+  `scripts/agent_trace_public_stats.py` → `experimental_results/2026-10-17-rq1b-reuse-horizon/public/`): horizons
+  6–11 s p50 / 20–36 s p90, prompts 20k–60k tokens, 7–35 calls per session; spans end at submission, so tool and model
+  time are not separable. SWE-bench trajectory datasets have no timing.
+- Real long-tool workload `benchmarks/agent/agent_tasks_lt.py` (24 CSV datasets 1.5M–6M rows under
+  /mnt/local/ghu4/agent-data, pandas / pytest / python_exec tools executed as subprocesses; measured 2.5–15 s), runner
+  and launcher extended (workload selection, client CPU set, background replay with optional de-quantization).
+  Runs: lt-k8-l1g, lt-k16-l1g, lt-k8-l1g-bg / lt-k16-l1g-bg (bursty Mooncake background), lt-k8-l1g-bg2 / lt-k16-l1g-bg2
+  (steady background). Replay extended (`--churn`, `event_cont`, evictions-before-reuse, live/dead occupancy, coverage,
+  residence, W_live / P / H); regime analysis `scripts/kv_agent_regime.py`; tables `scripts/kv_horizon_tables.py`.
+- Result: continue signal ≥ 50% of the oracle gain only in the band W_live ≲ C ≲ P·H (90–91% with real steady churn,
+  +3–7 pts) or below the live set (51–70%); 0–4% in every no-/moderate-pressure setting; end signal never the useful one;
+  bursty churn favours SLRU. Gate 2 PARTIAL; RQ1 closed. Experiment file CLOSED, decision report, INDEX updated.
 
 ### 2026-10-17 late (session 34, continued) — RQ1-B real agent runtime validation
 

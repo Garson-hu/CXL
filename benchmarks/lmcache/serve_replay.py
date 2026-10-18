@@ -7,7 +7,7 @@ Output, one line per request: "REQ <idx> <trace_s> <send_ns> <first_token_ns> <e
 <cached_tokens>" (mono ns; cached = vLLM's prompt_tokens_details.cached_tokens when the server reports it, else -1).
 usage: serve_replay.py <url> <model> <trace.jsonl> <t0_s> <t1_s> <speed> [max_model_len=32768] [max_out=1024] [duration_s=0]
   duration_s > 0: stop sending after that many seconds and cancel requests still open (saturated runs); 0 = run to the end."""
-import asyncio, json, random, sys, time
+import asyncio, json, os, random, sys, time
 import aiohttp
 
 url, model, trace = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -22,6 +22,7 @@ def block_tokens(h):
     return cache[h]
 
 reqs = []
+DEQ = float(os.environ.get("REPLAY_DEQUANT_S", "0"))   # > 0: spread requests that share a quantized timestamp uniformly over the quantum (2026-10-17; default off)
 for line in open(trace):
     r = json.loads(line); ts = r["timestamp"] / 1000.0
     if ts < t0: continue
@@ -29,6 +30,12 @@ for line in open(trace):
     out = min(int(r["output_length"]), max_out)
     toks = [t for h in r["hash_ids"] for t in block_tokens(h)][: r["input_length"]][: max_len - out - 8]
     reqs.append((ts, toks, out))
+if DEQ > 0:
+    groups = {}
+    for i, (ts, toks, out) in enumerate(reqs): groups.setdefault(ts, []).append(i)
+    for ts, idxs in groups.items():
+        for k, i in enumerate(idxs): reqs[i] = (ts + DEQ * (k + 0.5) / len(idxs), reqs[i][1], reqs[i][2])
+    reqs.sort(key=lambda x: x[0])
 
 async def one(sess, i, ts, toks, out, start):
     await asyncio.sleep(max(0.0, start + (ts - t0) / speed - time.monotonic()))

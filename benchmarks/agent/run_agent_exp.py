@@ -14,6 +14,10 @@ ap = argparse.ArgumentParser(); ap.add_argument("out"); ap.add_argument("tag"); 
 ap.add_argument("--l1-gb", type=float, default=2.0); ap.add_argument("--gpu-blocks", type=int, default=2560); ap.add_argument("--max-turns", type=int, default=6)
 ap.add_argument("--seed", type=int, default=11); ap.add_argument("--latency-scale", default="1.0"); ap.add_argument("--max-model-len", type=int, default=8192)
 ap.add_argument("--model", default="Qwen/Qwen2.5-3B-Instruct-AWQ")
+ap.add_argument("--workload", default="agent_tasks", help="agent_tasks (short tools, synthetic latency) or agent_tasks_lt (real long tools)")
+ap.add_argument("--client-cpus", default="124-126", help="cpu list for the agent client (real tools need many cores, e.g. 32-95)")
+ap.add_argument("--bg-trace", default="", help="optional background churn: a Mooncake trace replayed by serve_replay.py on the same server (REAL traffic)")
+ap.add_argument("--bg-speed", default="0.05"); ap.add_argument("--bg-window", default="0,3600"); ap.add_argument("--bg-dequant", default="0", help="spread requests sharing a quantized trace timestamp over this many trace seconds (the Mooncake traces are quantized to 3 s)")
 ap.add_argument("--lazy-offload", default="", help="LMCache MP lazy offload: '' (off, default) or 'threshold,select' e.g. '1,10' — stores are issued after the request finishes (existing LMCache option, no policy change)")      # 1.5B fp16 emits all tool calls at once and answers wrongly (smoke run 2026-10-17); 3B AWQ keeps the loop multi-step
 A = ap.parse_args(); out, tag = A.out, A.tag
 MODEL = A.model; VPORT, MPPORT, HPORT = 8100, 5555, 8200
@@ -21,7 +25,7 @@ os.makedirs(out, exist_ok=True); meta = open(f"{out}/{tag}-meta.txt", "w")
 def mark(name, extra=""): meta.write(f"M {name} {time.monotonic_ns()} wall={time.time():.6f} {extra}\n"); meta.flush()
 env = dict(os.environ, HF_HOME="/mnt/local/ghu4/hf", XDG_CACHE_HOME="/mnt/local/ghu4/cache", TMPDIR="/mnt/local/ghu4/tmp",
            VLLM_CACHE_ROOT="/mnt/local/ghu4/cache/vllm", PYTHONHASHSEED="0", LMCACHE_DISABLE_BANNER="1")
-mark("config", json.dumps(dict(n_tasks=A.n_tasks, workers=A.workers, l1_gb=A.l1_gb, gpu_blocks=A.gpu_blocks, max_turns=A.max_turns, seed=A.seed, latency_scale=A.latency_scale, max_model_len=A.max_model_len, model=MODEL, lazy_offload=A.lazy_offload)))
+mark("config", json.dumps(dict(n_tasks=A.n_tasks, workers=A.workers, l1_gb=A.l1_gb, gpu_blocks=A.gpu_blocks, max_turns=A.max_turns, seed=A.seed, latency_scale=A.latency_scale, max_model_len=A.max_model_len, model=MODEL, lazy_offload=A.lazy_offload, workload=A.workload, client_cpus=A.client_cpus, bg_trace=A.bg_trace, bg_speed=A.bg_speed, bg_dequant=A.bg_dequant)))
 lm_env = dict(env, PYTHONPATH=f"{HERE}/kvevt", KVEVT_OUT=f"{out}/{tag}-kvevents.jsonl")
 srv = [f"{ENV_BIN}/lmcache", "server", "--host", "127.0.0.1", "--port", str(MPPORT), "--http-host", "127.0.0.1", "--http-port", str(HPORT),
        "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--l1-size-gb", f"{A.l1_gb:g}"]
@@ -54,10 +58,17 @@ mark("vllm_ready")
 stat = subprocess.Popen(["bash", "-c", f"while true; do echo \"T $(date +%s.%N)\"; curl -s http://127.0.0.1:{HPORT}/status; echo; sleep 2; done"],
                         stdout=open(f"{out}/{tag}-status.txt", "w"), stderr=subprocess.DEVNULL, start_new_session=True)
 time.sleep(2); mark("serve_start")
-cenv = dict(env, AGENT_TOOL_LATENCY_SCALE=A.latency_scale)
-rc = subprocess.run(["taskset", "-c", "124-126", AGENT_PY, f"{HERE}/run_agent.py", f"http://127.0.0.1:{VPORT}", MODEL, f"{out}/{tag}-agent.jsonl", str(A.n_tasks), str(A.workers), str(A.max_turns), str(A.seed)],
+cenv = dict(env, AGENT_TOOL_LATENCY_SCALE=A.latency_scale, AGENT_WORKLOAD=A.workload)
+bg = None
+if A.bg_trace:
+    t0, t1 = A.bg_window.split(",")
+    bg = subprocess.Popen(["taskset", "-c", "127", f"{ENV_BIN}/python", f"{HERE}/../lmcache/serve_replay.py", f"http://127.0.0.1:{VPORT}", MODEL, A.bg_trace, t0, t1, A.bg_speed, str(A.max_model_len), "256"],
+                          stdout=open(f"{out}/{tag}-bg.txt", "w"), stderr=subprocess.STDOUT, env=dict(env, REPLAY_DEQUANT_S=A.bg_dequant), start_new_session=True)
+    mark("bg_start", f"trace={os.path.basename(A.bg_trace)} speed={A.bg_speed} dequant={A.bg_dequant}")
+rc = subprocess.run(["taskset", "-c", A.client_cpus, AGENT_PY, f"{HERE}/run_agent.py", f"http://127.0.0.1:{VPORT}", MODEL, f"{out}/{tag}-agent.jsonl", str(A.n_tasks), str(A.workers), str(A.max_turns), str(A.seed)],
                     stdout=open(f"{out}/{tag}-client.txt", "w"), stderr=subprocess.STDOUT, env=cenv).returncode
 mark("serve_end", f"client_rc={rc}"); time.sleep(8)
+if bg: os.killpg(bg.pid, signal.SIGTERM); mark("bg_end")
 os.killpg(stat.pid, signal.SIGTERM)
 for p in (vl, lm):
     os.killpg(p.pid, signal.SIGINT)

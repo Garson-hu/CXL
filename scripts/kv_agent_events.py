@@ -19,7 +19,7 @@ def summ(xs): return dict(n=len(xs), p10=pct(xs, .1), p50=pct(xs, .5), p90=pct(x
 
 # ------------------------------------------------------------------ agent events
 A = [json.loads(l) for l in open(f"{run_dir}/{tag}-agent.jsonl")]
-tasks = collections.defaultdict(lambda: dict(calls={}, tools=[], events=[]))
+tasks = collections.defaultdict(lambda: dict(calls={}, tools=[], events=[])); tool_done = []
 for e in A:
     if "task" not in e: continue
     T = tasks[e["task"]]; T["events"].append(e)
@@ -28,6 +28,7 @@ for e in A:
     elif e["ev"] == "llm_response": T["calls"][e["rid"]].update(t_resp=e["t"], decision=e["decision"], tool_calls=e["tool_calls"], in_tokens=e["in_tokens"], out_tokens=e["out_tokens"], cached_tokens=e["cached_tokens"])
     elif e["ev"] == "llm_end": T.setdefault("llm_end", []).append((e["t"], e["decision"]))
     elif e["ev"] in ("tool_start", "tool_end", "tool_call"): T["tools"].append((e["t"], e["ev"], e["tool"]))
+    elif e["ev"] == "tool_done": tool_done.append((e["tool"], e["dur_s"], e.get("rc", 0)))
     elif e["ev"] == "agent_end": T["t_agent_end"] = e["t"]
     elif e["ev"] in ("task_end", "task_abort"): T["t_end"] = e["t"]; T["outcome"] = e["ev"] if e["ev"] == "task_end" else f"abort:{e['reason']}"; T["ok"] = e.get("ok"); T["n_calls"] = e["n_calls"]
 for T in tasks.values():
@@ -41,9 +42,11 @@ K = [json.loads(l) for l in open(f"{run_dir}/{tag}-kvevents.jsonl")]
 req = collections.defaultdict(dict)                                   # rid -> lookup/prefetch/store/end_session
 writes = collections.defaultdict(list); evicts = collections.defaultdict(list); reads = collections.defaultdict(list); touches = collections.defaultdict(list)
 lookups = []                                                          # (t, rid, hashes, task, call)
+bg_lookups = []                                                       # non-agent requests on the same server (REAL background churn), exported as task -1
 for e in K:
     ev = e["ev"]; m = RID.search(e.get("sid") or "") or RID.search(e.get("request_id") or "")
     rid = m.group(0) if m else None
+    if ev == "mp.lookup" and not rid: bg_lookups.append((e["t"], e.get("request_id") or e.get("sid"), e["hashes"])); continue
     if ev == "mp.lookup" and rid: req[rid].update(t_lookup=e["t"], hashes=e["hashes"], seq_len=e.get("seq_len")); lookups.append((e["t"], rid, e["hashes"], int(m.group(1)), int(m.group(2))))
     elif ev == "mp.lookup_prefetch.end" and rid: req[rid].update(t_lookup_end=e["t"], found=e.get("found_count"), hit_tokens=e.get("hit_tokens"), req_tokens=e.get("requested_tokens"))
     elif ev == "mp.store.start" and rid: req[rid].setdefault("t_store_start", e["t"])
@@ -101,6 +104,8 @@ with open(f"{out_dir}/{tag}-trace.jsonl", "w") as f:
             if c.get("hashes") is None: continue
             f.write(json.dumps(dict(task=tk, call=i + 1, rid=c["rid"], t_submit=c["t_submit"], t_lookup=c["t_lookup"], t_resp=c.get("t_resp"), t_dec=c.get("t_dec"), decision=c.get("decision"),
                                     t_task_end=T.get("t_agent_end") or T.get("t_end"), outcome=T.get("outcome"), hashes=c["hashes"], found=c.get("found"))) + "\n")
+    for t, rid, hs in bg_lookups:
+        f.write(json.dumps(dict(task=-1, call=0, rid=rid, t_submit=t, t_lookup=t, t_resp=None, t_dec=None, decision=None, t_task_end=None, outcome="background", hashes=hs, found=None)) + "\n")
 
 # ------------------------------------------------------------------ decisions
 dec_rows = []; cont_lead_submit = []; cont_lead_lookup = []; cont_prec = []; cont_rec = []; cont_evicted = []; cont_hit_full = []
@@ -161,14 +166,16 @@ n_calls = len(rows); n_tasks = len(tasks); outcomes = collections.Counter(T.get(
 reuse_chunks = sum(r["chunks_reuse"] for r in rows); hit_chunks = sum(min(r["chunks_hit"], r["chunks_reuse"]) for r in rows)
 summary = dict(tag=tag, tasks=n_tasks, calls=n_calls, outcomes=dict(outcomes), calls_per_task=summ([len(T["calls"]) for T in tasks.values()]),
                decisions=dict(continue_=sum(1 for r in rows if r["decision"] == "continue"), end=sum(1 for r in rows if r["decision"] == "end")),
-               queue_wait_s=summ(lead_q), tool_duration_s=summ(tool_dur), lookup_to_response_s=summ([r["lookup_to_resp_s"] for r in rows if r["lookup_to_resp_s"] is not None]),
+               queue_wait_s=summ(lead_q), tool_duration_s=summ(tool_dur), tool_duration_by_tool_s={n: summ([d for t_, d, _ in tool_done if t_ == n]) for n in sorted({t_ for t_, _, _ in tool_done})},
+               tool_failures={n: sum(1 for t_, _, rc in tool_done if t_ == n and rc) for n in sorted({t_ for t_, _, _ in tool_done})}, lookup_to_response_s=summ([r["lookup_to_resp_s"] for r in rows if r["lookup_to_resp_s"] is not None]),
                continue_lead_to_next_submit_s=summ(cont_lead_submit), continue_lead_to_next_lookup_s=summ(cont_lead_lookup),
                continue_context_block_age_s=summ(cont_block_age), continue_precision=summ(cont_prec), continue_recall_of_next=summ(cont_rec), continue_context_evicted_before_next=summ(cont_evicted), continue_next_full_hit=summ(cont_hit_full),
                end_private_chunks=sum(end_private_dead) + sum(end_private_alive), end_private_dead=sum(end_private_dead), end_private_alive=sum(end_private_alive),
                end_shared_chunks=sum(n for _, n in end_shared_alive), end_shared_alive=sum(a for a, _ in end_shared_alive),
                end_last_call_new_chunks=sum(end_last_new), end_last_call_new_chunks_share_of_writes=sum(end_last_new) / max(1, sum(len(v) for v in writes.values())), end_private_block_age_s=summ(end_ages), end_minus_last_write_s=summ(end_write_gap), end_minus_store_end_s=summ(end_store_gap), end_minus_last_lookup_s=summ(end_lookup_gap), dead_residence_after_end_s=summ(end_dead_residence),
                l1_turnover_write_to_evict_s=summ(res_lru), write_to_next_reuse_s=summ(reuse_gap), chunks_lookedup=sum(r["chunks"] for r in rows), reuse_chunks=reuse_chunks, reuse_chunks_hit=hit_chunks,
-               reuse_hit_share_real=hit_chunks / max(1, reuse_chunks), evictions=sum(len(v) for v in evicts.values()), writes=sum(len(v) for v in writes.values()), unique_chunks=len(ref_by))
+               reuse_hit_share_real=hit_chunks / max(1, reuse_chunks), evictions=sum(len(v) for v in evicts.values()), writes=sum(len(v) for v in writes.values()), unique_chunks=len(ref_by),
+               background_requests=len(bg_lookups), background_chunks=sum(len(h) for _, _, h in bg_lookups))
 json.dump(summary, open(f"{out_dir}/{tag}-summary.json", "w"), indent=1)
 print(json.dumps(summary, indent=1))
 

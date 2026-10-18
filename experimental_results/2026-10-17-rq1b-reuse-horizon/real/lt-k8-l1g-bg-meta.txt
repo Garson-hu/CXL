@@ -1,0 +1,8 @@
+M config 872645181058343 wall=1792286102.449486 {"n_tasks": 200, "workers": 8, "l1_gb": 1.0, "gpu_blocks": 2048, "max_turns": 6, "seed": 11, "latency_scale": "1.0", "max_model_len": 8192, "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "lazy_offload": "", "workload": "agent_tasks_lt", "client_cpus": "32-95", "bg_trace": "workloads/mooncake_conversation_trace.jsonl", "bg_speed": "0.05"}
+M lmcache_ready 872649223394507 wall=1792286106.491822 
+M vllm_ready 872674270411952 wall=1792286131.538839 
+M serve_start 872676309923106 wall=1792286133.578350 
+M bg_start 872676338836326 wall=1792286133.607263 trace=mooncake_conversation_trace.jsonl speed=0.05
+M serve_end 872934917913501 wall=1792286392.186341 client_rc=0
+M bg_end 872942918024987 wall=1792286400.186452 
+M done 873063836224933 wall=1792286521.104654 
