@@ -1,0 +1,6 @@
+M config 934755496813900 wall=1792348212.765241 {"cfg": "dram", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "l1_gb": 4.0, "gpu_blocks": 1024, "Ls": "1024,2048,4096,7680", "reps": 3, "max_model_len": 8192}
+M lmcache_ready 934761575735721 wall=1792348218.844163 
+M vllm_ready 934789663798367 wall=1792348246.932225 
+M bench_start 934791664029779 wall=1792348248.932457 
+M bench_end 935334290740107 wall=1792348791.559167 client_rc=0
+M done 935352388059356 wall=1792348809.656488 

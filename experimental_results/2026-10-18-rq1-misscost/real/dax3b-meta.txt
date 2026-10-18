@@ -1,0 +1,6 @@
+M config 935352615846565 wall=1792348809.884274 {"cfg": "dax", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "l1_gb": 4.0, "gpu_blocks": 1024, "Ls": "1024,2048,4096,7680", "reps": 3, "max_model_len": 8192}
+M lmcache_ready 935357676904805 wall=1792348814.945332 
+M vllm_ready 935389736227368 wall=1792348847.004655 
+M bench_start 935391736317819 wall=1792348849.004745 
+M bench_end 935914669795272 wall=1792349371.938222 client_rc=0
+M done 935922253529473 wall=1792349379.521958 

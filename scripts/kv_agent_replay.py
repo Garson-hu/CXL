@@ -16,6 +16,12 @@ Policies (all decide with information available at the decision time):
                  arrives or <bound> s pass                                                        (needs continue event)
   event_both+slru  event_both with the SLRU order for the rest
   event_cont     REAL continue decisions only (protect the context until the task's next call or <bound> s)
+  cost / event_cont+cost   COST-AWARE: among the next --scan LRU candidates evict the cheapest-to-lose chunk under the
+                 miss-cost model: the recompute of the contiguous cached chain behind the chunk (prefix semantics) at
+                 the measured position-dependent per-token cost, minus the load cost; needs --r0/--r1/--l
+  --order tail   LMCache 0.5.5 / vLLM eviction order (a request's tail chunks are evicted before its head); 'head' is
+                 the position-blind order used by the earlier rounds. Scoring is prefix-aware in both cases: a chunk
+                 counts as USABLE only if every earlier chunk of the request also hit (TTFT model: --r0 --r1 --l).
   event_end+defer / event_both+defer   as above, plus the store of a task's final call is never issued (LMCache's lazy
                  offload would hold it until the request ends; the end decision drops it) — the write-avoidance case
   oracle         Belady MIN with bypass of never-reused chunks                                     (upper bound E)
@@ -26,7 +32,7 @@ Extra metrics per policy: evictions before reuse, live / dead occupancy, hits un
 blocks that were read again, LRU residence (write -> eviction, p50), and the trace's live working set, production rate
 and reuse horizon (regime variables); --churn adds SYNTHETIC never-reused chunks of other tenants at a fixed rate.
 usage: kv_agent_replay.py <trace.jsonl> <out_dir> <tag> [--caps 48,64,96,128,192,256,384] [--bound 30] [--chunk-mb 9.44] [--churn 0] [--policies ...] [--no-fig]"""
-import argparse, collections, csv, heapq, json, os
+import argparse, collections, csv, heapq, json, os, random
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -37,10 +43,23 @@ ap.add_argument("--ttl", default="10,30"); ap.add_argument("--share", type=float
 ap.add_argument("--churn", type=float, default=0.0, help="SYNTHETIC background churn: never-reused chunks from other tenants injected at this rate (chunks/s), uniformly over the trace span")
 ap.add_argument("--policies", default="split,lru,slru,ttl10,ttl30,event_end,event_cont,event_both,event_both+slru,event_end+defer,event_both+defer,oracle")
 ap.add_argument("--no-fig", action="store_true")
-A = ap.parse_args(); INF = float("inf"); TOK = 256
+ap.add_argument("--order", default="head", choices=["head", "tail"], help="LRU order inside a request: head = position-blind (chunk 0 least recent), tail = LMCache 0.5.5 / vLLM order (tail evicted first)")
+ap.add_argument("--mooncake", action="store_true", help="the trace is a Mooncake jsonl (timestamp ms, hash_ids, input_length); no tasks, no events")
+ap.add_argument("--tok", type=int, default=256, help="tokens per chunk (256 for LMCache chunks, 512 for Mooncake hash blocks)")
+ap.add_argument("--r0", type=float, default=0.0, help="MISS-COST MODEL: recompute seconds per token at position 0 (measured)"); ap.add_argument("--r1", type=float, default=0.0, help="recompute seconds per token per token of position (superlinearity, measured)")
+ap.add_argument("--l", type=float, default=0.0, help="MISS-COST MODEL: load seconds per token from the host tier (measured)"); ap.add_argument("--cost-noise", type=float, default=0.0, help="relative noise applied to the cost estimate used by cost-aware policies (sensitivity)")
+ap.add_argument("--scan", type=int, default=64, help="cost-aware policies: upper bound of LRU candidates scanned per eviction (the window is min(scan, cap/16), at least 4)")
+A = ap.parse_args(); INF = float("inf"); TOK = A.tok
 plt.rcParams.update({"font.size": 11, "axes.spines.top": False, "axes.spines.right": False, "figure.facecolor": "white", "axes.grid": True, "grid.color": "#e6e6e6", "legend.frameon": False, "svg.fonttype": "none"})
 
-R = sorted((json.loads(l) for l in open(A.trace)), key=lambda r: r["t_lookup"])
+def _load():
+    if not A.mooncake: return sorted((json.loads(l) for l in open(A.trace)), key=lambda r: r["t_lookup"])
+    out = []
+    for i, l in enumerate(open(A.trace)):
+        r = json.loads(l); t = r["timestamp"] / 1000.0
+        out.append(dict(task=i, call=1, rid=f"mc{i}", t_submit=t, t_lookup=t, t_resp=None, t_dec=None, decision=None, t_task_end=t, outcome="trace", hashes=[str(h) for h in r["hash_ids"]], found=None, input_length=r.get("input_length")))
+    return sorted(out, key=lambda r: r["t_lookup"])
+R = _load()
 # accesses: (t, hash, request index); next-use index per access (for the oracle); task structure
 acc = []; task_of = []; t_end_of = {}; next_call_t = {}
 for i, r in enumerate(R):
@@ -118,25 +137,39 @@ def run(policy, cap):
     dead = collections.OrderedDict(); protected = {}                                # hash -> protect-until time (continue)
     refs = collections.defaultdict(set); ended = set(); task_last = {}                # hash -> tasks that referenced it; ended tasks; task -> last request time
     heap = []; nuv = {}; ei = 0
-    st = dict(acc=0, reuse=0, hit=0, miss=0, written=0, bypass=0, occ_dead=0.0, occ_all=0.0, evict=0, evict_live=0, cov_prot=0, dead_fp=0, res=[]); seen = set(); last_t = None; last_idx = {}
-    stored_at = {}
+    st = dict(acc=0, reuse=0, hit=0, miss=0, written=0, bypass=0, occ_dead=0.0, occ_all=0.0, evict=0, evict_live=0, cov_prot=0, dead_fp=0, res=[], usable=0, usable_tok=0, req=0, req_tok=0, ttft_cold=0.0, ttft=0.0, evict_cost=0.0); seen = set(); last_t = None; last_idx = {}
+    stored_at = {}; pos = {}                                                               # pos[h]: chunk index inside the request that first stored it (online: the manager knows it)
+    cost_aware = "cost" in policy; rng_c = random.Random(7); req_of = {}
+    def ev_cost(h):
+        """Estimated cost of losing this chunk (seconds), online information only: the recompute of the contiguous cached
+        chain from this chunk to the first gap of the request that stored it (prefix semantics: everything behind a hole
+        is recomputed anyway), at the measured per-token cost r(p) = r0 + r1·p, minus what loading it would have cost."""
+        q = req_of.get(h); k = pos.get(h, 0); hs = R[q]["hashes"] if q is not None else [h]; c = 0.0; n_ = 0
+        while k < len(hs) and hs[k] in where and n_ < 64:
+            c += (A.r0 + A.r1 * k * TOK - A.l) * TOK; k += 1; n_ += 1
+        return c * (1 + A.cost_noise * rng_c.uniform(-1, 1)) if A.cost_noise else c
+    cur = -1; req_hs = []; usable = True
     def remove(h, now=None):
         t_ = where.pop(h); n[t_] -= 1; lru.pop(h, None); tier[t_].pop(h, None); dead.pop(h, None); prob.pop(h, None); prot.pop(h, None); nuv.pop(h, None); protected.pop(h, None)
         st["evict"] += 1; st["evict_live"] += (nu[last_idx[h]] < INF)
         if now is not None and h in stored_at and len(st["res"]) < 200000: st["res"].append(now - stored_at.pop(h))
     def place(h, t_, i):
-        where[h] = t_; n[t_] += 1; lru[h] = True; tier[t_][h] = True; st["written"] += 1; stored_at[h] = acc[i][0]
+        where[h] = t_; n[t_] += 1; lru[h] = True; tier[t_][h] = True; st["written"] += 1; stored_at[h] = acc[i][0]; pos.setdefault(h, len(req_hs) - 1); req_of.setdefault(h, cur)
         if use_slru: prob[h] = True
         if oracle: nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
     def victim(now):
         srcs = ((dead,) if dead else ()) + ((prob, prot) if use_slru else (lru,))
         for src in srcs:
-            k = 0
+            k = 0; best = None; bc = INF; scanned = 0
+            win = min(A.scan, max(4, cap // 16))                                          # cost breaks ties only among the least-recent few (recency = reuse likelihood stays primary)
             for b in src:
                 if protected.get(b, -INF) > now: k += 1; continue
-                if ttl is not None and src is lru:
-                    pass
-                return b
+                if not cost_aware: return b
+                c = ev_cost(b)                                                             # cost-aware: cheapest-to-lose among the next `win` LRU candidates
+                if c < bc: best, bc = b, c
+                scanned += 1
+                if scanned >= win: break
+            if best is not None: return best
             if k > 512: break
         if ttl is not None:
             for b in lru:
@@ -144,8 +177,23 @@ def run(policy, cap):
                 if tk_ is None or now - task_last.get(tk_, now) > ttl: return b
                 break
         return next(iter(lru))
+    def end_request():
+        if cur < 0: return
+        if A.order == "tail":                                                              # LMCache / vLLM order: touch the request's chunks in reverse so the tail is evicted first
+            for b in reversed(req_hs):
+                if b in where:
+                    lru.move_to_end(b); tier[where[b]].move_to_end(b)
+                    if use_slru:
+                        if b in prot: prot.move_to_end(b)
+                        elif b in prob: prob.move_to_end(b)
     for i, (t, h, ri) in enumerate(acc):
         tk = task_of[ri]; task_last[tk] = t
+        if ri != cur:
+            end_request(); cur = ri; req_hs = []; usable = True
+            if ri >= half and task_of[ri] >= 0:
+                Ltok = R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK; st["req"] += 1; st["req_tok"] += Ltok
+                st["ttft_cold"] += A.r0 * Ltok + A.r1 * Ltok * Ltok / 2
+        req_hs.append(h)
         while ei < len(events) and events[ei][0] <= t:
             _, _, kind, x = events[ei]; ei += 1
             if kind == "end" and ev_end:
@@ -167,6 +215,7 @@ def run(policy, cap):
             if test:
                 st["hit"] += 1
                 if protected.get(h, -INF) > t: st["cov_prot"] += 1
+                if usable: st["usable"] += 1; st["usable_tok"] += TOK; st["ttft"] += A.l * TOK          # prefix-aware: counts only while every earlier chunk of the request hit
             if h in dead and test: st["dead_fp"] += 1
             lru.move_to_end(h); tier[where[h]].move_to_end(h); dead.pop(h, None)
             if use_slru:
@@ -176,7 +225,9 @@ def run(policy, cap):
                     while len(prot) > cap // 3: d_, _ = prot.popitem(last=False); prob[d_] = True
             if oracle: nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
             continue
-        if test: st["miss"] += 1
+        if test:
+            st["miss"] += 1
+            if usable: usable = False; k_ = len(req_hs) - 1; rem = (R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK) - k_ * TOK; st["ttft"] += A.r0 * rem + A.r1 * (rem * rem / 2 + k_ * TOK * rem)
         if oracle:
             if nu[i] == INF: st["bypass"] += 1; continue
             if n[0] + n[1] >= cap:
@@ -195,8 +246,12 @@ def run(policy, cap):
         if defer and ri in final_call: st["bypass"] += 1; continue                            # store deferred past the request end, dropped on the end decision
         if n[0] + n[1] >= cap: remove(victim(t), t)
         place(h, 0 if n[0] < nslot[0] else 1, i)
+    end_request()
     res = sorted(st["res"]); t_res = res[len(res) // 2] if res else INF
-    return dict(policy=policy, cap=cap, cap_GB=cap * A.chunk_mb / 1000, churn=A.churn, acc=st["acc"], reuse=st["reuse"], hits=st["hit"], reuse_hit_share=st["hit"] / max(1, st["reuse"]), overall_hit=st["hit"] / max(1, st["acc"]),
+    return dict(policy=policy, order=A.order, cap=cap, cap_GB=cap * A.chunk_mb / 1000, churn=A.churn, acc=st["acc"], reuse=st["reuse"], hits=st["hit"], reuse_hit_share=st["hit"] / max(1, st["reuse"]), overall_hit=st["hit"] / max(1, st["acc"]),
+                usable_hits=st["usable"], usable_hit_share=st["usable"] / max(1, st["reuse"]), usable_tokens=st["usable_tok"], prompt_tokens=st["req_tok"], usable_token_share=st["usable_tok"] / max(1, st["req_tok"]),
+                requests=st["req"], ttft_cold_s=st["ttft_cold"], ttft_s=st["ttft"], ttft_saved_s=st["ttft_cold"] - st["ttft"], ttft_mean_ms=1000 * st["ttft"] / max(1, st["req"]),
+                ttft_saved_per_written_GB=(st["ttft_cold"] - st["ttft"]) / max(1e-9, st["written"] * A.chunk_mb / 1000),
                 recomputed_tokens=st["miss"] * TOK, written_chunks=st["written"], bypassed=st["bypass"], dead_occupancy_share=st["occ_dead"] / max(1e-9, st["occ_all"]), live_occupancy_share=1 - st["occ_dead"] / max(1e-9, st["occ_all"]),
                 evictions=st["evict"], evictions_before_reuse=st["evict_live"], evict_before_reuse_share=st["evict_live"] / max(1, st["evict"]), hits_under_protection=st["cov_prot"], dead_marked_but_reused=st["dead_fp"],
                 residence_p50_s=t_res, W_live_mean=W_LIVE["mean"], W_live_p90=W_LIVE["p90"], P_agent_chunks_s=P_AGENT, P_bg_chunks_s=P_BG, P_total_chunks_s=P_AGENT + P_BG + A.churn, H_p50_s=H["p50"], H_p90_s=H["p90"])
@@ -212,7 +267,7 @@ for cap in caps:
         if p == "lru": base = r
         if base is not None and p != "lru":
             r["hits_vs_lru"] = r["hits"] - base["hits"]; r["recompute_tokens_avoided_vs_lru"] = base["recomputed_tokens"] - r["recomputed_tokens"]; r["written_vs_lru"] = r["written_chunks"] - base["written_chunks"]
-        print(f"cap {cap:4d} ({r['cap_GB']:.2f} GB) churn {A.churn:4.1f} {p:16s} reuse-hit {r['reuse_hit_share']:.3f} overall {r['overall_hit']:.3f} recompute {r['recomputed_tokens'] / 1e3:7.1f} ktok written {r['written_chunks']:6d} dead-occ {r['dead_occupancy_share']:.2f} evict-live {r['evict_before_reuse_share']:.2f} res {r['residence_p50_s']:6.1f} s" + (f" hits+{r['hits_vs_lru']}" if "hits_vs_lru" in r else ""), flush=True)
+        print(f"cap {cap:4d} ({r['cap_GB']:.2f} GB) churn {A.churn:4.1f} {A.order} {p:16s} reuse-hit {r['reuse_hit_share']:.3f} usable {r['usable_hit_share']:.3f} tok-share {r['usable_token_share']:.3f} ttft {r['ttft_mean_ms']:7.0f} ms written {r['written_chunks']:6d} dead-occ {r['dead_occupancy_share']:.2f} evict-live {r['evict_before_reuse_share']:.2f} res {r['residence_p50_s']:6.1f} s" + (f" hits+{r['hits_vs_lru']}" if "hits_vs_lru" in r else ""), flush=True)
 os.makedirs(A.out, exist_ok=True)
 keys = sorted({k for r in rows for k in r}, key=lambda k: (k not in rows[-1], k))
 with open(f"{A.out}/{A.tag}-replay.csv", "w", newline="") as f:

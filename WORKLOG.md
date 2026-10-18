@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-18 addendum — RQ1 CLOSED (miss-cost feasibility).** Miss cost is prefix-dependent and already exploited by
+tail-first eviction in vLLM/LMCache; loading from DRAM or CXL costs ≤ 1/15 of recompute; cost-aware retention adds
+nothing over recency/frequency/lifecycle policies (agent traces, Mooncake). The value input to RQ2 is settled and
+small; any joint benefit must come from movement cost / interference. Gate 2 PARTIAL unchanged.
+
 **2026-10-17 final-round addendum — RQ1-B CLOSED (reuse horizon vs residence).** Real agent lifecycle signals help only
 when the cache turns over within ~2 reuse horizons while still holding the live contexts (90–91% of the oracle gain with
 real steady churn, +3–7 pts) or when the cache is below the live set (51–70%); everywhere else 0–4%. A 200 GiB tier with
@@ -214,6 +219,19 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-18 (session 34, RQ1 miss-cost feasibility)
+
+- Microbenchmark `benchmarks/lmcache/misscost_bench.py` + `misscost_run.py` (3B-AWQ, LMCache L1 4 GB in DRAM and on
+  /dev/dax1.0, GPU cache 16k tokens; cold / GPU hit / L1 hit / hole / clean prefix / 4-at-once; L = 1k–7.7k, 3 reps):
+  recompute 0.134 ms/token (+7%/1k position), load from either tier ≤ 1/15 of recompute, hole at f·L = prefix of f·L,
+  contention 3.1×; one store/evict stall (2.6 s) at a full L1. Fit + figure `scripts/kv_misscost_figs.py`.
+- Replay extended (`--order tail` = LMCache's reversed-touch order, prefix-aware usable hits, TTFT model, `cost`,
+  `slru+cost`, `event_cont+cost`, `--cost-noise`, `--mooncake` loader); first cost-only version evicted shared heads →
+  0 hits (kept as a finding); tables `scripts/kv_misscost_tables.py`. Agent traces and Mooncake 100/200/400 GiB.
+- Result: cost-aware retention never beats recency-based policies (−50…+2% of the oracle's TTFT gain; 0% Mooncake),
+  no complement to SLRU or the continue signal, insensitive to ±50% cost error. RQ1 closed; Gate 2 unchanged PARTIAL.
+  Experiment file CLOSED; decision report and INDEX updated. Node idle (no servers left running).
 
 ### 2026-10-17 (session 34, final RQ1-B round) — reuse horizon vs cache residence
 
