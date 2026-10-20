@@ -1,3 +1,10 @@
 trace: 23608 requests (0 synthetic churn), 23608 tasks, 409616 chunk accesses, 183300 unique chunks, test half from request 11804
 live working set (agent chunks of unfinished tasks): mean 1 p90 0 max 237; agent production 51.82 chunks/s + real background 0.00 + synthetic churn 0.00; reuse horizon p50 0.0 s p90 0.0 s (n=0)
 cap 6400 (429.44 GB) churn  0.0 tail split            reuse-hit 0.747 usable 0.744 tok-share 0.440 ttft    1305 ms written 239533 dead-occ 0.72 evict-live 0.24 res   87.0 s
+cap 6400 (429.44 GB) churn  0.0 tail lru              reuse-hit 0.748 usable 0.748 tok-share 0.443 ttft    1299 ms written 239359 dead-occ 0.72 evict-live 0.24 res   87.0 s
+cap 6400 (429.44 GB) churn  0.0 tail slru             reuse-hit 0.748 usable 0.748 tok-share 0.442 ttft    1301 ms written 240025 dead-occ 0.70 evict-live 0.24 res   63.0 s hits+-67
+cap 6400 (429.44 GB) churn  0.0 tail pop              reuse-hit 0.753 usable 0.753 tok-share 0.446 ttft    1295 ms written 238224 dead-occ 0.71 evict-live 0.24 res   87.0 s hits+570
+cap 6400 (429.44 GB) churn  0.0 tail lhd              reuse-hit 0.763 usable 0.763 tok-share 0.452 ttft    1333 ms written 108082 dead-occ 0.74 evict-live 0.18 res  183.0 s hits+1718
+cap 6400 (429.44 GB) churn  0.0 tail olr              reuse-hit 0.720 usable 0.720 tok-share 0.426 ttft    1359 ms written  36549 dead-occ 0.80 evict-live 0.10 res  618.0 s hits+-3143
+cap 6400 (429.44 GB) churn  0.0 tail cond             reuse-hit 0.763 usable 0.763 tok-share 0.451 ttft    1282 ms written 157873 dead-occ 0.71 evict-live 0.22 res  135.0 s hits+1628
+cap 6400 (429.44 GB) churn  0.0 tail oracle           reuse-hit 1.000 usable 1.000 tok-share 0.592 ttft     966 ms written  39481 dead-occ 0.27 evict-live 0.00 res  342.0 s hits+28382

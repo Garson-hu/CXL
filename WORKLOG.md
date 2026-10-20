@@ -9,6 +9,11 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-20 addendum — RQ1-B historical learning CLOSED.** New blocks' reuse is not learnable from history; observed
+blocks' reuse is (AP 0.75–0.99) but LRU already keeps them. A self-labelling admission filter (class hit-rate feedback,
+bypass) is the first online method beating SLRU on both real traces (14–16% of the oracle gain at 200 GiB, −66…−78%
+writes); negative on synthetic. Gate 2 stays PARTIAL. dax perms reset by the 2026-10-18 reboot (root 0600).
+
 **2026-10-18 addendum — RQ1 CLOSED (miss-cost feasibility).** Miss cost is prefix-dependent and already exploited by
 tail-first eviction in vLLM/LMCache; loading from DRAM or CXL costs ≤ 1/15 of recompute; cost-aware retention adds
 nothing over recency/frequency/lifecycle policies (agent traces, Mooncake). The value input to RQ2 is settled and
@@ -219,6 +224,23 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-18 → 2026-10-20 (session 34, RQ1-B historical learning; cluster power loss on 2026-10-18)
+
+- Characterization `scripts/kv_history_characterize.py` (prefix groups by depth, sharing, concentration, inter-reuse
+  intervals, popularity persistence, conditional new-block reuse, LRU premature evictions at 100/200/400 GiB) on the
+  Mooncake conversation / tool-agent / synthetic traces and two real agent traces → `*-history.json`, fig-history-*.
+- Online predictors `scripts/kv_online_predict.py` (prequential, lazy labels, NEW vs OBSERVED blocks, H = 60/300 s,
+  tables + online logistic; AP / P@R50 / calibration per time fifth; next-interval error) → `*-predict.json`, fig-predict-*.
+- Replay `scripts/kv_agent_replay.py` extended with learned policies (pop / lhd / olr / cond, feedback labels from the
+  cache's own hits and evictions, `--admit-th` bypass, `--dump-hits`); `scripts/kv_hits_compare.py`, `kv_hits_explain.py`,
+  `kv_history_figs.py`. Mooncake replays at 100/200/400 GiB (tail order, prefix-aware) and agent traces.
+- Power loss on 2026-10-18 killed the tool-agent replays before their CSVs were written; c28 rebooted (dax perms reset to
+  root 0600 again), /mnt/local intact, uncommitted work intact; checkpoint commit ce62460; tool-agent replays rerun
+  split by capacity on 2026-10-20.
+- Result: history predicts observed-block reuse (AP 0.75 / 0.99) but not new-block reuse (≤ 1.3× base); retention
+  learning = LRU; learned admission bypass beats SLRU on both real traces (14–16% of the oracle gain at 200 GiB, writes
+  −66…−78%), negative on synthetic. Gate 2 stays PARTIAL. Report CLOSED, decision report + INDEX updated.
 
 ### 2026-10-18 (session 34, RQ1 miss-cost feasibility)
 

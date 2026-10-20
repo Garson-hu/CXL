@@ -1,6 +1,6 @@
 # 2026-10-18 — RQ1-B: historical reuse-pattern learning and continually updated online prediction — can future KV reuse be learned from past requests, and does that improve cache decisions?
 
-**STATUS: ACTIVE (2026-10-18).** Evidence types: **OFFLINE TRACE ANALYSIS** (characterization of the Mooncake
+**STATUS: CLOSED 2026-10-20** (the round was interrupted by a cluster power loss on 2026-10-18; the tool-agent replays were rerun on 2026-10-20, everything else is from 2026-10-18). Evidence types: **OFFLINE TRACE ANALYSIS** (characterization of the Mooncake
 conversation / tool-agent traces, the SYNTHETIC Mooncake trace, and two REAL agent runtime traces of the earlier rounds),
 **OFFLINE PREDICTION STUDY** (strictly chronological, prequential; predictions use only past accesses, labels resolve
 later), **TRACE-DRIVEN REPLAY** (the capacity simulator with prefix-aware scoring and LMCache's eviction order, learned
@@ -160,7 +160,81 @@ context, which the traces show carries little. KV-specific systems — vLLM pref
 LRU over the prefix tree, session-aware offload and scheduler-aware prefetch; none learns admission.
 
 
-<!-- F -->
+## Task F — cache-level utility of learned online policies (Deliverable 4; TRACE-DRIVEN REPLAY, fig-history-policies, `*-replay.csv`, `hits/`)
+Replay with `kv_agent_replay.py`: prefix-aware scoring (a chunk counts only while every earlier chunk of the request
+hit), LMCache's tail-first order, same capacity / arrival order / warm-up (second half scored) / block size / data
+availability for every policy. Learned policies use only the cache's own history: at every eviction the evicted block
+is a negative sample of its class if it never hit since admission, and the first hit after admission is a positive
+sample; the learned probability is used (a) as the retention priority among the least-recently-used window (cap/16
+candidates) and (b), when `--admit-th` is set, to bypass admission of blocks whose class probability is below the
+threshold (never the first block of a request). Classes: `pop` decayed popularity of the block (τ = 300 s), `lhd`
+(root, position bucket, continuation-depth bucket) hit rate (LHD-like), `olr` online logistic regression on
+creation-time features, `cond` per-root hit rate. Baselines: static split + LRU, global LRU, SLRU 1/3, LFU (decayed
+popularity without decay), the agent continue signal where applicable, the block oracle. The admission threshold 0.15
+was chosen on the agent traces and applied unchanged to the Mooncake traces (not tuned per trace).
+
+### F1. Mooncake traces, 8B blocks (usable-prefix hit share | TB written in the scored half | share of the oracle's hit gain over LRU)
+| trace, capacity | LRU | SLRU | LFU | pop | lhd | lhd + bypass | cond + bypass | olr + bypass | oracle |
+|---|---|---|---|---|---|---|---|---|---|
+| conversation 100 GiB | 0.130 / 18.4 | 0.147 / 18.2 / 4% | 0.133 / 1% | 0.142 / 3% | 0.130 / 0% | 0.116 / 2.7 / 12%† | 0.193 / 2.5 / 13% | 0.205 / 2.2 / 18% | 0.610 / 3.2 |
+| conversation 200 GiB | 0.178 / 18.0 | 0.209 / 17.7 / 5% | 0.178 / 0% | 0.188 / 2% | 0.177 / 0% | **0.273 / 4.0 / 15%** | **0.274 / 5.2 / 16%** | 0.115 / 0.2 / −10% | 0.797 / 3.2 |
+| conversation 400 GiB | 0.376 / 16.5 | 0.376 / 0% | 0.380 / 1% | 0.388 / 2% | 0.378 / 0% | 0.397 / 7.1 / 3% | 0.399 / 9.6 / 4% | 0.135 / −41% | 0.967 / 3.0 |
+| tool agent 100 GiB | 0.624 / 18.0 | 0.631 / 3% | 0.625 / 1% | 0.630 / 3% | 0.623 / 0% | 0.647 / 3.3 / 13% | 0.653 / 3.2 / 13% | 0.649 / 1.9 / 14% | 0.851 / 3.1 |
+| tool agent 200 GiB | 0.648 / 17.6 | 0.661 / 5% | 0.649 / 0% | 0.653 / 2% | 0.646 / 0% | **0.691 / 3.8 / 15%** | **0.689 / 6.1 / 14%** | 0.682 / 1.4 / 15% | 0.940 / 3.0 |
+| tool agent 400 GiB | 0.748 / 16.1 | 0.748 / 0% | 0.749 / 1% | 0.753 / 2% | 0.748 / 0% | 0.763 / 7.3 / 6% | 0.763 / 10.6 / 6% | 0.720 / −11% | 1.000 / 2.6 |
+| synthetic 200 GiB (SYNTHETIC) | 0.348 / 6.6 | 0.365 / 5% | – | 0.346 / 0% | 0.343 / −1% | 0.301 / 5.0 / −9% | 0.272 / 4.2 / −21% | 0.310 / −11% | 0.696 / 2.0 |
+
+(† at 100 GiB the lhd bypass over-fires on the conversation trace: hit share below LRU although the hit gain over LRU
+is positive — the share metric counts usable hits of *all* reuses while bypassed blocks' later reads become misses.)
+
+- **Retention-only learning adds nothing over LRU / SLRU** (pop +2–3%, lhd / olr / cond 0%, LFU 0–1%, SLRU 4–5%),
+  on both real traces at every capacity: the observed-block predictions of Task B are accurate but concern blocks
+  LRU already keeps; the blocks LRU loses are needed 108 s after an eviction that happens 39 s after their last use,
+  and no ranking among the cached blocks can keep them 3.5× longer while the cache fills with new blocks.
+- **Learned admission is the first online method that clearly beats SLRU on the real traces:** at 200 GiB the
+  class-feedback policies raise the usable-prefix hit share from 0.178 (LRU) / 0.209 (SLRU) to 0.273–0.274 on the
+  conversation trace and from 0.648 / 0.661 to 0.689–0.691 on the tool-agent trace — **14–16% of the oracle's hit
+  gain, +4,700 … +5,100 net hits in the scored half** (7,000–7,400 LRU misses avoided, 1,900–2,300 new misses) — while
+  writing **4–6 TB instead of 18 TB (−66 … −78%)**. At 100 GiB 12–14%, at 400 GiB 3–6%; the online logistic version is
+  unstable (badly calibrated: −10 … −41% at 200–400 GiB on the conversation trace).
+- **The synthetic trace is hurt (−9 … −38%)**: its reuse is not class-structured, so a fixed bypass threshold removes
+  reused blocks. A deployment would have to confirm the class rates on its first minutes before enabling the bypass;
+  this chronological check was not automated here (the threshold is one hand-set value for all traces).
+
+### F2. Which misses the learning avoids (conversation, 200 GiB, lhd + bypass vs LRU; `kv_hits_explain.py`)
+| accesses by | LRU misses avoided (share of the class's accesses) | new misses introduced |
+|---|---|---|
+| block position 0–7 / 8–31 / 32+ in the request | 7,141 (18.1%) / 0 / 0 | 0 / 1,638 (2.9%) / 487 (1.2%) |
+| request: fresh (< 8 old blocks) / continuation (≥ 8) | 1,449 (1.8%) / 5,692 (10.4%) | 0 / 2,125 (3.9%) |
+| block's past uses at the access: new / 1 / 2–4 / 5+ | 0 / 3,198 (15.4%) / 2,517 (15.7%) / 1,426 (8.9%) | 0 / 891 / 665 / 569 |
+| block age: < 60 s / 60–300 s / > 300 s | 620 (0.7%) / 3,943 (24.1%) / 2,578 (7.8%) | 986 / 414 / 725 |
+
+The mechanism is one rule the feedback discovers within the first minutes: **new blocks deep in a continuing
+conversation (position ≥ 8 of a request with ≥ 8 old blocks) almost never hit before they are evicted**, so the
+policy stops storing them — the A3 cell "continuation depth 1–31: reuse 0.05–0.10" turned into an admission decision
+by the cache's own labels. Not writing them removes three quarters of the write traffic and roughly triples the
+residence of what remains, so the *leading* blocks of a conversation — the ones its next turn re-reads first — are
+still there 108 s later (avoided hits: positions 0–7, age 60–300 s, 1–4 past uses). The cost is the 5–10% of deep
+continuation blocks that would have been reused (new misses at positions 8+). The tool-agent trace shows the same
+pattern (avoided hits 8.3% of position 0–7 accesses, introduced 2.2% of positions 8–31). It is the oracle's lever —
+not storing blocks that will not be read — applied to the one class that history can identify; the oracle, bypassing
+76% of blocks with perfect knowledge, reaches 0.797 where the rule reaches 0.274, because the rule cannot tell which
+of the fresh requests' blocks (base rate 24%) will have a next turn.
+
+### F3. Real agent traces (from the Reuse Horizon round's traces; `ag-*-replay.csv`)
+With one root and short contexts the class feedback degenerates into "admit the first ~6 chunks of a request", which
+on the real-tool trace with churn equals the structure of the workload (late chunks are the final call's tool
+outputs): `cond` + bypass recovers 85–88% of the oracle's gain at C / W_live = 1.3–1.7 (0.987–0.989 vs LRU
+0.904–0.930, continue signal 0.981–0.984) with a third of the writes; `lhd` + bypass 56–60%; on the short-tool trace
+all learned policies are within 0–16% of LRU. Retention-only learning: 9–38% (`lhd`, `cond`) at C < 1.5 W_live, 0
+above.
+
+### F4. Overheads
+Per cached block: use count, last-use time, last interval, decayed popularity (32 bytes against a 64 MiB block);
+class tables: roots × 4 position buckets × 3 depth buckets counters; per access O(1) updates; per eviction a scan of
+at most cap/16 least-recent candidates (≤ 200 at 3,200 blocks); no training phase, labels are the cache's own hits and
+evictions. The online logistic model adds 8 standardised features and one SGD step per label.
+
 
 ## Task G — prefetch feasibility (Deliverable 5; analysis only)
 - **Is there a lower copy?** In the studied configuration the host cache (DRAM + CXL) is the only tier below the GPU:
@@ -180,4 +254,51 @@ LRU over the prefix tree, session-aware offload and scheduler-aware prefetch; no
   write interference (RQ3), not information.
 
 
-<!-- H -->
+## Task H — synthesis (Deliverable 6: the comprehensive RQ1 picture)
+1. **Do historical patterns hold unused future-reuse information?** Partly. The reuse of blocks that have been used
+   before is highly predictable from their own history (AP 0.75 / 0.99 against base rates 0.20 / 0.65, stable over
+   time), but LRU and SLRU already keep those blocks for as long as the capacity allows; the information that was
+   unused is the *negative* one — which classes of new blocks the cache never gets to use again — and it is learnable
+   from the cache's own feedback within minutes.
+2. **What can be learned stably?** Per-block reuse likelihood from count, last interval and decayed popularity; the
+   next-use time within a factor of two; per-class (root, position, continuation depth) hit-before-eviction rates;
+   the tool-agent trace's per-root reuse rates. Not learnable: whether a *fresh* request's blocks will have a next
+   turn (AP within 1.3× of the 4–16% base rate), and the next hot prefixes (popularity does not persist between
+   5-minute windows).
+3. **What can be updated online?** All of the above, with O(1) per access and labels that arrive with the next use or
+   at eviction; no model needed a training phase, and the tables converge inside the first fifth of the trace.
+4. **Which granularity?** Block-level history for retention relevance; request-class level (position × continuation
+   depth × root) for admission; session level only where the application supplies it (agents). Application / tenant
+   level could not be tested: the public traces carry no such ids.
+5. **Which methods improved the cache, not just the metrics?** Only learned admission (class-feedback bypass): +4.7k
+   … +5.1k hits and −66 … −78% writes at 200 GiB on both real traces (14–16% of the oracle's gain). Retention ranking
+   by learned probabilities, decayed popularity, LFU and the online logistic model changed nothing or hurt.
+6. **Does history improve admission of new blocks?** Yes, by class exclusion rather than by prediction: it removes the
+   deep blocks of continuations (and, on the tool-agent trace, the two low-reuse roots) and cannot identify the reused
+   minority of fresh requests.
+7. **Is history better suited to retention of existing prefixes?** As a prediction, yes; as a cache decision, no:
+   what it predicts well, LRU keeps anyway, and what LRU loses it cannot bring back without more capacity.
+8. **Next-use time / distance?** Predictable within 2× for 59–73% of observed blocks (own intervals, root interval
+   histogram); useless for new blocks. Sufficient to say "before / after the residence time".
+9. **Which workload regimes suit historical learning?** Multi-turn conversation and tool-agent serving where a
+   stable minority of request classes produces blocks that are never re-read before eviction (continuation tails, low-
+   reuse applications); not synthetic / memoryless reuse, not short-context agents, not caches far above the live
+   working set (the gain falls to 3–6% at 400 GiB).
+10. **What does it give the unified DRAM/CXL manager?** A cheap, self-labelling admission filter that removes most of
+    the never-reused writes (−66 … −78% of host-memory writes at 200 GiB) and a retention-relevance score for observed
+    blocks; together with the chain structure (keep heads, evict tails) and the agent lifecycle events this is the
+    value information RQ2 can rely on. Its hit-rate value is 14–16% of the oracle's gain; its write-side value is of
+    the order of the oracle's own (−72% vs −82%).
+
+### RQ1 after all rounds (updates `decision-2026-10-17.md`)
+- Gate 1 (value): PASS. Gate 2 (online predictability, ≥ 50% of the oracle's gain): **still PARTIAL** — the best online
+  method on the real traces at 200 GiB recovers 14–16% of the hit gain; the agent continue signal reaches 50–90% only
+  inside the capacity-pressure band. The threshold is not changed.
+- What is new: a history-based online admission filter is the first method that beats SLRU on both real traces, with a
+  write reduction close to the oracle's; its benefit is robust to capacity (12–16% at 100–200 GiB) and to the
+  chronological protocol, and negative only on the synthetic trace. It is a practical result, not a predictability
+  result: it learns what not to store, not what will be reused.
+- What is still missing: any signal that separates the 24% of fresh-request blocks that will be re-read from the 76%
+  that will not — not in history, not in the request, only in the application (agents) — and any persistence of
+  popularity that would let the cache anticipate the next hot prefixes.
+

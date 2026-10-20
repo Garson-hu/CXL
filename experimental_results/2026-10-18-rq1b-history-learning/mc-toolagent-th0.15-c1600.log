@@ -4,3 +4,7 @@ cap 1600 (107.36 GB) churn  0.0 tail split            reuse-hit 0.624 usable 0.6
 cap 1600 (107.36 GB) churn  0.0 tail lru              reuse-hit 0.624 usable 0.624 tok-share 0.369 ttft    1448 ms written 268667 dead-occ 0.69 evict-live 0.32 res   21.0 s
 cap 1600 (107.36 GB) churn  0.0 tail slru             reuse-hit 0.631 usable 0.631 tok-share 0.373 ttft    1435 ms written 266208 dead-occ 0.67 evict-live 0.31 res   15.0 s hits+823
 cap 1600 (107.36 GB) churn  0.0 tail pop              reuse-hit 0.630 usable 0.630 tok-share 0.372 ttft    1443 ms written 267065 dead-occ 0.67 evict-live 0.32 res   21.0 s hits+663
+cap 1600 (107.36 GB) churn  0.0 tail lhd              reuse-hit 0.653 usable 0.647 tok-share 0.383 ttft    1434 ms written  49715 dead-occ 0.67 evict-live 0.28 res   99.0 s hits+3347
+cap 1600 (107.36 GB) churn  0.0 tail olr              reuse-hit 0.655 usable 0.649 tok-share 0.384 ttft    1431 ms written  28626 dead-occ 0.68 evict-live 0.24 res  174.0 s hits+3564
+cap 1600 (107.36 GB) churn  0.0 tail cond             reuse-hit 0.653 usable 0.653 tok-share 0.387 ttft    1413 ms written  47913 dead-occ 0.68 evict-live 0.25 res  105.0 s hits+3342
+cap 1600 (107.36 GB) churn  0.0 tail oracle           reuse-hit 0.851 usable 0.851 tok-share 0.504 ttft    1164 ms written  46342 dead-occ 0.07 evict-live 0.50 res   84.0 s hits+25656
