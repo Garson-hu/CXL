@@ -1,0 +1,59 @@
+toolagent: 23608 requests over 3537 s
+{
+ "tag": "toolagent",
+ "requests": 23608,
+ "span_s": 3536.999,
+ "blocks": 183300,
+ "accesses": 409616,
+ "reused_blocks": 39481,
+ "never_share": 0.7846099290780142,
+ "reused_blocks_by_distinct_requests": {
+  "2": 21868,
+  "3": 8440,
+  "4": 3841,
+  "5": 1864,
+  "6": 1238,
+  "7": 441,
+  "8": 307,
+  "9": 120,
+  "10": 1362
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.6291556938086569,
+  "top_1pct_blocks_share_of_reuses": 0.7070512027430672,
+  "top_10pct_blocks_share_of_reuses": 0.9065421799607628
+ },
+ "long_lived_shared_blocks": 950,
+ "inter_reuse_interval_s": {
+  "p10": 0.0,
+  "p50": 0.0,
+  "p90": 243.0,
+  "n": 226316
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 9173,
+  "p25": 0.355433487841918,
+  "p50": 0.5468209765623061,
+  "p75": 0.752793160538109
+ },
+ "arrival_fano_10s": 3.6220696039071307,
+ "popularity_persistence_blocks": {
+  "window_s": 300,
+  "spearman_consecutive_p50": -0.3041359994944939,
+  "top100_kept_next_window_p50": 0.18,
+  "windows": 11
+ },
+ "top100_blocks_dead_after_window_p50": 0.28,
+ "next_use_time_s_of_reuses": {
+  "p10": 0.0,
+  "p50": 0.0,
+  "p90": 243.0
+ }
+}
+cond_by_root base 0.215 {'root0': (159940, 0.244), 'root46': (16142, 0.023), 'root74': (7191, 0.015)}
+cond_by_time_since_previous_turn base 0.215 {'fresh': (183265, 0.215)}
+cond_by_continuation_depth base 0.215 {'depth0': (150459, 0.245), 'depth1': (23319, 0.047), 'depth3': (6293, 0.179), 'depth2': (3229, 0.1)}
+LRU 99.99472656249999 GiB: reuse-hit 0.621 premature 85663 share of reuses missed 0.379 with past reuse 0.55 lead last->evict p50 21.0 evict->reuse p50 108.0
+LRU 199.98945312499998 GiB: reuse-hit 0.645 premature 80369 share of reuses missed 0.355 with past reuse 0.54 lead last->evict p50 39.0 evict->reuse p50 96.0
+LRU 399.97890624999997 GiB: reuse-hit 0.743 premature 58085 share of reuses missed 0.257 with past reuse 0.55 lead last->evict p50 84.0 evict->reuse p50 108.0
+wrote experimental_results/2026-10-18-rq1b-history-learning/fig-history-toolagent.png

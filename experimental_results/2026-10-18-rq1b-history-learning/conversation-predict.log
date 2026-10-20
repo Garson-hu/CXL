@@ -1,0 +1,27 @@
+conversation: 12031 requests, 288500 accesses, span 3537 s; tuning on the first 20%, evaluating the rest in 5 segments
+== new_H60: n=141570, base rate 0.037
+   base      AP 0.035  P@R50 0.036  calib 0.002  AP by segment [0.033, 0.034, 0.041, 0.039, 0.03]  unseen-root AP nan (n=0)
+   root      AP 0.035  P@R50 0.036  calib 0.002  AP by segment [0.033, 0.034, 0.041, 0.039, 0.03]  unseen-root AP nan (n=0)
+   ctx       AP 0.045  P@R50 0.048  calib 0.002  AP by segment [0.036, 0.042, 0.052, 0.055, 0.043]  unseen-root AP nan (n=0)
+   olr       AP 0.037  P@R50 0.038  calib 0.338  AP by segment [0.03, 0.031, 0.15, 0.053, 0.034]  unseen-root AP nan (n=0)
+== new_H300: n=141570, base rate 0.157
+   base      AP 0.150  P@R50 0.146  calib 0.029  AP by segment [0.14, 0.152, 0.156, 0.203, 0.11]  unseen-root AP nan (n=0)
+   root      AP 0.150  P@R50 0.146  calib 0.029  AP by segment [0.14, 0.152, 0.156, 0.203, 0.11]  unseen-root AP nan (n=0)
+   ctx       AP 0.184  P@R50 0.187  calib 0.031  AP by segment [0.174, 0.205, 0.193, 0.228, 0.154]  unseen-root AP nan (n=0)
+   olr       AP 0.162  P@R50 0.164  calib 0.654  AP by segment [0.151, 0.164, 0.209, 0.192, 0.128]  unseen-root AP nan (n=0)
+== obs_H60: n=89181, base rate 0.200
+   base      AP 0.192  P@R50 0.200  calib 0.161  AP by segment [0.172, 0.241, 0.203, 0.196, 0.192]
+   cnt       AP 0.604  P@R50 0.677  calib 0.037  AP by segment [0.703, 0.633, 0.527, 0.527, 0.415]
+   cntrec    AP 0.749  P@R50 0.992  calib 0.024  AP by segment [0.793, 0.692, 0.802, 0.745, 0.738]
+   interval  AP 0.703  P@R50 0.912  calib 0.218  AP by segment [0.759, 0.646, 0.786, 0.663, 0.636]
+   pop       AP 0.746  P@R50 1.000  calib 0.016  AP by segment [0.781, 0.695, 0.799, 0.749, 0.718]
+   olr       AP 0.723  P@R50 0.950  calib 0.170  AP by segment [0.757, 0.664, 0.791, 0.72, 0.705]
+== obs_H300: n=89181, base rate 0.477
+   base      AP 0.475  P@R50 0.472  calib 0.291  AP by segment [0.489, 0.489, 0.5, 0.47, 0.392]
+   cnt       AP 0.729  P@R50 0.762  calib 0.070  AP by segment [0.734, 0.761, 0.748, 0.732, 0.685]
+   cntrec    AP 0.749  P@R50 0.715  calib 0.055  AP by segment [0.698, 0.781, 0.806, 0.757, 0.72]
+   interval  AP 0.491  P@R50 0.487  calib 0.430  AP by segment [0.496, 0.485, 0.542, 0.488, 0.513]
+   pop       AP 0.750  P@R50 0.690  calib 0.038  AP by segment [0.739, 0.765, 0.789, 0.766, 0.706]
+   olr       AP 0.725  P@R50 0.661  calib 0.305  AP by segment [0.68, 0.761, 0.749, 0.753, 0.693]
+next-interval {'n': 51105, 'median_abs_log_ratio': 0.489, 'within_2x': 0.592, 'within_5x': 0.874, 'median_pred_s': 66.0, 'median_actual_s': 96.0}
+wrote experimental_results/2026-10-18-rq1b-history-learning/fig-predict-conversation.png

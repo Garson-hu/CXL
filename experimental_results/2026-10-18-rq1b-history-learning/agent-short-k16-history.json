@@ -1,0 +1,282 @@
+{
+ "tag": "agent-short-k16",
+ "requests": 1564,
+ "span_s": 172.77298855781555,
+ "blocks": 842,
+ "accesses": 7981,
+ "reused_blocks": 595,
+ "never_share": 0.29334916864608074,
+ "reused_blocks_by_distinct_requests": {
+  "2": 294,
+  "3": 250,
+  "4": 24,
+  "5": 4,
+  "6": 5,
+  "10": 18
+ },
+ "prefix_groups_by_depth": {
+  "1": {
+   "groups": 1,
+   "big_groups": 1,
+   "big_cover_new": 1.0,
+   "rate_p10": 0.7662337662337663,
+   "rate_p50": 0.7662337662337663,
+   "rate_p90": 0.7662337662337663,
+   "spearman_halves": NaN,
+   "long_lived_groups": 1,
+   "top_groups": [
+    {
+     "req": 1564,
+     "new": 841,
+     "rate1": 0.7662337662337663,
+     "rate2": 0.633245382585752
+    }
+   ]
+  },
+  "2": {
+   "groups": 1,
+   "big_groups": 1,
+   "big_cover_new": 1.0,
+   "rate_p10": 0.7657266811279827,
+   "rate_p50": 0.7657266811279827,
+   "rate_p90": 0.7657266811279827,
+   "spearman_halves": NaN,
+   "long_lived_groups": 1,
+   "top_groups": [
+    {
+     "req": 1564,
+     "new": 840,
+     "rate1": 0.7657266811279827,
+     "rate2": 0.633245382585752
+    }
+   ]
+  },
+  "3": {
+   "groups": 1,
+   "big_groups": 1,
+   "big_cover_new": 1.0,
+   "rate_p10": 0.7652173913043478,
+   "rate_p50": 0.7652173913043478,
+   "rate_p90": 0.7652173913043478,
+   "spearman_halves": NaN,
+   "long_lived_groups": 1,
+   "top_groups": [
+    {
+     "req": 1564,
+     "new": 839,
+     "rate1": 0.7652173913043478,
+     "rate2": 0.633245382585752
+    }
+   ]
+  },
+  "4": {
+   "groups": 16,
+   "big_groups": 1,
+   "big_cover_new": 0.37910085054678005,
+   "rate_p10": 0.5673758865248227,
+   "rate_p50": 0.5673758865248227,
+   "rate_p90": 0.5673758865248227,
+   "spearman_halves": NaN,
+   "long_lived_groups": 15,
+   "top_groups": [
+    {
+     "req": 490,
+     "new": 312,
+     "rate1": 0.5673758865248227,
+     "rate2": 0.5380116959064327
+    }
+   ]
+  },
+  "8": {
+   "groups": 134,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 0,
+   "top_groups": []
+  }
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.21893822664238688,
+  "top_1pct_blocks_share_of_reuses": 0.8222440117663539,
+  "top_10pct_blocks_share_of_reuses": 0.8980249334640706
+ },
+ "long_lived_shared_blocks": 18,
+ "inter_reuse_interval_s": {
+  "p10": 0.00014710426330566406,
+  "p50": 0.12742137908935547,
+  "p90": 1.6250333786010742,
+  "n": 7139
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 51,
+  "p25": 0.741464649291385,
+  "p50": 1.3067981352587934,
+  "p75": 1.5041013039290771
+ },
+ "arrival_fano_10s": 5.859192952543337,
+ "popularity_persistence_blocks": {
+  "window_s": 30.0,
+  "spearman_consecutive_p50": -0.3959352691104516,
+  "top100_kept_next_window_p50": 0.17,
+  "windows": 5
+ },
+ "top100_blocks_dead_after_window_p50": 0.79,
+ "cond_by_request_length": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "len0k": {
+    "n": 842,
+    "rate": 0.7066508313539193
+   }
+  },
+  "spread_p10": 0.7066508313539193,
+  "spread_p90": 0.7066508313539193,
+  "max_lift": 1.0
+ },
+ "cond_by_position_bucket": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "pos0": {
+    "n": 841,
+    "rate": 0.7074910820451843
+   }
+  },
+  "spread_p10": 0.7074910820451843,
+  "spread_p90": 0.7074910820451843,
+  "max_lift": 1.0011890606420928
+ },
+ "cond_by_continuation_depth": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "depth0": {
+    "n": 841,
+    "rate": 0.7074910820451843
+   }
+  },
+  "spread_p10": 0.7074910820451843,
+  "spread_p90": 0.7074910820451843,
+  "max_lift": 1.0011890606420928
+ },
+ "cond_by_time_since_previous_turn": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "gap<60": {
+    "n": 823,
+    "rate": 0.6998784933171325
+   }
+  },
+  "spread_p10": 0.6998784933171325,
+  "spread_p90": 0.6998784933171325,
+  "max_lift": 0.9904162880218916
+ },
+ "cond_by_root": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "root5ad81d": {
+    "n": 842,
+    "rate": 0.7066508313539193
+   }
+  },
+  "spread_p10": 0.7066508313539193,
+  "spread_p90": 0.7066508313539193,
+  "max_lift": 1.0
+ },
+ "cond_by_task": {
+  "base": 0.7066508313539193,
+  "cells": {
+   "task_call1": {
+    "n": 842,
+    "rate": 0.7066508313539193
+   }
+  },
+  "spread_p10": 0.7066508313539193,
+  "spread_p90": 0.7066508313539193,
+  "max_lift": 1.0
+ },
+ "next_use_time_s_of_reuses": {
+  "p10": 0.00014710426330566406,
+  "p50": 0.12742137908935547,
+  "p90": 1.6250333786010742
+ },
+ "lru_premature_evictions": {
+  "32": {
+   "cap_blocks": 32,
+   "cap_GB": 0.295,
+   "reuse_hit_share": 0.9319232385488163,
+   "premature_evictions": 486,
+   "share_of_reuses_missed": 0.06807676145118365,
+   "lead_last_access_to_eviction_s": {
+    "p10": 1.029632806777954,
+    "p50": 1.796482801437378,
+    "p90": 3.39384126663208
+   },
+   "eviction_to_reuse_s": {
+    "p10": 0.0004258155822753906,
+    "p50": 1.4543488025665283,
+    "p90": 63.39232301712036
+   },
+   "past_uses_at_eviction": {
+    "1": 204,
+    "2": 98,
+    "3": 18,
+    "4": 6,
+    "5": 160
+   },
+   "share_with_past_reuse": 0.5802469135802469
+  },
+  "65": {
+   "cap_blocks": 65,
+   "cap_GB": 0.59921875,
+   "reuse_hit_share": 0.9725451743941729,
+   "premature_evictions": 196,
+   "share_of_reuses_missed": 0.027454825605827148,
+   "lead_last_access_to_eviction_s": {
+    "p10": 6.051660776138306,
+    "p50": 7.635857820510864,
+    "p90": 8.987774848937988
+   },
+   "eviction_to_reuse_s": {
+    "p10": 2.732752561569214,
+    "p50": 31.912901163101196,
+    "p90": 85.36657547950745
+   },
+   "past_uses_at_eviction": {
+    "1": 92,
+    "2": 54,
+    "3": 8,
+    "4": 4,
+    "5": 38
+   },
+   "share_with_past_reuse": 0.5306122448979592
+  },
+  "130": {
+   "cap_blocks": 130,
+   "cap_GB": 1.1984375,
+   "reuse_hit_share": 0.9792688051547835,
+   "premature_evictions": 148,
+   "share_of_reuses_missed": 0.020731194845216416,
+   "lead_last_access_to_eviction_s": {
+    "p10": 16.530568838119507,
+    "p50": 18.18847918510437,
+    "p90": 19.860554695129395
+   },
+   "eviction_to_reuse_s": {
+    "p10": 4.069895267486572,
+    "p50": 37.983041763305664,
+    "p90": 80.7823691368103
+   },
+   "past_uses_at_eviction": {
+    "1": 74,
+    "2": 46,
+    "3": 6,
+    "4": 4,
+    "5": 18
+   },
+   "share_with_past_reuse": 0.5
+  }
+ }
+}

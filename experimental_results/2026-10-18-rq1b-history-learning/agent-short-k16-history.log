@@ -1,0 +1,56 @@
+agent-short-k16: 1564 requests over 173 s
+{
+ "tag": "agent-short-k16",
+ "requests": 1564,
+ "span_s": 172.77298855781555,
+ "blocks": 842,
+ "accesses": 7981,
+ "reused_blocks": 595,
+ "never_share": 0.29334916864608074,
+ "reused_blocks_by_distinct_requests": {
+  "2": 294,
+  "3": 250,
+  "4": 24,
+  "5": 4,
+  "6": 5,
+  "10": 18
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.21893822664238688,
+  "top_1pct_blocks_share_of_reuses": 0.8222440117663539,
+  "top_10pct_blocks_share_of_reuses": 0.8980249334640706
+ },
+ "long_lived_shared_blocks": 18,
+ "inter_reuse_interval_s": {
+  "p10": 0.00014710426330566406,
+  "p50": 0.12742137908935547,
+  "p90": 1.6250333786010742,
+  "n": 7139
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 51,
+  "p25": 0.741464649291385,
+  "p50": 1.3067981352587934,
+  "p75": 1.5041013039290771
+ },
+ "arrival_fano_10s": 5.859192952543337,
+ "popularity_persistence_blocks": {
+  "window_s": 30.0,
+  "spearman_consecutive_p50": -0.3959352691104516,
+  "top100_kept_next_window_p50": 0.17,
+  "windows": 5
+ },
+ "top100_blocks_dead_after_window_p50": 0.79,
+ "next_use_time_s_of_reuses": {
+  "p10": 0.00014710426330566406,
+  "p50": 0.12742137908935547,
+  "p90": 1.6250333786010742
+ }
+}
+cond_by_root base 0.707 {'root5ad81d': (842, 0.707)}
+cond_by_time_since_previous_turn base 0.707 {'gap<60': (823, 0.7)}
+cond_by_continuation_depth base 0.707 {'depth0': (841, 0.707)}
+LRU 0.295 GiB: reuse-hit 0.932 premature 486 share of reuses missed 0.068 with past reuse 0.58 lead last->evict p50 1.8 evict->reuse p50 1.5
+LRU 0.59921875 GiB: reuse-hit 0.973 premature 196 share of reuses missed 0.027 with past reuse 0.53 lead last->evict p50 7.6 evict->reuse p50 31.9
+LRU 1.1984375 GiB: reuse-hit 0.979 premature 148 share of reuses missed 0.021 with past reuse 0.5 lead last->evict p50 18.2 evict->reuse p50 38.0
+wrote experimental_results/2026-10-18-rq1b-history-learning/fig-history-agent-short-k16.png

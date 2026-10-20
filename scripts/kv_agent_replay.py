@@ -19,6 +19,11 @@ Policies (all decide with information available at the decision time):
   cost / event_cont+cost   COST-AWARE: among the next --scan LRU candidates evict the cheapest-to-lose chunk under the
                  miss-cost model: the recompute of the contiguous cached chain behind the chunk (prefix semantics) at
                  the measured position-dependent per-token cost, minus the load cost; needs --r0/--r1/--l
+  pop / lhd / olr / cond   LEARNED ONLINE (history only, the cache's own feedback as labels): retention priority used as
+                 the tie-break among the least-recent window — pop = decayed popularity of the block, lhd = hit
+                 probability of the block's class (root, position, depth) learned from admissions that did / did not hit
+                 before eviction, olr = online logistic regression on creation-time features, cond = per-root hit rate;
+                 with --admit-th > 0 lhd / olr / cond also bypass admission of blocks whose learned probability is below it.
   --order tail   LMCache 0.5.5 / vLLM eviction order (a request's tail chunks are evicted before its head); 'head' is
                  the position-blind order used by the earlier rounds. Scoring is prefix-aware in both cases: a chunk
                  counts as USABLE only if every earlier chunk of the request also hit (TTFT model: --r0 --r1 --l).
@@ -32,7 +37,7 @@ Extra metrics per policy: evictions before reuse, live / dead occupancy, hits un
 blocks that were read again, LRU residence (write -> eviction, p50), and the trace's live working set, production rate
 and reuse horizon (regime variables); --churn adds SYNTHETIC never-reused chunks of other tenants at a fixed rate.
 usage: kv_agent_replay.py <trace.jsonl> <out_dir> <tag> [--caps 48,64,96,128,192,256,384] [--bound 30] [--chunk-mb 9.44] [--churn 0] [--policies ...] [--no-fig]"""
-import argparse, collections, csv, heapq, json, os, random
+import argparse, collections, csv, heapq, json, math, os, random
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -48,6 +53,8 @@ ap.add_argument("--mooncake", action="store_true", help="the trace is a Mooncake
 ap.add_argument("--tok", type=int, default=256, help="tokens per chunk (256 for LMCache chunks, 512 for Mooncake hash blocks)")
 ap.add_argument("--r0", type=float, default=0.0, help="MISS-COST MODEL: recompute seconds per token at position 0 (measured)"); ap.add_argument("--r1", type=float, default=0.0, help="recompute seconds per token per token of position (superlinearity, measured)")
 ap.add_argument("--l", type=float, default=0.0, help="MISS-COST MODEL: load seconds per token from the host tier (measured)"); ap.add_argument("--cost-noise", type=float, default=0.0, help="relative noise applied to the cost estimate used by cost-aware policies (sensitivity)")
+ap.add_argument("--tau", type=float, default=300.0, help="learned policies: popularity / rate decay time constant (s)"); ap.add_argument("--admit-th", type=float, default=0.0, help="learned policies: bypass admission when the learned reuse probability is below this (0 = no bypass)")
+ap.add_argument("--dump-hits", default="", help="write one byte per scored access (1 = hit) per policy and capacity to <path>-<policy>-<cap>.bin, for miss-avoided / miss-introduced comparisons")
 ap.add_argument("--scan", type=int, default=64, help="cost-aware policies: upper bound of LRU candidates scanned per eviction (the window is min(scan, cap/16), at least 4)")
 A = ap.parse_args(); INF = float("inf"); TOK = A.tok
 plt.rcParams.update({"font.size": 11, "axes.spines.top": False, "axes.spines.right": False, "figure.facecolor": "white", "axes.grid": True, "grid.color": "#e6e6e6", "legend.frameon": False, "svg.fonttype": "none"})
@@ -140,6 +147,38 @@ def run(policy, cap):
     st = dict(acc=0, reuse=0, hit=0, miss=0, written=0, bypass=0, occ_dead=0.0, occ_all=0.0, evict=0, evict_live=0, cov_prot=0, dead_fp=0, res=[], usable=0, usable_tok=0, req=0, req_tok=0, ttft_cold=0.0, ttft=0.0, evict_cost=0.0); seen = set(); last_t = None; last_idx = {}
     stored_at = {}; pos = {}                                                               # pos[h]: chunk index inside the request that first stored it (online: the manager knows it)
     cost_aware = "cost" in policy; rng_c = random.Random(7); req_of = {}
+    learned = policy.split("+")[0] in ("pop", "lhd", "olr", "cond"); L_kind = policy.split("+")[0] if learned else None
+    TAU = A.tau; cls_stat = collections.defaultdict(lambda: [0.0, 0.0, None])            # class -> [hits (decayed), admitted (decayed), last t]: P(a block of this class gets a hit before eviction)
+    root_stat = collections.defaultdict(lambda: [0.0, 0.0, None]); blk_pop = {}; blk_pop_t = {}; blk_cls = {}; blk_hit = {}; blk_z = {}; blk_root = {}
+    olr_w = [0.0] * 7; olr_m = [0.0] * 6; olr_v = [1.0] * 6; olr_n = [0]
+    def dec(st, t):
+        if st[2] is not None and t > st[2]: f = math.exp(-(t - st[2]) / (4 * TAU)); st[0] *= f; st[1] *= f
+        st[2] = t if st[2] is None else max(st[2], t)
+    def rate(st, t, prior, k=20.0): dec(st, t); return (st[0] + k * prior) / (st[1] + k)
+    def bpop(h, t): return blk_pop[h] * math.exp(-(t - blk_pop_t[h]) / TAU) if h in blk_pop else 0.0
+    def cls_of(h, j, dep, root): return (root, min(3, j // 8), min(2, dep // 8))
+    def olr_feats(h, t, j, dep, root, Lr): rs = root_stat[root]; return [math.log1p(j), math.log1p(dep), math.log1p(Lr / TOK), rate(rs, t, 0.25) if rs[1] > 0 else 0.25, math.log1p(rs[1]), math.log1p(bpop(root, t))]
+    def olr_z(x):
+        olr_n[0] += 1
+        if olr_n[0] <= 2000:
+            for i_, xi in enumerate(x): olr_m[i_] += (xi - olr_m[i_]) / olr_n[0]; olr_v[i_] += ((xi - olr_m[i_]) ** 2 - olr_v[i_]) / olr_n[0]
+        return [(xi - olr_m[i_]) / math.sqrt(olr_v[i_] + 1e-6) for i_, xi in enumerate(x)]
+    def olr_p(z): s_ = olr_w[0] + sum(w * zi for w, zi in zip(olr_w[1:], z)); return 1 / (1 + math.exp(-max(-30, min(30, s_))))
+    def olr_upd(z, y):
+        p_ = olr_p(z); g = p_ - y; olr_w[0] -= 0.05 * g
+        for i_, zi in enumerate(z): olr_w[i_ + 1] -= 0.05 * (g * zi + 1e-4 * olr_w[i_ + 1])
+    def feedback(h, t, hit):
+        """the cache's own label when a block is evicted (0) or first hit after admission (1): used by lhd / olr / cond."""
+        if h in blk_cls: st = cls_stat[blk_cls[h]]; dec(st, t); st[0] += hit; st[1] += 1
+        if h in blk_root: st = root_stat[blk_root[h]]; dec(st, t); st[0] += hit; st[1] += 1
+        if h in blk_z: olr_upd(blk_z[h], hit)
+    def prio(h, t):
+        """learned retention priority (higher = keep): pop = decayed popularity; lhd = class hit rate; olr = model score; cond = root rate."""
+        if L_kind == "pop": return bpop(h, t)
+        if L_kind == "lhd": st = cls_stat.get(blk_cls.get(h)); return rate(st, t, 0.3) if st and st[1] >= 20 else 0.3
+        if L_kind == "olr": return olr_p(blk_z[h]) if h in blk_z else 0.3
+        if L_kind == "cond": st = root_stat.get(blk_root.get(h)); return rate(st, t, 0.3) if st and st[1] >= 50 else 0.3
+        return 0.0
     def ev_cost(h):
         """Estimated cost of losing this chunk (seconds), online information only: the recompute of the contiguous cached
         chain from this chunk to the first gap of the request that stored it (prefix semantics: everything behind a hole
@@ -148,9 +187,11 @@ def run(policy, cap):
         while k < len(hs) and hs[k] in where and n_ < 64:
             c += (A.r0 + A.r1 * k * TOK - A.l) * TOK; k += 1; n_ += 1
         return c * (1 + A.cost_noise * rng_c.uniform(-1, 1)) if A.cost_noise else c
-    cur = -1; req_hs = []; usable = True
+    cur = -1; req_hs = []; usable = True; hitlog = bytearray() if A.dump_hits else None
     def remove(h, now=None):
         t_ = where.pop(h); n[t_] -= 1; lru.pop(h, None); tier[t_].pop(h, None); dead.pop(h, None); prob.pop(h, None); prot.pop(h, None); nuv.pop(h, None); protected.pop(h, None)
+        if learned and now is not None and not blk_hit.get(h, False): feedback(h, now, 0)
+        blk_hit.pop(h, None)
         st["evict"] += 1; st["evict_live"] += (nu[last_idx[h]] < INF)
         if now is not None and h in stored_at and len(st["res"]) < 200000: st["res"].append(now - stored_at.pop(h))
     def place(h, t_, i):
@@ -164,8 +205,8 @@ def run(policy, cap):
             win = min(A.scan, max(4, cap // 16))                                          # cost breaks ties only among the least-recent few (recency = reuse likelihood stays primary)
             for b in src:
                 if protected.get(b, -INF) > now: k += 1; continue
-                if not cost_aware: return b
-                c = ev_cost(b)                                                             # cost-aware: cheapest-to-lose among the next `win` LRU candidates
+                if not cost_aware and not learned: return b
+                c = ev_cost(b) if cost_aware else prio(b, now)                             # cost-aware: cheapest-to-lose; learned: lowest retention priority among the next `win` LRU candidates
                 if c < bc: best, bc = b, c
                 scanned += 1
                 if scanned >= win: break
@@ -211,7 +252,10 @@ def run(policy, cap):
             if last_t is not None and where:
                 dt = t - last_t; st["occ_all"] += dt * len(where); st["occ_dead"] += dt * sum(1 for b in where if nu[last_idx[b]] == INF)
         last_t = t
+        if learned: blk_pop[h] = bpop(h, t) + 1.0; blk_pop_t[h] = t; blk_pop[R[ri]["hashes"][0]] = bpop(R[ri]["hashes"][0], t) + 1.0; blk_pop_t[R[ri]["hashes"][0]] = t
+        if test and hitlog is not None: hitlog.append(1 if h in where else 0)
         if h in where:
+            if learned and not blk_hit.get(h, False): blk_hit[h] = True; feedback(h, t, 1)
             if test:
                 st["hit"] += 1
                 if protected.get(h, -INF) > t: st["cov_prot"] += 1
@@ -244,9 +288,18 @@ def run(policy, cap):
             if n[tgt] >= nslot[tgt]: remove(next(iter(tier[tgt])), t)
             place(h, tgt, i); continue
         if defer and ri in final_call: st["bypass"] += 1; continue                            # store deferred past the request end, dropped on the end decision
+        if learned:
+            root_ = R[ri]["hashes"][0]; j_ = len(req_hs) - 1; dep_ = sum(1 for x in R[ri]["hashes"][:j_] if x in seen)
+            blk_cls[h] = cls_of(h, j_, dep_, root_); blk_root[h] = root_; blk_hit[h] = False
+            if L_kind == "olr": blk_z[h] = olr_z(olr_feats(h, t, j_, dep_, root_, R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK))
+            if A.admit_th > 0 and L_kind in ("lhd", "olr", "cond"):
+                st_ = cls_stat.get(blk_cls[h]) if L_kind == "lhd" else root_stat.get(root_)
+                p_ = (olr_p(blk_z[h]) if olr_n[0] > 2000 else 1.0) if L_kind == "olr" else (rate(st_, t, 0.3) if st_ and st_[1] >= 50 else 1.0)
+                if p_ < A.admit_th and j_ > 0: st["bypass"] += 1; blk_cls.pop(h, None); blk_z.pop(h, None); blk_root.pop(h, None); continue   # never bypass a request's first block
         if n[0] + n[1] >= cap: remove(victim(t), t)
         place(h, 0 if n[0] < nslot[0] else 1, i)
     end_request()
+    if hitlog is not None: open(f"{A.dump_hits}-{policy}-{cap}.bin", "wb").write(bytes(hitlog))
     res = sorted(st["res"]); t_res = res[len(res) // 2] if res else INF
     return dict(policy=policy, order=A.order, cap=cap, cap_GB=cap * A.chunk_mb / 1000, churn=A.churn, acc=st["acc"], reuse=st["reuse"], hits=st["hit"], reuse_hit_share=st["hit"] / max(1, st["reuse"]), overall_hit=st["hit"] / max(1, st["acc"]),
                 usable_hits=st["usable"], usable_hit_share=st["usable"] / max(1, st["reuse"]), usable_tokens=st["usable_tok"], prompt_tokens=st["req_tok"], usable_token_share=st["usable_tok"] / max(1, st["req_tok"]),

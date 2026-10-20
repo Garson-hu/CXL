@@ -1,0 +1,5 @@
+trace: 12031 requests (0 synthetic churn), 12031 tasks, 288500 chunk accesses, 182790 unique chunks, test half from request 6015
+live working set (agent chunks of unfinished tasks): mean 1 p90 0 max 219; agent production 51.68 chunks/s + real background 0.00 + synthetic churn 0.00; reuse horizon p50 0.0 s p90 0.0 s (n=0)
+cap 1600 (107.36 GB) churn  0.0 tail pop              reuse-hit 0.133 usable 0.133 tok-share 0.053 ttft    3071 ms written 273201 dead-occ 0.69 evict-live 0.33 res   21.0 s
+cap 3200 (214.72 GB) churn  0.0 tail pop              reuse-hit 0.178 usable 0.178 tok-share 0.071 ttft    3028 ms written 267767 dead-occ 0.70 evict-live 0.32 res   42.0 s
+cap 6400 (429.44 GB) churn  0.0 tail pop              reuse-hit 0.380 usable 0.380 tok-share 0.151 ttft    2801 ms written 245681 dead-occ 0.71 evict-live 0.26 res   87.0 s

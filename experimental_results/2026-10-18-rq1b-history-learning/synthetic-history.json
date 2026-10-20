@@ -1,0 +1,296 @@
+{
+ "tag": "synthetic",
+ "requests": 3993,
+ "span_s": 1022.025,
+ "blocks": 43924,
+ "accesses": 121877,
+ "reused_blocks": 18251,
+ "never_share": 0.5844868409070212,
+ "reused_blocks_by_distinct_requests": {
+  "2": 2906,
+  "3": 3345,
+  "4": 3194,
+  "5": 2117,
+  "6": 2107,
+  "7": 1100,
+  "8": 1182,
+  "9": 1045,
+  "10": 1255
+ },
+ "prefix_groups_by_depth": {
+  "1": {
+   "groups": 2211,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 28,
+   "top_groups": []
+  },
+  "2": {
+   "groups": 1138,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 28,
+   "top_groups": []
+  },
+  "3": {
+   "groups": 1029,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 28,
+   "top_groups": []
+  },
+  "4": {
+   "groups": 964,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 28,
+   "top_groups": []
+  },
+  "8": {
+   "groups": 949,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 23,
+   "top_groups": []
+  }
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.012687131989788719,
+  "top_1pct_blocks_share_of_reuses": 0.10072736135876746,
+  "top_10pct_blocks_share_of_reuses": 0.49558067040396137
+ },
+ "long_lived_shared_blocks": 1122,
+ "inter_reuse_interval_s": {
+  "p10": 4.814000000000078,
+  "p50": 59.38700000000006,
+  "p90": 281.76399999999995,
+  "n": 77953
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 12000,
+  "p25": 0.6176458195205246,
+  "p50": 0.827214169492715,
+  "p75": 1.1137951796839225
+ },
+ "arrival_fano_10s": 1.3694985642349842,
+ "popularity_persistence_blocks": {
+  "window_s": 300,
+  "spearman_consecutive_p50": -0.13160903567322202,
+  "top100_kept_next_window_p50": 0.0,
+  "windows": 3
+ },
+ "top100_blocks_dead_after_window_p50": 0.0,
+ "cond_by_request_length": {
+  "base": 0.41551315909297876,
+  "cells": {
+   "len64k": {
+    "n": 14995,
+    "rate": 0.6560853617872624
+   },
+   "len40k": {
+    "n": 4372,
+    "rate": 0.2582342177493138
+   },
+   "len56k": {
+    "n": 2830,
+    "rate": 0.5844522968197879
+   },
+   "len32k": {
+    "n": 7816,
+    "rate": 0.23375127942681678
+   },
+   "len0k": {
+    "n": 2146,
+    "rate": 0.11742777260018639
+   },
+   "len24k": {
+    "n": 6697,
+    "rate": 0.17784082424966402
+   },
+   "len48k": {
+    "n": 3270,
+    "rate": 0.4492354740061162
+   },
+   "len8k": {
+    "n": 887,
+    "rate": 0.5107102593010147
+   },
+   "len16k": {
+    "n": 911,
+    "rate": 0.4807903402854007
+   }
+  },
+  "spread_p10": 0.11742777260018639,
+  "spread_p90": 0.6560853617872624,
+  "max_lift": 1.5789761345210518
+ },
+ "cond_by_position_bucket": {
+  "base": 0.41551315909297876,
+  "cells": {
+   "pos0": {
+    "n": 9217,
+    "rate": 0.3311272648367148
+   },
+   "pos1": {
+    "n": 7032,
+    "rate": 0.37841296928327645
+   },
+   "pos2": {
+    "n": 6582,
+    "rate": 0.36675782436949256
+   },
+   "pos3": {
+    "n": 5962,
+    "rate": 0.3644750083864475
+   },
+   "pos4": {
+    "n": 15131,
+    "rate": 0.5254774965303021
+   }
+  },
+  "spread_p10": 0.3311272648367148,
+  "spread_p90": 0.5254774965303021,
+  "max_lift": 1.264647063590871
+ },
+ "cond_by_continuation_depth": {
+  "base": 0.41551315909297876,
+  "cells": {
+   "depth0": {
+    "n": 41959,
+    "rate": 0.43204080173502707
+   },
+   "depth3": {
+    "n": 1656,
+    "rate": 0.04528985507246377
+   },
+   "depth1": {
+    "n": 206,
+    "rate": 0.19902912621359223
+   }
+  },
+  "spread_p10": 0.04528985507246377,
+  "spread_p90": 0.43204080173502707,
+  "max_lift": 1.0397764602163897
+ },
+ "cond_by_time_since_previous_turn": {
+  "base": 0.41551315909297876,
+  "cells": {
+   "fresh": {
+    "n": 43924,
+    "rate": 0.41551315909297876
+   }
+  },
+  "spread_p10": 0.41551315909297876,
+  "spread_p90": 0.41551315909297876,
+  "max_lift": 1.0
+ },
+ "cond_by_root": {
+  "base": 0.41551315909297876,
+  "cells": {},
+  "spread_p10": NaN,
+  "spread_p90": NaN,
+  "max_lift": NaN
+ },
+ "next_use_time_s_of_reuses": {
+  "p10": 4.814000000000078,
+  "p50": 59.38700000000006,
+  "p90": 281.76399999999995
+ },
+ "lru_premature_evictions": {
+  "1526": {
+   "cap_blocks": 1526,
+   "cap_GB": 99.99472656249999,
+   "reuse_hit_share": 0.18494477441535284,
+   "premature_evictions": 63536,
+   "share_of_reuses_missed": 0.8150552255846472,
+   "lead_last_access_to_eviction_s": {
+    "p10": 8.730999999999995,
+    "p50": 12.851999999999975,
+    "p90": 18.74000000000001
+   },
+   "eviction_to_reuse_s": {
+    "p10": 8.283000000000015,
+    "p50": 74.09099999999998,
+    "p90": 290.63
+   },
+   "past_uses_at_eviction": {
+    "1": 17211,
+    "2": 14332,
+    "3": 10432,
+    "4": 7425,
+    "5": 14136
+   },
+   "share_with_past_reuse": 0.7291142029715437
+  },
+  "3052": {
+   "cap_blocks": 3052,
+   "cap_GB": 199.98945312499998,
+   "reuse_hit_share": 0.29708927174066424,
+   "premature_evictions": 54794,
+   "share_of_reuses_missed": 0.7029107282593358,
+   "lead_last_access_to_eviction_s": {
+    "p10": 20.912000000000035,
+    "p50": 28.18900000000002,
+    "p90": 37.52999999999997
+   },
+   "eviction_to_reuse_s": {
+    "p10": 8.242000000000019,
+    "p50": 78.54500000000007,
+    "p90": 301.23900000000003
+   },
+   "past_uses_at_eviction": {
+    "1": 16236,
+    "2": 13149,
+    "3": 8953,
+    "4": 5991,
+    "5": 10465
+   },
+   "share_with_past_reuse": 0.7036901850567581
+  },
+  "6104": {
+   "cap_blocks": 6104,
+   "cap_GB": 399.97890624999997,
+   "reuse_hit_share": 0.49352815157851526,
+   "premature_evictions": 39481,
+   "share_of_reuses_missed": 0.5064718484214847,
+   "lead_last_access_to_eviction_s": {
+    "p10": 49.33299999999997,
+    "p50": 61.809000000000026,
+    "p90": 76.19200000000001
+   },
+   "eviction_to_reuse_s": {
+    "p10": 12.795000000000073,
+    "p50": 91.969,
+    "p90": 323.203
+   },
+   "past_uses_at_eviction": {
+    "1": 13663,
+    "2": 10723,
+    "3": 6432,
+    "4": 3722,
+    "5": 4941
+   },
+   "share_with_past_reuse": 0.6539348040829767
+  }
+ }
+}

@@ -1,0 +1,59 @@
+synthetic: 3993 requests over 1022 s
+{
+ "tag": "synthetic",
+ "requests": 3993,
+ "span_s": 1022.025,
+ "blocks": 43924,
+ "accesses": 121877,
+ "reused_blocks": 18251,
+ "never_share": 0.5844868409070212,
+ "reused_blocks_by_distinct_requests": {
+  "2": 2906,
+  "3": 3345,
+  "4": 3194,
+  "5": 2117,
+  "6": 2107,
+  "7": 1100,
+  "8": 1182,
+  "9": 1045,
+  "10": 1255
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.012687131989788719,
+  "top_1pct_blocks_share_of_reuses": 0.10072736135876746,
+  "top_10pct_blocks_share_of_reuses": 0.49558067040396137
+ },
+ "long_lived_shared_blocks": 1122,
+ "inter_reuse_interval_s": {
+  "p10": 4.814000000000078,
+  "p50": 59.38700000000006,
+  "p90": 281.76399999999995,
+  "n": 77953
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 12000,
+  "p25": 0.6176458195205246,
+  "p50": 0.827214169492715,
+  "p75": 1.1137951796839225
+ },
+ "arrival_fano_10s": 1.3694985642349842,
+ "popularity_persistence_blocks": {
+  "window_s": 300,
+  "spearman_consecutive_p50": -0.13160903567322202,
+  "top100_kept_next_window_p50": 0.0,
+  "windows": 3
+ },
+ "top100_blocks_dead_after_window_p50": 0.0,
+ "next_use_time_s_of_reuses": {
+  "p10": 4.814000000000078,
+  "p50": 59.38700000000006,
+  "p90": 281.76399999999995
+ }
+}
+cond_by_root base 0.416 {}
+cond_by_time_since_previous_turn base 0.416 {'fresh': (43924, 0.416)}
+cond_by_continuation_depth base 0.416 {'depth0': (41959, 0.432), 'depth3': (1656, 0.045), 'depth1': (206, 0.199)}
+LRU 99.99472656249999 GiB: reuse-hit 0.185 premature 63536 share of reuses missed 0.815 with past reuse 0.73 lead last->evict p50 12.9 evict->reuse p50 74.1
+LRU 199.98945312499998 GiB: reuse-hit 0.297 premature 54794 share of reuses missed 0.703 with past reuse 0.7 lead last->evict p50 28.2 evict->reuse p50 78.5
+LRU 399.97890624999997 GiB: reuse-hit 0.494 premature 39481 share of reuses missed 0.506 with past reuse 0.65 lead last->evict p50 61.8 evict->reuse p50 92.0
+wrote experimental_results/2026-10-18-rq1b-history-learning/fig-history-synthetic.png

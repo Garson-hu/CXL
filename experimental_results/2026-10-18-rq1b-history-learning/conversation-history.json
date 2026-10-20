@@ -1,0 +1,319 @@
+{
+ "tag": "conversation",
+ "requests": 12031,
+ "span_s": 3536.999,
+ "blocks": 182790,
+ "accesses": 288500,
+ "reused_blocks": 44144,
+ "never_share": 0.7584988237868593,
+ "reused_blocks_by_distinct_requests": {
+  "2": 25455,
+  "3": 9399,
+  "4": 3911,
+  "5": 1877,
+  "6": 1287,
+  "7": 467,
+  "8": 289,
+  "9": 118,
+  "10": 1341
+ },
+ "prefix_groups_by_depth": {
+  "1": {
+   "groups": 1,
+   "big_groups": 1,
+   "big_cover_new": 1.0,
+   "rate_p10": 0.27382653275622976,
+   "rate_p50": 0.27382653275622976,
+   "rate_p90": 0.27382653275622976,
+   "spearman_halves": NaN,
+   "long_lived_groups": 1,
+   "top_groups": [
+    {
+     "req": 12031,
+     "new": 182789,
+     "rate1": 0.27382653275622976,
+     "rate2": 0.20636750722023722
+    }
+   ]
+  },
+  "2": {
+   "groups": 7373,
+   "big_groups": 1,
+   "big_cover_new": 0.0014479865006612853,
+   "rate_p10": 0.0,
+   "rate_p50": 0.0,
+   "rate_p90": 0.0,
+   "spearman_halves": NaN,
+   "long_lived_groups": 31,
+   "top_groups": [
+    {
+     "req": 2,
+     "new": 254,
+     "rate1": 0.0,
+     "rate2": 0.0
+    }
+   ]
+  },
+  "3": {
+   "groups": 6572,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 26,
+   "top_groups": []
+  },
+  "4": {
+   "groups": 6015,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 23,
+   "top_groups": []
+  },
+  "8": {
+   "groups": 5277,
+   "big_groups": 0,
+   "big_cover_new": 0.0,
+   "rate_p10": NaN,
+   "rate_p50": NaN,
+   "rate_p90": NaN,
+   "spearman_halves": NaN,
+   "long_lived_groups": 21,
+   "top_groups": []
+  }
+ },
+ "reuse_concentration": {
+  "top_0.1pct_blocks_share_of_reuses": 0.15219941348973606,
+  "top_1pct_blocks_share_of_reuses": 0.3164601267618958,
+  "top_10pct_blocks_share_of_reuses": 0.7514426260524075
+ },
+ "long_lived_shared_blocks": 929,
+ "inter_reuse_interval_s": {
+  "p10": 0.0,
+  "p50": 113.99900000000002,
+  "p90": 518.9999999999998,
+  "n": 105710
+ },
+ "interval_cv_blocks_ge4_uses": {
+  "n": 9290,
+  "p25": 0.3513020008759267,
+  "p50": 0.5435407555908666,
+  "p75": 0.7475430618755163
+ },
+ "arrival_fano_10s": 2.0935025665805895,
+ "popularity_persistence_blocks": {
+  "window_s": 300,
+  "spearman_consecutive_p50": -0.30048246954658464,
+  "top100_kept_next_window_p50": 0.09,
+  "windows": 11
+ },
+ "top100_blocks_dead_after_window_p50": 0.34,
+ "cond_by_request_length": {
+  "base": 0.24150117621314077,
+  "cells": {
+   "len8k": {
+    "n": 20148,
+    "rate": 0.30027794322017076
+   },
+   "len0k": {
+    "n": 9254,
+    "rate": 0.23265614869245732
+   },
+   "len40k": {
+    "n": 12639,
+    "rate": 0.2607010048263312
+   },
+   "len48k": {
+    "n": 12033,
+    "rate": 0.2936092412532203
+   },
+   "len16k": {
+    "n": 20376,
+    "rate": 0.2621711817824892
+   },
+   "len32k": {
+    "n": 18304,
+    "rate": 0.22546984265734266
+   },
+   "len24k": {
+    "n": 19935,
+    "rate": 0.2237772761474793
+   },
+   "len64k": {
+    "n": 60902,
+    "rate": 0.2108961938852583
+   },
+   "len56k": {
+    "n": 9199,
+    "rate": 0.2542667681269703
+   }
+  },
+  "spread_p10": 0.2108961938852583,
+  "spread_p90": 0.30027794322017076,
+  "max_lift": 1.2433808726262916
+ },
+ "cond_by_position_bucket": {
+  "base": 0.24150117621314077,
+  "cells": {
+   "pos0": {
+    "n": 41873,
+    "rate": 0.3028920784276264
+   },
+   "pos1": {
+    "n": 35099,
+    "rate": 0.2532835693324596
+   },
+   "pos2": {
+    "n": 25373,
+    "rate": 0.2191305718677334
+   },
+   "pos3": {
+    "n": 18217,
+    "rate": 0.21403085030466049
+   },
+   "pos4": {
+    "n": 62228,
+    "rate": 0.21070900559233785
+   }
+  },
+  "spread_p10": 0.21070900559233785,
+  "spread_p90": 0.3028920784276264,
+  "max_lift": 1.2542053963344018
+ },
+ "cond_by_continuation_depth": {
+  "base": 0.24150117621314077,
+  "cells": {
+   "depth0": {
+    "n": 164960,
+    "rate": 0.2540797769156159
+   },
+   "depth3": {
+    "n": 6768,
+    "rate": 0.17065602836879432
+   },
+   "depth1": {
+    "n": 7601,
+    "rate": 0.09840810419681621
+   },
+   "depth2": {
+    "n": 3461,
+    "rate": 0.09477029760184917
+   }
+  },
+  "spread_p10": 0.09477029760184917,
+  "spread_p90": 0.2540797769156159,
+  "max_lift": 1.0520850494383251
+ },
+ "cond_by_time_since_previous_turn": {
+  "base": 0.24150117621314077,
+  "cells": {
+   "fresh": {
+    "n": 182755,
+    "rate": 0.2415419550764685
+   }
+  },
+  "spread_p10": 0.2415419550764685,
+  "spread_p90": 0.2415419550764685,
+  "max_lift": 1.0001688557545232
+ },
+ "cond_by_root": {
+  "base": 0.24150117621314077,
+  "cells": {
+   "root0": {
+    "n": 182790,
+    "rate": 0.24150117621314077
+   }
+  },
+  "spread_p10": 0.24150117621314077,
+  "spread_p90": 0.24150117621314077,
+  "max_lift": 1.0
+ },
+ "next_use_time_s_of_reuses": {
+  "p10": 0.0,
+  "p50": 113.99900000000002,
+  "p90": 518.9999999999998
+ },
+ "lru_premature_evictions": {
+  "1526": {
+   "cap_blocks": 1526,
+   "cap_GB": 99.99472656249999,
+   "reuse_hit_share": 0.13043231482357392,
+   "premature_evictions": 91922,
+   "share_of_reuses_missed": 0.869567685176426,
+   "lead_last_access_to_eviction_s": {
+    "p10": 14.998999999999796,
+    "p50": 18.001000000000204,
+    "p90": 24.000999999999976
+   },
+   "eviction_to_reuse_s": {
+    "p10": 27.0,
+    "p50": 117.0,
+    "p90": 516.0
+   },
+   "past_uses_at_eviction": {
+    "1": 43592,
+    "2": 18333,
+    "3": 9184,
+    "4": 5317,
+    "5": 15496
+   },
+   "share_with_past_reuse": 0.5257718500467788
+  },
+  "3052": {
+   "cap_blocks": 3052,
+   "cap_GB": 199.98945312499998,
+   "reuse_hit_share": 0.17854507615173587,
+   "premature_evictions": 86836,
+   "share_of_reuses_missed": 0.8214549238482641,
+   "lead_last_access_to_eviction_s": {
+    "p10": 33.0,
+    "p50": 39.0,
+    "p90": 47.998999999999796
+   },
+   "eviction_to_reuse_s": {
+    "p10": 18.0,
+    "p50": 108.0,
+    "p90": 512.9989999999998
+   },
+   "past_uses_at_eviction": {
+    "1": 41537,
+    "2": 17417,
+    "3": 8680,
+    "4": 4990,
+    "5": 14212
+   },
+   "share_with_past_reuse": 0.5216615228706988
+  },
+  "6104": {
+   "cap_blocks": 6104,
+   "cap_GB": 399.97890624999997,
+   "reuse_hit_share": 0.3824992905117775,
+   "premature_evictions": 65276,
+   "share_of_reuses_missed": 0.6175007094882224,
+   "lead_last_access_to_eviction_s": {
+    "p10": 72.0,
+    "p50": 81.0,
+    "p90": 90.0
+   },
+   "eviction_to_reuse_s": {
+    "p10": 15.0,
+    "p50": 132.0,
+    "p90": 525.0
+   },
+   "past_uses_at_eviction": {
+    "1": 31668,
+    "2": 13109,
+    "3": 6515,
+    "4": 3220,
+    "5": 10764
+   },
+   "share_with_past_reuse": 0.5148599791653901
+  }
+ }
+}
