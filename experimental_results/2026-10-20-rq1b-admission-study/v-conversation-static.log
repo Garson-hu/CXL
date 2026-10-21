@@ -1,0 +1,11 @@
+trace: 12031 requests (0 synthetic churn), 12031 tasks, 288500 chunk accesses, 182790 unique chunks, test half from request 6015
+live working set (agent chunks of unfinished tasks): mean 1 p90 0 max 219; agent production 51.68 chunks/s + real background 0.00 + synthetic churn 0.00; reuse horizon p50 0.0 s p90 0.0 s (n=0)
+cap 3200 (214.72 GB) churn  0.0 tail static_d4        reuse-hit 0.222 usable 0.222 tok-share 0.089 ttft    3018 ms written  21378 dead-occ 0.81 evict-live 0.08 res  462.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_d16       reuse-hit 0.278 usable 0.278 tok-share 0.111 ttft    2967 ms written 102821 dead-occ 0.70 evict-live 0.26 res   99.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_n4        reuse-hit 0.303 usable 0.303 tok-share 0.121 ttft    2892 ms written 106558 dead-occ 0.60 evict-live 0.36 res   93.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_n16       reuse-hit 0.228 usable 0.228 tok-share 0.091 ttft    2982 ms written 170469 dead-occ 0.65 evict-live 0.35 res   63.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_p4        reuse-hit 0.209 usable 0.209 tok-share 0.083 ttft    2991 ms written 159386 dead-occ 0.78 evict-live 0.23 res   69.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_p16       reuse-hit 0.200 usable 0.200 tok-share 0.080 ttft    3009 ms written 185005 dead-occ 0.77 evict-live 0.24 res   60.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_dp8_4     reuse-hit 0.210 usable 0.210 tok-share 0.084 ttft    3003 ms written 180084 dead-occ 0.75 evict-live 0.26 res   60.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_dp4_8     reuse-hit 0.209 usable 0.209 tok-share 0.083 ttft    2999 ms written 175522 dead-occ 0.77 evict-live 0.25 res   63.0 s
+cap 3200 (214.72 GB) churn  0.0 tail static_dp16_8    reuse-hit 0.201 usable 0.201 tok-share 0.080 ttft    3011 ms written 204936 dead-occ 0.73 evict-live 0.28 res   54.0 s

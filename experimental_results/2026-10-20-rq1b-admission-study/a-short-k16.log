@@ -1,0 +1,26 @@
+trace: 1564 requests (0 synthetic churn), 400 tasks, 7981 chunk accesses, 842 unique chunks, test half from request 782
+live working set (agent chunks of unfinished tasks): mean 57 p90 65 max 68; agent production 4.87 chunks/s + real background 0.00 + synthetic churn 0.00; reuse horizon p50 1.4 s p90 2.3 s (n=677)
+cap   24 (0.23 GB) churn  0.0 tail lru              reuse-hit 0.874 usable 0.874 tok-share 0.787 ttft      46 ms written   1718 dead-occ 0.39 evict-live 0.52 res    1.6 s
+cap   24 (0.23 GB) churn  0.0 tail slru             reuse-hit 0.875 usable 0.875 tok-share 0.788 ttft      46 ms written   1709 dead-occ 0.39 evict-live 0.51 res    1.3 s hits+3
+cap   24 (0.23 GB) churn  0.0 tail event_cont       reuse-hit 0.921 usable 0.921 tok-share 0.830 ttft      38 ms written   1340 dead-occ 0.37 evict-live 0.38 res    1.7 s hits+171
+cap   24 (0.23 GB) churn  0.0 tail static_n4        reuse-hit 0.874 usable 0.874 tok-share 0.787 ttft      46 ms written   1718 dead-occ 0.39 evict-live 0.52 res    1.6 s hits+0
+cap   24 (0.23 GB) churn  0.0 tail static_d6        reuse-hit 0.893 usable 0.893 tok-share 0.804 ttft      43 ms written   1144 dead-occ 0.36 evict-live 0.51 res    2.3 s hits+68
+cap   24 (0.23 GB) churn  0.0 tail lhd              reuse-hit 0.880 usable 0.880 tok-share 0.792 ttft      45 ms written   1649 dead-occ 0.38 evict-live 0.53 res    1.6 s hits+20
+cap   24 (0.23 GB) churn  0.0 tail cond             reuse-hit 0.874 usable 0.874 tok-share 0.787 ttft      46 ms written   1718 dead-occ 0.39 evict-live 0.52 res    1.6 s hits+0
+cap   24 (0.23 GB) churn  0.0 tail oracle           reuse-hit 0.959 usable 0.959 tok-share 0.864 ttft      32 ms written    690 dead-occ 0.24 evict-live 0.29 res    3.1 s hits+307
+cap   32 (0.30 GB) churn  0.0 tail lru              reuse-hit 0.931 usable 0.931 tok-share 0.839 ttft      37 ms written   1296 dead-occ 0.46 evict-live 0.36 res    3.0 s
+cap   32 (0.30 GB) churn  0.0 tail slru             reuse-hit 0.927 usable 0.927 tok-share 0.835 ttft      37 ms written   1323 dead-occ 0.47 evict-live 0.37 res    2.5 s hits+-15
+cap   32 (0.30 GB) churn  0.0 tail event_cont       reuse-hit 0.952 usable 0.952 tok-share 0.857 ttft      33 ms written   1143 dead-occ 0.46 evict-live 0.27 res    3.2 s hits+74
+cap   32 (0.30 GB) churn  0.0 tail static_n4        reuse-hit 0.931 usable 0.931 tok-share 0.839 ttft      37 ms written   1296 dead-occ 0.46 evict-live 0.36 res    3.0 s hits+0
+cap   32 (0.30 GB) churn  0.0 tail static_d6        reuse-hit 0.930 usable 0.930 tok-share 0.837 ttft      37 ms written    839 dead-occ 0.46 evict-live 0.33 res    4.4 s hits+-6
+cap   32 (0.30 GB) churn  0.0 tail lhd              reuse-hit 0.932 usable 0.932 tok-share 0.839 ttft      37 ms written   1293 dead-occ 0.46 evict-live 0.36 res    2.9 s hits+1
+cap   32 (0.30 GB) churn  0.0 tail cond             reuse-hit 0.931 usable 0.931 tok-share 0.839 ttft      37 ms written   1296 dead-occ 0.46 evict-live 0.36 res    3.0 s hits+0
+cap   32 (0.30 GB) churn  0.0 tail oracle           reuse-hit 0.970 usable 0.970 tok-share 0.874 ttft      30 ms written    659 dead-occ 0.28 evict-live 0.21 res    3.8 s hits+140
+cap   48 (0.45 GB) churn  0.0 tail lru              reuse-hit 0.960 usable 0.960 tok-share 0.864 ttft      32 ms written   1066 dead-occ 0.59 evict-live 0.22 res    5.8 s
+cap   48 (0.45 GB) churn  0.0 tail slru             reuse-hit 0.958 usable 0.958 tok-share 0.863 ttft      32 ms written   1079 dead-occ 0.60 evict-live 0.23 res    5.4 s hits+-7
+cap   48 (0.45 GB) churn  0.0 tail event_cont       reuse-hit 0.961 usable 0.961 tok-share 0.865 ttft      32 ms written   1061 dead-occ 0.59 evict-live 0.22 res    5.8 s hits+3
+cap   48 (0.45 GB) churn  0.0 tail static_n4        reuse-hit 0.960 usable 0.960 tok-share 0.864 ttft      32 ms written   1066 dead-occ 0.59 evict-live 0.22 res    5.8 s hits+0
+cap   48 (0.45 GB) churn  0.0 tail static_d6        reuse-hit 0.939 usable 0.939 tok-share 0.846 ttft      36 ms written    768 dead-occ 0.58 evict-live 0.27 res    8.1 s hits+-75
+cap   48 (0.45 GB) churn  0.0 tail lhd              reuse-hit 0.960 usable 0.960 tok-share 0.864 ttft      32 ms written   1066 dead-occ 0.59 evict-live 0.22 res    5.8 s hits+0
+cap   48 (0.45 GB) churn  0.0 tail cond             reuse-hit 0.960 usable 0.960 tok-share 0.864 ttft      32 ms written   1066 dead-occ 0.59 evict-live 0.22 res    5.8 s hits+0
+cap   48 (0.45 GB) churn  0.0 tail oracle           reuse-hit 0.980 usable 0.980 tok-share 0.883 ttft      29 ms written    628 dead-occ 0.33 evict-live 0.14 res    4.1 s hits+75

@@ -21,7 +21,7 @@ for ri, (t, hs) in enumerate(R):
     for j, h in enumerate(hs):
         if ri >= half:
             if k >= min(len(base), len(pol)): break
-            b, p = base[k], pol[k]; k += 1
+            b, p = base[k] == 1, pol[k] == 1; k += 1
             uses = seen[h]; ub = "new" if uses == 0 else "1" if uses == 1 else "2-4" if uses < 5 else "5+"
             age = t - first_t.get(h, t); ab = "age<60s" if age < 60 else "age<300s" if age < 300 else "age300s+"
             for key in (("position", pb(j)), ("request", dep), ("past uses", ub), ("block age", ab)):

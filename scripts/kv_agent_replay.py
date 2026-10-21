@@ -19,6 +19,11 @@ Policies (all decide with information available at the decision time):
   cost / event_cont+cost   COST-AWARE: among the next --scan LRU candidates evict the cheapest-to-lose chunk under the
                  miss-cost model: the recompute of the contiguous cached chain behind the chunk (prefix semantics) at
                  the measured position-dependent per-token cost, minus the load cost; needs --r0/--r1/--l
+  static_2nd<k>  STATIC second-touch admission on LRU: a block never requested before is admitted only at positions < k
+                 (k = 1 by default); any block requested before is admitted (a ghost set of hashes, no data kept)
+  static_d<k> / static_p<m> / static_n<k> / static_dp<k>_<m>   STATIC admission rules on LRU: bypass a new block at
+                 position >= k / of a request with >= m existing-prefix blocks / that is the k-th or later NEW block of
+                 its request / position >= k and existing prefix >= m (never the first block). No learning.
   pop / lhd / olr / cond   LEARNED ONLINE (history only, the cache's own feedback as labels): retention priority used as
                  the tie-break among the least-recent window — pop = decayed popularity of the block, lhd = hit
                  probability of the block's class (root, position, depth) learned from admissions that did / did not hit
@@ -54,7 +59,12 @@ ap.add_argument("--tok", type=int, default=256, help="tokens per chunk (256 for 
 ap.add_argument("--r0", type=float, default=0.0, help="MISS-COST MODEL: recompute seconds per token at position 0 (measured)"); ap.add_argument("--r1", type=float, default=0.0, help="recompute seconds per token per token of position (superlinearity, measured)")
 ap.add_argument("--l", type=float, default=0.0, help="MISS-COST MODEL: load seconds per token from the host tier (measured)"); ap.add_argument("--cost-noise", type=float, default=0.0, help="relative noise applied to the cost estimate used by cost-aware policies (sensitivity)")
 ap.add_argument("--tau", type=float, default=300.0, help="learned policies: popularity / rate decay time constant (s)"); ap.add_argument("--admit-th", type=float, default=0.0, help="learned policies: bypass admission when the learned reuse probability is below this (0 = no bypass)")
-ap.add_argument("--dump-hits", default="", help="write one byte per scored access (1 = hit) per policy and capacity to <path>-<policy>-<cap>.bin, for miss-avoided / miss-introduced comparisons")
+ap.add_argument("--dump-hits", default="", help="write one byte per scored access per policy and capacity to <path>-<policy>-<cap>.bin: 1 hit, 0 miss on a never-seen block, 2 miss on a block that was bypassed at its last admission opportunity, 3 miss on a block that had been admitted and evicted")
+ap.add_argument("--dump-admit", default="", help="write one byte per NEW block in the scored half (1 admitted, 0 bypassed) to <path>-<policy>-<cap>.adm, for the oracle-gap decomposition")
+ap.add_argument("--explore", type=float, default=0.0, help="learned admission: admit a would-be-bypassed block with this probability so that its class keeps receiving feedback")
+ap.add_argument("--bypass-feedback", action="store_true", help="learned admission: a bypassed block also labels its class — 1 if the same hash is requested again within the online residence estimate, 0 otherwise (both observable at runtime)")
+ap.add_argument("--freeze-at", type=float, default=0.0, help="learned policies: stop updating the class statistics after this fraction of the trace span (0 = keep learning): 'historical' vs 'online' variants")
+ap.add_argument("--min-samples", type=float, default=50.0, help="learned admission: a class may bypass only after this many (decayed) feedback samples")
 ap.add_argument("--scan", type=int, default=64, help="cost-aware policies: upper bound of LRU candidates scanned per eviction (the window is min(scan, cap/16), at least 4)")
 A = ap.parse_args(); INF = float("inf"); TOK = A.tok
 plt.rcParams.update({"font.size": 11, "axes.spines.top": False, "axes.spines.right": False, "figure.facecolor": "white", "axes.grid": True, "grid.color": "#e6e6e6", "legend.frameon": False, "svg.fonttype": "none"})
@@ -148,6 +158,16 @@ def run(policy, cap):
     stored_at = {}; pos = {}                                                               # pos[h]: chunk index inside the request that first stored it (online: the manager knows it)
     cost_aware = "cost" in policy; rng_c = random.Random(7); req_of = {}
     learned = policy.split("+")[0] in ("pop", "lhd", "olr", "cond"); L_kind = policy.split("+")[0] if learned else None
+    static_rule = None                                                                   # ("d", k): bypass new blocks at position >= k; ("p", m): requests with >= m old blocks; ("n", k): the k-th+ NEW block of a request; ("dp", k, m): position >= k and old >= m
+    import re as _re
+    m_ = _re.match(r"static_(dp)(\d+)_(\d+)$|static_([dpn])(\d+)$|static_(2nd)(\d*)$", policy.split("+")[0])
+    if m_: static_rule = ("dp", int(m_.group(2)), int(m_.group(3))) if m_.group(1) else (("2nd", int(m_.group(7) or 1)) if m_.group(6) else (m_.group(4), int(m_.group(5))))
+    FREEZE_T = (T0 + A.freeze_at * SPAN) if A.freeze_at > 0 else INF
+    last_state = {}                                                                      # hash -> "bypassed" | "evicted" | None (resident)
+    pend_fb = []; pend_open = {}; pend_cls = {}; req_old = 0                             # bypass feedback: heap of (deadline, h, cls, root); open deadlines per hash
+    adm_rate = [0.0, None]                                                               # online residence estimate: decayed admissions per second
+    st.update(bypass_total=0, bypass_reused=0, bypass_reused_60=0, bypass_reused_300=0, admit_never=0, miss_bypassed=0, miss_evicted=0, miss_new=0, explored=0, fb_delay=[], hits_f=[0] * 5, acc_f=[0] * 5)
+    admlog = bytearray() if A.dump_admit else None
     TAU = A.tau; cls_stat = collections.defaultdict(lambda: [0.0, 0.0, None])            # class -> [hits (decayed), admitted (decayed), last t]: P(a block of this class gets a hit before eviction)
     root_stat = collections.defaultdict(lambda: [0.0, 0.0, None]); blk_pop = {}; blk_pop_t = {}; blk_cls = {}; blk_hit = {}; blk_z = {}; blk_root = {}
     olr_w = [0.0] * 7; olr_m = [0.0] * 6; olr_v = [1.0] * 6; olr_n = [0]
@@ -167,11 +187,21 @@ def run(policy, cap):
     def olr_upd(z, y):
         p_ = olr_p(z); g = p_ - y; olr_w[0] -= 0.05 * g
         for i_, zi in enumerate(z): olr_w[i_ + 1] -= 0.05 * (g * zi + 1e-4 * olr_w[i_ + 1])
-    def feedback(h, t, hit):
-        """the cache's own label when a block is evicted (0) or first hit after admission (1): used by lhd / olr / cond."""
-        if h in blk_cls: st = cls_stat[blk_cls[h]]; dec(st, t); st[0] += hit; st[1] += 1
-        if h in blk_root: st = root_stat[blk_root[h]]; dec(st, t); st[0] += hit; st[1] += 1
+    def feedback(h, t, hit, cls=None, root=None):
+        """the cache's own label when a block is evicted (0) or first hit after admission (1): used by lhd / olr / cond.
+        With --bypass-feedback also called for bypassed blocks (cls/root given): 1 if re-requested within the residence estimate."""
+        if t > FREEZE_T: return
+        cls = cls if cls is not None else blk_cls.get(h); root = root if root is not None else blk_root.get(h)
+        if cls is not None: st_ = cls_stat[cls]; dec(st_, t); st_[0] += hit; st_[1] += 1
+        if root is not None: st_ = root_stat[root]; dec(st_, t); st_[0] += hit; st_[1] += 1
         if h in blk_z: olr_upd(blk_z[h], hit)
+        if h in stored_at and len(st["fb_delay"]) < 100000: st["fb_delay"].append(t - stored_at[h])
+    def residence_est(t):
+        """online estimate of the LRU residence: capacity / admission rate (decayed over 4 tau)."""
+        return cap / max(1e-6, adm_rate[0] / (4 * TAU)) if adm_rate[1] is not None else INF
+    def note_admission(t):
+        if adm_rate[1] is not None: adm_rate[0] *= math.exp(-(t - adm_rate[1]) / (4 * TAU))
+        adm_rate[0] += 1.0; adm_rate[1] = t
     def prio(h, t):
         """learned retention priority (higher = keep): pop = decayed popularity; lhd = class hit rate; olr = model score; cond = root rate."""
         if L_kind == "pop": return bpop(h, t)
@@ -191,11 +221,13 @@ def run(policy, cap):
     def remove(h, now=None):
         t_ = where.pop(h); n[t_] -= 1; lru.pop(h, None); tier[t_].pop(h, None); dead.pop(h, None); prob.pop(h, None); prot.pop(h, None); nuv.pop(h, None); protected.pop(h, None)
         if learned and now is not None and not blk_hit.get(h, False): feedback(h, now, 0)
-        blk_hit.pop(h, None)
+        blk_hit.pop(h, None); last_state[h] = "evicted"
         st["evict"] += 1; st["evict_live"] += (nu[last_idx[h]] < INF)
         if now is not None and h in stored_at and len(st["res"]) < 200000: st["res"].append(now - stored_at.pop(h))
     def place(h, t_, i):
-        where[h] = t_; n[t_] += 1; lru[h] = True; tier[t_][h] = True; st["written"] += 1; stored_at[h] = acc[i][0]; pos.setdefault(h, len(req_hs) - 1); req_of.setdefault(h, cur)
+        where[h] = t_; n[t_] += 1; lru[h] = True; tier[t_][h] = True; st["written"] += 1; stored_at[h] = acc[i][0]; pos.setdefault(h, len(req_hs) - 1); req_of.setdefault(h, cur); last_state[h] = None
+        if nu[i] == INF: st["admit_never"] += 1
+        note_admission(acc[i][0])
         if use_slru: prob[h] = True
         if oracle: nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
     def victim(now):
@@ -230,7 +262,7 @@ def run(policy, cap):
     for i, (t, h, ri) in enumerate(acc):
         tk = task_of[ri]; task_last[tk] = t
         if ri != cur:
-            end_request(); cur = ri; req_hs = []; usable = True
+            end_request(); cur = ri; req_hs = []; usable = True; req_old = sum(1 for x in R[ri]["hashes"] if x in seen)   # existing-prefix length: blocks that existed before this request
             if ri >= half and task_of[ri] >= 0:
                 Ltok = R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK; st["req"] += 1; st["req_tok"] += Ltok
                 st["ttft_cold"] += A.r0 * Ltok + A.r1 * Ltok * Ltok / 2
@@ -247,17 +279,25 @@ def run(policy, cap):
                     if b in where: protected[b] = until
         refs[h].add(tk)
         reuse = h in seen; seen.add(h); last_idx[h] = i; test = ri >= half and task_of[ri] >= 0            # scored: agent accesses in the second half; churn / background only adds pressure
+        if learned and A.bypass_feedback:
+            while pend_fb and pend_fb[0][0] <= t:                                        # deadline passed: the bypassed block was not requested again within the residence estimate
+                dl, hb, cb, rb = heapq.heappop(pend_fb)
+                if pend_open.get(hb) == dl: pend_open.pop(hb, None); feedback(hb, dl, 0, cb, rb)
+            if h in pend_open:                                                           # requested again before the deadline: a useful block was bypassed
+                dl = pend_open.pop(h); cb_rb = pend_cls.pop(h, None)
+                if cb_rb: feedback(h, t, 1, cb_rb[0], cb_rb[1])
         if test:
+            f_ = min(4, int(5 * (ri - half) / max(1, len(R) - half))); st["acc_f"][f_] += 1
             st["acc"] += 1; st["reuse"] += reuse
             if last_t is not None and where:
                 dt = t - last_t; st["occ_all"] += dt * len(where); st["occ_dead"] += dt * sum(1 for b in where if nu[last_idx[b]] == INF)
         last_t = t
         if learned: blk_pop[h] = bpop(h, t) + 1.0; blk_pop_t[h] = t; blk_pop[R[ri]["hashes"][0]] = bpop(R[ri]["hashes"][0], t) + 1.0; blk_pop_t[R[ri]["hashes"][0]] = t
-        if test and hitlog is not None: hitlog.append(1 if h in where else 0)
+        if test and hitlog is not None: hitlog.append(1 if h in where else (2 if last_state.get(h) == "bypassed" else 3 if last_state.get(h) == "evicted" else 0))
         if h in where:
             if learned and not blk_hit.get(h, False): blk_hit[h] = True; feedback(h, t, 1)
             if test:
-                st["hit"] += 1
+                st["hit"] += 1; st["hits_f"][f_] += 1
                 if protected.get(h, -INF) > t: st["cov_prot"] += 1
                 if usable: st["usable"] += 1; st["usable_tok"] += TOK; st["ttft"] += A.l * TOK          # prefix-aware: counts only while every earlier chunk of the request hit
             if h in dead and test: st["dead_fp"] += 1
@@ -270,36 +310,63 @@ def run(policy, cap):
             if oracle: nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
             continue
         if test:
-            st["miss"] += 1
+            st["miss"] += 1; ls_ = last_state.get(h)
+            if ls_ == "bypassed": st["miss_bypassed"] += 1
+            elif ls_ == "evicted": st["miss_evicted"] += 1
+            else: st["miss_new"] += 1
             if usable: usable = False; k_ = len(req_hs) - 1; rem = (R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK) - k_ * TOK; st["ttft"] += A.r0 * rem + A.r1 * (rem * rem / 2 + k_ * TOK * rem)
+        def _adm(x):
+            if admlog is not None and test and not reuse: admlog.append(x)
         if oracle:
-            if nu[i] == INF: st["bypass"] += 1; continue
+            if nu[i] == INF: st["bypass"] += 1; st["bypass_total"] += 1; last_state[h] = "bypassed"; _adm(0); continue
             if n[0] + n[1] >= cap:
                 while heap:
                     negn, b = heap[0]
                     if b in where and nuv[b] == -negn: break
                     heapq.heappop(heap)
-                if -heap[0][0] <= nu[i]: st["bypass"] += 1; continue
+                if -heap[0][0] <= nu[i]: st["bypass"] += 1; st["bypass_total"] += 1; last_state[h] = "bypassed"; _adm(0); continue
                 heapq.heappop(heap); remove(b, t); tgt = 0 if n[0] < nslot[0] else 1
             else: tgt = 0 if n[0] < nslot[0] else 1
-            place(h, tgt, i); continue
+            _adm(1); place(h, tgt, i); continue
         if use_split:
             tgt = 0 if (int(h[:12], 16) % 1000) < A.share * 1000 else 1                           # deterministic tier assignment
             if n[tgt] >= nslot[tgt]: remove(next(iter(tier[tgt])), t)
             place(h, tgt, i); continue
         if defer and ri in final_call: st["bypass"] += 1; continue                            # store deferred past the request end, dropped on the end decision
+        j_ = len(req_hs) - 1
+        def _bypass():
+            st["bypass"] += 1; st["bypass_total"] += 1; last_state[h] = "bypassed"; _adm(0)
+            if nu[i] < INF:
+                st["bypass_reused"] += 1; dt_ = acc[nu[i]][0] - t; st["bypass_reused_60"] += (dt_ <= 60); st["bypass_reused_300"] += (dt_ <= 300)
+        if static_rule is not None and j_ > 0:
+            kind_ = static_rule[0]; by = False
+            if kind_ == "d": by = j_ >= static_rule[1]
+            elif kind_ == "p": by = req_old >= static_rule[1]
+            elif kind_ == "n": by = (j_ - req_old) >= static_rule[1]
+            elif kind_ == "dp": by = j_ >= static_rule[1] and req_old >= static_rule[2]
+            elif kind_ == "2nd": by = (not reuse) and j_ >= static_rule[1]                 # second-touch admission: a never-seen block is admitted only in the first k positions
+            if by: _bypass(); continue
         if learned:
-            root_ = R[ri]["hashes"][0]; j_ = len(req_hs) - 1; dep_ = sum(1 for x in R[ri]["hashes"][:j_] if x in seen)
-            blk_cls[h] = cls_of(h, j_, dep_, root_); blk_root[h] = root_; blk_hit[h] = False
+            root_ = R[ri]["hashes"][0]; dep_ = req_old                                       # continuation depth = existing-prefix length of the request (fixed 2026-10-20; the 2026-10-18 runs used the position here)
+            cls_ = cls_of(h, j_, dep_, root_); blk_cls[h] = cls_; blk_root[h] = root_; blk_hit[h] = False
             if L_kind == "olr": blk_z[h] = olr_z(olr_feats(h, t, j_, dep_, root_, R[ri].get("input_length") or len(R[ri]["hashes"]) * TOK))
             if A.admit_th > 0 and L_kind in ("lhd", "olr", "cond"):
-                st_ = cls_stat.get(blk_cls[h]) if L_kind == "lhd" else root_stat.get(root_)
-                p_ = (olr_p(blk_z[h]) if olr_n[0] > 2000 else 1.0) if L_kind == "olr" else (rate(st_, t, 0.3) if st_ and st_[1] >= 50 else 1.0)
-                if p_ < A.admit_th and j_ > 0: st["bypass"] += 1; blk_cls.pop(h, None); blk_z.pop(h, None); blk_root.pop(h, None); continue   # never bypass a request's first block
+                st_ = cls_stat.get(cls_) if L_kind == "lhd" else root_stat.get(root_)
+                p_ = (olr_p(blk_z[h]) if olr_n[0] > 2000 else 1.0) if L_kind == "olr" else (rate(st_, t, 0.3) if st_ and st_[1] >= A.min_samples else 1.0)
+                if p_ < A.admit_th and j_ > 0:
+                    if A.explore > 0 and rng_c.random() < A.explore: st["explored"] += 1        # sampled admission keeps the class observable
+                    else:
+                        blk_cls.pop(h, None); blk_z.pop(h, None); blk_root.pop(h, None); _bypass()
+                        if A.bypass_feedback:
+                            dl = t + min(residence_est(t), 4 * TAU); heapq.heappush(pend_fb, (dl, h, cls_, root_)); pend_open[h] = dl; pend_cls[h] = (cls_, root_)
+                        continue
+        _adm(1)
         if n[0] + n[1] >= cap: remove(victim(t), t)
         place(h, 0 if n[0] < nslot[0] else 1, i)
     end_request()
     if hitlog is not None: open(f"{A.dump_hits}-{policy}-{cap}.bin", "wb").write(bytes(hitlog))
+    if admlog is not None: open(f"{A.dump_admit}-{policy}-{cap}.adm", "wb").write(bytes(admlog))
+    fbd = sorted(st["fb_delay"])
     res = sorted(st["res"]); t_res = res[len(res) // 2] if res else INF
     return dict(policy=policy, order=A.order, cap=cap, cap_GB=cap * A.chunk_mb / 1000, churn=A.churn, acc=st["acc"], reuse=st["reuse"], hits=st["hit"], reuse_hit_share=st["hit"] / max(1, st["reuse"]), overall_hit=st["hit"] / max(1, st["acc"]),
                 usable_hits=st["usable"], usable_hit_share=st["usable"] / max(1, st["reuse"]), usable_tokens=st["usable_tok"], prompt_tokens=st["req_tok"], usable_token_share=st["usable_tok"] / max(1, st["req_tok"]),
@@ -307,6 +374,9 @@ def run(policy, cap):
                 ttft_saved_per_written_GB=(st["ttft_cold"] - st["ttft"]) / max(1e-9, st["written"] * A.chunk_mb / 1000),
                 recomputed_tokens=st["miss"] * TOK, written_chunks=st["written"], bypassed=st["bypass"], dead_occupancy_share=st["occ_dead"] / max(1e-9, st["occ_all"]), live_occupancy_share=1 - st["occ_dead"] / max(1e-9, st["occ_all"]),
                 evictions=st["evict"], evictions_before_reuse=st["evict_live"], evict_before_reuse_share=st["evict_live"] / max(1, st["evict"]), hits_under_protection=st["cov_prot"], dead_marked_but_reused=st["dead_fp"],
+                bypass_total=st["bypass_total"], bypass_reused_later=st["bypass_reused"], bypass_reused_60s=st["bypass_reused_60"], bypass_reused_300s=st["bypass_reused_300"], admitted_never_reused=st["admit_never"],
+                miss_after_bypass=st["miss_bypassed"], miss_after_eviction=st["miss_evicted"], miss_new=st["miss_new"], explored=st["explored"], feedback_delay_p50_s=(fbd[len(fbd) // 2] if fbd else None), feedback_delay_p90_s=(fbd[int(0.9 * (len(fbd) - 1))] if fbd else None),
+                residence_est_end_s=residence_est(acc[-1][0]) if learned else None, hits_by_fifth="/".join(str(x) for x in st["hits_f"]), acc_by_fifth="/".join(str(x) for x in st["acc_f"]), freeze_at=A.freeze_at, explore=A.explore, bypass_feedback=int(A.bypass_feedback), admit_th=A.admit_th,
                 residence_p50_s=t_res, W_live_mean=W_LIVE["mean"], W_live_p90=W_LIVE["p90"], P_agent_chunks_s=P_AGENT, P_bg_chunks_s=P_BG, P_total_chunks_s=P_AGENT + P_BG + A.churn, H_p50_s=H["p50"], H_p90_s=H["p90"])
 
 POLS = A.policies.split(",")

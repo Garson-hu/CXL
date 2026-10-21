@@ -9,6 +9,12 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-20 (late) addendum — RQ1-B ADMISSION STUDY CLOSED.** The learned admission filter's benefit is second-touch
+admission: refusing first-touch blocks cuts writes 69–77% and lengthens the LRU residence from 42 s to one reuse horizon.
+The parameter-free second-touch rule beats the (corrected) learned class policy at 210–419 GiB (26% / 29% vs 22% / 25% of
+the oracle's gain at 210 GiB); the learned rates win at 52–105 GiB and never harm where capacity covers the horizon.
+Remaining gap = the reused 20% of fresh requests' blocks, unlearnable. Gate 2 PARTIAL. No RQ2/RQ3 work started.
+
 **2026-10-20 addendum — RQ1-B historical learning CLOSED.** New blocks' reuse is not learnable from history; observed
 blocks' reuse is (AP 0.75–0.99) but LRU already keeps them. A self-labelling admission filter (class hit-rate feedback,
 bypass) is the first online method beating SLRU on both real traces (14–16% of the oracle gain at 200 GiB, −66…−78%
@@ -224,6 +230,24 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-20 (session 34, RQ1-B admission study — the learned admission filter examined)
+
+- Brief: explain the learned admission filter per access, compare it with static rules, audit its feedback (observability,
+  censoring, delayed labels, adaptation), test generalization (traces, capacities, time, constructed mixes), decompose
+  the oracle gap, measure decision quality, assess relevance; no RQ2/RQ3 work.
+- Found and fixed a depth bug in the 2026-10-18 learned class (depth = position); every configuration rerun.
+- `scripts/kv_agent_replay.py`: static admission rules (`static_d/p/n/dp`, `static_2nd`), corrected class, `--explore`,
+  `--bypass-feedback`, `--freeze-at`, `--min-samples`, reason-coded hit dumps and admission dumps, decomposition columns
+  (bypassed / reused later, admitted never reused, misses by reason, feedback delay, residence estimate, hits per fifth).
+  New: `kv_admission_tables.py`, `kv_admission_figs.py`, `kv_admit_gap.py` (oracle-gap cross-tab with next use and stack
+  distance), `kv_mix_traces.py` (CONSTRUCTED interleaved / phase-change traces from the two real Mooncake traces).
+- 36 replays (`run_all.sh`) + 15 second-touch replays + mixed and agent second-touch replays →
+  `experimental_results/2026-10-20-rq1b-admission-study/`.
+- Result: mechanism = second-touch admission (writes −69 … −77%, residence 42 → 123–156 s); second-touch rule 26% / 29%
+  of the oracle's gain at 210 GiB vs learned 22% / 25%, learned better at 52–105 GiB and safe where capacity covers the
+  horizon; feedback censoring / delay not binding; frozen statistics decay; gap = fresh requests' reused 20% (45% of the
+  oracle's extra hits). Report `docs/experiments/2026-10-20-rq1b-admission-study.md` CLOSED; INDEX, decision report updated.
 
 ### 2026-10-18 → 2026-10-20 (session 34, RQ1-B historical learning; cluster power loss on 2026-10-18)
 
