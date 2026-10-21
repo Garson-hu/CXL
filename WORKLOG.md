@@ -9,6 +9,14 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-21 addendum — RQ1-B PRACTICAL / ADAPTIVE ADMISSION CLOSED.** Second touch works with a bounded ghost (64k
+entries = unbounded; 16k entries or a 2 × 8 KB Bloom filter match or beat it at ≤ 210 GiB). The adaptive ingredient is
+the online residence estimate: "admit a re-seen block only if its last gap fits the residence" (no parameter) gives
+21–33% of the oracle's gain at 52–419 GiB on both real traces with 1.8–2.8 TB written, 6–20 points above TinyLFU
+(adapted), identical on selection and test halves. Class tables learn correctly (policy-independent labels verified)
+but add no hits for 2–3× the writes and their selected configuration did not transfer. Gap = first-touch cost (62–80%,
+unlearnable) + dead second-touch admissions. Gate 2 PARTIAL. No RQ2/RQ3 work.
+
 **2026-10-20 (late) addendum — RQ1-B ADMISSION STUDY CLOSED.** The learned admission filter's benefit is second-touch
 admission: refusing first-touch blocks cuts writes 69–77% and lengthens the LRU residence from 42 s to one reuse horizon.
 The parameter-free second-touch rule beats the (corrected) learned class policy at 210–419 GiB (26% / 29% vs 22% / 25% of
@@ -230,6 +238,23 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-21 (session 34, RQ1-B practical and adaptive admission)
+
+- Brief: bounded ghost history, adaptive admission from observable cache pressure, strong existing baselines (2Q, ARC,
+  TinyLFU, W-TinyLFU), feedback correctness, oracle gap, generalization, cache-semantics validation; no RQ2/RQ3.
+- New simulator `scripts/kv_admission_sim.py` (validated to the block against the 2026-10-20 replay): bounded /
+  TTL / Bloom ghost, 2Q, ARC, TinyLFU (adapted) and W-TinyLFU, the gap rule `2nd_int`, `adapt2`, class tables with
+  policy-independent re-lookup labels and a replanned threshold, GPU front cache, scoring ranges (first-half
+  selection), cold start, freezing, table / plan dumps. `kv_ghost_stats.py`, `kv_gap_classes.py`,
+  `kv_shadow_compare.py`, `kv_adm_tables.py`, `kv_adm_figs.py`.
+- ~400 replays (`run_all.sh`): main grid (12 policies × 5 capacities × 3 traces), ghost bounds, ablations, first-half
+  selection (48 configurations) and test-half runs of the selected ones, constructed mixes, real agent traces, GPU
+  front cache, shadow tables → `experimental_results/2026-10-21-rq1b-adaptive-admission/`, five figures.
+- Two simulator bugs found and fixed before the final runs (a 2Q ghost pop order; the ARC list names shadowing the
+  trace end time); the g-/m-/sh- groups were rerun after the fix; `--plan-log` and `--dump-tables` had shared a file
+  name (fixed with a `-tables.json` suffix).
+- Result: see the experiment file; Gate 2 PARTIAL; decision report, INDEX updated.
 
 ### 2026-10-20 (session 34, RQ1-B admission study — the learned admission filter examined)
 

@@ -1,0 +1,24 @@
+cap   3200 ( 209.7 GiB) 2nd          usable 0.140 served 0.140 hits    7417 usable_n    7417 written     652 bypass  272828 res None est None ghost 1000 forgot 90039 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.140 served 0.140 hits    7417 usable_n    7417 written     652 bypass  272828 res None est None ghost 1000 forgot 90039 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.318 served 0.318 hits   16799 usable_n   16799 written  115820 bypass  140880 res 87.0010000000002 est 194.6 ghost 1000 forgot 70018 fp 0 thr 0.257
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g1000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.275 served 0.275 hits   14531 usable_n   14531 written    9117 bypass  250540 res 1085.9989999999998 est 1028.6 ghost 4000 forgot 67751 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.275 served 0.275 hits   14531 usable_n   14531 written    9117 bypass  250540 res 1085.9989999999998 est 1028.6 ghost 4000 forgot 67751 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.322 served 0.322 hits   17036 usable_n   17036 written  112306 bypass  143599 res 95.99900000000002 est 141.1 ghost 4000 forgot 56458 fp 0 thr 0.217
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g4000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.391 served 0.391 hits   20685 usable_n   20685 written   43023 bypass  204233 res 218.9989999999998 est 310.5 ghost 16000 forgot 21444 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.391 served 0.391 hits   20643 usable_n   20643 written   37681 bypass  210209 res 245.9989999999998 est 235.8 ghost 16000 forgot 22082 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.354 served 0.354 hits   18711 usable_n   18711 written  117278 bypass  138120 res 81.00099999999998 est 183.2 ghost 16000 forgot 22769 fp 0 thr 0.224
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g16000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.346 served 0.346 hits   18270 usable_n   18270 written   65532 bypass  184751 res 144.00099999999998 est 143.1 ghost 64000 forgot 1962 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.384 served 0.384 hits   20281 usable_n   20281 written   39478 bypass  208743 res 234.0 est 410.4 ghost 64000 forgot 1958 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.354 served 0.354 hits   18730 usable_n   18730 written  114988 bypass  139974 res 84.0 est 162.2 ghost 64000 forgot 1955 fp 0 thr 0.179
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g64000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.162 served 0.162 hits    8586 usable_n    8586 written    1603 bypass  269821 res None est None ghost 1600 forgot 87032 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.162 served 0.162 hits    8586 usable_n    8586 written    1603 bypass  269821 res None est None ghost 1600 forgot 87032 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.319 served 0.319 hits   16841 usable_n   16841 written  110791 bypass  145572 res 102.0 est 200.7 ghost 1600 forgot 67712 fp 0 thr 0.276
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g0.5c-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.239 served 0.239 hits   12606 usable_n   12606 written    5656 bypass  257318 res 1662.0 est 1693.3 ghost 3200 forgot 74529 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.239 served 0.239 hits   12606 usable_n   12606 written    5656 bypass  257318 res 1662.0 est 1693.3 ghost 3200 forgot 74529 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.329 served 0.329 hits   17374 usable_n   17374 written  113745 bypass  142461 res 90.00099999999998 est 169.8 ghost 3200 forgot 59988 fp 0 thr 0.247
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-g1c-replay.csv

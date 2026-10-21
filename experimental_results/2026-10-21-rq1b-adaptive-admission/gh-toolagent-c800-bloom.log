@@ -1,0 +1,8 @@
+cap    800 (  52.4 GiB) 2nd          usable 0.619 served 0.622 hits   70053 usable_n   69793 written  111341 bypass  157768 res 24.0 est 27.3 ghost 0 forgot 0 fp 51777 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-bloom32768_4_8000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.628 served 0.629 hits   70862 usable_n   70760 written   59740 bypass  206834 res 42.001000000000204 est 61.3 ghost 0 forgot 0 fp 10480 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-bloom65536_4_8000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.625 served 0.626 hits   70523 usable_n   70488 written   87709 bypass  180177 res 30.0 est 44.2 ghost 0 forgot 0 fp 5681 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-bloom262144_4_32000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.624 served 0.624 hits   70323 usable_n   70304 written   87178 bypass  180789 res 30.0 est 47.6 ghost 0 forgot 0 fp 2507 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-bloom1048576_4_128000-replay.csv

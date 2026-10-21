@@ -1,0 +1,16 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.788 served 0.788 hits   88873 usable_n   88873 written  121536 bypass  110458 res 177.00000000000003 est 188.3 ghost 176900 forgot 0 fp 0 thr 0.149
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-feat-c-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.790 served 0.790 hits   89084 usable_n   89084 written  135736 bypass   96935 res 147.00099999999998 est 199.6 ghost 176900 forgot 0 fp 0 thr 0.154
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-feat-cint-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.788 served 0.788 hits   88858 usable_n   88858 written  160678 bypass   73053 res 126.0 est 194.3 ghost 176900 forgot 0 fp 0 thr 0.142
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-feat-cintpos-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.784 served 0.784 hits   88326 usable_n   88326 written  168553 bypass   65617 res 117.0 est 165.4 ghost 176900 forgot 0 fp 0 thr 0.152
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-feat-cintpreroot-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.787 served 0.787 hits   88662 usable_n   88658 written  171079 bypass   62695 res 120.0 est 182.5 ghost 176900 forgot 0 fp 0 thr 0.135
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-nochain-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.770 served 0.770 hits   86818 usable_n   86818 written  216762 bypass   19890 res 95.9989999999998 est 120.0 ghost 176900 forgot 0 fp 0 thr 0.081
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-hitbe-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.778 served 0.778 hits   87678 usable_n   87678 written   73296 bypass  160644 res 117.0 est 1008.5 ghost 176900 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.808 served 0.808 hits   91054 usable_n   91054 written  107580 bypass  121987 res 108.00099999999998 est 439.1 ghost 176900 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c6400-th0.3-replay.csv

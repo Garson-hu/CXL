@@ -1,0 +1,9 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.439 served 0.439 hits   23183 usable_n   23183 written   77196 bypass  162598 res 111.0 est 909.2 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c6400-A-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.476 served 0.476 hits   25146 usable_n   25146 written  118186 bypass  120020 res 165.0 est 183.6 ghost 176390 forgot 0 fp 0 thr 0.152
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c6400-B-replay.csv
+cap   6400 ( 419.4 GiB) adapt2       usable 0.462 served 0.462 hits   24392 usable_n   24392 written  130513 bypass  108133 res 164.99900000000002 est 170.6 ghost 176390 forgot 0 fp 0 thr 0.13
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c6400-C-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.509 served 0.509 hits   26910 usable_n   26910 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 64000 forgot 1860 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd          usable 0.509 served 0.509 hits   26877 usable_n   26877 written   51540 bypass  184468 res 351.0 est 345.9 ghost 64000 forgot 1679 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c6400-D-replay.csv

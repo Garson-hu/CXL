@@ -1,0 +1,8 @@
+cap   3200 ( 209.7 GiB) 2nd          usable 0.237 served 0.291 hits   15371 usable_n   12530 written   99077 bypass  157599 res 102.0 est 114.2 ghost 0 forgot 0 fp 55056 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-bloom32768_4_8000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.339 served 0.358 hits   18913 usable_n   17937 written   43407 bypass  207099 res 213.0 est 229.0 ghost 0 forgot 0 fp 11013 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-bloom65536_4_8000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.336 served 0.343 hits   18141 usable_n   17770 written   68395 bypass  182341 res 138.00099999999998 est 154.1 ghost 0 forgot 0 fp 7070 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-bloom262144_4_32000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.325 served 0.329 hits   17389 usable_n   17174 written   71285 bypass  179934 res 134.9989999999998 est 112.9 ghost 0 forgot 0 fp 2855 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c3200-bloom1048576_4_128000-replay.csv

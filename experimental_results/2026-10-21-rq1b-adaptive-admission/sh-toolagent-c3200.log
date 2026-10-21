@@ -1,0 +1,4 @@
+cap   3200 ( 209.7 GiB) lru          usable 0.648 served 0.648 hits   72997 usable_n   72997 written  262741 bypass       0 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd          usable 0.733 served 0.733 hits   82616 usable_n   82616 written   60037 bypass  183296 res 155.99900000000002 est 149.2 ghost 180100 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.940 served 0.940 hits  105929 usable_n  105929 written   44277 bypass  151917 res 162.0 est 576.3 ghost 180100 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sh-toolagent-c3200-replay.csv

@@ -1,0 +1,13 @@
+cap   1600 ( 104.8 GiB) lru          usable 0.624 served 0.624 hits   70304 usable_n   70304 written  268667 bypass       0 res 21.0 est 15.3 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) slru         usable 0.631 served 0.631 hits   71127 usable_n   71127 written  266208 bypass       0 res 15.0 est 9.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) 2q           usable 0.634 served 0.639 hits   71979 usable_n   71471 written  265417 bypass       0 res 9.000999999999976 est 4.2 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) arc          usable 0.639 served 0.639 hits   71987 usable_n   71987 written  265138 bypass       0 res 12.001000000000204 est 9.1 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) tinylfu      usable 0.663 served 0.663 hits   74685 usable_n   74682 written   43665 bypass  215494 res 120.0 est 168.8 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) wtinylfu     usable 0.649 served 0.649 hits   73190 usable_n   73183 written  262060 bypass       0 res 0.0 est 3.3 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) 2nd          usable 0.656 served 0.656 hits   73896 usable_n   73896 written   76540 bypass  183296 res 66.0 est 85.8 ghost 181700 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.683 served 0.683 hits   77008 usable_n   77008 written   34269 bypass  220228 res 138.0 est 139.4 ghost 181700 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) adapt2       usable 0.673 served 0.673 hits   75800 usable_n   75800 written   80193 bypass  178832 res 57.0 est 96.8 ghost 181700 forgot 0 fp 0 thr 0.217
+cap   1600 ( 104.8 GiB) adaptive     usable 0.677 served 0.677 hits   76320 usable_n   76320 written   75021 bypass  183273 res 72.0 est 103.2 ghost 181700 forgot 0 fp 0 thr 0.214
+cap   1600 ( 104.8 GiB) lhd          usable 0.666 served 0.669 hits   75357 usable_n   75108 written   43913 bypass  214063 res 117.001 est 122.1 ghost 0 forgot 0 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) oracle       usable 0.851 served 0.851 hits   95960 usable_n   95960 written   46342 bypass  169324 res 83.99900000000002 est 186.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/g-toolagent-c1600-replay.csv

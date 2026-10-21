@@ -1,0 +1,11 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.486 served 0.486 hits   80302 usable_n   80302 written  231837 bypass  298864 res 36.001000000000204 est 111.6 ghost 195405 forgot 10382 fp 0 thr 0.198
+cap   3200 ( 209.7 GiB) adapt2       usable 0.501 served 0.501 hits   82872 usable_n   82872 written  215599 bypass  313732 res 42.0 est 105.4 ghost 195405 forgot 10556 fp 0 thr 0.239
+cap   3200 ( 209.7 GiB) 2nd          usable 0.512 served 0.512 hits   84589 usable_n   84589 written  148039 bypass  377324 res 66.0 est 83.2 ghost 195405 forgot 10413 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-interleave-cold-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.464 served 0.464 hits   76742 usable_n   76742 written  405234 bypass  134583 res 24.0 est 14.6 ghost 362890 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adapt2       usable 0.475 served 0.475 hits   78488 usable_n   78488 written  339639 bypass  199568 res 33.0 est 34.8 ghost 362890 forgot 0 fp 0 thr 0.092
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-interleave-frozen-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.554 served 0.554 hits   91667 usable_n   91667 written   64975 bypass  447771 res 147.00099999999998 est 125.9 ghost 16000 forgot 81688 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.554 served 0.554 hits   91684 usable_n   91684 written   58332 bypass  454652 res 165.00099999999998 est 244.4 ghost 16000 forgot 82439 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.541 served 0.541 hits   89497 usable_n   89497 written  147103 bypass  374384 res 75.0 est 118.0 ghost 16000 forgot 84047 fp 0 thr 0.208
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-interleave-g16k-replay.csv

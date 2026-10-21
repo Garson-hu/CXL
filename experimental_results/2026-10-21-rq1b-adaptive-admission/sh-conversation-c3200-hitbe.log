@@ -1,0 +1,2 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.221 served 0.221 hits   11698 usable_n   11698 written  223926 bypass   42038 res 48.0 est 66.8 ghost 179590 forgot 0 fp 0 thr 0.018
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sh-conversation-c3200-hitbe-replay.csv

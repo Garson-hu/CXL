@@ -1,0 +1,9 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.371 served 0.371 hits   22877 usable_n   22877 written   47402 bypass   48252 res 61.545999999999935 est 65.3 ghost 40724 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-synthetic-c3200-A-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.355 served 0.355 hits   21880 usable_n   21880 written   77943 bypass   18958 res 40.23599999999999 est 60.2 ghost 40724 forgot 0 fp 0 thr 0.275
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-synthetic-c3200-B-replay.csv
+cap   3200 ( 209.7 GiB) adapt2       usable 0.363 served 0.363 hits   22396 usable_n   22396 written   71977 bypass   24303 res 42.14300000000003 est 60.2 ghost 40724 forgot 0 fp 0 thr 0.313
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-synthetic-c3200-C-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.358 served 0.358 hits   22094 usable_n   22094 written   27897 bypass   68696 res 92.51099999999997 est 70.4 ghost 40724 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd          usable 0.364 served 0.364 hits   22448 usable_n   22448 written   54407 bypass   41713 res 37.72199999999998 est 60.2 ghost 40724 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-synthetic-c3200-D-replay.csv

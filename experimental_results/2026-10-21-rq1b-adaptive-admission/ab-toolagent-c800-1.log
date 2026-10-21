@@ -1,0 +1,16 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.639 served 0.639 hits   72019 usable_n   72019 written   49724 bypass  214476 res 51.0 est 90.5 ghost 182500 forgot 0 fp 0 thr 0.229
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-feat-c-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   72813 usable_n   72813 written   44165 bypass  219590 res 57.0 est 127.9 ghost 182500 forgot 0 fp 0 thr 0.368
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-feat-cint-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   73078 usable_n   73078 written   42720 bypass  220591 res 54.0 est 156.1 ghost 182500 forgot 0 fp 0 thr 0.406
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-feat-cintpos-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   72863 usable_n   72863 written   56928 bypass  207613 res 36.0 est 126.1 ghost 182500 forgot 0 fp 0 thr 0.35
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-feat-cintpreroot-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.647 hits   72963 usable_n   72761 written   56196 bypass  208347 res 39.0 est 107.6 ghost 182500 forgot 0 fp 0 thr 0.305
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-nochain-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.629 served 0.629 hits   70948 usable_n   70948 written  185538 bypass   83479 res 12.0 est 119.7 ghost 182500 forgot 0 fp 0 thr 0.021
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-hitbe-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   73736 usable_n   73736 written   19067 bypass  242935 res 131.9989999999998 est 172.6 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.647 served 0.647 hits   72973 usable_n   72973 written   32545 bypass  230821 res 78.0 est 94.6 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-th0.3-replay.csv

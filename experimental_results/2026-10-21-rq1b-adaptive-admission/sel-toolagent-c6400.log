@@ -1,0 +1,9 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.769 served 0.769 hits   86714 usable_n   86714 written   74050 bypass  159548 res 120.0 est 1028.6 ghost 176900 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-toolagent-c6400-A-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.788 served 0.788 hits   88869 usable_n   88869 written  123245 bypass  108588 res 171.0 est 231.9 ghost 176900 forgot 0 fp 0 thr 0.165
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-toolagent-c6400-B-replay.csv
+cap   6400 ( 419.4 GiB) adapt2       usable 0.782 served 0.782 hits   88112 usable_n   88112 written  126037 bypass  106948 res 168.0 est 200.5 ghost 176900 forgot 0 fp 0 thr 0.152
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-toolagent-c6400-C-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.802 served 0.802 hits   90350 usable_n   90350 written   41165 bypass  188928 res 429.0 est 500.3 ghost 64000 forgot 290 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd          usable 0.807 served 0.807 hits   90983 usable_n   90983 written   45278 bypass  183583 res 387.0 est 432.0 ghost 64000 forgot 287 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-toolagent-c6400-D-replay.csv

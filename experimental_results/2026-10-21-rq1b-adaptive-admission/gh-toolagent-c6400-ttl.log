@@ -1,0 +1,12 @@
+cap   6400 ( 419.4 GiB) 2nd          usable 0.711 served 0.711 hits   80154 usable_n   80154 written   11032 bypass  240071 res 1950.001 est 1809.6 ghost 176900 forgot 56775 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.711 served 0.711 hits   80154 usable_n   80154 written   11032 bypass  240071 res 1950.001 est 1809.6 ghost 176900 forgot 56775 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.791 served 0.791 hits   89110 usable_n   89110 written  156044 bypass   76865 res 138.0 est 171.1 ghost 176900 forgot 46811 fp 0 thr 0.153
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-ttl60-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.798 served 0.798 hits   89899 usable_n   89899 written   35456 bypass  195423 res 501.0 est 503.5 ghost 176900 forgot 12128 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.798 served 0.798 hits   89899 usable_n   89899 written   35456 bypass  195423 res 501.0 est 503.5 ghost 176900 forgot 12128 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.790 served 0.790 hits   89022 usable_n   89022 written  167791 bypass   65909 res 114.0 est 176.3 ghost 176900 forgot 16659 fp 0 thr 0.182
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-ttl300-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.807 served 0.807 hits   90953 usable_n   90953 written   45236 bypass  183655 res 387.0 est 432.9 ghost 176900 forgot 359 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.802 served 0.802 hits   90350 usable_n   90350 written   41165 bypass  188928 res 429.0 est 500.3 ghost 176900 forgot 359 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.787 served 0.787 hits   88738 usable_n   88738 written  172775 bypass   61000 res 120.0 est 142.5 ghost 176900 forgot 359 fp 0 thr 0.134
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-ttl1200-replay.csv

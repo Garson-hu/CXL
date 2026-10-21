@@ -1,0 +1,36 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.208 served 0.208 hits    5726 usable_n    5726 written   31742 bypass  236107 res 78.00099999999998 est 225.3 ghost 181990 forgot 0 fp 0 thr 0.493
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau150-pr2-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.209 served 0.209 hits    5739 usable_n    5739 written   32312 bypass  235878 res 77.9989999999998 est 223.3 ghost 181990 forgot 0 fp 0 thr 0.48
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau150-pr10-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.213 served 0.213 hits    5847 usable_n    5847 written   33673 bypass  234235 res 69.0 est 225.0 ghost 181990 forgot 0 fp 0 thr 0.513
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau150-pr50-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.191 served 0.191 hits    5265 usable_n    5265 written   41318 bypass  227673 res 62.998999999999796 est 168.4 ghost 181990 forgot 0 fp 0 thr 0.432
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau300-pr2-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.192 served 0.192 hits    5276 usable_n    5276 written   41231 bypass  227462 res 62.999000000000024 est 156.8 ghost 181990 forgot 0 fp 0 thr 0.418
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau300-pr10-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.203 served 0.203 hits    5575 usable_n    5575 written   45199 bypass  224042 res 54.0 est 169.9 ghost 181990 forgot 0 fp 0 thr 0.428
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau300-pr50-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.177 served 0.177 hits    4874 usable_n    4874 written   63985 bypass  206675 res 39.0 est 99.1 ghost 181990 forgot 0 fp 0 thr 0.297
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau600-pr2-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.170 served 0.170 hits    4677 usable_n    4677 written   65271 bypass  205426 res 36.0 est 99.0 ghost 181990 forgot 0 fp 0 thr 0.297
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau600-pr10-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.177 served 0.177 hits    4869 usable_n    4869 written   65427 bypass  205572 res 36.001 est 97.0 ghost 181990 forgot 0 fp 0 thr 0.29
+cap    800 (  52.4 GiB) lru          usable 0.114 served 0.114 hits    3144 usable_n    3144 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.462 served 0.462 hits   12694 usable_n   12694 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-conversation-c800-tau600-pr50-replay.csv

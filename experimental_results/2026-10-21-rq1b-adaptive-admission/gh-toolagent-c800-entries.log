@@ -1,0 +1,24 @@
+cap    800 (  52.4 GiB) 2nd          usable 0.629 served 0.629 hits   70866 usable_n   70866 written     804 bypass  267004 res 3084.0 est 3084.1 ghost 1000 forgot 83708 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.629 served 0.629 hits   70866 usable_n   70866 written     804 bypass  267004 res 3084.0 est 3084.1 ghost 1000 forgot 83708 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.647 served 0.647 hits   72945 usable_n   72945 written   34681 bypass  229215 res 63.0 est 135.7 ghost 1000 forgot 79134 fp 0 thr 0.284
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g1000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.653 served 0.653 hits   73565 usable_n   73565 written   11440 bypass  249295 res 198.0 est 280.6 ghost 4000 forgot 66003 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.653 served 0.653 hits   73590 usable_n   73590 written   10889 bypass  249877 res 210.0 est 292.9 ghost 4000 forgot 65963 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.650 served 0.650 hits   73217 usable_n   73217 written   37946 bypass  225486 res 42.0 est 166.2 ghost 4000 forgot 66359 fp 0 thr 0.328
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g4000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.630 served 0.630 hits   70993 usable_n   70993 written   62885 bypass  203614 res 42.0 est 57.1 ghost 16000 forgot 20320 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.648 served 0.648 hits   73012 usable_n   73012 written   26595 bypass  235755 res 90.0 est 98.3 ghost 16000 forgot 20573 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.650 served 0.650 hits   73272 usable_n   73272 written   42772 bypass  220576 res 51.0 est 132.0 ghost 16000 forgot 20467 fp 0 thr 0.326
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g16000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.625 served 0.625 hits   70446 usable_n   70446 written   84183 bypass  183655 res 30.000999999999976 est 49.2 ghost 64000 forgot 359 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.648 served 0.648 hits   73012 usable_n   73012 written   26595 bypass  235755 res 90.0 est 98.3 ghost 64000 forgot 321 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.647 served 0.647 hits   72955 usable_n   72955 written   45352 bypass  218422 res 48.0 est 181.5 ghost 64000 forgot 321 fp 0 thr 0.465
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g64000-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.616 served 0.616 hits   69390 usable_n   69390 written     164 bypass  269811 res None est None ghost 400 forgot 86515 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.616 served 0.616 hits   69390 usable_n   69390 written     164 bypass  269811 res None est None ghost 400 forgot 86515 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   73048 usable_n   73048 written   38373 bypass  226147 res 51.0 est 139.9 ghost 400 forgot 80785 fp 0 thr 0.277
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g0.5c-replay.csv
+cap    800 (  52.4 GiB) 2nd          usable 0.620 served 0.620 hits   69859 usable_n   69859 written     374 bypass  269007 res None est None ghost 800 forgot 85711 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.620 served 0.620 hits   69859 usable_n   69859 written     374 bypass  269007 res None est None ghost 800 forgot 85711 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   73029 usable_n   73029 written   38193 bypass  226048 res 45.000999999999976 est 181.4 ghost 800 forgot 79937 fp 0 thr 0.366
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c800-g1c-replay.csv

@@ -1,0 +1,28 @@
+cap   3200 ( 209.7 GiB) adapt2       usable 0.374 served 0.374 hits   10298 usable_n   10298 written   59112 bypass  191834 res 177.0 est 240.5 ghost 179590 forgot 0 fp 0 thr 0.267
+cap   3200 ( 209.7 GiB) lru          usable 0.190 served 0.190 hits    5231 usable_n    5231 written  268621 bypass       0 res 42.0 est 47.9 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.791 served 0.791 hits   21749 usable_n   21749 written   47476 bypass  154271 res 150.0 est 579.9 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-tau40-adapt2-replay.csv
+cap   3200 ( 209.7 GiB) adapt2       usable 0.369 served 0.369 hits   10143 usable_n   10143 written   63136 bypass  187828 res 159.0 est 287.0 ghost 179590 forgot 0 fp 0 thr 0.36
+cap   3200 ( 209.7 GiB) lru          usable 0.190 served 0.190 hits    5231 usable_n    5231 written  268621 bypass       0 res 42.0 est 47.9 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.791 served 0.791 hits   21749 usable_n   21749 written   47476 bypass  154271 res 150.0 est 579.9 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-tau75-adapt2-replay.csv
+cap   3200 ( 209.7 GiB) adapt2       usable 0.373 served 0.373 hits   10266 usable_n   10266 written   56912 bypass  193408 res 177.0 est 225.7 ghost 179590 forgot 0 fp 0 thr 0.322
+cap   3200 ( 209.7 GiB) lru          usable 0.190 served 0.190 hits    5231 usable_n    5231 written  268621 bypass       0 res 42.0 est 47.9 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.791 served 0.791 hits   21749 usable_n   21749 written   47476 bypass  154271 res 150.0 est 579.9 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-tau150-adapt2-replay.csv
+cap   3200 ( 209.7 GiB) adapt2       usable 0.369 served 0.369 hits   10141 usable_n   10141 written   70922 bypass  181236 res 101.99900000000002 est 479.1 ghost 179590 forgot 0 fp 0 thr 0.332
+cap   3200 ( 209.7 GiB) lru          usable 0.190 served 0.190 hits    5231 usable_n    5231 written  268621 bypass       0 res 42.0 est 47.9 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.791 served 0.791 hits   21749 usable_n   21749 written   47476 bypass  154271 res 150.0 est 579.9 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-tau300-adapt2-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.279 served 0.279 hits    7686 usable_n    7686 written    9117 bypass  250540 res 1085.9989999999998 est 1028.6 ghost 4000 forgot 67751 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.279 served 0.279 hits    7686 usable_n    7686 written    9117 bypass  250540 res 1085.9989999999998 est 1028.6 ghost 4000 forgot 67751 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-g4000-2nd-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.393 served 0.393 hits   10795 usable_n   10795 written   43023 bypass  204233 res 218.9989999999998 est 310.5 ghost 16000 forgot 21444 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.371 served 0.371 hits   10206 usable_n   10206 written   37681 bypass  210209 res 245.9989999999998 est 235.8 ghost 16000 forgot 22082 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-g16000-2nd-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.383 served 0.383 hits   10546 usable_n   10546 written   65532 bypass  184751 res 144.00099999999998 est 143.1 ghost 64000 forgot 1962 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.372 served 0.372 hits   10237 usable_n   10237 written   39478 bypass  208743 res 234.0 est 410.4 ghost 64000 forgot 1958 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-g64000-2nd-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.383 served 0.383 hits   10544 usable_n   10544 written   67858 bypass  182789 res 140.99900000000002 est 127.2 ghost 179590 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.372 served 0.372 hits   10237 usable_n   10237 written   39478 bypass  208743 res 234.0 est 410.4 ghost 179590 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c3200-ginf-2nd-replay.csv

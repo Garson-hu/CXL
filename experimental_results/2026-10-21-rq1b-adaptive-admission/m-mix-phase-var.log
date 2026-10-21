@@ -1,0 +1,11 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.691 served 0.691 hits  118266 usable_n  118266 written  239452 bypass  266409 res 75.0 est 164.6 ghost 232368 forgot 3789 fp 0 thr 0.218
+cap   3200 ( 209.7 GiB) adapt2       usable 0.709 served 0.709 hits  121354 usable_n  121354 written  138221 bypass  362356 res 93.0 est 265.7 ghost 232368 forgot 3862 fp 0 thr 0.417
+cap   3200 ( 209.7 GiB) 2nd          usable 0.735 served 0.735 hits  125720 usable_n  125720 written  123492 bypass  370532 res 149.9989999999998 est 149.2 ghost 232368 forgot 3759 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-phase-cold-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.647 served 0.647 hits  110751 usable_n  110751 written  460474 bypass   66006 res 44.998999999999796 est 57.3 ghost 362890 forgot 0 fp 0 thr 0.056
+cap   3200 ( 209.7 GiB) adapt2       usable 0.686 served 0.686 hits  117398 usable_n  117398 written  266684 bypass  243681 res 74.9989999999998 est 78.9 ghost 362890 forgot 0 fp 0 thr 0.124
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-phase-frozen-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.742 served 0.742 hits  126974 usable_n  126974 written   86678 bypass  402495 res 218.9989999999998 est 277.5 ghost 16000 forgot 36411 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.738 served 0.738 hits  126234 usable_n  126234 written   75769 bypass  414669 res 245.9989999999998 est 227.5 ghost 16000 forgot 37591 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adaptive     usable 0.733 served 0.733 hits  125450 usable_n  125450 written  177391 bypass  321984 res 117.0 est 169.9 ghost 16000 forgot 37930 fp 0 thr 0.19
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-phase-g16k-replay.csv

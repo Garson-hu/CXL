@@ -1,0 +1,16 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.644 served 0.644 hits   72550 usable_n   72550 written   47933 bypass  217032 res 51.001000000000204 est 300.0 ghost 182500 forgot 0 fp 0 thr 0.573
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-w300-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   72773 usable_n   72773 written   42321 bypass  221030 res 57.0 est 120.0 ghost 182500 forgot 0 fp 0 thr 0.353
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-w120-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   72850 usable_n   72850 written   40434 bypass  222852 res 60.0 est 105.3 ghost 182500 forgot 0 fp 0 thr 0.315
+cap    800 (  52.4 GiB) 2nd_int      usable 0.643 served 0.643 hits   72453 usable_n   72453 written   33817 bypass  229798 res 74.9989999999998 est 95.9 ghost 182500 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-resrate-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.616 served 0.616 hits   69476 usable_n   69476 written  144620 bypass  123236 res 12.0 est 5.9 ghost 182500 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adapt2       usable 0.617 served 0.617 hits   69551 usable_n   69551 written  139032 bypass  129370 res 15.001000000000204 est 16.5 ghost 182500 forgot 0 fp 0 thr 0.023
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-frozen-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.626 served 0.626 hits   70508 usable_n   70508 written   68997 bypass  197223 res 30.0 est 113.7 ghost 98073 forgot 4333 fp 0 thr 0.414
+cap    800 (  52.4 GiB) adapt2       usable 0.625 served 0.625 hits   70483 usable_n   70483 written   70866 bypass  194870 res 33.0 est 71.1 ghost 98073 forgot 4341 fp 0 thr 0.183
+cap    800 (  52.4 GiB) 2nd          usable 0.626 served 0.626 hits   70600 usable_n   70600 written   79603 bypass  188081 res 30.001000000000204 est 49.0 ghost 98073 forgot 4397 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-cold-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   72833 usable_n   72833 written   57409 bypass  207402 res 35.999000000000024 est 133.5 ghost 182500 forgot 0 fp 0 thr 0.412
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c800-replan60-replay.csv

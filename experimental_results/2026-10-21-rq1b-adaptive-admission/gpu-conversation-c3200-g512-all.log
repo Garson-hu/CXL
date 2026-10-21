@@ -1,0 +1,7 @@
+cap   3200 ( 209.7 GiB) lru          usable 0.178 served 0.178 hits    3385 usable_n    9413 written  268621 bypass       0 res 42.0 est 47.9 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd          usable 0.339 served 0.339 hits   11884 usable_n   17912 written   67858 bypass  182789 res 140.99900000000002 est 127.2 ghost 179590 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.384 served 0.384 hits   14257 usable_n   20285 written   39478 bypass  208743 res 234.0 est 410.4 ghost 179590 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adapt2       usable 0.347 served 0.347 hits   12293 usable_n   18321 written   90443 bypass  161841 res 108.0 est 142.8 ghost 179590 forgot 0 fp 0 thr 0.312
+cap   3200 ( 209.7 GiB) adaptive     usable 0.345 served 0.345 hits   12212 usable_n   18240 written  119292 bypass  136125 res 81.00099999999998 est 144.1 ghost 179590 forgot 0 fp 0 thr 0.175
+cap   3200 ( 209.7 GiB) oracle       usable 0.795 served 0.795 hits   35980 usable_n   42008 written   47535 bypass  154340 res 149.99900000000002 est 577.3 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gpu-conversation-c3200-g512-all-replay.csv

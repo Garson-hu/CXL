@@ -1,0 +1,72 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.650 served 0.650 hits   37112 usable_n   37112 written   43578 bypass  220966 res 57.001000000000204 est 110.9 ghost 182500 forgot 0 fp 0 thr 0.279
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fc-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.653 served 0.653 hits   37294 usable_n   37294 written   34321 bypass  229056 res 74.99900000000002 est 100.0 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fc-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.656 served 0.656 hits   37493 usable_n   37493 written   27527 bypass  235182 res 87.0010000000002 est 99.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fc-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   37358 usable_n   37358 written   27998 bypass  234121 res 90.0 est 182.6 ghost 182500 forgot 0 fp 0 thr 0.337
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcint-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   36924 usable_n   36924 written   30774 bypass  232172 res 75.0 est 80.6 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcint-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   37382 usable_n   37382 written   17080 bypass  244416 res 140.9989999999998 est 175.9 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcint-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.652 served 0.652 hits   37219 usable_n   37219 written   25944 bypass  236112 res 90.0010000000002 est 282.1 ghost 182500 forgot 0 fp 0 thr 0.427
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcintpospre-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.650 served 0.650 hits   37138 usable_n   37138 written   30642 bypass  232161 res 78.0010000000002 est 84.3 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcintpospre-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.652 served 0.652 hits   37245 usable_n   37245 written   18083 bypass  243191 res 135.0 est 231.3 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau40-fcintpospre-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.653 served 0.653 hits   37280 usable_n   37280 written   44130 bypass  220263 res 57.001000000000204 est 79.1 ghost 182500 forgot 0 fp 0 thr 0.204
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fc-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.652 served 0.652 hits   37236 usable_n   37236 written   34929 bypass  228315 res 75.0 est 99.4 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fc-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.657 served 0.657 hits   37529 usable_n   37529 written   27601 bypass  235065 res 87.0010000000002 est 99.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fc-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   37332 usable_n   37332 written   31632 bypass  231169 res 69.0010000000002 est 152.4 ghost 182500 forgot 0 fp 0 thr 0.401
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcint-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.645 served 0.645 hits   36831 usable_n   36831 written   31083 bypass  231837 res 81.0 est 86.4 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcint-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.647 served 0.647 hits   36946 usable_n   36946 written   18183 bypass  243906 res 134.99900000000002 est 177.4 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcint-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.652 served 0.652 hits   37273 usable_n   37273 written   27915 bypass  234079 res 81.00099999999998 est 281.8 ghost 182500 forgot 0 fp 0 thr 0.51
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcintpospre-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   37042 usable_n   37042 written   31279 bypass  231614 res 78.00099999999998 est 86.7 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcintpospre-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.651 served 0.651 hits   37163 usable_n   37163 written   18375 bypass  243555 res 135.0 est 185.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau75-fcintpospre-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.655 served 0.655 hits   37433 usable_n   37433 written   47647 bypass  216478 res 54.0 est 85.7 ghost 182500 forgot 0 fp 0 thr 0.229
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fc-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.649 served 0.649 hits   37084 usable_n   37084 written   35558 bypass  227873 res 75.0 est 99.5 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fc-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.657 served 0.657 hits   37530 usable_n   37530 written   27930 bypass  234806 res 87.0 est 99.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fc-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.656 served 0.656 hits   37471 usable_n   37471 written   36932 bypass  226089 res 57.0 est 161.0 ghost 182500 forgot 0 fp 0 thr 0.423
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcint-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   37000 usable_n   37000 written   30488 bypass  232193 res 87.0 est 98.7 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcint-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.651 served 0.651 hits   37193 usable_n   37193 written   17910 bypass  243824 res 132.0 est 179.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcint-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   37383 usable_n   37383 written   32457 bypass  230065 res 72.0 est 243.2 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcintpospre-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.650 served 0.650 hits   37158 usable_n   37158 written   32058 bypass  231115 res 81.0 est 87.7 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcintpospre-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.651 served 0.651 hits   37197 usable_n   37197 written   18604 bypass  243473 res 132.0010000000002 est 190.7 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau150-fcintpospre-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.654 served 0.654 hits   37387 usable_n   37387 written   49724 bypass  214476 res 51.0 est 90.5 ghost 182500 forgot 0 fp 0 thr 0.229
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fc-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.653 served 0.653 hits   37303 usable_n   37303 written   35982 bypass  227237 res 72.00099999999998 est 99.1 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fc-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.657 served 0.657 hits   37542 usable_n   37542 written   28083 bypass  234595 res 87.0 est 99.1 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fc-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   36992 usable_n   36992 written   44165 bypass  219590 res 57.0 est 127.9 ghost 182500 forgot 0 fp 0 thr 0.368
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcint-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.646 served 0.646 hits   36895 usable_n   36895 written   31999 bypass  231214 res 78.0 est 94.9 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcint-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.655 served 0.655 hits   37395 usable_n   37395 written   18535 bypass  243622 res 132.0 est 188.7 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcint-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.651 served 0.651 hits   37185 usable_n   37185 written   45401 bypass  218375 res 48.000999999999976 est 159.6 ghost 182500 forgot 0 fp 0 thr 0.414
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcintpospre-th-1-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.648 served 0.648 hits   37013 usable_n   37013 written   32545 bypass  230821 res 78.0 est 94.6 ghost 182500 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcintpospre-th0.3-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.652 served 0.652 hits   37230 usable_n   37230 written   19067 bypass  242935 res 131.9989999999998 est 172.6 ghost 182500 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-toolagent-c800-tau300-fcintpospre-th0.5-replay.csv

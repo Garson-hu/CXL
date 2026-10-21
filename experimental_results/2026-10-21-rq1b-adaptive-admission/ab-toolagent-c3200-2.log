@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.738 served 0.738 hits   83186 usable_n   83186 written  104671 bypass  141706 res 69.0 est 300.0 ghost 180100 forgot 0 fp 0 thr 0.287
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-w300-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.733 served 0.733 hits   82636 usable_n   82636 written  108744 bypass  139433 res 99.0 est 120.0 ghost 180100 forgot 0 fp 0 thr 0.16
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-w120-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.733 served 0.733 hits   82597 usable_n   82597 written  103347 bypass  144754 res 99.0 est 163.3 ghost 180100 forgot 0 fp 0 thr 0.187
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.743 served 0.743 hits   83738 usable_n   83738 written   44997 bypass  197643 res 210.00099999999998 est 271.5 ghost 180100 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-resrate-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.648 served 0.648 hits   73085 usable_n   73085 written  249949 bypass   12263 res 42.00200000000041 est 53.3 ghost 180100 forgot 0 fp 0 thr 0.074
+cap   3200 ( 209.7 GiB) adapt2       usable 0.655 served 0.655 hits   73826 usable_n   73826 written  210717 bypass   48571 res 48.001000000000204 est 57.0 ghost 180100 forgot 0 fp 0 thr 0.17
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-frozen-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.669 served 0.669 hits   75458 usable_n   75458 written  168674 bypass   87134 res 54.0 est 140.2 ghost 95673 forgot 3367 fp 0 thr 0.251
+cap   3200 ( 209.7 GiB) adapt2       usable 0.687 served 0.687 hits   77419 usable_n   77419 written  115559 bypass  135787 res 75.001 est 259.6 ghost 95673 forgot 3231 fp 0 thr 0.478
+cap   3200 ( 209.7 GiB) 2nd          usable 0.736 served 0.736 hits   82902 usable_n   82902 written   56037 bypass  187010 res 159.0 est 149.2 ghost 95673 forgot 3300 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-cold-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.723 served 0.723 hits   81542 usable_n   81542 written  113712 bypass  135524 res 90.0010000000002 est 152.4 ghost 180100 forgot 0 fp 0 thr 0.161
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-toolagent-c3200-replan60-replay.csv

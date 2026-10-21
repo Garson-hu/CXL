@@ -1,0 +1,16 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.173 served 0.173 hits    9167 usable_n    9167 written   45465 bypass  224277 res 60.0 est 300.0 ghost 181990 forgot 0 fp 0 thr 0.57
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-w300-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.180 served 0.180 hits    9515 usable_n    9515 written   41557 bypass  226942 res 56.998999999999796 est 120.0 ghost 181990 forgot 0 fp 0 thr 0.349
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-w120-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.181 served 0.181 hits    9572 usable_n    9572 written   39743 bypass  228929 res 60.0 est 106.1 ghost 181990 forgot 0 fp 0 thr 0.31
+cap    800 (  52.4 GiB) 2nd_int      usable 0.175 served 0.175 hits    9260 usable_n    9260 written   33636 bypass  235347 res 75.0 est 96.6 ghost 181990 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-resrate-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.118 served 0.118 hits    6216 usable_n    6216 written  143401 bypass  129543 res 12.0 est 6.0 ghost 181990 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adapt2       usable 0.119 served 0.119 hits    6283 usable_n    6283 written  145339 bypass  129056 res 17.998999999999796 est 11.0 ghost 181990 forgot 0 fp 0 thr 0.002
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-frozen-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.142 served 0.142 hits    7511 usable_n    7511 written   61111 bypass  209745 res 36.0 est 126.9 ghost 99331 forgot 6610 fp 0 thr 0.425
+cap    800 (  52.4 GiB) adapt2       usable 0.141 served 0.141 hits    7430 usable_n    7430 written   73791 bypass  197380 res 30.001000000000204 est 87.8 ghost 99331 forgot 6652 fp 0 thr 0.315
+cap    800 (  52.4 GiB) 2nd          usable 0.139 served 0.139 hits    7322 usable_n    7322 written   83404 bypass  189888 res 30.0 est 32.2 ghost 99331 forgot 6870 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-cold-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.184 served 0.184 hits    9730 usable_n    9730 written   59961 bypass  210127 res 30.000999999999976 est 164.0 ghost 181990 forgot 0 fp 0 thr 0.457
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-replan60-replay.csv

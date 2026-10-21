@@ -1,0 +1,36 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.786 served 0.786 hits   44895 usable_n   44895 written  154842 bypass   77166 res 141.0 est 160.9 ghost 176900 forgot 0 fp 0 thr 0.15
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau150-pr2-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.786 served 0.786 hits   44902 usable_n   44902 written  152323 bypass   79604 res 144.0 est 165.3 ghost 176900 forgot 0 fp 0 thr 0.151
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau150-pr10-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.780 served 0.780 hits   44555 usable_n   44555 written  153971 bypass   78901 res 143.99900000000002 est 165.0 ghost 176900 forgot 0 fp 0 thr 0.143
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau150-pr50-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.758 served 0.758 hits   43327 usable_n   43327 written  173108 bypass   60693 res 120.0 est 186.0 ghost 176900 forgot 0 fp 0 thr 0.182
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau300-pr2-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.758 served 0.758 hits   43305 usable_n   43305 written  173169 bypass   60758 res 117.00099999999998 est 164.9 ghost 176900 forgot 0 fp 0 thr 0.134
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau300-pr10-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.768 served 0.768 hits   43848 usable_n   43848 written  170031 bypass   63845 res 123.0 est 207.7 ghost 176900 forgot 0 fp 0 thr 0.137
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau300-pr50-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.749 served 0.749 hits   42808 usable_n   42808 written  196044 bypass   39384 res 102.0 est 124.7 ghost 176900 forgot 0 fp 0 thr 0.128
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau600-pr2-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.751 served 0.751 hits   42918 usable_n   42918 written  196109 bypass   39651 res 104.99900000000002 est 128.4 ghost 176900 forgot 0 fp 0 thr 0.128
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau600-pr10-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.750 served 0.750 hits   42868 usable_n   42868 written  193030 bypass   43390 res 105.0 est 122.1 ghost 176900 forgot 0 fp 0 thr 0.126
+cap   6400 ( 419.4 GiB) lru          usable 0.742 served 0.742 hits   42407 usable_n   42407 written  239359 bypass       0 res 87.00099999999998 est 92.7 ghost 0 forgot 0 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) oracle       usable 1.000 served 1.000 hits   57126 usable_n   57126 written   39481 bypass  143819 res 342.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune-toolagent-c6400-tau600-pr50-replay.csv

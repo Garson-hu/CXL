@@ -1,0 +1,2 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.665 served 0.665 hits   74988 usable_n   74988 written  226638 bypass   33830 res 48.0 est 72.5 ghost 180100 forgot 0 fp 0 thr 0.022
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sh-toolagent-c3200-hitbe-replay.csv

@@ -1,0 +1,16 @@
+cap    800 (  52.4 GiB) adaptive     usable 0.192 served 0.192 hits   10130 usable_n   10130 written   40534 bypass  227937 res 36.0 est 426.4 ghost 181990 forgot 0 fp 0 thr 0.781
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-feat-c-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.180 served 0.180 hits    9514 usable_n    9514 written   46546 bypass  222777 res 51.000999999999976 est 137.8 ghost 181990 forgot 0 fp 0 thr 0.367
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-feat-cint-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.185 served 0.185 hits    9788 usable_n    9788 written   41606 bypass  227029 res 62.998999999999796 est 170.4 ghost 181990 forgot 0 fp 0 thr 0.427
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-feat-cintpos-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.184 served 0.184 hits    9728 usable_n    9728 written   57400 bypass  212485 res 36.0 est 131.4 ghost 181990 forgot 0 fp 0 thr 0.364
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-feat-cintpreroot-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.178 served 0.182 hits    9626 usable_n    9424 written   55423 bypass  214411 res 39.0 est 110.5 ghost 181990 forgot 0 fp 0 thr 0.312
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-nochain-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.161 served 0.161 hits    8490 usable_n    8490 written   96849 bypass  176228 res 15.001000000000005 est 105.0 ghost 181990 forgot 0 fp 0 thr 0.062
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-hitbe-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.197 served 0.197 hits   10400 usable_n   10400 written   22586 bypass  245315 res 114.0 est 180.5 ghost 181990 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-th0.5-replay.csv
+cap    800 (  52.4 GiB) adaptive     usable 0.188 served 0.188 hits    9947 usable_n    9947 written   33192 bypass  235393 res 78.00099999999998 est 114.6 ghost 181990 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c800-th0.3-replay.csv

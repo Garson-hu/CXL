@@ -1,0 +1,13 @@
+cap    800 (  52.4 GiB) lru          usable 0.117 served 0.117 hits    6167 usable_n    6167 written  276036 bypass       0 res 9.000999999999976 est 5.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) slru         usable 0.120 served 0.120 hits    6337 usable_n    6337 written  275006 bypass       0 res 9.0 est 4.3 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2q           usable 0.135 served 0.135 hits    7136 usable_n    7136 written  273500 bypass       0 res 6.0 est 3.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) arc          usable 0.127 served 0.127 hits    6718 usable_n    6718 written  274583 bypass       0 res 6.001000000000204 est 4.1 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) tinylfu      usable 0.161 served 0.161 hits    8514 usable_n    8514 written   35421 bypass  234948 res 84.0010000000002 est 132.5 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) wtinylfu     usable 0.164 served 0.166 hits    8764 usable_n    8657 written  270001 bypass       0 res 0.0 est 19.8 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd          usable 0.132 served 0.132 hits    6952 usable_n    6952 written   90873 bypass  182789 res 29.998999999999796 est 32.1 ghost 181990 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) 2nd_int      usable 0.185 served 0.185 hits    9788 usable_n    9788 written   26579 bypass  241131 res 90.0010000000002 est 100.8 ghost 181990 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) adapt2       usable 0.192 served 0.192 hits   10130 usable_n   10130 written   40534 bypass  227937 res 36.0 est 426.4 ghost 181990 forgot 0 fp 0 thr 0.781
+cap    800 (  52.4 GiB) adaptive     usable 0.183 served 0.183 hits    9674 usable_n    9674 written   41231 bypass  227462 res 62.999000000000024 est 156.8 ghost 181990 forgot 0 fp 0 thr 0.418
+cap    800 (  52.4 GiB) lhd          usable 0.164 served 0.166 hits    8781 usable_n    8664 written   30425 bypass  239668 res 84.0010000000002 est 99.0 ghost 0 forgot 0 fp 0 thr 0.0
+cap    800 (  52.4 GiB) oracle       usable 0.446 served 0.446 hits   23592 usable_n   23592 written   43319 bypass  195557 res 47.998999999999796 est 97.0 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/g-conversation-c800-replay.csv

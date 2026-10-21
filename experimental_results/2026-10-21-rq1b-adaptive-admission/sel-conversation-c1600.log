@@ -1,0 +1,9 @@
+cap   1600 ( 104.8 GiB) adaptive     usable 0.271 served 0.271 hits   14309 usable_n   14309 written   31867 bypass  227975 res 146.99900000000002 est 301.3 ghost 181190 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c1600-A-replay.csv
+cap   1600 ( 104.8 GiB) adaptive     usable 0.246 served 0.246 hits   12994 usable_n   12994 written   57407 bypass  205104 res 87.0 est 172.0 ghost 181190 forgot 0 fp 0 thr 0.386
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c1600-B-replay.csv
+cap   1600 ( 104.8 GiB) adapt2       usable 0.269 served 0.269 hits   14218 usable_n   14218 written   51194 bypass  210149 res 75.0 est 289.8 ghost 181190 forgot 0 fp 0 thr 0.411
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c1600-C-replay.csv
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.267 served 0.267 hits   14133 usable_n   14133 written   33921 bypass  225479 res 140.9989999999998 est 142.6 ghost 64000 forgot 1971 fp 0 thr 0.0
+cap   1600 ( 104.8 GiB) 2nd          usable 0.188 served 0.188 hits    9939 usable_n    9939 written   81579 bypass  184772 res 62.999000000000024 est 77.9 ghost 64000 forgot 1983 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/sel-conversation-c1600-D-replay.csv

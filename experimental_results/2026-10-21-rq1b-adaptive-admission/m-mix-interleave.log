@@ -1,0 +1,13 @@
+cap   3200 ( 209.7 GiB) lru          usable 0.464 served 0.464 hits   76717 usable_n   76717 written  543139 bypass       0 res 21.0 est 14.4 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) slru         usable 0.476 served 0.476 hits   78728 usable_n   78728 written  537942 bypass       0 res 18.0 est 8.5 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2q           usable 0.487 served 0.487 hits   80461 usable_n   80461 written  535920 bypass       0 res 15.0 est 5.1 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) arc          usable 0.486 served 0.486 hits   80399 usable_n   80399 written  535906 bypass       0 res 17.998999999999995 est 8.3 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) tinylfu      usable 0.526 served 0.526 hits   87049 usable_n   86976 written   78012 bypass  443087 res 135.0 est 132.5 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) wtinylfu     usable 0.508 served 0.509 hits   84099 usable_n   83977 written  525622 bypass       0 res 0.0 est 2.2 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd          usable 0.502 served 0.502 hits   82974 usable_n   82974 written  160893 bypass  366085 res 63.0 est 82.0 ghost 362890 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.549 served 0.549 hits   90820 usable_n   90820 written   68205 bypass  445557 res 138.0 est 150.2 ghost 362890 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adapt2       usable 0.529 served 0.529 hits   87452 usable_n   87452 written  173870 bypass  350881 res 48.0 est 128.3 ghost 362890 forgot 0 fp 0 thr 0.18
+cap   3200 ( 209.7 GiB) adaptive     usable 0.535 served 0.535 hits   88460 usable_n   88460 written  149556 bypass  372987 res 72.0 est 102.9 ghost 362890 forgot 0 fp 0 thr 0.217
+cap   3200 ( 209.7 GiB) lhd          usable 0.521 served 0.523 hits   86469 usable_n   86232 written   90301 bypass  432056 res 113.9989999999998 est 138.0 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) oracle       usable 0.775 served 0.775 hits  128148 usable_n  128148 written   94534 bypass  341889 res 81.0 est 232.1 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/m-mix-interleave-replay.csv

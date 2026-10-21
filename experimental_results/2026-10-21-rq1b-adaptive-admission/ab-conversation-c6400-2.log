@@ -1,0 +1,16 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.462 served 0.462 hits   24412 usable_n   24412 written  176188 bypass   63815 res 120.0 est 300.0 ghost 176390 forgot 0 fp 0 thr 0.185
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-w300-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.456 served 0.456 hits   24087 usable_n   24087 written  185001 bypass   55789 res 117.0 est 120.0 ghost 176390 forgot 0 fp 0 thr 0.104
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-w120-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.468 served 0.468 hits   24731 usable_n   24731 written  170558 bypass   68701 res 125.9989999999998 est 154.3 ghost 176390 forgot 0 fp 0 thr 0.13
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.512 served 0.512 hits   27048 usable_n   27048 written   45987 bypass  189324 res 392.9999999999998 est 519.9 ghost 176390 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-resrate-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.380 served 0.380 hits   20082 usable_n   20082 written  235128 bypass   10860 res 89.99900000000002 est 90.2 ghost 176390 forgot 0 fp 0 thr 0.216
+cap   6400 ( 419.4 GiB) adapt2       usable 0.403 served 0.403 hits   21305 usable_n   21305 written  201215 bypass   42022 res 99.0010000000002 est 108.4 ghost 176390 forgot 0 fp 0 thr 0.408
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-frozen-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.398 served 0.398 hits   21009 usable_n   21009 written  211458 bypass   32217 res 93.0 est 112.3 ghost 93731 forgot 4935 fp 0 thr 0.136
+cap   6400 ( 419.4 GiB) adapt2       usable 0.445 served 0.445 hits   23517 usable_n   23517 written  133450 bypass  106410 res 159.0 est 188.9 ghost 93731 forgot 5120 fp 0 thr 0.207
+cap   6400 ( 419.4 GiB) 2nd          usable 0.495 served 0.495 hits   26171 usable_n   26171 written   48745 bypass  187975 res 378.0 est 363.6 ghost 93731 forgot 4767 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-cold-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.475 served 0.475 hits   25073 usable_n   25073 written  174330 bypass   65347 res 117.0 est 149.9 ghost 176390 forgot 0 fp 0 thr 0.13
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-replan60-replay.csv

@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) adaptive     usable 0.358 served 0.358 hits   18907 usable_n   18907 written   70922 bypass  181236 res 101.99900000000002 est 479.1 ghost 179590 forgot 0 fp 0 thr 0.332
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-feat-c-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.370 served 0.370 hits   19527 usable_n   19527 written   91295 bypass  161114 res 90.00099999999998 est 166.2 ghost 179590 forgot 0 fp 0 thr 0.212
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-feat-cint-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.356 served 0.356 hits   18818 usable_n   18818 written  110657 bypass  143773 res 96.0 est 160.6 ghost 179590 forgot 0 fp 0 thr 0.193
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-feat-cintpos-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.367 served 0.367 hits   19397 usable_n   19397 written   99761 bypass  153360 res 81.0 est 159.2 ghost 179590 forgot 0 fp 0 thr 0.182
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-feat-cintpreroot-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.348 served 0.350 hits   18474 usable_n   18384 written  122167 bypass  133136 res 68.999 est 143.7 ghost 179590 forgot 0 fp 0 thr 0.172
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-nochain-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.221 served 0.221 hits   11698 usable_n   11698 written  223926 bypass   42038 res 48.0 est 66.8 ghost 179590 forgot 0 fp 0 thr 0.018
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-hitbe-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.366 served 0.366 hits   19346 usable_n   19346 written   50714 bypass  200958 res 138.00099999999998 est 456.1 ghost 179590 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-th0.5-replay.csv
+cap   3200 ( 209.7 GiB) adaptive     usable 0.377 served 0.377 hits   19946 usable_n   19946 written   80577 bypass  170547 res 98.99900000000002 est 322.9 ghost 179590 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c3200-th0.3-replay.csv

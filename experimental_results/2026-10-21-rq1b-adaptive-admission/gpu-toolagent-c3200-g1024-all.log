@@ -1,0 +1,7 @@
+cap   3200 ( 209.7 GiB) lru          usable 0.648 served 0.648 hits    3423 usable_n   72997 written  262741 bypass       0 res 42.0 est 52.5 ghost 0 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd          usable 0.734 served 0.734 hits   13170 usable_n   82744 written   60037 bypass  183296 res 155.99900000000002 est 149.2 ghost 180100 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.743 served 0.743 hits   14181 usable_n   83755 written   39326 bypass  203418 res 231.0 est 379.2 ghost 180100 forgot 0 fp 0 thr 0.0
+cap   3200 ( 209.7 GiB) adapt2       usable 0.729 served 0.729 hits   12592 usable_n   82166 written   86991 bypass  160185 res 87.0 est 240.7 ghost 180100 forgot 0 fp 0 thr 0.568
+cap   3200 ( 209.7 GiB) adaptive     usable 0.730 served 0.730 hits   12732 usable_n   82306 written  116139 bypass  132924 res 78.0 est 160.9 ghost 180100 forgot 0 fp 0 thr 0.199
+cap   3200 ( 209.7 GiB) oracle       usable 0.935 served 0.935 hits   35774 usable_n  105348 written   44290 bypass  152556 res 162.0 est 574.1 ghost 0 forgot 0 fp 0 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gpu-toolagent-c3200-g1024-all-replay.csv

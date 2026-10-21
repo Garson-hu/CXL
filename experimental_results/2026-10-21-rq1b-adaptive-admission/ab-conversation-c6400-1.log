@@ -1,0 +1,16 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.463 served 0.463 hits   24449 usable_n   24449 written  132774 bypass  106154 res 161.99900000000002 est 175.1 ghost 176390 forgot 0 fp 0 thr 0.143
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-feat-c-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.452 served 0.452 hits   23874 usable_n   23874 written  146106 bypass   93667 res 150.0010000000002 est 189.5 ghost 176390 forgot 0 fp 0 thr 0.149
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-feat-cint-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.476 served 0.476 hits   25177 usable_n   25177 written  162616 bypass   76843 res 129.0 est 143.9 ghost 176390 forgot 0 fp 0 thr 0.13
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-feat-cintpos-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.477 served 0.477 hits   25223 usable_n   25223 written  147054 bypass   91522 res 137.99900000000002 est 188.3 ghost 176390 forgot 0 fp 0 thr 0.156
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-feat-cintpreroot-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.474 served 0.475 hits   25075 usable_n   25035 written  172609 bypass   66900 res 114.0010000000002 est 136.5 ghost 176390 forgot 0 fp 0 thr 0.126
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-nochain-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.433 served 0.433 hits   22903 usable_n   22903 written  212081 bypass   30992 res 93.0 est 119.1 ghost 176390 forgot 0 fp 0 thr 0.049
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-hitbe-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.448 served 0.448 hits   23649 usable_n   23649 written   73158 bypass  167475 res 129.0 est 1164.1 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.507 served 0.507 hits   26784 usable_n   26784 written  110824 bypass  125166 res 113.99900000000002 est 479.7 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/ab-conversation-c6400-th0.3-replay.csv

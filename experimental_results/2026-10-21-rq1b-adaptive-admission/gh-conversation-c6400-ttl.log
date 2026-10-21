@@ -1,0 +1,12 @@
+cap   6400 ( 419.4 GiB) 2nd          usable 0.317 served 0.317 hits   16727 usable_n   16727 written   10890 bypass  245812 res 1982.9999999999998 est 1943.6 ghost 176390 forgot 63023 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.317 served 0.317 hits   16727 usable_n   16727 written   10890 bypass  245812 res 1982.9999999999998 est 1943.6 ghost 176390 forgot 63023 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.463 served 0.463 hits   24452 usable_n   24452 written  162005 bypass   77383 res 129.0 est 140.9 ghost 176390 forgot 53977 fp 0 thr 0.131
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c6400-ttl60-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.501 served 0.501 hits   26482 usable_n   26482 written   35516 bypass  200855 res 501.0 est 522.0 ghost 176390 forgot 18066 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.501 served 0.501 hits   26482 usable_n   26482 written   35516 bypass  200855 res 501.0 est 522.0 ghost 176390 forgot 18066 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.464 served 0.464 hits   24537 usable_n   24537 written  171879 bypass   68033 res 123.0 est 170.9 ghost 176390 forgot 22700 fp 0 thr 0.127
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c6400-ttl300-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.509 served 0.509 hits   26873 usable_n   26873 written   51188 bypass  184798 res 354.0010000000002 est 347.2 ghost 176390 forgot 2009 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.509 served 0.509 hits   26910 usable_n   26910 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 176390 forgot 2009 fp 0 thr 0.0
+cap   6400 ( 419.4 GiB) adaptive     usable 0.479 served 0.479 hits   25303 usable_n   25303 written  168866 bypass   70538 res 125.9989999999998 est 129.8 ghost 176390 forgot 2009 fp 0 thr 0.107
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-conversation-c6400-ttl1200-replay.csv

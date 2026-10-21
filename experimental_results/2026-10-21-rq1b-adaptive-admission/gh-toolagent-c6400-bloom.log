@@ -1,0 +1,8 @@
+cap   6400 ( 419.4 GiB) 2nd          usable 0.735 served 0.778 hits   87677 usable_n   82876 written   87496 bypass  147161 res 219.0 est 236.0 ghost 0 forgot 0 fp 55548 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-bloom32768_4_8000-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.779 served 0.790 hits   89070 usable_n   87789 written   40695 bypass  192250 res 444.0 est 504.1 ghost 0 forgot 0 fp 11057 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-bloom65536_4_8000-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.793 served 0.800 hits   90166 usable_n   89345 written   51948 bypass  178382 res 345.0 est 387.3 ghost 0 forgot 0 fp 7850 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-bloom262144_4_32000-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.804 served 0.807 hits   90998 usable_n   90591 written   48462 bypass  180410 res 372.0 est 364.0 ghost 0 forgot 0 fp 2886 thr 0.0
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/gh-toolagent-c6400-bloom1048576_4_128000-replay.csv

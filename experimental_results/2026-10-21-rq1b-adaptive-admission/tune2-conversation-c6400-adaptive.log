@@ -1,0 +1,72 @@
+cap   6400 ( 419.4 GiB) adaptive     usable 0.472 served 0.472 hits   12983 usable_n   12983 written   93733 bypass  143891 res 219.0 est 212.8 ghost 176390 forgot 0 fp 0 thr 0.168
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fc-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.475 served 0.475 hits   13067 usable_n   13067 written  101127 bypass  135751 res 102.0 est 295.7 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fc-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.443 served 0.443 hits   12186 usable_n   12186 written   63716 bypass  177031 res 135.0 est 609.9 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fc-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.465 served 0.465 hits   12798 usable_n   12798 written   91374 bypass  145782 res 212.99900000000002 est 201.6 ghost 176390 forgot 0 fp 0 thr 0.167
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcint-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.457 served 0.457 hits   12561 usable_n   12561 written   94396 bypass  142762 res 105.00099999999998 est 405.3 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcint-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.445 served 0.445 hits   12245 usable_n   12245 written   65159 bypass  174464 res 141.00099999999998 est 752.3 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcint-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.471 served 0.471 hits   12952 usable_n   12952 written  117954 bypass  119742 res 177.0 est 153.5 ghost 176390 forgot 0 fp 0 thr 0.151
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcintpospre-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.470 served 0.470 hits   12927 usable_n   12927 written   92674 bypass  144211 res 108.0 est 512.2 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcintpospre-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.441 served 0.441 hits   12116 usable_n   12116 written   64346 bypass  176699 res 138.00099999999998 est 1600.7 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau40-fcintpospre-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.470 served 0.470 hits   12927 usable_n   12927 written  102094 bypass  136193 res 180.0 est 182.0 ghost 176390 forgot 0 fp 0 thr 0.149
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fc-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.471 served 0.471 hits   12958 usable_n   12958 written  104387 bypass  132392 res 101.99900000000002 est 295.7 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fc-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.452 served 0.452 hits   12429 usable_n   12429 written   67274 bypass  174645 res 120.0 est 1106.2 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fc-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.464 served 0.464 hits   12756 usable_n   12756 written   95726 bypass  141492 res 201.0 est 245.8 ghost 176390 forgot 0 fp 0 thr 0.174
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcint-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.468 served 0.468 hits   12866 usable_n   12866 written   98171 bypass  138492 res 105.00099999999998 est 423.4 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcint-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.441 served 0.441 hits   12135 usable_n   12135 written   67613 bypass  172488 res 135.0 est 1116.8 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcint-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.467 served 0.467 hits   12852 usable_n   12852 written  124769 bypass  112830 res 162.0 est 157.8 ghost 176390 forgot 0 fp 0 thr 0.141
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcintpospre-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.462 served 0.462 hits   12700 usable_n   12700 written   96351 bypass  140463 res 108.0 est 489.0 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcintpospre-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.451 served 0.451 hits   12390 usable_n   12390 written   67254 bypass  174161 res 129.00099999999998 est 1069.0 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau75-fcintpospre-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.466 served 0.466 hits   12809 usable_n   12809 written  130513 bypass  108133 res 164.99900000000002 est 170.6 ghost 176390 forgot 0 fp 0 thr 0.13
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fc-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.474 served 0.474 hits   13040 usable_n   13040 written  108585 bypass  128484 res 96.00099999999998 est 295.6 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fc-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.463 served 0.463 hits   12746 usable_n   12746 written   72925 bypass  167806 res 114.0 est 1123.1 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fc-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.462 served 0.462 hits   12713 usable_n   12713 written  118186 bypass  120020 res 165.0 est 183.6 ghost 176390 forgot 0 fp 0 thr 0.152
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcint-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.475 served 0.475 hits   13051 usable_n   13051 written  100942 bypass  135586 res 104.99900000000002 est 399.8 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcint-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.438 served 0.438 hits   12034 usable_n   12034 written   72371 bypass  168460 res 119.999 est 983.9 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcint-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.485 served 0.485 hits   13344 usable_n   13344 written  144165 bypass   93651 res 144.0 est 177.7 ghost 176390 forgot 0 fp 0 thr 0.137
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcintpospre-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.468 served 0.468 hits   12873 usable_n   12873 written  102701 bypass  133928 res 108.00099999999998 est 526.9 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcintpospre-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.438 served 0.438 hits   12035 usable_n   12035 written   70664 bypass  170671 res 126.00099999999998 est 1025.8 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau150-fcintpospre-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.460 served 0.460 hits   12641 usable_n   12641 written  132774 bypass  106154 res 161.99900000000002 est 175.1 ghost 176390 forgot 0 fp 0 thr 0.143
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fc-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.471 served 0.471 hits   12943 usable_n   12943 written  112131 bypass  124964 res 96.00099999999998 est 295.6 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fc-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.475 served 0.475 hits   13058 usable_n   13058 written   77196 bypass  162598 res 111.0 est 909.2 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fc-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.452 served 0.452 hits   12441 usable_n   12441 written  146106 bypass   93667 res 150.0010000000002 est 189.5 ghost 176390 forgot 0 fp 0 thr 0.149
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcint-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.478 served 0.478 hits   13152 usable_n   13152 written  104718 bypass  131762 res 105.0 est 459.3 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcint-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.450 served 0.450 hits   12367 usable_n   12367 written   75380 bypass  164911 res 117.0 est 1406.0 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcint-th0.5-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.435 served 0.435 hits   11966 usable_n   11966 written  170790 bypass   69058 res 126.001 est 141.2 ghost 176390 forgot 0 fp 0 thr 0.13
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcintpospre-th-1-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.484 served 0.484 hits   13308 usable_n   13308 written  110824 bypass  125166 res 113.99900000000002 est 479.7 ghost 176390 forgot 0 fp 0 thr 0.3
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcintpospre-th0.3-replay.csv
+cap   6400 ( 419.4 GiB) adaptive     usable 0.451 served 0.451 hits   12405 usable_n   12405 written   73158 bypass  167475 res 129.0 est 1164.1 ghost 176390 forgot 0 fp 0 thr 0.5
+wrote experimental_results/2026-10-21-rq1b-adaptive-admission/tune2-conversation-c6400-tau300-fcintpospre-th0.5-replay.csv
