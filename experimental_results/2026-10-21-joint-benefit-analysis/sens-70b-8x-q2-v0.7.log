@@ -1,0 +1,4 @@
+cost_budget   usable 0.115 hits    7668 pend   1364 dram   1496.6 GB ( 7.20 GB/s on, worst min  7.58) cxl   9417.1 GB (45.49) p99  5.10% backlog    92.2 GB drops  60157 bypass       0 regime filter (0 sw, veto 0) ckpt None
+indep         usable 0.233 hits   13478 pend     62 dram    472.7 GB ( 2.29 GB/s on, worst min  2.47) cxl   1423.3 GB ( 6.88) p99  1.91% backlog     0.9 GB drops      0 bypass  236237 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.231 hits   13495 pend     62 dram    436.3 GB ( 2.10 GB/s on, worst min  3.03) cxl   1384.7 GB ( 6.69) p99  1.75% backlog     0.8 GB drops      0 bypass  236996 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sens-70b-8x-q2-v0.7-joint.csv

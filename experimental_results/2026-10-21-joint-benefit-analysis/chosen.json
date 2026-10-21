@@ -1,0 +1,98 @@
+{
+ "conversation|70b|1|adam": [
+  8.0,
+  1.0
+ ],
+ "conversation|70b|1|reader": [
+  8.0,
+  1.0
+ ],
+ "conversation|70b|4|adam": [
+  4.0,
+  1.0
+ ],
+ "conversation|70b|4|reader": [
+  32.0,
+  1.0
+ ],
+ "conversation|70b|8|adam": [
+  12.0,
+  1.0
+ ],
+ "conversation|70b|8|reader": [
+  32.0,
+  1.0
+ ],
+ "conversation|8b|1|adam": [
+  2.0,
+  4.0
+ ],
+ "conversation|8b|1|reader": [
+  2.0,
+  4.0
+ ],
+ "conversation|8b|4|adam": [
+  4.0,
+  1.0
+ ],
+ "conversation|8b|4|reader": [
+  4.0,
+  1.0
+ ],
+ "conversation|8b|8|adam": [
+  8.0,
+  1.0
+ ],
+ "conversation|8b|8|reader": [
+  8.0,
+  1.0
+ ],
+ "toolagent|70b|1|adam": [
+  8.0,
+  1.0
+ ],
+ "toolagent|70b|1|reader": [
+  8.0,
+  1.0
+ ],
+ "toolagent|70b|4|adam": [
+  8.0,
+  1.0
+ ],
+ "toolagent|70b|4|reader": [
+  8.0,
+  1.0
+ ],
+ "toolagent|70b|8|adam": [
+  16.0,
+  1.0
+ ],
+ "toolagent|70b|8|reader": [
+  32.0,
+  1.0
+ ],
+ "toolagent|8b|1|adam": [
+  2.0,
+  1.0
+ ],
+ "toolagent|8b|1|reader": [
+  2.0,
+  1.0
+ ],
+ "toolagent|8b|4|adam": [
+  12.0,
+  1.0
+ ],
+ "toolagent|8b|4|reader": [
+  12.0,
+  1.0
+ ],
+ "toolagent|8b|8|adam": [
+  32.0,
+  1.0
+ ],
+ "toolagent|8b|8|reader": [
+  32.0,
+  4.0
+ ]
+}

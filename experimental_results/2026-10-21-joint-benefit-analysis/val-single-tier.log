@@ -1,0 +1,4 @@
+split_lru     usable 0.180 hits    9759 pend      1 dram      0.0 GB ( 0.00 GB/s on, worst min  0.00) cxl   8410.0 GB ( 5.08) p99  0.00% backlog     1.7 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+value_split   usable 0.387 hits   20509 pend      0 dram      0.0 GB ( 0.00 GB/s on, worst min  0.00) cxl    995.1 GB ( 0.60) p99  0.00% backlog     0.3 GB drops      0 bypass  215298 regime filter (0 sw, veto 0) ckpt None
+oracle_free   usable 0.801 hits   42447 pend      1 dram      0.0 GB ( 0.00 GB/s on, worst min  0.00) cxl   1340.3 GB ( 0.81) p99  0.00% backlog     0.0 GB drops      0 bypass  151479 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/val-single-tier-joint.csv

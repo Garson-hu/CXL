@@ -1,0 +1,80 @@
+indep         usable 0.341 hits    9775 pend      0 dram     41.9 GB ( 0.05 GB/s on, worst min  0.07) cxl    501.9 GB ( 0.56) p99  0.02% backlog     0.3 GB drops      0 bypass  218514 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.201 hits    6580 pend      0 dram    156.8 GB ( 0.18 GB/s on, worst min  0.21) cxl   4219.3 GB ( 4.74) p99  0.09% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.346 hits   10061 pend      0 dram     38.4 GB ( 0.04 GB/s on, worst min  0.11) cxl    478.8 GB ( 0.54) p99  0.02% backlog     0.3 GB drops      0 bypass  218538 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B0.25-d1-joint.csv
+indep         usable 0.364 hits   10435 pend      0 dram     64.5 GB ( 0.07 GB/s on, worst min  0.11) cxl    493.1 GB ( 0.55) p99  0.04% backlog     0.3 GB drops      0 bypass  216886 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.210 hits    6938 pend      0 dram    190.4 GB ( 0.21 GB/s on, worst min  0.24) cxl   4161.7 GB ( 4.67) p99  0.11% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.362 hits   10306 pend      0 dram     49.1 GB ( 0.06 GB/s on, worst min  0.11) cxl    499.8 GB ( 0.56) p99  0.03% backlog     0.3 GB drops      0 bypass  217410 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B0.25-d4-joint.csv
+indep         usable 0.364 hits   10478 pend      0 dram     72.9 GB ( 0.08 GB/s on, worst min  0.13) cxl    448.2 GB ( 0.50) p99  0.04% backlog     0.3 GB drops      0 bypass  216568 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.203 hits    6898 pend      0 dram    306.3 GB ( 0.34 GB/s on, worst min  0.41) cxl   4048.5 GB ( 4.54) p99  0.18% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.370 hits   10619 pend      0 dram     51.4 GB ( 0.06 GB/s on, worst min  0.11) cxl    458.4 GB ( 0.52) p99  0.03% backlog     0.3 GB drops      0 bypass  216003 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B0.5-d1-joint.csv
+indep         usable 0.376 hits   10681 pend      0 dram     92.4 GB ( 0.10 GB/s on, worst min  0.17) cxl    431.9 GB ( 0.48) p99  0.05% backlog     0.3 GB drops      0 bypass  215786 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.207 hits    7120 pend      0 dram    352.2 GB ( 0.40 GB/s on, worst min  0.45) cxl   3987.7 GB ( 4.48) p99  0.21% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.378 hits   10732 pend      0 dram     81.9 GB ( 0.09 GB/s on, worst min  0.24) cxl    430.6 GB ( 0.48) p99  0.05% backlog     0.3 GB drops      0 bypass  215795 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B0.5-d4-joint.csv
+indep         usable 0.386 hits   10756 pend      0 dram    133.1 GB ( 0.15 GB/s on, worst min  0.24) cxl    390.1 GB ( 0.44) p99  0.08% backlog     0.3 GB drops      0 bypass  215444 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.237 hits    6961 pend      0 dram    605.2 GB ( 0.68 GB/s on, worst min  0.83) cxl   3745.4 GB ( 4.20) p99  0.35% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.383 hits   10667 pend      0 dram    131.3 GB ( 0.15 GB/s on, worst min  0.31) cxl    387.8 GB ( 0.43) p99  0.08% backlog     0.3 GB drops      0 bypass  216226 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B1-d1-joint.csv
+indep         usable 0.385 hits   10721 pend      0 dram    143.1 GB ( 0.16 GB/s on, worst min  0.25) cxl    377.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215230 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.237 hits    7157 pend      0 dram    655.8 GB ( 0.74 GB/s on, worst min  0.88) cxl   3681.6 GB ( 4.13) p99  0.38% backlog     1.1 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.379 hits   10729 pend      0 dram    117.0 GB ( 0.13 GB/s on, worst min  0.31) cxl    393.5 GB ( 0.44) p99  0.07% backlog     0.3 GB drops      0 bypass  216684 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B1-d4-joint.csv
+indep         usable 0.386 hits   10879 pend      0 dram    135.1 GB ( 0.15 GB/s on, worst min  0.25) cxl    382.9 GB ( 0.43) p99  0.08% backlog     0.3 GB drops      0 bypass  215362 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.239 hits    7145 pend      0 dram    617.2 GB ( 0.69 GB/s on, worst min  0.84) cxl   3721.0 GB ( 4.18) p99  0.36% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.380 hits   10692 pend      0 dram    117.9 GB ( 0.13 GB/s on, worst min  0.30) cxl    398.2 GB ( 0.45) p99  0.07% backlog     0.3 GB drops      0 bypass  216446 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B2-d1-joint.csv
+indep         usable 0.386 hits   10749 pend      0 dram    163.5 GB ( 0.18 GB/s on, worst min  0.29) cxl    359.9 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215449 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.249 hits    7190 pend      0 dram    999.3 GB ( 1.12 GB/s on, worst min  1.37) cxl   3335.9 GB ( 3.74) p99  0.58% backlog     1.1 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.373 hits   10334 pend      0 dram    158.5 GB ( 0.18 GB/s on, worst min  0.55) cxl    391.9 GB ( 0.44) p99  0.09% backlog     0.3 GB drops      0 bypass  218230 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B2-d4-joint.csv
+indep         usable 0.386 hits   10877 pend      0 dram    140.1 GB ( 0.16 GB/s on, worst min  0.26) cxl    377.1 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215337 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.232 hits    7041 pend      0 dram    712.1 GB ( 0.80 GB/s on, worst min  1.03) cxl   3633.1 GB ( 4.08) p99  0.42% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.370 hits   10443 pend      0 dram    137.6 GB ( 0.15 GB/s on, worst min  0.38) cxl    399.2 GB ( 0.45) p99  0.08% backlog     0.3 GB drops      0 bypass  216723 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B4-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7194 pend      0 dram   1182.3 GB ( 1.33 GB/s on, worst min  1.68) cxl   3152.6 GB ( 3.54) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9787 pend      0 dram    195.9 GB ( 0.22 GB/s on, worst min  0.61) cxl    339.2 GB ( 0.38) p99  0.11% backlog     0.3 GB drops      0 bypass  224896 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B4-d4-joint.csv
+indep         usable 0.386 hits   10860 pend      0 dram    140.6 GB ( 0.16 GB/s on, worst min  0.26) cxl    378.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215298 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.236 hits    6986 pend      0 dram    778.2 GB ( 0.87 GB/s on, worst min  1.19) cxl   3570.7 GB ( 4.01) p99  0.45% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.377 hits   10537 pend      0 dram    117.1 GB ( 0.13 GB/s on, worst min  0.30) cxl    408.9 GB ( 0.46) p99  0.07% backlog     0.3 GB drops      0 bypass  218162 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B8-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7189 pend      0 dram   1186.4 GB ( 1.33 GB/s on, worst min  1.69) cxl   3148.9 GB ( 3.53) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9798 pend      0 dram    198.3 GB ( 0.22 GB/s on, worst min  0.66) cxl    342.3 GB ( 0.38) p99  0.12% backlog     0.3 GB drops      0 bypass  224805 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B8-d4-joint.csv
+indep         usable 0.386 hits   10860 pend      0 dram    140.6 GB ( 0.16 GB/s on, worst min  0.26) cxl    378.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215308 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.236 hits    6983 pend      0 dram    781.6 GB ( 0.88 GB/s on, worst min  1.19) cxl   3567.5 GB ( 4.00) p99  0.46% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.377 hits   10537 pend      0 dram    117.2 GB ( 0.13 GB/s on, worst min  0.30) cxl    408.8 GB ( 0.46) p99  0.07% backlog     0.3 GB drops      0 bypass  218101 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B12-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7189 pend      0 dram   1186.5 GB ( 1.33 GB/s on, worst min  1.69) cxl   3148.8 GB ( 3.53) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9798 pend      0 dram    198.3 GB ( 0.22 GB/s on, worst min  0.66) cxl    342.3 GB ( 0.38) p99  0.12% backlog     0.3 GB drops      0 bypass  224805 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B12-d4-joint.csv
+indep         usable 0.386 hits   10860 pend      0 dram    140.6 GB ( 0.16 GB/s on, worst min  0.26) cxl    378.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215307 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.236 hits    6981 pend      0 dram    782.1 GB ( 0.88 GB/s on, worst min  1.19) cxl   3567.2 GB ( 4.00) p99  0.46% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.377 hits   10527 pend      0 dram    116.6 GB ( 0.13 GB/s on, worst min  0.31) cxl    409.7 GB ( 0.46) p99  0.07% backlog     0.3 GB drops      0 bypass  218156 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B16-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7189 pend      0 dram   1186.5 GB ( 1.33 GB/s on, worst min  1.69) cxl   3148.8 GB ( 3.53) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9798 pend      0 dram    198.3 GB ( 0.22 GB/s on, worst min  0.66) cxl    342.3 GB ( 0.38) p99  0.12% backlog     0.3 GB drops      0 bypass  224805 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B16-d4-joint.csv
+indep         usable 0.386 hits   10860 pend      0 dram    140.6 GB ( 0.16 GB/s on, worst min  0.26) cxl    378.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215307 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.236 hits    6981 pend      0 dram    782.1 GB ( 0.88 GB/s on, worst min  1.19) cxl   3567.2 GB ( 4.00) p99  0.46% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.377 hits   10527 pend      0 dram    116.6 GB ( 0.13 GB/s on, worst min  0.31) cxl    409.7 GB ( 0.46) p99  0.07% backlog     0.3 GB drops      0 bypass  218156 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B24-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7189 pend      0 dram   1186.5 GB ( 1.33 GB/s on, worst min  1.69) cxl   3148.8 GB ( 3.53) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9798 pend      0 dram    198.3 GB ( 0.22 GB/s on, worst min  0.66) cxl    342.3 GB ( 0.38) p99  0.12% backlog     0.3 GB drops      0 bypass  224805 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B24-d4-joint.csv
+indep         usable 0.386 hits   10860 pend      0 dram    140.6 GB ( 0.16 GB/s on, worst min  0.26) cxl    378.8 GB ( 0.42) p99  0.08% backlog     0.3 GB drops      0 bypass  215307 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.236 hits    6981 pend      0 dram    782.1 GB ( 0.88 GB/s on, worst min  1.19) cxl   3567.2 GB ( 4.00) p99  0.46% backlog     1.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.377 hits   10527 pend      0 dram    116.6 GB ( 0.13 GB/s on, worst min  0.31) cxl    409.7 GB ( 0.46) p99  0.07% backlog     0.3 GB drops      0 bypass  218156 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B32-d1-joint.csv
+indep         usable 0.384 hits   10709 pend      0 dram    166.3 GB ( 0.19 GB/s on, worst min  0.30) cxl    358.1 GB ( 0.40) p99  0.10% backlog     0.3 GB drops      0 bypass  215519 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.253 hits    7189 pend      0 dram   1186.5 GB ( 1.33 GB/s on, worst min  1.69) cxl   3148.8 GB ( 3.53) p99  0.69% backlog     1.2 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.354 hits    9798 pend      0 dram    198.3 GB ( 0.22 GB/s on, worst min  0.66) cxl    342.3 GB ( 0.38) p99  0.12% backlog     0.3 GB drops      0 bypass  224805 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-conversation-8b-1x-reader-B32-d4-joint.csv

@@ -1,0 +1,11 @@
+split_slru    usable 0.121 hits    7033 pend   1518 dram   6897.1 GB (33.25 GB/s on, worst min 35.55) cxl  14190.8 GB (68.56) p99 35.63%* backlog 20495.0 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+value_split   usable 0.234 hits   13597 pend     64 dram    630.6 GB ( 3.05 GB/s on, worst min  3.45) cxl   1229.8 GB ( 5.94) p99  2.84% backlog     0.8 GB drops      0 bypass  236527 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.114 hits    9394 pend    902 dram   1494.3 GB ( 7.18 GB/s on, worst min  7.56) cxl   4684.6 GB (22.63) p99  5.08% backlog    46.2 GB drops  87126 bypass       0 regime filter (0 sw, veto 0) ckpt None
+indep         usable 0.232 hits   13492 pend     63 dram    477.9 GB ( 2.31 GB/s on, worst min  2.47) cxl   1419.6 GB ( 6.86) p99  1.93% backlog     1.0 GB drops      0 bypass  236213 regime filter (0 sw, veto 0) ckpt None
+indep_nodrop  usable 0.232 hits   13492 pend     63 dram    477.9 GB ( 2.31 GB/s on, worst min  2.47) cxl   1419.6 GB ( 6.86) p99  1.93% backlog     1.0 GB drops      0 bypass  236213 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.231 hits   13493 pend     64 dram    436.3 GB ( 2.10 GB/s on, worst min  3.03) cxl   1384.7 GB ( 6.69) p99  1.75% backlog     0.8 GB drops      0 bypass  236996 regime filter (0 sw, veto 0) ckpt None
+joint_hash    usable 0.232 hits   13492 pend     63 dram    477.9 GB ( 2.31 GB/s on, worst min  2.47) cxl   1419.6 GB ( 6.86) p99  1.93% backlog     1.0 GB drops      0 bypass  236213 regime filter (0 sw, veto 0) ckpt None
+joint_nodrop  usable 0.231 hits   13493 pend     64 dram    436.3 GB ( 2.10 GB/s on, worst min  3.03) cxl   1384.7 GB ( 6.69) p99  1.75% backlog     0.8 GB drops      0 bypass  236996 regime filter (0 sw, veto 0) ckpt None
+oracle_cost   usable 0.394 hits   24477 pend    554 dram    818.5 GB ( 3.95 GB/s on, worst min  4.61) cxl   3606.7 GB (17.42) p99  2.92% backlog    45.4 GB drops      0 bypass  170019 regime filter (0 sw, veto 0) ckpt None
+oracle_joint  usable 0.446 hits   25825 pend    458 dram    922.9 GB ( 4.46 GB/s on, worst min  4.80) cxl   3443.8 GB (16.64) p99  3.06% backlog    41.6 GB drops      0 bypass  168632 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/stress-conversation-70b-8x-cxl23-adam-joint.csv

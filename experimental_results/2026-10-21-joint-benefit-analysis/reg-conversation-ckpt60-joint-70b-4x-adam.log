@@ -1,0 +1,9 @@
+split_slru    usable 0.124 hits    8016 pend     22 dram   6932.0 GB (16.72 GB/s on, worst min 20.32) cxl  14312.2 GB (34.57) p99 13.88% backlog    76.8 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt 15.27
+value_split   usable 0.236 hits   13455 pend      0 dram    648.2 GB ( 1.56 GB/s on, worst min  2.52) cxl   1228.6 GB ( 2.97) p99  1.45% backlog    68.9 GB drops      0 bypass  236533 regime filter (0 sw, veto 0) ckpt 1.69
+cost_budget   usable 0.122 hits    8341 pend     76 dram   1243.4 GB ( 3.00 GB/s on, worst min  3.23) cxl  17846.0 GB (43.11) p99  2.38% backlog   159.2 GB drops  12462 bypass       0 regime filter (0 sw, veto 0) ckpt 3.48
+indep         usable 0.241 hits   13517 pend      0 dram    425.0 GB ( 1.03 GB/s on, worst min  1.38) cxl   1438.0 GB ( 3.47) p99  0.83% backlog    68.7 GB drops    251 bypass  236175 regime filter (0 sw, veto 0) ckpt 1.49
+joint         usable 0.242 hits   13632 pend      0 dram    349.4 GB ( 0.84 GB/s on, worst min  1.48) cxl   1438.7 GB ( 3.48) p99  0.69% backlog    22.8 GB drops    238 bypass  236851 regime filter (0 sw, veto 0) ckpt 1.49
+joint_hash    usable 0.240 hits   13504 pend      0 dram    423.7 GB ( 1.02 GB/s on, worst min  1.33) cxl   1436.2 GB ( 3.47) p99  0.83% backlog    21.6 GB drops    312 bypass  236137 regime filter (0 sw, veto 0) ckpt 1.49
+oracle_cost   usable 0.511 hits   29038 pend     18 dram    705.1 GB ( 1.70 GB/s on, worst min  2.05) cxl   3512.1 GB ( 8.48) p99  1.39% backlog    68.7 GB drops   1008 bypass  165211 regime filter (0 sw, veto 0) ckpt 1.49
+oracle_joint  usable 0.528 hits   29188 pend     22 dram    755.8 GB ( 1.83 GB/s on, worst min  2.14) cxl   3520.9 GB ( 8.51) p99  1.50% backlog    68.9 GB drops    813 bypass  163922 regime filter (0 sw, veto 0) ckpt 1.6
+wrote experimental_results/2026-10-21-joint-benefit-analysis/reg-conversation-ckpt60-joint-70b-4x-adam-joint.csv

@@ -1,0 +1,9 @@
+split_slru    usable 0.454 hits   76129 pend    199 dram  13840.6 GB (32.94 GB/s on, worst min 37.12) cxl  28948.0 GB (69.17) p99 35.17%* backlog 20874.5 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+value_split   usable 0.492 hits   82790 pend      0 dram    863.8 GB ( 2.06 GB/s on, worst min  2.72) cxl   1737.9 GB ( 4.15) p99  1.91% backlog     1.2 GB drops      0 bypass  499211 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.454 hits   76979 pend    241 dram   1412.0 GB ( 3.36 GB/s on, worst min  3.44) cxl  19129.9 GB (45.71) p99  2.59% backlog    92.2 GB drops 131687 bypass       0 regime filter (0 sw, veto 0) ckpt None
+indep         usable 0.495 hits   82927 pend      0 dram    492.5 GB ( 1.17 GB/s on, worst min  1.49) cxl   2119.1 GB ( 5.06) p99  0.95% backlog     1.6 GB drops      0 bypass  496155 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.491 hits   82465 pend      0 dram    277.9 GB ( 0.66 GB/s on, worst min  0.97) cxl   2249.0 GB ( 5.37) p99  0.53% backlog     1.7 GB drops      0 bypass  498238 regime filter (0 sw, veto 0) ckpt None
+joint_hash    usable 0.495 hits   82927 pend      0 dram    492.5 GB ( 1.17 GB/s on, worst min  1.49) cxl   2119.1 GB ( 5.06) p99  0.95% backlog     1.6 GB drops      0 bypass  496155 regime filter (0 sw, veto 0) ckpt None
+oracle_cost   usable 0.601 hits  104953 pend     46 dram    953.1 GB ( 2.27 GB/s on, worst min  2.51) cxl   8767.0 GB (20.95) p99  1.90% backlog    29.4 GB drops      0 bypass  351531 regime filter (0 sw, veto 0) ckpt None
+oracle_joint  usable 0.616 hits  105420 pend     46 dram    831.4 GB ( 1.98 GB/s on, worst min  2.31) cxl   8884.7 GB (21.23) p99  1.64% backlog    26.2 GB drops      0 bypass  349132 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/reg-mixinter-70b-4x-adam-joint.csv

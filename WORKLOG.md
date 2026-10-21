@@ -9,6 +9,15 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-21 (third round) addendum — PHASE 3 JOINT BENEFIT ANALYSIS CLOSED: CORE HYPOTHESIS H2 NOT SUPPORTED.** With
+the same RQ1 information and the same measured DRAM/CXL costs, a joint value × cost policy equals the independent
+combination (reuse-aware admission + budget-gated placement) to −0.5 … +0.7 points on 24 real-trace configurations
+(8B / 70B × 1–8× × two traces × two neighbours); the RQ1 admission alone removes 88–91% of host writes and all of
+their tail (peaks ≤ 25 GB/s vs a 46 GB/s path, DRAM ≤ 2.1 GB/s, backlog ≤ 1 GB, Adam p99 ≤ 1.9%), so the cost module
+is idle; the value oracle gains ≤ 0.02 from removing costs; under CONSTRUCTED stress (CXL ≤ 6 GB/s) a value-blind
+drop beats the value-ordered one. Gate 3 not met; recommendation: no minimal unified manager on this hypothesis. Note:
+the earlier admission reports' "TB written (scored half)" were whole-trace volumes (×2); hit shares unaffected.
+
 **2026-10-21 (second round) addendum — RQ1-B ROBUST ADMISSION CLOSED; RQ1 CONSOLIDATED.** Regime rule "normal
 admission when the admit-all residence ≥ the online median re-lookup gap of first-touch blocks" keeps the gap rule at
 52–419 GiB (21–33%) and switches at 839 GiB (0% with LRU, +12 / +17% with SLRU instead of −10 / −19%); SLRU-structured
@@ -246,6 +255,20 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-21 (session 34, third round: Phase 3 joint benefit analysis — RQ2 hypothesis validation)
+
+- Brief: post-RQ1 resource pressure, value–cost coupling, a reproducible joint simulator from measured costs, fair
+  baselines (static split, reuse-aware only, cost-aware only, independent combination, joint, oracles), regimes,
+  decomposition, critical assessment; no unified manager, no cxlpathd change, no new hardware runs.
+- New `scripts/kv_joint_sim.py` (two tiers, CXL FIFO server at the measured 46 GB/s with offer-ordered pending stores
+  and prefill-spaced offers, token-bucket DRAM budget, interference curves interpolated from the 2026-10-12
+  calibration, checkpoint co-writer, 13 policies incl. two oracles; validated on the RQ1 single-tier numbers),
+  `kv_joint_tables.py` (budget selection on the first half, grids, regimes, stress), `kv_joint_pressure.py`,
+  `kv_joint_figs.py`; ~700 replays in `experimental_results/2026-10-21-joint-benefit-analysis/` (`run_all.sh`).
+- Found while validating: the earlier admission reports' write volumes counted the whole trace (noted in the new
+  file and the decision report; the frozen files are not edited).
+- Result: see the experiment file; Gate 3 not met; decision report and INDEX updated.
 
 ### 2026-10-21 (session 34, second round: RQ1-B robust online reuse information and adaptive admission)
 

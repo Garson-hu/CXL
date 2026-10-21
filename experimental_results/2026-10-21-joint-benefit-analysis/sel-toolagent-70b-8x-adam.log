@@ -1,0 +1,80 @@
+indep         usable 0.653 hits   37708 pend    153 dram     19.0 GB ( 0.17 GB/s on, worst min  0.17) cxl    811.8 GB ( 7.41) p99  0.14% backlog     0.7 GB drops      0 bypass  236828 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35112 pend   1017 dram     26.2 GB ( 0.23 GB/s on, worst min  0.22) cxl   4917.0 GB (44.91) p99  0.19% backlog    92.2 GB drops  35945 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.654 hits   37753 pend    153 dram     15.8 GB ( 0.14 GB/s on, worst min  0.14) cxl    812.0 GB ( 7.42) p99  0.12% backlog     0.7 GB drops      0 bypass  238368 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B0.25-d1-joint.csv
+indep         usable 0.652 hits   37891 pend    153 dram     26.2 GB ( 0.24 GB/s on, worst min  0.23) cxl    798.9 GB ( 7.30) p99  0.19% backlog     0.6 GB drops      0 bypass  235226 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35116 pend   1019 dram     26.8 GB ( 0.24 GB/s on, worst min  0.23) cxl   4916.9 GB (44.90) p99  0.20% backlog    92.2 GB drops  35937 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.654 hits   37907 pend    153 dram     22.0 GB ( 0.20 GB/s on, worst min  0.19) cxl    798.1 GB ( 7.29) p99  0.16% backlog     0.7 GB drops      0 bypass  236867 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B0.25-d4-joint.csv
+indep         usable 0.653 hits   37968 pend    153 dram     35.1 GB ( 0.31 GB/s on, worst min  0.32) cxl    800.1 GB ( 7.31) p99  0.26% backlog     0.6 GB drops      0 bypass  234864 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35254 pend   1006 dram     51.0 GB ( 0.46 GB/s on, worst min  0.43) cxl   4917.5 GB (44.91) p99  0.37% backlog    92.2 GB drops  35663 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.656 hits   38006 pend    153 dram     32.4 GB ( 0.29 GB/s on, worst min  0.28) cxl    797.6 GB ( 7.28) p99  0.24% backlog     0.6 GB drops      0 bypass  235583 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B0.5-d1-joint.csv
+indep         usable 0.653 hits   37978 pend    162 dram     52.5 GB ( 0.47 GB/s on, worst min  0.44) cxl    984.1 GB ( 8.99) p99  0.38% backlog     1.0 GB drops      0 bypass  233994 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35236 pend   1017 dram     53.5 GB ( 0.48 GB/s on, worst min  0.45) cxl   4917.4 GB (44.91) p99  0.39% backlog    92.2 GB drops  35657 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.658 hits   38143 pend    153 dram     40.4 GB ( 0.36 GB/s on, worst min  0.36) cxl    795.7 GB ( 7.27) p99  0.29% backlog     0.6 GB drops      0 bypass  235547 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B0.5-d4-joint.csv
+indep         usable 0.655 hits   38101 pend    153 dram     65.8 GB ( 0.59 GB/s on, worst min  0.55) cxl   1013.3 GB ( 9.25) p99  0.48% backlog     0.9 GB drops      0 bypass  233550 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35410 pend   1003 dram    100.7 GB ( 0.91 GB/s on, worst min  0.84) cxl   4919.2 GB (44.92) p99  0.74% backlog    92.2 GB drops  35206 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.651 hits   38112 pend    159 dram     51.7 GB ( 0.47 GB/s on, worst min  0.45) cxl    916.2 GB ( 8.37) p99  0.38% backlog     0.9 GB drops      0 bypass  235004 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B1-d1-joint.csv
+indep         usable 0.659 hits   38224 pend    153 dram     88.8 GB ( 0.80 GB/s on, worst min  0.80) cxl    952.8 GB ( 8.70) p99  0.65% backlog     0.8 GB drops      0 bypass  233036 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35390 pend   1007 dram    106.9 GB ( 0.96 GB/s on, worst min  0.90) cxl   4918.6 GB (44.92) p99  0.78% backlog    92.2 GB drops  35188 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.658 hits   38266 pend    158 dram     80.4 GB ( 0.72 GB/s on, worst min  0.78) cxl    990.0 GB ( 9.04) p99  0.59% backlog     0.9 GB drops      0 bypass  233577 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B1-d4-joint.csv
+indep         usable 0.656 hits   38306 pend    153 dram     98.2 GB ( 0.88 GB/s on, worst min  0.85) cxl    850.4 GB ( 7.77) p99  0.72% backlog     0.9 GB drops      0 bypass  232328 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35529 pend    992 dram    192.0 GB ( 1.73 GB/s on, worst min  1.61) cxl   4921.7 GB (44.95) p99  1.41% backlog    92.2 GB drops  34539 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.657 hits   38270 pend    176 dram    102.7 GB ( 0.92 GB/s on, worst min  0.86) cxl    987.5 GB ( 9.02) p99  0.75% backlog     0.9 GB drops      0 bypass  232895 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B2-d1-joint.csv
+indep         usable 0.663 hits   38624 pend    162 dram    156.4 GB ( 1.40 GB/s on, worst min  1.45) cxl    814.8 GB ( 7.44) p99  1.14% backlog     0.7 GB drops      0 bypass  231457 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35572 pend   1003 dram    213.8 GB ( 1.93 GB/s on, worst min  1.80) cxl   4921.6 GB (44.95) p99  1.59% backlog    92.2 GB drops  34355 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.665 hits   38986 pend    167 dram    129.5 GB ( 1.16 GB/s on, worst min  1.19) cxl    770.2 GB ( 7.03) p99  0.94% backlog     0.7 GB drops      0 bypass  232386 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B2-d4-joint.csv
+indep         usable 0.666 hits   38629 pend    153 dram    176.5 GB ( 1.58 GB/s on, worst min  1.65) cxl    809.3 GB ( 7.39) p99  1.29% backlog     0.7 GB drops      0 bypass  231591 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35680 pend    977 dram    372.2 GB ( 3.35 GB/s on, worst min  3.13) cxl   4924.1 GB (44.97) p99  2.59% backlog    92.2 GB drops  33314 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.676 hits   38799 pend    153 dram    162.4 GB ( 1.46 GB/s on, worst min  1.37) cxl    796.5 GB ( 7.27) p99  1.18% backlog     0.7 GB drops      0 bypass  230735 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B4-d1-joint.csv
+indep         usable 0.675 hits   38765 pend    153 dram    245.0 GB ( 2.19 GB/s on, worst min  2.30) cxl    721.7 GB ( 6.59) p99  1.83% backlog     0.7 GB drops      0 bypass  231339 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35686 pend    974 dram    427.6 GB ( 3.85 GB/s on, worst min  3.60) cxl   4925.4 GB (44.98) p99  2.87% backlog    92.2 GB drops  32973 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.676 hits   38899 pend    159 dram    202.7 GB ( 1.81 GB/s on, worst min  1.80) cxl    738.0 GB ( 6.74) p99  1.48% backlog     0.6 GB drops      0 bypass  232012 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B4-d4-joint.csv
+indep         usable 0.676 hits   38758 pend    153 dram    246.2 GB ( 2.21 GB/s on, worst min  2.32) cxl    722.7 GB ( 6.60) p99  1.85% backlog     0.7 GB drops      0 bypass  231482 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.610 hits   35579 pend    986 dram    731.6 GB ( 6.60 GB/s on, worst min  6.19) cxl   4922.1 GB (44.95) p99  4.50% backlog    92.2 GB drops  31276 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.671 hits   38924 pend    164 dram    194.8 GB ( 1.74 GB/s on, worst min  1.82) cxl    725.2 GB ( 6.62) p99  1.42% backlog     0.6 GB drops      0 bypass  231665 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B8-d1-joint.csv
+indep         usable 0.667 hits   38556 pend    153 dram    319.8 GB ( 2.88 GB/s on, worst min  2.88) cxl    704.1 GB ( 6.43) p99  2.32% backlog     0.7 GB drops      0 bypass  231272 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35826 pend    944 dram    856.3 GB ( 7.72 GB/s on, worst min  7.22) cxl   4932.8 GB (45.05) p99  5.69% backlog    92.2 GB drops  30264 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.674 hits   38863 pend    158 dram    259.4 GB ( 2.30 GB/s on, worst min  2.34) cxl    691.0 GB ( 6.31) p99  1.92% backlog     0.6 GB drops      0 bypass  231391 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B8-d4-joint.csv
+indep         usable 0.676 hits   38781 pend    153 dram    250.5 GB ( 2.25 GB/s on, worst min  2.36) cxl    715.8 GB ( 6.54) p99  1.88% backlog     0.7 GB drops      0 bypass  231377 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.611 hits   35878 pend    933 dram    776.2 GB ( 7.00 GB/s on, worst min  6.47) cxl   4937.9 GB (45.09) p99  4.90% backlog    92.2 GB drops  30670 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.665 hits   38726 pend    153 dram    205.2 GB ( 1.82 GB/s on, worst min  1.72) cxl    764.2 GB ( 6.98) p99  1.50% backlog     0.7 GB drops      0 bypass  231996 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B12-d1-joint.csv
+indep         usable 0.666 hits   38510 pend    153 dram    330.4 GB ( 2.98 GB/s on, worst min  2.92) cxl    691.5 GB ( 6.32) p99  2.37% backlog     0.6 GB drops      0 bypass  231229 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.613 hits   35663 pend    968 dram   1283.3 GB (11.56 GB/s on, worst min 10.83) cxl   4941.5 GB (45.13) p99  7.97% backlog    92.2 GB drops  27805 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.674 hits   38673 pend    158 dram    298.5 GB ( 2.65 GB/s on, worst min  2.44) cxl    666.2 GB ( 6.08) p99  2.18% backlog     0.6 GB drops      0 bypass  231247 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B12-d4-joint.csv
+indep         usable 0.676 hits   38777 pend    153 dram    250.7 GB ( 2.26 GB/s on, worst min  2.37) cxl    716.0 GB ( 6.54) p99  1.88% backlog     0.7 GB drops      0 bypass  231356 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.612 hits   35768 pend    941 dram    861.5 GB ( 7.77 GB/s on, worst min  7.25) cxl   4937.0 GB (45.09) p99  5.76% backlog    92.2 GB drops  30269 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.665 hits   38714 pend    153 dram    207.1 GB ( 1.84 GB/s on, worst min  1.75) cxl    764.0 GB ( 6.98) p99  1.51% backlog     0.7 GB drops      0 bypass  232269 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B16-d1-joint.csv
+indep         usable 0.666 hits   38516 pend    153 dram    331.7 GB ( 2.99 GB/s on, worst min  2.92) cxl    689.7 GB ( 6.30) p99  2.38% backlog     0.6 GB drops      0 bypass  231229 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.607 hits   35620 pend    959 dram   1693.4 GB (15.27 GB/s on, worst min 14.30) cxl   4946.2 GB (45.17) p99 11.14%* backlog    92.2 GB drops  25385 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.673 hits   38725 pend    161 dram    301.2 GB ( 2.68 GB/s on, worst min  2.49) cxl    662.1 GB ( 6.05) p99  2.20% backlog     0.6 GB drops      0 bypass  231621 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B16-d4-joint.csv
+indep         usable 0.676 hits   38775 pend    153 dram    253.0 GB ( 2.28 GB/s on, worst min  2.41) cxl    713.5 GB ( 6.52) p99  1.90% backlog     0.7 GB drops      0 bypass  231380 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.608 hits   35781 pend    947 dram   1043.0 GB ( 9.42 GB/s on, worst min  8.97) cxl   4938.5 GB (45.10) p99  7.09% backlog    92.2 GB drops  29159 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.668 hits   38777 pend    158 dram    227.9 GB ( 2.03 GB/s on, worst min  1.87) cxl    720.0 GB ( 6.58) p99  1.68% backlog     0.7 GB drops      0 bypass  231486 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B24-d1-joint.csv
+indep         usable 0.666 hits   38509 pend    153 dram    331.9 GB ( 2.99 GB/s on, worst min  2.92) cxl    693.0 GB ( 6.33) p99  2.38% backlog     0.6 GB drops      0 bypass  231231 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.613 hits   35586 pend    994 dram   2326.4 GB (21.00 GB/s on, worst min 19.48) cxl   4951.9 GB (45.22) p99 16.54%* backlog    92.2 GB drops  21579 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.676 hits   38954 pend    164 dram    253.2 GB ( 2.23 GB/s on, worst min  2.30) cxl    708.6 GB ( 6.47) p99  1.86% backlog     0.7 GB drops      0 bypass  235891 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B24-d4-joint.csv
+indep         usable 0.678 hits   38903 pend    164 dram    260.1 GB ( 2.34 GB/s on, worst min  2.48) cxl    711.6 GB ( 6.50) p99  1.96% backlog     0.7 GB drops      0 bypass  231342 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.613 hits   35677 pend    953 dram   1251.3 GB (11.30 GB/s on, worst min 10.67) cxl   4941.2 GB (45.12) p99  7.78% backlog    92.2 GB drops  28000 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.677 hits   38770 pend    159 dram    247.0 GB ( 2.19 GB/s on, worst min  2.09) cxl    703.1 GB ( 6.42) p99  1.82% backlog     0.6 GB drops      0 bypass  230591 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B32-d1-joint.csv
+indep         usable 0.666 hits   38507 pend    153 dram    331.9 GB ( 2.99 GB/s on, worst min  2.92) cxl    693.0 GB ( 6.33) p99  2.38% backlog     0.6 GB drops      0 bypass  231224 regime filter (0 sw, veto 0) ckpt None
+cost_budget   usable 0.614 hits   35591 pend   1014 dram   2671.0 GB (24.12 GB/s on, worst min 22.22) cxl   4953.5 GB (45.24) p99 19.47%* backlog    92.2 GB drops  19492 bypass       0 regime filter (0 sw, veto 0) ckpt None
+joint         usable 0.670 hits   38858 pend    167 dram    241.6 GB ( 2.13 GB/s on, worst min  2.14) cxl    695.7 GB ( 6.35) p99  1.77% backlog     0.7 GB drops      0 bypass  236021 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-joint-benefit-analysis/sel-toolagent-70b-8x-adam-B32-d4-joint.csv
