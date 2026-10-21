@@ -1,0 +1,19 @@
+  audit lru cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) lru          usable 0.555 served 0.555 hits   34226 usable_n   34226 written   81958 bypass       0 res 70.26100000000001 est 112.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) slru         usable 0.572 served 0.572 hits   35254 usable_n   35254 written   80260 bypass       0 res 53.74699999999996 est 135.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd          usable 0.592 served 0.592 hits   36489 usable_n   36489 written   38390 bypass   41713 res 112.69899999999996 est 138.9 ghost 37524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.558 served 0.558 hits   34424 usable_n   34424 written   26672 bypass   55545 res 176.76399999999995 est 174.8 ghost 37524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.564 served 0.564 hits   34762 usable_n   34762 written   36134 bypass   46071 res 151.018 est 120.6 ghost 37524 forgot 0 fp 0 thr 0.0 regime normal switches 5 163:n/265:f/357:n/399:f/859:n
+  audit tinylfu cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) tinylfu      usable 0.466 served 0.466 hits   28724 usable_n   28724 written   18751 bypass   67663 res 380.21400000000006 est 372.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) oracle       usable 0.852 served 0.852 hits   52532 usable_n   52532 written   24004 bypass   29222 res 194.539 est 202.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c6400-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.592 served 0.592 hits   36489 usable_n   36489 written   38390 bypass   41713 res 112.69899999999996 est 138.9 ghost 37524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.558 served 0.558 hits   34424 usable_n   34424 written   26672 bypass   55545 res 176.76399999999995 est 174.8 ghost 37524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.564 served 0.564 hits   34762 usable_n   34762 written   36134 bypass   46071 res 151.018 est 120.6 ghost 37524 forgot 0 fp 0 thr 0.0 regime normal switches 5 163:n/265:f/357:n/399:f/859:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c6400-g64k-replay.csv

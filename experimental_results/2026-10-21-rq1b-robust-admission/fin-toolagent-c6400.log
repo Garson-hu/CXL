@@ -1,0 +1,4 @@
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.802 served 0.802 hits   90405 usable_n   90405 written   60582 bypass  170338 res 381.0 est 500.3 ghost 176900 forgot 0 fp 0 thr 0.0 regime filter switches 4 96:n/384:f/492:n/600:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c6400-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.801 served 0.801 hits   90325 usable_n   90325 written   61293 bypass  169484 res 293.9989999999998 est 704.3 ghost 176900 forgot 0 fp 0 thr 0.0 regime filter switches 4 96:n/384:f/492:n/612:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c6400-slru-replay.csv

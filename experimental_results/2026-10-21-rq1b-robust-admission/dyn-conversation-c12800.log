@@ -1,0 +1,32 @@
+cap  12800 ( 838.7 GiB) lru          usable 0.466 served 0.466 hits   16409 usable_n   16409 written  298147 bypass       0 res 110.76775881022377 est 126.6 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.485 served 0.485 hits   17087 usable_n   17087 written  293411 bypass       0 res 78.0 est 122.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.555 served 0.555 hits   19555 usable_n   19555 written   54670 bypass  244683 res 774.001 est 601.8 ghost 240726 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.557 served 0.557 hits   19621 usable_n   19621 written   51179 bypass  248339 res 819.0010000000002 est 685.9 ghost 240726 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.466 served 0.466 hits   16409 usable_n   16409 written  292140 bypass    7869 res 109.55756604840508 est 126.6 ghost 240726 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.413 served 0.413 hits   14556 usable_n   14556 written   37327 bypass  268866 res 1430.9989999999998 est 1465.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   35224 usable_n   35224 written   44144 bypass  209382 res 656.999 est 1173.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-conversation-c12800-stepup-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.579 served 0.579 hits   35178 usable_n   35178 written  288255 bypass       0 res 147.0 est 217.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.632 served 0.632 hits   38365 usable_n   38365 written  282708 bypass       0 res 96.44142967881635 est 155.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.586 served 0.586 hits   35595 usable_n   35595 written   53811 bypass  236948 res 714.0 est 969.4 ghost 231886 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.585 served 0.585 hits   35520 usable_n   35520 written   49959 bypass  240798 res 764.4150710579036 est 963.6 ghost 231886 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.579 served 0.579 hits   35178 usable_n   35178 written  282248 bypass    7869 res 141.0 est 217.4 ghost 231886 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.473 served 0.473 hits   28698 usable_n   28698 written   38769 bypass  257647 res 1233.001 est 1734.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   60728 usable_n   60728 written   44144 bypass  200542 res 656.999 est 1173.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-conversation-c12800-stepdown-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.586 served 0.586 hits   25484 usable_n   25484 written  242781 bypass       0 res 183.0 est 217.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.649 served 0.649 hits   28246 usable_n   28246 written  237291 bypass       0 res 132.0 est 157.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.582 served 0.582 hits   25331 usable_n   25331 written   47868 bypass  201353 res 822.0 est 976.7 ghost 191206 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.576 served 0.576 hits   25059 usable_n   25059 written   45237 bypass  204491 res 852.001 est 952.5 ghost 191206 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.586 served 0.586 hits   25484 usable_n   25484 written  236774 bypass    7869 res 183.0 est 217.4 ghost 191206 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.424 served 0.424 hits   18451 usable_n   18451 written   36264 bypass  220745 res 1488.001 est 1614.6 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   43502 usable_n   43502 written   44144 bypass  159862 res 656.999 est 1173.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-conversation-c12800-burst-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.663 served 0.663 hits   24269 usable_n   24269 written  176389 bypass       0 res 192.00099999999998 est 430.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.718 served 0.718 hits   26306 usable_n   26306 written  172857 bypass       0 res 147.0 est 341.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.610 served 0.610 hits   22345 usable_n   22345 written   33485 bypass  151182 res 963.0 est 1918.8 ghost 138383 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.601 served 0.601 hits   22015 usable_n   22015 written   32541 bypass  152456 res 969.0 est 2025.4 ghost 138383 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.663 served 0.663 hits   24269 usable_n   24269 written  170382 bypass    7869 res 194.99900000000002 est 430.1 ghost 138383 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.461 served 0.461 hits   16895 usable_n   16895 written   28522 bypass  159787 res 1236.0 est 2906.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   36613 usable_n   36613 written   33260 bypass  117923 res 726.0 est 1456.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-conversation-c12800-thin-replay.csv

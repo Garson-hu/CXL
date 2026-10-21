@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.711 served 0.711 hits   58997 usable_n   58997 written   46939 bypass  268933 res 198.0010000000002 est 186.4 ghost 250836 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-stepup-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.732 served 0.732 hits   90741 usable_n   90741 written   45219 bypass  261747 res 201.0010000000002 est 399.4 ghost 241996 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-stepdown-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.730 served 0.730 hits   73506 usable_n   73506 written   41718 bypass  223003 res 228.00099999999998 est 386.1 ghost 201316 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-burst-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.759 served 0.759 hits   64140 usable_n   64140 written   30298 bypass  165462 res 249.00099999999998 est 568.6 ghost 148242 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-thin-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.725 served 0.725 hits   60150 usable_n   60150 written   45266 bypass  269783 res 150.0 est 147.3 ghost 250836 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-stepup-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.736 served 0.736 hits   91244 usable_n   91244 written   44549 bypass  262658 res 149.99900000000002 est 155.8 ghost 241996 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-stepdown-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.736 served 0.736 hits   74136 usable_n   74136 written   40293 bypass  224244 res 174.00099999999998 est 157.7 ghost 201316 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-burst-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.764 served 0.764 hits   64560 usable_n   64560 written   29297 bypass  166588 res 212.99900000000002 est 615.4 ghost 148242 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-toolagent-c3200-thin-slru-replay.csv

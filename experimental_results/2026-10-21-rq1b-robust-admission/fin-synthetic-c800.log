@@ -1,0 +1,4 @@
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.128 served 0.128 hits    7908 usable_n    7908 written   21018 bypass   91959 res 31.024999999999977 est 11.7 ghost 43124 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c800-replay.csv
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.132 served 0.132 hits    8165 usable_n    8165 written   20742 bypass   92232 res 22.182999999999993 est 15.2 ghost 43124 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c800-slru-replay.csv

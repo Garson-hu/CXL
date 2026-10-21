@@ -1,0 +1,32 @@
+cap  12800 ( 838.7 GiB) lru          usable 0.785 served 0.785 hits   65183 usable_n   65183 written  291202 bypass       0 res 111.0010000000002 est 126.6 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.802 served 0.802 hits   66576 usable_n   66576 written  287078 bypass       0 res 78.07899427731309 est 199.6 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.829 served 0.829 hits   68833 usable_n   68833 written   49078 bypass  245190 res 885.8486661162628 est 931.3 ghost 241236 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.827 served 0.827 hits   68636 usable_n   68636 written   48701 bypass  245767 res 888.001 est 727.7 ghost 241236 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.785 served 0.785 hits   65183 usable_n   65183 written  286084 bypass    6972 res 110.9672585614112 est 126.6 ghost 241236 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.761 served 0.761 hits   63144 usable_n   63144 written   44024 bypass  257460 res 1107.001 est 1021.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   82997 usable_n   82997 written   39481 bypass  214555 res 819.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c12800-stepup-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.841 served 0.841 hits  104213 usable_n  104213 written  281788 bypass       0 res 147.00099999999998 est 205.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.862 served 0.862 hits  106923 usable_n  106923 written  276901 bypass       0 res 93.88165578066446 est 376.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.838 served 0.838 hits  103911 usable_n  103911 written   47800 bypass  237455 res 793.8876496090218 est 1102.2 ghost 232396 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.836 served 0.836 hits  103660 usable_n  103660 written   47489 bypass  238021 res 797.999 est 1081.9 ghost 232396 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.841 served 0.841 hits  104213 usable_n  104213 written  276670 bypass    6972 res 140.9989999999998 est 205.0 ghost 232396 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.782 served 0.782 hits   97003 usable_n   97003 written   46099 bypass  244954 res 1012.9037470240401 est 1097.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits  123977 usable_n  123977 written   39481 bypass  205715 res 819.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c12800-stepdown-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.844 served 0.844 hits   84982 usable_n   84982 written  236200 bypass       0 res 186.00099999999998 est 205.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.876 served 0.876 hits   88223 usable_n   88223 written  231087 bypass       0 res 135.0 est 268.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.833 served 0.833 hits   83870 usable_n   83870 written   42634 bypass  201860 res 926.999 est 1102.2 ghost 191716 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.831 served 0.831 hits   83664 usable_n   83664 written   42401 bypass  202301 res 927.0 est 1079.7 ghost 191716 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.844 served 0.844 hits   84982 usable_n   84982 written  231082 bypass    6972 res 186.00099999999998 est 205.0 ghost 191716 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.762 served 0.762 hits   76781 usable_n   76781 written   42707 bypass  208577 res 1170.0 est 1170.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits  100734 usable_n  100734 written   39481 bypass  165035 res 819.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c12800-burst-replay.csv
+cap  12800 ( 838.7 GiB) lru          usable 0.874 served 0.874 hits   73835 usable_n   73835 written  172783 bypass       0 res 195.0 est 424.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) slru         usable 0.895 served 0.895 hits   75639 usable_n   75639 written  169742 bypass       0 res 149.99900000000002 est 412.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd          usable 0.847 served 0.847 hits   71578 usable_n   71578 written   30577 bypass  151438 res 1041.0 est 1766.1 ghost 138642 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.846 served 0.846 hits   71521 usable_n   71521 written   30526 bypass  151546 res 1040.999 est 1778.9 ghost 138642 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.874 served 0.874 hits   73835 usable_n   73835 written  167665 bypass    6972 res 195.00099999999998 est 424.3 ghost 138642 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.788 served 0.788 hits   66567 usable_n   66567 written   33705 bypass  151057 res 1157.999 est 2161.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   84497 usable_n   84497 written   30571 bypass  120871 res 879.0 est 1504.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c12800-thin-replay.csv

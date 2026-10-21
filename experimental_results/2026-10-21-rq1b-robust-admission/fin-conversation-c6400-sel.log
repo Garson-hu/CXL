@@ -1,0 +1,2 @@
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.485 served 0.485 hits   13327 usable_n   13327 written   58753 bypass  177962 res 294.001 est 698.6 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/360:f/516:n/600:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c6400-sel-slru-replay.csv

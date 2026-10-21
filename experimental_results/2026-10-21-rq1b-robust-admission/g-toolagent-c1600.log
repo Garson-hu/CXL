@@ -1,0 +1,19 @@
+  audit lru cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) lru          usable 0.624 served 0.624 hits   70304 usable_n   70304 written  268667 bypass       0 res 21.0 est 15.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) slru         usable 0.631 served 0.631 hits   71127 usable_n   71127 written  266208 bypass       0 res 15.0 est 9.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd          usable 0.656 served 0.656 hits   73896 usable_n   73896 written   76540 bypass  183296 res 66.0 est 85.8 ghost 181700 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.683 served 0.683 hits   77008 usable_n   77008 written   34269 bypass  220228 res 138.0 est 139.4 ghost 181700 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.624 served 0.624 hits   70304 usable_n   70304 written  261706 bypass    6972 res 21.0 est 15.3 ghost 181700 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+  audit tinylfu cap 1600: served_behind_a_hole_not_counted=3 (invariants hold)
+cap   1600 ( 104.8 GiB) tinylfu      usable 0.663 served 0.663 hits   74685 usable_n   74682 written   43665 bypass  215494 res 120.0 est 168.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) oracle       usable 0.851 served 0.851 hits   95960 usable_n   95960 written   46342 bypass  169324 res 83.99900000000002 est 186.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-toolagent-c1600-replay.csv
+cap   1600 ( 104.8 GiB) 2nd          usable 0.654 served 0.654 hits   73740 usable_n   73740 written   76375 bypass  183617 res 66.0 est 85.6 ghost 64000 forgot 321 fp 0 thr 0.0 regime  switches 0 
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.683 served 0.683 hits   77008 usable_n   77008 written   34269 bypass  220228 res 138.0 est 139.4 ghost 64000 forgot 321 fp 0 thr 0.0 regime  switches 0 
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.624 served 0.624 hits   70304 usable_n   70304 written  261706 bypass    6972 res 21.0 est 15.3 ghost 64000 forgot 359 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-toolagent-c1600-g64k-replay.csv

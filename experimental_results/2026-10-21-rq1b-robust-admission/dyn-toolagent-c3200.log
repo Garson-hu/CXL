@@ -1,0 +1,32 @@
+cap   3200 ( 209.7 GiB) lru          usable 0.622 served 0.622 hits   51637 usable_n   51637 written  335402 bypass       0 res 33.0 est 23.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.640 served 0.640 hits   53112 usable_n   53112 written  330213 bypass       0 res 21.60121533589654 est 16.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd          usable 0.704 served 0.704 hits   58462 usable_n   58462 written   71358 bypass  245190 res 134.9989999999998 est 115.0 ghost 250836 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.711 served 0.711 hits   58997 usable_n   58997 written   46939 bypass  268933 res 198.0010000000002 est 186.4 ghost 250836 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.622 served 0.622 hits   51637 usable_n   51637 written  328528 bypass    6972 res 31.36176448767219 est 23.8 ghost 250836 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap   3200 ( 209.7 GiB) tinylfu      usable 0.686 served 0.688 hits   57078 usable_n   56926 written   46592 bypass  273235 res 210.0 est 242.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.935 served 0.935 hits   77587 usable_n   77587 written   44277 bypass  222653 res 162.0 est 576.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c3200-stepup-replay.csv
+cap   3200 ( 209.7 GiB) lru          usable 0.644 served 0.644 hits   79786 usable_n   79786 written  326068 bypass       0 res 30.0 est 52.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.652 served 0.652 hits   80882 usable_n   80882 written  323084 bypass       0 res 21.0 est 43.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd          usable 0.729 served 0.729 hits   90368 usable_n   90368 written   70425 bypass  237455 res 132.0 est 149.2 ghost 241996 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.732 served 0.732 hits   90741 usable_n   90741 written   45219 bypass  261747 res 201.0010000000002 est 399.4 ghost 241996 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   79786 usable_n   79786 written  319194 bypass    6972 res 30.0 est 52.5 ghost 241996 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap   3200 ( 209.7 GiB) tinylfu      usable 0.704 served 0.704 hits   87275 usable_n   87275 written   46865 bypass  264608 res 222.0 est 274.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.940 served 0.940 hits  116544 usable_n  116544 written   44277 bypass  213813 res 162.0 est 576.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c3200-stepdown-replay.csv
+cap   3200 ( 209.7 GiB) lru          usable 0.638 served 0.638 hits   64248 usable_n   64248 written  284218 bypass       0 res 41.999000000000024 est 52.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.653 served 0.653 hits   65802 usable_n   65802 written  279694 bypass       0 res 30.0 est 41.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd          usable 0.725 served 0.725 hits   73034 usable_n   73034 written   63145 bypass  201860 res 150.00099999999998 est 149.2 ghost 201316 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.730 served 0.730 hits   73506 usable_n   73506 written   41718 bypass  223003 res 228.00099999999998 est 386.1 ghost 201316 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.638 served 0.638 hits   64248 usable_n   64248 written  277344 bypass    6972 res 41.999000000000024 est 52.5 ghost 201316 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap   3200 ( 209.7 GiB) tinylfu      usable 0.702 served 0.702 hits   70737 usable_n   70737 written   42415 bypass  226836 res 236.9989999999998 est 341.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.936 served 0.936 hits   94269 usable_n   94269 written   44277 bypass  173133 res 162.0 est 576.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c3200-burst-replay.csv
+cap   3200 ( 209.7 GiB) lru          usable 0.691 served 0.691 hits   58357 usable_n   58357 written  208666 bypass       0 res 45.0 est 98.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.705 served 0.705 hits   59573 usable_n   59573 written  205493 bypass       0 res 33.001000000000005 est 85.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd          usable 0.766 served 0.766 hits   64760 usable_n   64760 written   43743 bypass  151438 res 171.0 est 412.5 ghost 148242 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.759 served 0.759 hits   64140 usable_n   64140 written   30298 bypass  165462 res 249.00099999999998 est 568.6 ghost 148242 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.691 served 0.691 hits   58357 usable_n   58357 written  201792 bypass    6972 res 45.0 est 98.4 ghost 148242 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap   3200 ( 209.7 GiB) tinylfu      usable 0.733 served 0.733 hits   61897 usable_n   61897 written   32929 bypass  165838 res 285.0 est 552.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.957 served 0.957 hits   80838 usable_n   80838 written   33548 bypass  125741 res 170.99900000000002 est 1100.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/dyn-toolagent-c3200-thin-replay.csv

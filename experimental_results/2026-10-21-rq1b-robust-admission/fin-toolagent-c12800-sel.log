@@ -1,0 +1,2 @@
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.860 served 0.860 hits   49105 usable_n   49105 written  204575 bypass    6972 res 137.99900000000002 est 232.5 ghost 170500 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c12800-sel-slru-replay.csv

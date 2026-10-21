@@ -1,0 +1,4 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.358 served 0.358 hits   22094 usable_n   22094 written   27897 bypass   68696 res 92.51099999999997 est 70.4 ghost 40724 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c3200-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.349 served 0.349 hits   21555 usable_n   21555 written   27957 bypass   68899 res 67.132 est 52.4 ghost 40724 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c3200-slru-replay.csv

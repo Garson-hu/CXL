@@ -1,0 +1,2 @@
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.789 served 0.789 hits   45065 usable_n   45065 written   61293 bypass  169484 res 293.9989999999998 est 704.3 ghost 176900 forgot 0 fp 0 thr 0.0 regime filter switches 4 96:n/384:f/492:n/612:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c6400-sel-slru-replay.csv

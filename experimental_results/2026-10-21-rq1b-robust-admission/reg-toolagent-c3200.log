@@ -1,0 +1,62 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  257864 bypass    4949 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 72:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.5-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.5-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  249674 bypass   12999 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 192:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.5-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  257864 bypass    4949 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 72:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.75-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.75-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  249674 bypass   12999 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 192:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.75-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.731 served 0.731 hits   41753 usable_n   41753 written   62068 bypass  181794 res 183.00099999999998 est 379.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 72:n/456:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.9-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.729 served 0.729 hits   41666 usable_n   41666 written   61677 bypass  182046 res 183.0010000000002 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.9-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.729 served 0.729 hits   41629 usable_n   41629 written   60975 bypass  184193 res 186.0 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 192:n/564:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-res-q0.9-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-model-m0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   36803 usable_n   36803 written  217608 bypass   41396 res 42.0 est 249.1 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/2964:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-model-m0.1-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.724 served 0.724 hits   41331 usable_n   41331 written   97995 bypass  149592 res 45.0 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/1056:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-model-m0.3-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.675 served 0.675 hits   38556 usable_n   38556 written  251622 bypass    6972 res 30.0 est 43.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-slru-replay.csv
+cap   3200 ( 209.7 GiB) lru          usable 0.644 served 0.644 hits   36803 usable_n   36803 written  262741 bypass       0 res 42.0 est 52.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.675 served 0.675 hits   38547 usable_n   38547 written  258536 bypass       0 res 30.0 est 43.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.732 served 0.732 hits   41793 usable_n   41793 written   39326 bypass  203418 res 231.0 est 379.2 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.927 served 0.927 hits   52968 usable_n   52968 written   44277 bypass  151917 res 162.0 est 576.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-sel-ref-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  257864 bypass    4949 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 72:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.5-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.5-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  249674 bypass   12999 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 192:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.5-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  257864 bypass    4949 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 72:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.75-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.75-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  249674 bypass   12999 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 192:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.75-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.743 served 0.743 hits   83777 usable_n   83777 written   62068 bypass  181794 res 183.00099999999998 est 379.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 72:n/456:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.9-h0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.743 served 0.743 hits   83777 usable_n   83777 written   61677 bypass  182046 res 183.0010000000002 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.9-h30-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.743 served 0.743 hits   83764 usable_n   83764 written   60975 bypass  184193 res 186.0 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 192:n/564:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-res-q0.9-h120-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-model-m0-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.682 served 0.682 hits   76832 usable_n   76832 written  217608 bypass   41396 res 42.0 est 249.1 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/2964:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-model-m0.1-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.743 served 0.743 hits   83721 usable_n   83721 written   97995 bypass  149592 res 45.0 est 378.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 2 96:n/1056:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-model-m0.3-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.661 served 0.661 hits   74517 usable_n   74517 written  251622 bypass    6972 res 30.0 est 43.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-slru-replay.csv
+cap   3200 ( 209.7 GiB) lru          usable 0.648 served 0.648 hits   72997 usable_n   72997 written  262741 bypass       0 res 42.0 est 52.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) slru         usable 0.661 served 0.661 hits   74517 usable_n   74517 written  258536 bypass       0 res 30.0 est 43.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.742 served 0.742 hits   83580 usable_n   83580 written   39326 bypass  203418 res 231.0 est 379.2 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) oracle       usable 0.940 served 0.940 hits  105929 usable_n  105929 written   44277 bypass  151917 res 162.0 est 576.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-toolagent-c3200-test-ref-replay.csv

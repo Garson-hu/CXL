@@ -1,0 +1,22 @@
+cap     24 (   0.2 GiB) lru          usable 0.874 served 0.874 hits    3166 usable_n    3166 written    1718 bypass       0 res 1.5532000064849854 est 2.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     24 (   0.2 GiB) slru         usable 0.875 served 0.875 hits    3169 usable_n    3169 written    1709 bypass       0 res 1.3398082256317139 est 2.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     24 (   0.2 GiB) 2nd          usable 0.881 served 0.881 hits    3192 usable_n    3192 written     824 bypass     841 res 3.034813404083252 est 4.6 ghost 818 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     24 (   0.2 GiB) 2nd_int      usable 0.878 served 0.878 hits    3181 usable_n    3181 written     600 bypass    1065 res 4.277746677398682 est 6.2 ghost 818 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     24 (   0.2 GiB) 2nd_int_auto usable 0.874 served 0.874 hits    3166 usable_n    3166 written    1578 bypass     142 res 1.5532000064849854 est 2.3 ghost 818 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     24 (   0.2 GiB) tinylfu      usable 0.874 served 0.874 hits    3166 usable_n    3166 written     484 bypass    1171 res 4.929800033569336 est 6.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     24 (   0.2 GiB) oracle       usable 0.959 served 0.959 hits    3473 usable_n    3473 written     690 bypass     394 res 3.1366989612579346 est 5.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) lru          usable 0.931 served 0.931 hits    3373 usable_n    3373 written    1296 bypass       0 res 2.960902690887451 est 4.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) slru         usable 0.927 served 0.927 hits    3358 usable_n    3358 written    1323 bypass       0 res 2.4908792972564697 est 4.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) 2nd          usable 0.892 served 0.892 hits    3232 usable_n    3232 written     731 bypass     841 res 4.868067264556885 est 6.3 ghost 810 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) 2nd_int      usable 0.883 served 0.883 hits    3200 usable_n    3200 written     577 bypass    1040 res 6.520920038223267 est 8.5 ghost 810 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) 2nd_int_auto usable 0.931 served 0.931 hits    3373 usable_n    3373 written    1208 bypass     142 res 3.050955295562744 est 4.1 ghost 810 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     32 (   0.3 GiB) tinylfu      usable 0.883 served 0.883 hits    3198 usable_n    3198 written     494 bypass    1097 res 6.958425045013428 est 9.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     32 (   0.3 GiB) oracle       usable 0.970 served 0.970 hits    3513 usable_n    3513 written     659 bypass     334 res 3.8195197582244873 est 8.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) lru          usable 0.960 served 0.960 hits    3476 usable_n    3476 written    1066 bypass       0 res 5.807314395904541 est 7.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) slru         usable 0.958 served 0.958 hits    3469 usable_n    3469 written    1079 bypass       0 res 5.405448913574219 est 7.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) 2nd          usable 0.897 served 0.897 hits    3249 usable_n    3249 written     695 bypass     841 res 8.857580423355103 est 10.8 ghost 794 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) 2nd_int      usable 0.888 served 0.888 hits    3217 usable_n    3217 written     569 bypass    1007 res 10.753794431686401 est 12.7 ghost 794 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) 2nd_int_auto usable 0.960 served 0.960 hits    3476 usable_n    3476 written    1003 bypass     137 res 5.989456415176392 est 7.2 ghost 794 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     48 (   0.4 GiB) tinylfu      usable 0.892 served 0.892 hits    3230 usable_n    3230 written     520 bypass    1008 res 11.2688307762146 est 13.3 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap     48 (   0.4 GiB) oracle       usable 0.980 served 0.980 hits    3551 usable_n    3551 written     628 bypass     299 res 4.065079927444458 est 13.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/a-short-k16-replay.csv

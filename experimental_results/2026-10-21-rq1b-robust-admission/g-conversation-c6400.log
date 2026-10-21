@@ -1,0 +1,19 @@
+  audit lru cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) lru          usable 0.376 served 0.376 hits   19882 usable_n   19882 written  246265 bypass       0 res 87.0 est 89.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) slru         usable 0.376 served 0.376 hits   19873 usable_n   19873 written  246858 bypass       0 res 60.0 est 80.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd          usable 0.504 served 0.504 hits   26612 usable_n   26612 written   53490 bypass  182789 res 342.0 est 296.5 ghost 176390 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.509 served 0.509 hits   26910 usable_n   26910 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 6400: ghost_resident_overlap_end=0 (invariants hold)
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.436 served 0.436 hits   23013 usable_n   23013 written  172004 bypass   72024 res 87.0 est 196.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3048:n/3384:f
+  audit tinylfu cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) tinylfu      usable 0.402 served 0.402 hits   21255 usable_n   21255 written   27450 bypass  216247 res 759.0 est 1166.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 6400:  (invariants hold)
+cap   6400 ( 419.4 GiB) oracle       usable 0.967 served 0.967 hits   51080 usable_n   51080 written   44207 bypass  140631 res 303.0 est 1125.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-conversation-c6400-replay.csv
+cap   6400 ( 419.4 GiB) 2nd          usable 0.509 served 0.509 hits   26877 usable_n   26877 written   51540 bypass  184468 res 351.0 est 345.9 ghost 64000 forgot 1679 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.509 served 0.509 hits   26910 usable_n   26910 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 64000 forgot 1860 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.436 served 0.436 hits   23013 usable_n   23013 written  172004 bypass   72024 res 87.0 est 196.7 ghost 64000 forgot 1775 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3048:n/3384:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-conversation-c6400-g64k-replay.csv

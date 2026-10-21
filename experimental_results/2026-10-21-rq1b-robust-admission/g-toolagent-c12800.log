@@ -1,0 +1,19 @@
+  audit lru cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) lru          usable 0.862 served 0.862 hits   97134 usable_n   97134 written  213266 bypass       0 res 189.0 est 205.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) slru         usable 0.884 served 0.884 hits   99680 usable_n   99680 written  209255 bypass       0 res 138.0 est 256.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd          usable 0.837 served 0.837 hits   94355 usable_n   94355 written   39784 bypass  183296 res 987.001 est 1106.8 ghost 170500 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.835 served 0.835 hits   94149 usable_n   94149 written   39622 bypass  183665 res 990.0 est 1088.6 ghost 170500 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.862 served 0.862 hits   97134 usable_n   97134 written  208148 bypass    6972 res 189.0 est 205.0 ghost 170500 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+  audit tinylfu cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.766 served 0.766 hits   86294 usable_n   86294 written   40351 bypass  189904 res 1217.999 est 1080.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits  112712 usable_n  112712 written   39481 bypass  143819 res 819.0 est 1108.7 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-toolagent-c12800-replay.csv
+cap  12800 ( 838.7 GiB) 2nd          usable 0.836 served 0.836 hits   94191 usable_n   94191 written   39665 bypass  183579 res 989.9989999999998 est 1081.3 ghost 64000 forgot 283 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.835 served 0.835 hits   94149 usable_n   94149 written   39622 bypass  183665 res 990.0 est 1088.6 ghost 64000 forgot 283 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.862 served 0.862 hits   97134 usable_n   97134 written  208148 bypass    6972 res 189.0 est 205.0 ghost 64000 forgot 250 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-toolagent-c12800-g64k-replay.csv

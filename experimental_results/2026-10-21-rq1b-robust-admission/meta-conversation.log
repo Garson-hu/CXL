@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) 2nd          usable 0.327 served 0.327 hits   12620 usable_n   12620 written   50091 bypass  289135 res 186.0 est 174.8 ghost 16000 forgot 28975 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.312 served 0.312 hits   12060 usable_n   12060 written   45832 bypass  294710 res 204.0 est 222.2 ghost 16000 forgot 29579 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.312 served 0.312 hits   12060 usable_n   12060 written   67933 bypass  273747 res 160.994655591242 est 222.2 ghost 16000 forgot 29773 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-conversation-c3200-g16000-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.304 served 0.304 hits   11734 usable_n   11734 written   77048 bypass  264221 res 123.0 est 112.5 ghost 64000 forgot 4061 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.317 served 0.317 hits   12255 usable_n   12255 written   49015 bypass  291177 res 192.0 est 189.6 ghost 64000 forgot 3989 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.317 served 0.317 hits   12255 usable_n   12255 written   71086 bypass  270237 res 152.16446405953138 est 189.6 ghost 64000 forgot 3989 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-conversation-c3200-g64000-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.286 served 0.286 hits   11043 usable_n   11043 written   81908 bypass  260160 res 114.00099999999998 est 106.7 ghost 268014 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.317 served 0.317 hits   12255 usable_n   12255 written   49015 bypass  291177 res 192.0 est 189.6 ghost 268014 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.317 served 0.317 hits   12255 usable_n   12255 written   71086 bypass  270237 res 152.16446405953138 est 189.6 ghost 268014 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-conversation-c3200-ginf-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.248 served 0.270 hits   10415 usable_n    9597 written   58459 bypass  285654 res 150.0 est 147.1 ghost 0 forgot 0 fp 18161 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-conversation-c3200-bloom-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.339 served 0.358 hits   18913 usable_n   17937 written   43407 bypass  207099 res 213.0 est 229.0 ghost 0 forgot 0 fp 11013 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-conversation-c3200-bloom-replay.csv

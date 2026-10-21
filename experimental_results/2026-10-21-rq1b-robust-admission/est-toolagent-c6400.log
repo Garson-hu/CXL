@@ -1,0 +1,21 @@
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.802 served 0.802 hits   90350 usable_n   90350 written   41165 bypass  188928 res 429.0 est 500.3 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 92.7 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-evict-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.800 served 0.800 hits   90206 usable_n   90206 written   40218 bypass  190035 res 435.0010000000002 est 545.7 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 90.6 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-evict50-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.801 served 0.801 hits   90244 usable_n   90244 written   41497 bypass  188695 res 428.9989999999998 est 530.5 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 103.2 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-evict1000-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.797 served 0.797 hits   89877 usable_n   89877 written   38587 bypass  191944 res 459.0 est 388.6 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 91.1 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-dead-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.804 served 0.804 hits   90658 usable_n   90658 written   41837 bypass  187723 res 423.0 est 536.0 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 95.1 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-rate-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.797 served 0.797 hits   89815 usable_n   89815 written   38678 bypass  191932 res 458.9989999999998 est 429.0 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 90.0 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-tail-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.800 served 0.800 hits   90182 usable_n   90182 written   39588 bypass  190617 res 447.0 est 501.0 ghost 176900 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84330 usable_n   84330 written  233310 bypass    6972 res 87.00099999999998 est 90.0 ghost 176900 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c6400-median-replay.csv

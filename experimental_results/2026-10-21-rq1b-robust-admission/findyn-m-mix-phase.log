@@ -1,0 +1,4 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.738 served 0.738 hits  126304 usable_n  126304 written   78890 bypass  411982 res 234.0 est 378.6 ghost 362890 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-m-mix-phase-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.743 served 0.743 hits  127109 usable_n  127109 written   77387 bypass  413872 res 179.99900000000002 est 173.6 ghost 362890 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-m-mix-phase-slru-replay.csv

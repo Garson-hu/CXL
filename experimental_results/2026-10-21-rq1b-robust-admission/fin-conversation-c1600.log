@@ -1,0 +1,4 @@
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.267 served 0.267 hits   14133 usable_n   14133 written   33921 bypass  225479 res 140.9989999999998 est 142.6 ghost 181190 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c1600-replay.csv
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.275 served 0.275 hits   14528 usable_n   14528 written   32930 bypass  226372 res 107.99900000000002 est 351.5 ghost 181190 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c1600-slru-replay.csv

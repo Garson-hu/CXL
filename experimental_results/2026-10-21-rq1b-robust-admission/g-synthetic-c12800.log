@@ -1,0 +1,19 @@
+  audit lru cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) lru          usable 0.776 served 0.776 hits   47836 usable_n   47836 written   63304 bypass       0 res 163.78600000000003 est 286.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) slru         usable 0.787 served 0.787 hits   48532 usable_n   48532 written   61930 bypass       0 res 136.33499999999998 est 313.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd          usable 0.811 served 0.811 hits   49995 usable_n   49995 written   23524 bypass   41713 res 369.445 est 510.9 ghost 31124 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.802 served 0.802 hits   49467 usable_n   49467 written   21643 bypass   44122 res 384.46299999999997 est 382.3 ghost 31124 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 12800: ghost_resident_overlap_end=0 (invariants hold)
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.776 served 0.776 hits   47836 usable_n   47836 written   53754 bypass   11826 res 158.72700000000003 est 286.8 ghost 31124 forgot 0 fp 0 thr 0.0 regime normal switches 1 153:n
+  audit tinylfu cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) tinylfu      usable 0.700 served 0.700 hits   43199 usable_n   43199 written   23516 bypass   45026 res 538.797 est 620.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 12800:  (invariants hold)
+cap  12800 ( 838.7 GiB) oracle       usable 1.000 served 1.000 hits   61683 usable_n   61683 written   18251 bypass   25673 res 458.515 est 777.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c12800-replay.csv
+cap  12800 ( 838.7 GiB) 2nd          usable 0.811 served 0.811 hits   49995 usable_n   49995 written   23524 bypass   41713 res 369.445 est 510.9 ghost 31124 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int      usable 0.802 served 0.802 hits   49467 usable_n   49467 written   21643 bypass   44122 res 384.46299999999997 est 382.3 ghost 31124 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.776 served 0.776 hits   47836 usable_n   47836 written   53754 bypass   11826 res 158.72700000000003 est 286.8 ghost 31124 forgot 0 fp 0 thr 0.0 regime normal switches 1 153:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c12800-g64k-replay.csv

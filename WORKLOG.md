@@ -9,6 +9,14 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-21 (second round) addendum — RQ1-B ROBUST ADMISSION CLOSED; RQ1 CONSOLIDATED.** Regime rule "normal
+admission when the admit-all residence ≥ the online median re-lookup gap of first-touch blocks" keeps the gap rule at
+52–419 GiB (21–33%) and switches at 839 GiB (0% with LRU, +12 / +17% with SLRU instead of −10 / −19%); SLRU-structured
+version 24–35% at 52–210 GiB. Unbiased residence estimators = dead-eviction EWMA / LRU-tail age; the rule's hits are
+estimator-independent; no oscillation; 2–8 points lost under load changes. Ghost 16–64k entries or 2 × 8 KB Bloom;
+prefix audit holds; LMCache exposes every event. Gate 2 PARTIAL. `docs/research/rq1-consolidation-2026-10-21.md` =
+the standalone RQ1 answer + value-information interface for RQ2. No RQ2/RQ3 work.
+
 **2026-10-21 addendum — RQ1-B PRACTICAL / ADAPTIVE ADMISSION CLOSED.** Second touch works with a bounded ghost (64k
 entries = unbounded; 16k entries or a 2 × 8 KB Bloom filter match or beat it at ≤ 210 GiB). The adaptive ingredient is
 the online residence estimate: "admit a re-seen block only if its last gap fits the residence" (no parameter) gives
@@ -238,6 +246,18 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-21 (session 34, second round: RQ1-B robust online reuse information and adaptive admission)
+
+- Brief: automatic regime adaptation, stable residence estimation, bounded metadata + prefix correctness + runtime
+  feasibility, focused baselines, mechanism / error analysis, RQ1 consolidation report, value-information interface.
+- `scripts/kv_admission_sim.py` extended: `2nd_int_auto` (regime rules res / res_ft / model, hysteresis, LRU or SLRU
+  normal structure), seven residence estimators in shadow + accuracy logs, CONSTRUCTED churn (8-block never-reused
+  requests) / thinning, prefix-semantics audit, per-decision logs; `kv_robust_tables.py`, `kv_robust_figs.py`.
+- ~450 replays (`run_all.sh`; two mid-course corrections recorded there: the decayed-rate startup bias, single-block
+  churn → 8-block requests). NFS was slow (10–16 s per directory listing) during the afternoon; analysis commands were
+  run with long timeouts.
+- Result: see the experiment file and the consolidation report; Gate 2 PARTIAL; decision report, INDEX updated.
 
 ### 2026-10-21 (session 34, RQ1-B practical and adaptive admission)
 

@@ -1,0 +1,4 @@
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.862 served 0.862 hits   97134 usable_n   97134 written  208148 bypass    6972 res 189.0 est 205.0 ghost 170500 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c12800-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.886 served 0.886 hits   99822 usable_n   99822 written  204575 bypass    6972 res 137.99900000000002 est 232.5 ghost 170500 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c12800-slru-replay.csv

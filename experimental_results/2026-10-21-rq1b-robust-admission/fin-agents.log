@@ -1,0 +1,16 @@
+cap     24 (   0.2 GiB) 2nd_int_auto usable 0.874 served 0.874 hits    3166 usable_n    3166 written    1578 bypass     142 res 1.5532000064849854 est 2.3 ghost 818 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     32 (   0.3 GiB) 2nd_int_auto usable 0.931 served 0.931 hits    3373 usable_n    3373 written    1208 bypass     142 res 3.050955295562744 est 4.1 ghost 810 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     48 (   0.4 GiB) 2nd_int_auto usable 0.960 served 0.960 hits    3476 usable_n    3476 written    1003 bypass     137 res 5.989456415176392 est 7.2 ghost 794 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-a-short-k16-replay.csv
+cap     24 (   0.2 GiB) 2nd_int_auto usable 0.875 served 0.875 hits    3169 usable_n    3169 written    1565 bypass     145 res 1.349689245223999 est 2.5 ghost 818 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     32 (   0.3 GiB) 2nd_int_auto usable 0.927 served 0.927 hits    3358 usable_n    3358 written    1230 bypass     141 res 2.63698410987854 est 4.1 ghost 810 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+cap     48 (   0.4 GiB) 2nd_int_auto usable 0.958 served 0.958 hits    3469 usable_n    3469 written    1013 bypass     137 res 5.625453948974609 est 7.2 ghost 794 forgot 0 fp 0 thr 0.0 regime normal switches 1 25:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-a-short-k16-slru-replay.csv
+cap     24 (   0.2 GiB) 2nd_int_auto usable 0.934 served 0.934 hits    1041 usable_n    1041 written     410 bypass     497 res 3.7493152618408203 est 6.8 ghost 754 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+cap     32 (   0.3 GiB) 2nd_int_auto usable 0.943 served 0.943 hits    1050 usable_n    1050 written     386 bypass     496 res 3.7516777515411377 est 10.2 ghost 746 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+cap     48 (   0.4 GiB) 2nd_int_auto usable 0.961 served 0.961 hits    1070 usable_n    1070 written     372 bypass     490 res 7.4999377727508545 est 20.6 ghost 730 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-a-lt-k16-bg2-replay.csv
+cap     24 (   0.2 GiB) 2nd_int_auto usable 0.952 served 0.952 hits    1061 usable_n    1061 written     376 bypass     497 res 3.7437500953674316 est 6.2 ghost 754 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+cap     32 (   0.3 GiB) 2nd_int_auto usable 0.953 served 0.953 hits    1062 usable_n    1062 written     375 bypass     496 res 3.7496564388275146 est 9.0 ghost 746 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+cap     48 (   0.4 GiB) 2nd_int_auto usable 0.960 served 0.960 hits    1069 usable_n    1069 written     373 bypass     490 res 3.7550063133239746 est 17.8 ghost 730 forgot 0 fp 0 thr 0.0 regime normal switches 1 101:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-a-lt-k16-bg2-slru-replay.csv

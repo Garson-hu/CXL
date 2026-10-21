@@ -1,0 +1,16 @@
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.490 served 0.490 hits   17263 usable_n   17263 written  242194 bypass   56961 res 176.99900000000002 est 442.7 ghost 240726 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2999:f/3060:n/3130:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-stepup-lru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.594 served 0.594 hits   36096 usable_n   36096 written  173915 bypass  115257 res 177.0 est 217.5 ghost 231886 forgot 0 fp 0 thr 0.0 regime normal switches 3 108:n/1340:f/2715:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-stepdown-lru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.575 served 0.575 hits   25024 usable_n   25024 written  233324 bypass   11779 res 183.0 est 217.4 ghost 191206 forgot 0 fp 0 thr 0.0 regime normal switches 3 108:n/2421:f/2493:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-burst-lru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.663 served 0.663 hits   24269 usable_n   24269 written  170382 bypass    7869 res 194.99900000000002 est 430.1 ghost 138383 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-thin-lru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.483 served 0.483 hits   17009 usable_n   17009 written  246484 bypass   50028 res 120.0 est 416.3 ghost 240726 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/3130:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-stepup-slru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.618 served 0.618 hits   37514 usable_n   37514 written  172842 bypass  113953 res 126.0 est 176.0 ghost 231886 forgot 0 fp 0 thr 0.0 regime normal switches 3 108:n/1350:f/2715:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-stepdown-slru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.644 served 0.644 hits   28009 usable_n   28009 written  232637 bypass    7869 res 131.99900000000002 est 167.3 ghost 191206 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-burst-slru-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.712 served 0.712 hits   26052 usable_n   26052 written  168090 bypass    7869 res 146.99900000000002 est 341.8 ghost 138383 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c12800-thin-slru-replay.csv

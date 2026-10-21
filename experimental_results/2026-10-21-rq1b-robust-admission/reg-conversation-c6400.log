@@ -1,0 +1,62 @@
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  172722 bypass   71580 res 87.0 est 222.0 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 84:n/2064:f/3024:n/3360:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.5-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  172004 bypass   72024 res 87.0 est 196.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3048:n/3384:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.5-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  170867 bypass   73812 res 87.0 est 91.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 204:n/2172:f/3168:n/3468:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.5-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.497 served 0.497 hits   13660 usable_n   13660 written   61478 bypass  174238 res 383.99699999999984 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 84:n/444:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.75-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.498 served 0.498 hits   13702 usable_n   13702 written   60797 bypass  174443 res 384.0 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/468:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.75-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.492 served 0.492 hits   13538 usable_n   13538 written   59355 bypass  177070 res 384.0 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 204:n/552:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.75-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.496 served 0.496 hits   13628 usable_n   13628 written   48416 bypass  186768 res 416.999 est 527.1 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 84:n/228:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.9-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.495 served 0.495 hits   13622 usable_n   13622 written   48770 bypass  187266 res 414.0010000000002 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/252:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.9-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.499 served 0.499 hits   13729 usable_n   13729 written   48444 bypass  187945 res 414.0010000000002 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 204:n/336:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-res-q0.9-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-model-m0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-model-m0.1-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.388 served 0.388 hits   10661 usable_n   10661 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-model-m0.3-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.393 served 0.393 hits   10798 usable_n   10798 written  172335 bypass   70074 res 63.0 est 169.5 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3024:n/3384:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-slru-replay.csv
+cap   6400 ( 419.4 GiB) lru          usable 0.388 served 0.388 hits   10661 usable_n   10661 written  246265 bypass       0 res 87.0 est 89.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) slru         usable 0.373 served 0.373 hits   10255 usable_n   10255 written  246858 bypass       0 res 60.0 est 80.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.494 served 0.494 hits   13582 usable_n   13582 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) oracle       usable 0.989 served 0.989 hits   27213 usable_n   27213 written   44207 bypass  140631 res 303.0 est 1125.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-sel-ref-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.428 served 0.428 hits   22631 usable_n   22631 written  172722 bypass   71580 res 87.0 est 222.0 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 84:n/2064:f/3024:n/3360:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.5-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.436 served 0.436 hits   23013 usable_n   23013 written  172004 bypass   72024 res 87.0 est 196.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3048:n/3384:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.5-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.433 served 0.433 hits   22895 usable_n   22895 written  170867 bypass   73812 res 87.0 est 91.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 204:n/2172:f/3168:n/3468:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.5-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26907 usable_n   26907 written   61478 bypass  174238 res 383.99699999999984 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 84:n/444:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.75-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26903 usable_n   26903 written   60797 bypass  174443 res 384.0 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/468:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.75-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.510 served 0.510 hits   26966 usable_n   26966 written   59355 bypass  177070 res 384.0 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 204:n/552:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.75-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26898 usable_n   26898 written   48416 bypass  186768 res 416.999 est 527.1 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 84:n/228:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.9-h0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26874 usable_n   26874 written   48770 bypass  187266 res 414.0010000000002 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/252:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.9-h30-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26921 usable_n   26921 written   48444 bypass  187945 res 414.0010000000002 est 527.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 2 204:n/336:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-res-q0.9-h120-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.376 served 0.376 hits   19882 usable_n   19882 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-model-m0-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.376 served 0.376 hits   19882 usable_n   19882 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-model-m0.1-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.376 served 0.376 hits   19882 usable_n   19882 written  239290 bypass    7869 res 87.0 est 89.2 ghost 176390 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-model-m0.3-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.465 served 0.465 hits   24553 usable_n   24553 written  172335 bypass   70074 res 63.0 est 169.5 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/2088:f/3024:n/3384:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-slru-replay.csv
+cap   6400 ( 419.4 GiB) lru          usable 0.376 served 0.376 hits   19882 usable_n   19882 written  246265 bypass       0 res 87.0 est 89.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) slru         usable 0.376 served 0.376 hits   19873 usable_n   19873 written  246858 bypass       0 res 60.0 est 80.4 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) 2nd_int      usable 0.509 served 0.509 hits   26910 usable_n   26910 written   41983 bypass  193794 res 425.9989999999998 est 527.8 ghost 176390 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   6400 ( 419.4 GiB) oracle       usable 0.967 served 0.967 hits   51080 usable_n   51080 written   44207 bypass  140631 res 303.0 est 1125.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/reg-conversation-c6400-test-ref-replay.csv

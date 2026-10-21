@@ -1,0 +1,21 @@
+cap    800 (  52.4 GiB) 2nd_int      usable 0.185 served 0.185 hits    9788 usable_n    9788 written   26579 bypass  241131 res 90.0010000000002 est 100.8 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.185 served 0.185 hits    9788 usable_n    9788 written   26579 bypass  241131 res 90.0010000000002 est 100.8 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-evict-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.187 served 0.187 hits    9903 usable_n    9903 written   25663 bypass  241623 res 96.0 est 110.5 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.187 served 0.187 hits    9903 usable_n    9903 written   25663 bypass  241623 res 96.0 est 110.5 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-evict50-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.184 served 0.184 hits    9724 usable_n    9724 written   27203 bypass  240634 res 90.0 est 82.3 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.184 served 0.184 hits    9724 usable_n    9724 written   27203 bypass  240634 res 90.0 est 82.3 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-evict1000-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.186 served 0.186 hits    9826 usable_n    9826 written   24360 bypass  243171 res 99.0 est 86.9 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.186 served 0.186 hits    9826 usable_n    9826 written   24360 bypass  243171 res 99.0 est 86.9 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-dead-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.177 served 0.177 hits    9362 usable_n    9362 written   28313 bypass  239771 res 90.0 est 96.8 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.177 served 0.177 hits    9362 usable_n    9362 written   28313 bypass  239771 res 90.0 est 96.8 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-rate-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.186 served 0.186 hits    9833 usable_n    9833 written   24138 bypass  243161 res 101.9989999999998 est 105.0 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.186 served 0.186 hits    9833 usable_n    9833 written   24138 bypass  243161 res 101.9989999999998 est 105.0 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-tail-replay.csv
+cap    800 (  52.4 GiB) 2nd_int      usable 0.184 served 0.184 hits    9714 usable_n    9714 written   24499 bypass  242998 res 98.99900000000002 est 90.0 ghost 181990 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.184 served 0.184 hits    9714 usable_n    9714 written   24499 bypass  242998 res 98.99900000000002 est 90.0 ghost 181990 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c800-median-replay.csv

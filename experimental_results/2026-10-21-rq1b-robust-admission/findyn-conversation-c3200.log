@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.320 served 0.320 hits   11268 usable_n   11268 written   46932 bypass  274543 res 201.0 est 195.9 ghost 250326 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-stepup-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.364 served 0.364 hits   22129 usable_n   22129 written   45411 bypass  267070 res 201.0010000000002 est 436.7 ghost 241486 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-stepdown-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.365 served 0.365 hits   15882 usable_n   15882 written   41559 bypass  228640 res 231.0 est 446.1 ghost 200806 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-burst-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.402 served 0.402 hits   14733 usable_n   14733 written   30607 bypass  168111 res 254.99999999999977 est 562.3 ghost 147983 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-thin-lru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.342 served 0.342 hits   12033 usable_n   12033 written   45697 bypass  275130 res 150.0 est 177.4 ghost 250326 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-stepup-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.376 served 0.376 hits   22828 usable_n   22828 written   44666 bypass  267885 res 150.0 est 168.4 ghost 241486 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-stepdown-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.375 served 0.375 hits   16332 usable_n   16332 written   40595 bypass  229733 res 174.001 est 174.5 ghost 200806 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-burst-slru-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.406 served 0.406 hits   14856 usable_n   14856 written   30044 bypass  169238 res 212.99900000000002 est 418.7 ghost 147983 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/findyn-conversation-c3200-thin-slru-replay.csv

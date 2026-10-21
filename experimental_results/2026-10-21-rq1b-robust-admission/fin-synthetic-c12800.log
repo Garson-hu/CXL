@@ -1,0 +1,4 @@
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.776 served 0.776 hits   47836 usable_n   47836 written   53754 bypass   11826 res 158.72700000000003 est 286.8 ghost 31124 forgot 0 fp 0 thr 0.0 regime normal switches 1 153:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c12800-replay.csv
+cap  12800 ( 838.7 GiB) 2nd_int_auto usable 0.789 served 0.789 hits   48683 usable_n   48683 written   52744 bypass   11826 res 133.42199999999997 est 344.9 ghost 31124 forgot 0 fp 0 thr 0.0 regime normal switches 1 153:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-synthetic-c12800-slru-replay.csv

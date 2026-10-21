@@ -1,0 +1,2 @@
+cap    800 (  52.4 GiB) 2nd_int_auto usable 0.652 served 0.652 hits   37251 usable_n   37251 written   24630 bypass  236703 res 68.999 est 59.6 ghost 182500 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c800-sel-slru-replay.csv

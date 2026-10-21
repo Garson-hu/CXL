@@ -1,0 +1,4 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.742 served 0.742 hits   83580 usable_n   83580 written   39326 bypass  203418 res 231.0 est 379.2 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c3200-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.748 served 0.748 hits   84267 usable_n   84267 written   37885 bypass  204558 res 182.99900000000002 est 172.9 ghost 180100 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-toolagent-c3200-slru-replay.csv

@@ -1,0 +1,16 @@
+cap   3200 ( 209.7 GiB) 2nd          usable 0.717 served 0.717 hits   63349 usable_n   63349 written   51047 bypass  282845 res 183.0 est 164.3 ghost 16000 forgot 22179 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.710 served 0.710 hits   62723 usable_n   62723 written   46169 bypass  288885 res 201.00099999999998 est 235.7 ghost 16000 forgot 22711 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.623 served 0.623 hits   55031 usable_n   55031 written  346588 bypass    6972 res 28.09639376187488 est 23.8 ghost 16000 forgot 25936 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-toolagent-c3200-g16000-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.708 served 0.708 hits   62494 usable_n   62494 written   73181 bypass  261849 res 128.99900000000002 est 115.7 ghost 64000 forgot 1182 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.713 served 0.713 hits   62982 usable_n   62982 written   48881 bypass  285742 res 192.0 est 186.1 ghost 64000 forgot 1132 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.623 served 0.623 hits   55031 usable_n   55031 written  346588 bypass    6972 res 28.09639376187488 est 23.8 ghost 64000 forgot 1085 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-toolagent-c3200-g64000-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.706 served 0.706 hits   62312 usable_n   62312 written   74546 bypass  260667 res 126.0 est 115.0 ghost 268524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.713 served 0.713 hits   62982 usable_n   62982 written   48881 bypass  285742 res 192.0 est 186.1 ghost 268524 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.623 served 0.623 hits   55031 usable_n   55031 written  346588 bypass    6972 res 28.09639376187488 est 23.8 ghost 268524 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-toolagent-c3200-ginf-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.676 served 0.687 hits   60640 usable_n   59705 written   58310 bypass  280300 res 151.58029478422122 est 144.7 ghost 0 forgot 0 fp 18203 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-toolagent-c3200-bloom-churn-replay.csv
+cap   3200 ( 209.7 GiB) 2nd          usable 0.723 served 0.732 hits   82471 usable_n   81486 written   43673 bypass  201087 res 212.9989999999998 est 230.9 ghost 0 forgot 0 fp 11082 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/meta-toolagent-c3200-bloom-replay.csv

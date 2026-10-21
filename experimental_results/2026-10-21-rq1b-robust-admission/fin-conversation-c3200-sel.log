@@ -1,0 +1,2 @@
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.381 served 0.381 hits   10487 usable_n   10487 written   38242 bypass  209977 res 180.0 est 173.2 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c3200-sel-slru-replay.csv

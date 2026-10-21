@@ -1,0 +1,21 @@
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.742 served 0.742 hits   83580 usable_n   83580 written   39326 bypass  203418 res 231.0 est 379.2 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-evict-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.742 served 0.742 hits   83612 usable_n   83612 written   38524 bypass  204117 res 237.0 est 236.7 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 51.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-evict50-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.743 served 0.743 hits   83768 usable_n   83768 written   39826 bypass  202788 res 231.0 est 252.2 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 55.7 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-evict1000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.742 served 0.742 hits   83633 usable_n   83633 written   35594 bypass  207266 res 258.0 est 212.6 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 52.5 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-dead-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.744 served 0.744 hits   83871 usable_n   83871 written   40608 bypass  202151 res 230.99900000000002 est 268.9 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 43.1 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-rate-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.742 served 0.742 hits   83671 usable_n   83671 written   35694 bypass  207211 res 255.0 est 222.0 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 51.0 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-tail-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.744 served 0.744 hits   83872 usable_n   83872 written   36575 bypass  205814 res 249.0 est 210.0 ghost 180100 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.648 served 0.648 hits   72997 usable_n   72997 written  255867 bypass    6972 res 42.0 est 54.0 ghost 180100 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-toolagent-c3200-median-replay.csv

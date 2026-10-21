@@ -1,0 +1,19 @@
+  audit lru cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) lru          usable 0.224 served 0.224 hits   13806 usable_n   13806 written  106746 bypass       0 res 14.690999999999974 est 24.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit slru cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) slru         usable 0.220 served 0.220 hits   13600 usable_n   13600 written  106814 bypass       0 res 10.247000000000014 est 19.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd          usable 0.235 served 0.235 hits   14501 usable_n   14501 written   63753 bypass   41713 res 16.25999999999999 est 21.1 ghost 42324 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.206 served 0.206 hits   12732 usable_n   12732 written   24936 bypass   82374 res 53.96399999999994 est 31.8 ghost 42324 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit 2nd_int_auto cap 1600: ghost_resident_overlap_end=0 (invariants hold)
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.206 served 0.206 hits   12732 usable_n   12732 written   24936 bypass   82374 res 53.96399999999994 est 31.8 ghost 42324 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+  audit tinylfu cap 1600: served_behind_a_hole_not_counted=10 (invariants hold)
+cap   1600 ( 104.8 GiB) tinylfu      usable 0.197 served 0.197 hits   12170 usable_n   12160 written   15451 bypass   91963 res 100.22400000000005 est 75.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+  audit oracle cap 1600:  (invariants hold)
+cap   1600 ( 104.8 GiB) oracle       usable 0.522 served 0.522 hits   32212 usable_n   32212 written   31498 bypass   48531 res 32.898000000000025 est 47.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c1600-replay.csv
+cap   1600 ( 104.8 GiB) 2nd          usable 0.235 served 0.235 hits   14501 usable_n   14501 written   63753 bypass   41713 res 16.25999999999999 est 21.1 ghost 42324 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1600 ( 104.8 GiB) 2nd_int      usable 0.206 served 0.206 hits   12732 usable_n   12732 written   24936 bypass   82374 res 53.96399999999994 est 31.8 ghost 42324 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1600 ( 104.8 GiB) 2nd_int_auto usable 0.206 served 0.206 hits   12732 usable_n   12732 written   24936 bypass   82374 res 53.96399999999994 est 31.8 ghost 42324 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+wrote experimental_results/2026-10-21-rq1b-robust-admission/g-synthetic-c1600-g64k-replay.csv

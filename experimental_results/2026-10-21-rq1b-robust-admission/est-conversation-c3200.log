@@ -1,0 +1,21 @@
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.384 served 0.384 hits   20281 usable_n   20281 written   39478 bypass  208743 res 234.0 est 410.4 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.384 served 0.384 hits   20315 usable_n   20315 written   61395 bypass  187923 res 186.0 est 410.4 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-evict-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.383 served 0.383 hits   20218 usable_n   20218 written   38301 bypass  210017 res 237.00099999999998 est 542.1 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.382 served 0.382 hits   20178 usable_n   20178 written   60923 bypass  188662 res 192.0 est 235.7 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-evict50-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.386 served 0.386 hits   20420 usable_n   20420 written   39872 bypass  208438 res 231.00099999999998 est 251.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.386 served 0.386 hits   20383 usable_n   20383 written   60891 bypass  189063 res 177.0 est 243.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-evict1000-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.383 served 0.383 hits   20255 usable_n   20255 written   35592 bypass  212861 res 260.9989999999998 est 213.9 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.383 served 0.383 hits   20255 usable_n   20255 written   58009 bypass  191461 res 198.0 est 213.9 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-dead-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.389 served 0.389 hits   20529 usable_n   20529 written   40549 bypass  207619 res 231.0 est 270.5 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.384 served 0.384 hits   20275 usable_n   20275 written   56787 bypass  192928 res 162.0010000000002 est 263.4 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-rate-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.385 served 0.385 hits   20329 usable_n   20329 written   35668 bypass  212676 res 257.999 est 225.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.385 served 0.385 hits   20329 usable_n   20329 written   58384 bypass  190986 res 197.99900000000002 est 225.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-tail-replay.csv
+cap   3200 ( 209.7 GiB) 2nd_int      usable 0.384 served 0.384 hits   20270 usable_n   20270 written   36943 bypass  211313 res 249.0 est 213.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   3200 ( 209.7 GiB) 2nd_int_auto usable 0.384 served 0.384 hits   20274 usable_n   20274 written   58419 bypass  191508 res 192.0 est 213.0 ghost 179590 forgot 0 fp 0 thr 0.0 regime filter switches 2 108:n/480:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/est-conversation-c3200-median-replay.csv

@@ -1,0 +1,4 @@
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.509 served 0.509 hits   26878 usable_n   26878 written   58322 bypass  178139 res 384.001 est 528.7 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/360:f/540:n/600:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c6400-replay.csv
+cap   6400 ( 419.4 GiB) 2nd_int_auto usable 0.507 served 0.507 hits   26813 usable_n   26813 written   58753 bypass  177962 res 294.001 est 698.6 ghost 176390 forgot 0 fp 0 thr 0.0 regime filter switches 4 108:n/360:f/516:n/600:f
+wrote experimental_results/2026-10-21-rq1b-robust-admission/fin-conversation-c6400-slru-replay.csv
