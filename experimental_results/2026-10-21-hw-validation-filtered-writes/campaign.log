@@ -1,0 +1,123 @@
+22:06:48 alone/alone-r1
+alone-r1: done
+22:15:14 fid/fid-conversation-8b-8x-admitall
+fid-conversation-8b-8x-admitall: done (kvreplay rc=0)
+22:19:48 fid/fid-conversation-70b-4x-admitall
+fid-conversation-70b-4x-admitall: done (kvreplay rc=0)
+22:27:38 fid/fid-toolagent-8b-8x-admitall
+fid-toolagent-8b-8x-admitall: done (kvreplay rc=0)
+22:31:50 fid/fid-toolagent-70b-4x-admitall
+fid-toolagent-70b-4x-admitall: done (kvreplay rc=0)
+22:39:54 fid/fid-conversation-8b-8x-filtered
+fid-conversation-8b-8x-filtered: done (kvreplay rc=0)
+22:43:39 fid/fid-conversation-70b-4x-filtered
+fid-conversation-70b-4x-filtered: done (kvreplay rc=0)
+22:50:49 corun/corun-conversation-8b-8x-admitall-r1
+corun-conversation-8b-8x-admitall-r1: done (kvreplay rc=0)
+22:56:03 corun/corun-conversation-8b-8x-filtered-r1
+corun-conversation-8b-8x-filtered-r1: done (kvreplay rc=0)
+23:01:05 corun/corun-conversation-8b-8x-budget-r1
+corun-conversation-8b-8x-budget-r1: done (kvreplay rc=0)
+23:06:12 corun/corun-conversation-70b-4x-admitall-r1
+corun-conversation-70b-4x-admitall-r1: done (kvreplay rc=0)
+23:14:52 corun/corun-conversation-70b-4x-filtered-r1
+corun-conversation-70b-4x-filtered-r1: done (kvreplay rc=0)
+23:23:18 corun/corun-conversation-70b-4x-budget-r1
+corun-conversation-70b-4x-budget-r1: done (kvreplay rc=0)
+23:31:43 corun/corun-toolagent-8b-8x-admitall-r1
+corun-toolagent-8b-8x-admitall-r1: done (kvreplay rc=0)
+23:37:03 corun/corun-toolagent-8b-8x-filtered-r1
+corun-toolagent-8b-8x-filtered-r1: done (kvreplay rc=0)
+23:42:09 corun/corun-toolagent-8b-8x-budget-r1
+corun-toolagent-8b-8x-budget-r1: done (kvreplay rc=0)
+23:47:15 corun/corun-toolagent-70b-4x-admitall-r1
+corun-toolagent-70b-4x-admitall-r1: done (kvreplay rc=0)
+23:56:01 corun/corun-toolagent-70b-4x-filtered-r1
+corun-toolagent-70b-4x-filtered-r1: done (kvreplay rc=0)
+00:04:35 corun/corun-toolagent-70b-4x-budget-r1
+corun-toolagent-70b-4x-budget-r1: done (kvreplay rc=0)
+00:13:10 alone/alone-r2
+alone-r2: done
+00:21:36 corun/corun-conversation-8b-8x-admitall-r2
+corun-conversation-8b-8x-admitall-r2: done (kvreplay rc=0)
+00:26:50 corun/corun-conversation-8b-8x-filtered-r2
+corun-conversation-8b-8x-filtered-r2: done (kvreplay rc=0)
+00:31:52 corun/corun-conversation-8b-8x-budget-r2
+corun-conversation-8b-8x-budget-r2: done (kvreplay rc=0)
+00:36:55 corun/corun-conversation-70b-4x-admitall-r2
+corun-conversation-70b-4x-admitall-r2: done (kvreplay rc=0)
+00:45:36 corun/corun-conversation-70b-4x-filtered-r2
+corun-conversation-70b-4x-filtered-r2: done (kvreplay rc=0)
+00:54:01 corun/corun-conversation-70b-4x-budget-r2
+corun-conversation-70b-4x-budget-r2: done (kvreplay rc=0)
+01:02:30 corun/corun-toolagent-8b-8x-admitall-r2
+corun-toolagent-8b-8x-admitall-r2: done (kvreplay rc=0)
+01:07:47 corun/corun-toolagent-8b-8x-filtered-r2
+corun-toolagent-8b-8x-filtered-r2: done (kvreplay rc=0)
+01:12:53 corun/corun-toolagent-8b-8x-budget-r2
+corun-toolagent-8b-8x-budget-r2: done (kvreplay rc=0)
+01:18:01 corun/corun-toolagent-70b-4x-admitall-r2
+corun-toolagent-70b-4x-admitall-r2: done (kvreplay rc=0)
+01:26:47 corun/corun-toolagent-70b-4x-filtered-r2
+corun-toolagent-70b-4x-filtered-r2: done (kvreplay rc=0)
+01:35:22 corun/corun-toolagent-70b-4x-budget-r2
+corun-toolagent-70b-4x-budget-r2: done (kvreplay rc=0)
+01:43:57 corun/corun-conversation-8b-8x-admitall-r3
+corun-conversation-8b-8x-admitall-r3: done (kvreplay rc=0)
+01:49:11 corun/corun-conversation-8b-8x-filtered-r3
+corun-conversation-8b-8x-filtered-r3: done (kvreplay rc=0)
+01:54:13 corun/corun-conversation-8b-8x-budget-r3
+corun-conversation-8b-8x-budget-r3: done (kvreplay rc=0)
+01:59:15 corun/corun-conversation-70b-4x-admitall-r3
+corun-conversation-70b-4x-admitall-r3: done (kvreplay rc=0)
+02:07:55 corun/corun-conversation-70b-4x-filtered-r3
+corun-conversation-70b-4x-filtered-r3: done (kvreplay rc=0)
+02:16:21 corun/corun-conversation-70b-4x-budget-r3
+corun-conversation-70b-4x-budget-r3: done (kvreplay rc=0)
+02:24:48 corun/corun-toolagent-8b-8x-admitall-r3
+corun-toolagent-8b-8x-admitall-r3: done (kvreplay rc=0)
+02:30:05 corun/corun-toolagent-8b-8x-filtered-r3
+corun-toolagent-8b-8x-filtered-r3: done (kvreplay rc=0)
+02:35:10 corun/corun-toolagent-8b-8x-budget-r3
+corun-toolagent-8b-8x-budget-r3: done (kvreplay rc=0)
+02:40:15 corun/corun-toolagent-70b-4x-admitall-r3
+corun-toolagent-70b-4x-admitall-r3: done (kvreplay rc=0)
+02:49:02 corun/corun-toolagent-70b-4x-filtered-r3
+corun-toolagent-70b-4x-filtered-r3: done (kvreplay rc=0)
+02:57:36 corun/corun-toolagent-70b-4x-budget-r3
+corun-toolagent-70b-4x-budget-r3: done (kvreplay rc=0)
+03:06:11 ctrl/ctrl-ccd4-filtered-r1
+ctrl-ccd4-filtered-r1: done (kvreplay rc=0)
+03:14:38 ctrl/ctrl-ccd4-admitall-r1
+ctrl-ccd4-admitall-r1: done (kvreplay rc=0)
+03:23:19 ctrl/ctrl-ccd4-none-admitall-r1
+ctrl-ccd4-none-admitall-r1: done (kvreplay rc=0)
+03:31:54 ctrl/ctrl-plain-filtered-r1
+ctrl-plain-filtered-r1: done (kvreplay rc=0)
+03:40:20 ctrl/ctrl-ccd4-filtered-r2
+ctrl-ccd4-filtered-r2: done (kvreplay rc=0)
+03:48:45 ctrl/ctrl-ccd4-admitall-r2
+ctrl-ccd4-admitall-r2: done (kvreplay rc=0)
+03:57:29 ctrl/ctrl-ccd4-none-admitall-r2
+ctrl-ccd4-none-admitall-r2: done (kvreplay rc=0)
+04:06:05 ctrl/ctrl-plain-filtered-r2
+ctrl-plain-filtered-r2: done (kvreplay rc=0)
+04:14:30 ctrl/ctrl-ccd67-none-admitall-r1
+ctrl-ccd67-none-admitall-r1: done (kvreplay rc=0)
+04:23:06 ctrl/ctrl-plain-admitall-r1
+ctrl-plain-admitall-r1: done (kvreplay rc=0)
+04:31:46 alone/alone-r3
+alone-r3: done
+04:40:12 x8/x8-conversation-70b-8x-admitall-r1
+x8-conversation-70b-8x-admitall-r1: done (kvreplay rc=0)
+04:45:31 x8/x8-conversation-70b-8x-filtered-r1
+x8-conversation-70b-8x-filtered-r1: done (kvreplay rc=0)
+04:50:30 x8/x8-conversation-70b-8x-budget-r1
+x8-conversation-70b-8x-budget-r1: done (kvreplay rc=0)
+04:55:37 x8/x8-conversation-70b-8x-admitall-r2
+x8-conversation-70b-8x-admitall-r2: done (kvreplay rc=0)
+05:00:53 x8/x8-conversation-70b-8x-filtered-r2
+x8-conversation-70b-8x-filtered-r2: done (kvreplay rc=0)
+05:05:52 x8/x8-conversation-70b-8x-budget-r2
+x8-conversation-70b-8x-budget-r2: done (kvreplay rc=0)
+ALLDONE Thu Oct 22 05:11:04 EDT 2026

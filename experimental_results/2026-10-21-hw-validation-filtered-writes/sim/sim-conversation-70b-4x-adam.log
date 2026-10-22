@@ -1,0 +1,4 @@
+split_lru     usable 0.122 hits    7003 pend     23 dram   6999.4 GB (16.88 GB/s on, worst min 20.66) cxl  14414.5 GB (34.82) p99 13.94% backlog    57.6 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+value_split   usable 0.236 hits   13455 pend      0 dram    648.2 GB ( 1.56 GB/s on, worst min  2.52) cxl   1228.6 GB ( 2.97) p99  1.45% backlog     0.8 GB drops      0 bypass  236533 regime filter (0 sw, veto 0) ckpt None
+indep         usable 0.240 hits   13463 pend      0 dram    424.4 GB ( 1.02 GB/s on, worst min  1.37) cxl   1474.1 GB ( 3.56) p99  0.83% backlog     0.8 GB drops      0 bypass  236435 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-hw-validation-filtered-writes/sim/sim-conversation-70b-4x-adam-joint.csv

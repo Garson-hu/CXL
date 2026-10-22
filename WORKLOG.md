@@ -9,6 +9,14 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-22 addendum — PHASE 3 HARDWARE VALIDATION CLOSED: THE FILTERED-WRITE CLAIM HOLDS ON c28 (DRAM SIDE).** The
+Phase 3 write decisions replayed physically (NT stores, CCDs 6–7) beside the real Adam step: admit-all breaks the 7% SLO
+everywhere (p99 +8.3 … +25%), the RQ1-filtered stream stays inside with margin (+1.6 … +2.8%, +4.0% at 70B 8×), the live
+budget-gated split redirects 9–29% of the DRAM candidates and trims it to +1.0 … +2.5%; model low by ≤ 1.2 points for the
+filtered stream, high beyond its calibration; writer on the victim's CCD or regular stores double the cost (+5.4 … +6.5%).
+CXL part NOT issued (DAX root 0600 since the 2026-10-18 reboot — admin fix still needed). Correction: Phase 3's "0 budget
+refusals" was wrong (15–35% redirected). Research assessment unchanged: no minimal manager on H2.
+
 **2026-10-21 (third round) addendum — PHASE 3 JOINT BENEFIT ANALYSIS CLOSED: CORE HYPOTHESIS H2 NOT SUPPORTED.** With
 the same RQ1 information and the same measured DRAM/CXL costs, a joint value × cost policy equals the independent
 combination (reuse-aware admission + budget-gated placement) to −0.5 … +0.7 points on 24 real-trace configurations
@@ -255,6 +263,19 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-21/22 (session 34, fourth round: Phase 3 hardware validation of the filtered-write interference claim)
+
+- Brief: validate on c28 whether RQ1-filtered KV writes cause negligible DRAM/CXL interference beside a real Adam run,
+  versus admit-all and versus filtered + independent budget; verify the Phase 3 data; build a real write-traffic
+  replayer; compare measurements with the cost model; no new mechanism, no cxlpathd change.
+- Found first: `/dev/dax0.0–2.0` root 0600 since the 2026-10-18 reboot → CXL-targeted stores counted but not issued;
+  DRAM-targeted part replayed physically (the part that carries the measured interference).
+- New: `benchmarks/memory/kvreplay.c` (replayer: NT / plain / none stores, link pacing, live token bucket, per-store
+  stamps), `run_kvreplay.py`, `analyze_kvreplay.py`, `scripts/kv_writelog_stats.py`, `scripts/kv_hwval_figs.py`,
+  `kv_joint_sim.py --write-log` (results identical); campaign `run_all.sh` (71 runs, 22:06–05:11); raw text gzip-compressed.
+- Results in the experiment file (CLOSED 2026-10-22); decision report and INDEX updated; Phase 3 "0 budget refusals"
+  corrected (15–35% redirected in its own CSVs; drops / vetoes 0 stand).
 
 ### 2026-10-21 (session 34, third round: Phase 3 joint benefit analysis — RQ2 hypothesis validation)
 

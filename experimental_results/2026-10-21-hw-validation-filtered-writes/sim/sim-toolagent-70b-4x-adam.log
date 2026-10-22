@@ -1,0 +1,4 @@
+split_lru     usable 0.620 hits   70316 pend     89 dram   6787.5 GB (16.13 GB/s on, worst min 17.55) cxl  14362.3 GB (34.20) p99 13.66% backlog    51.3 GB drops      0 bypass       0 regime filter (0 sw, veto 0) ckpt None
+value_split   usable 0.671 hits   76531 pend      0 dram    597.9 GB ( 1.42 GB/s on, worst min  1.83) cxl   1346.8 GB ( 3.21) p99  1.32% backlog     0.7 GB drops      0 bypass  231113 regime filter (0 sw, veto 0) ckpt None
+indep         usable 0.673 hits   76692 pend      0 dram    509.9 GB ( 1.21 GB/s on, worst min  1.49) cxl   1409.7 GB ( 3.36) p99  0.99% backlog     0.7 GB drops      0 bypass  231367 regime filter (0 sw, veto 0) ckpt None
+wrote experimental_results/2026-10-21-hw-validation-filtered-writes/sim/sim-toolagent-70b-4x-adam-joint.csv

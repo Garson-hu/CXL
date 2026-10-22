@@ -1,0 +1,8 @@
+M config 121545496339659 writelog=experimental_results/2026-10-21-hw-validation-filtered-writes/writelogs/toolagent-8b-8x-value_split.txt t0=232.125 t1=446.285 neighbor=opt vthreads=80 before_s=60 alone_s=300 dram_gib=64 replay=--budget 32 --depth 1
+M neighbor_start 121545670732187 cpus=0-79
+M replay_ready 121551423397199 
+M before_start 121576446159817 
+M before_end 121636506566708 
+M replay_go 121636507526209 
+M replay_end 121852219506008 rc=0
+M done 121852836204174 

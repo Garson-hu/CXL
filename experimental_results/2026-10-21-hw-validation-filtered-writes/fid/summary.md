@@ -1,0 +1,8 @@
+| tag | log | neighbour | Adam steps quiet / during | quiet p99 s | during p99 s | slow med / p95 / p99 (%) | per-minute p99 (%) | DRAM GB/s mean / p99 10 ms / max 10 ms / max 100 ms / max 1 s | 10 ms > 8 GB/s | CXL skipped GB/s | backlog max GB | start delay p99 / max ms | stores issued D / C / skipped | bucket cand / granted / refused | CPU s |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fid-conversation-70b-4x-admitall | conversation-70b-4x-split_lru.txt | none | – / – | – | – | – / – / – | – | 16.464 / 68.19 / 108.9 / 46.39 / 35.78 | 66.05% | 34.049 | 1.86 | 0.2 / 1.09 | 42064 / 0 / 86994 | 0 / 0 / 0 | 334.7 |
+| fid-conversation-70b-4x-filtered | conversation-70b-4x-value_split.txt | none | – / – | – | – | – / – / – | – | 1.585 / 17.06 / 37.35 / 12.83 / 7.94 | 10.97% | 2.979 | 0.67 | 0.21 / 0.25 | 3916 / 0 / 7357 | 0 / 0 / 0 | 21.6 |
+| fid-conversation-8b-8x-admitall | conversation-8b-8x-split_lru.txt | none | – / – | – | – | – / – / – | – | 12.204 / 53.04 / 89.96 / 27.61 / 22.41 | 52.07% | 25.148 | 0.45 | 0.07 / 0.4 | 40508 / 0 / 83471 | 0 / 0 / 0 | 135.8 |
+| fid-conversation-8b-8x-filtered | conversation-8b-8x-value_split.txt | none | – / – | – | – | – / – / – | – | 1.5 / 13.42 / 26.84 / 7.06 / 5.39 | 4.03% | 3.217 | 0.13 | 0.21 / 0.25 | 4721 / 0 / 10125 | 0 / 0 / 0 | 13.5 |
+| fid-toolagent-70b-4x-admitall | toolagent-70b-4x-split_lru.txt | none | – / – | – | – | – / – / – | – | 15.771 / 75.63 / 159.18 / 67.05 / 33.27 | 60.2% | 33.368 | 2.63 | 0.2 / 0.24 | 40855 / 0 / 86443 | 0 / 0 / 0 | 362.7 |
+| fid-toolagent-8b-8x-admitall | toolagent-8b-8x-split_lru.txt | none | – / – | – | – | – / – / – | – | 11.642 / 58.21 / 123.35 / 34.97 / 20.13 | 47.44% | 24.613 | 1.06 | 0.19 / 1.93 | 39117 / 0 / 82697 | 0 / 0 / 0 | 146.8 |

@@ -3,6 +3,7 @@
 *.so
 benchmarks/memory/membench
 benchmarks/memory/cxlprobe
+benchmarks/memory/kvreplay
 system/placement/bwbench
 system/placement/gnnbench
 system/placement/sensbench

@@ -41,6 +41,7 @@ ap.add_argument("--replan", type=float, default=10.0, help="regime re-evaluation
 ap.add_argument("--r0", type=float, default=0.000134); ap.add_argument("--r1", type=float, default=9.4e-9); ap.add_argument("--l", type=float, default=0.000005)
 ap.add_argument("--migrate", action="store_true", help="variant: promote a CXL block to DRAM on its first CXL hit when the DRAM budget has credit (counted as a DRAM write and a CXL read)")
 ap.add_argument("--prefill-tps", type=float, default=7300.0, help="per-request prefill rate (tokens/s): the j-th block of a request is offered to the host cache j × tok / prefill_tps s after the request (physical, not scaled by --speed), as in kvemu2")
+ap.add_argument("--write-log", default="", help="(2026-10-21 hardware validation) write every store decision to <prefix>-<policy>.txt: 'S <offer wall s> <D|C> <bytes> <scored> <id> <hash-share candidate> <bucket credit GB after>', 'C <id> <CXL completion wall s>', 'D <offer> <bytes> <scored> <id>' (drops); header lines give the scored window in wall seconds")
 ap.add_argument("--dump-hits", default=""); ap.add_argument("--series", default="", help="write per-wall-second series (DRAM/CXL GB written, backlog GB, drops, hits) to <path>-<policy>.json")
 A = ap.parse_args(); INF = float("inf"); TOK = A.tok; BYTES = A.block_mb * 1e6
 
@@ -142,6 +143,8 @@ def run(policy):
     credit = [A.depth * BYTES]; credit_t = [0.0]; vq = collections.deque(maxlen=2000); vth_dyn = [0.0]; vcount = [0]
     st = collections.Counter(); st_f = collections.Counter(); st_res = []; ser = collections.defaultdict(lambda: [0.0, 0.0, 0.0, 0, 0])   # per wall second: dram GB, cxl GB, backlog max, drops, hits
     hitlog = bytearray() if A.dump_hits else None
+    wl = open(f"{A.write_log}-{P}.txt", "w") if A.write_log else None
+    if wl: wl.write(f"# write log of {P}: trace {A.trace} speed {A.speed} block_bytes {BYTES} scored_wall_start {(R[LO]['t'] - T0) / A.speed:.6f} scored_wall_end {(R[HI - 1]['t'] - T0) / A.speed:.6f} budget {A.budget} depth {A.depth} split_share {A.split_share} prefill_tps {A.prefill_tps}\n")
     ck_log = []; ck_next = [A_ck[1] if A_ck else INF]
     ph_on, ph_off = ((float(x) for x in A.phases.split(",")) if A.phases else (INF, 0.0)); ph_on = float(ph_on); ph_off = float(ph_off)
     def wall(t): return (t - T0) / A.speed
@@ -157,7 +160,9 @@ def run(policy):
             use_kv = kv_ok if not (kv_ok and ck_ok) else (ck_mode in ("kvprio", "joint") or kvq[0][0] <= ckq[0][0])
             we, _, b, h = heapq.heappop(kvq if use_kv else ckq); q_bytes[0] -= b
             start = max(srv_free[0], we); done = start + b / (cxl_gbps * 1e9); srv_free[0] = done
-            if h is not None: writing[h] = done
+            if h is not None:
+                writing[h] = done
+                if wl: wl.write(f"C {h} {done:.6f}\n")
             else:
                 for e in ck_log:
                     if e[2] < e[1]:
@@ -234,11 +239,14 @@ def run(policy):
                     high = hv >= max(A.vth, vth_dyn[0]) if P != "oracle_joint" else hv >= vth_dyn[0]
                     lim = A.qmax * (A.qhard_mult if (joint and high) else 1.0)
                     if A_ck and ck_mode == "joint" and ckq and not high: lim = 0.0
-                    if bl > lim: bypass(h, t, i, c_, k, "drop", ws); continue
+                    if bl > lim:
+                        if wl: wl.write(f"D {ws:.6f} {int(round(BYTES))} {int(scored(i))} {h}\n")
+                        bypass(h, t, i, c_, k, "drop", ws); continue
                 push(kvq, ws, BYTES, h); advance(ws); place(h, 1, t, ws, i, c_, k, writing.get(h, INF))
             elif tier_to == 1: place(h, 1, t, ws, i, c_, k, ws)
             else: place(h, 0, t, ws, i, c_, k, ws + BYTES / (A.dram_gbps * 1e9))
             if cxl_gbps < INF: ser[int(ws)][2] = max(ser[int(ws)][2], bl * A.cxl_gbps)
+            if wl: wl.write(f"S {ws:.6f} {'D' if tier_to == 0 else 'C'} {int(round(BYTES))} {int(scored(i))} {h} {int(hsel)} {credit[0] / 1e9:.3f}\n")
     def two_class(t):
         lam_f = tab.rate((0, None), t); nf, cf = tab.raw((0, None), t); lam_r = 0.0; nr = 0.0; cr = [0.0] * len(WG)
         for c in (1, 2, 3):

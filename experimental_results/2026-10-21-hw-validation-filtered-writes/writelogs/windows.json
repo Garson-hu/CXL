@@ -1,0 +1,122 @@
+{
+ "conversation-70b-4x-indep": {
+  "t0": 470.25,
+  "t1": 884.7145859999999,
+  "stores_dram": 2581,
+  "stores_cxl": 8821,
+  "GB_dram": 433.09,
+  "GB_cxl": 1480.16
+ },
+ "conversation-70b-4x-split_lru": {
+  "t0": 470.25,
+  "t1": 898.952394,
+  "stores_dram": 42064,
+  "stores_cxl": 86994,
+  "GB_dram": 7058.34,
+  "GB_cxl": 14597.59
+ },
+ "conversation-70b-4x-value_split": {
+  "t0": 470.25,
+  "t1": 884.7145859999999,
+  "stores_dram": 3916,
+  "stores_cxl": 7357,
+  "GB_dram": 657.1,
+  "GB_cxl": 1234.5
+ },
+ "conversation-70b-8x-indep": {
+  "t0": 235.125,
+  "t1": 443.33971099999997,
+  "stores_dram": 2920,
+  "stores_cxl": 8626,
+  "GB_dram": 489.98,
+  "GB_cxl": 1447.44
+ },
+ "conversation-70b-8x-split_lru": {
+  "t0": 235.125,
+  "t1": 457.833877,
+  "stores_dram": 41957,
+  "stores_cxl": 86443,
+  "GB_dram": 7040.38,
+  "GB_cxl": 14505.14
+ },
+ "conversation-70b-8x-value_split": {
+  "t0": 235.125,
+  "t1": 443.33971099999997,
+  "stores_dram": 3862,
+  "stores_cxl": 7471,
+  "GB_dram": 648.04,
+  "GB_cxl": 1253.63
+ },
+ "conversation-8b-8x-indep": {
+  "t0": 235.125,
+  "t1": 446.285464,
+  "stores_dram": 3525,
+  "stores_cxl": 11199,
+  "GB_dram": 236.53,
+  "GB_cxl": 751.45
+ },
+ "conversation-8b-8x-split_lru": {
+  "t0": 235.125,
+  "t1": 457.833877,
+  "stores_dram": 40508,
+  "stores_cxl": 83471,
+  "GB_dram": 2718.09,
+  "GB_cxl": 5600.9
+ },
+ "conversation-8b-8x-value_split": {
+  "t0": 235.125,
+  "t1": 446.285464,
+  "stores_dram": 4721,
+  "stores_cxl": 10125,
+  "GB_dram": 316.78,
+  "GB_cxl": 679.39
+ },
+ "toolagent-70b-4x-indep": {
+  "t0": 464.24975,
+  "t1": 886.327736,
+  "stores_dram": 3086,
+  "stores_cxl": 8515,
+  "GB_dram": 517.83,
+  "GB_cxl": 1428.82
+ },
+ "toolagent-70b-4x-split_lru": {
+  "t0": 464.24975,
+  "t1": 898.952394,
+  "stores_dram": 40855,
+  "stores_cxl": 86443,
+  "GB_dram": 6855.47,
+  "GB_cxl": 14505.14
+ },
+ "toolagent-70b-4x-value_split": {
+  "t0": 464.24975,
+  "t1": 887.660339,
+  "stores_dram": 3611,
+  "stores_cxl": 8178,
+  "GB_dram": 605.93,
+  "GB_cxl": 1372.27
+ },
+ "toolagent-8b-8x-indep": {
+  "t0": 232.124875,
+  "t1": 446.285464,
+  "stores_dram": 4130,
+  "stores_cxl": 10942,
+  "GB_dram": 277.12,
+  "GB_cxl": 734.21
+ },
+ "toolagent-8b-8x-split_lru": {
+  "t0": 232.124875,
+  "t1": 457.577519,
+  "stores_dram": 39117,
+  "stores_cxl": 82697,
+  "GB_dram": 2624.75,
+  "GB_cxl": 5548.97
+ },
+ "toolagent-8b-8x-value_split": {
+  "t0": 232.124875,
+  "t1": 446.285464,
+  "stores_dram": 4836,
+  "stores_cxl": 10315,
+  "GB_dram": 324.5,
+  "GB_cxl": 692.14
+ }
+}
