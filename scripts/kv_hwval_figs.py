@@ -64,7 +64,7 @@ if drawn: fig.tight_layout(); fig.savefig(f"{D}/fig-hwval-timeline.png", dpi=200
 # ---- 2. slowdown ----
 rows = load_summary("corun") + load_summary("x8"); alone = load_summary("alone")
 if rows:
-    fig, ax = plt.subplots(figsize=(12, 5.2)); xs = {c: i for i, (c, _) in enumerate(CFGS)}
+    fig, ax = plt.subplots(figsize=(12, 6.4)); xs = {c: i for i, (c, _) in enumerate(CFGS)}
     for si, (s, lab, col) in enumerate(STREAMS):
         dx = (si - 1) * 0.22; first = True
         for c, _ in CFGS:
@@ -80,7 +80,7 @@ if rows:
     ax.axhline(7, color="k", ls="--", lw=0.9, label="SLO: p99 +7%"); ax.axhline(0, color="k", lw=0.5)
     ax.set_xticks(range(len(CFGS))); ax.set_xticklabels([l for _, l in CFGS]); ax.set_ylabel("Adam p99 step-time slowdown vs quiet window, %"); ax.set_yscale("symlog", linthresh=2); ax.set_ylim(-0.8, 40)
     ax.set_title("HW (CPU replay of the Phase 3 DRAM-targeted writes beside the real 80-thread Adam step, c28; CXL-targeted stores not issued)", fontsize=10)
-    ax.legend(fontsize=7.5, ncol=2, loc="upper right", bbox_to_anchor=(1.0, 0.93)); fig.tight_layout(); fig.savefig(f"{D}/fig-hwval-slowdown.png", dpi=200); fig.savefig(f"{D}/fig-hwval-slowdown.svg"); print("wrote fig-hwval-slowdown")
+    ax.legend(fontsize=8, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.09)); fig.tight_layout(); fig.savefig(f"{D}/fig-hwval-slowdown.png", dpi=200); fig.savefig(f"{D}/fig-hwval-slowdown.svg"); print("wrote fig-hwval-slowdown")
 # ---- 3. bursts ----
 fig, axs = plt.subplots(1, 2, figsize=(12, 4.6)); drawn = False
 for ax, (c, lab) in zip(axs, [("conversation-70b-4x", "conv 70B 4×"), ("conversation-8b-8x", "conv 8B 8×")]):
