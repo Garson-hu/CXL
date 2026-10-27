@@ -1,0 +1,20 @@
+{
+ "data_dir": "/mnt/beegfs/ghu4/hvac/cosmoUniverse_2019_05_4parE_tf_v2_mini/train_61440",
+ "n_train": 61440,
+ "bytes": 178071110206,
+ "epochs": 3,
+ "batch_size": 4,
+ "seed": 0,
+ "parse_par": 4,
+ "prefetch": 8,
+ "read_par": 8,
+ "samples_per_s": [
+  63.498063311707156,
+  74.86008810475396,
+  74.85109978410513
+ ],
+ "gpu": [
+  "/physical_device:GPU:0"
+ ],
+ "host": "c33"
+}

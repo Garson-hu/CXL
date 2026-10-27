@@ -1,0 +1,7 @@
+cap  10987 ( 719.9 GiB) lru          usable 0.580 served 0.580 hits   30641 usable_n   30641 written  224727 bypass       0 res 156.0 est 154.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) slru         usable 0.620 served 0.620 hits   32751 usable_n   32751 written  221967 bypass       0 res 113.99900000000002 est 111.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) 2nd_int_auto usable 0.620 served 0.620 hits   32751 usable_n   32751 written  215842 bypass    7869 res 113.99900000000002 est 111.0 ghost 171803 forgot 0 fp 0 thr 0.0 regime normal switches 1 108:n
+cap  10987 ( 719.9 GiB) oracle       usable 1.000 served 1.000 hits   52839 usable_n   52839 written   44144 bypass  138646 res 510.0010000000002 est None ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) wslru:100    usable 0.546 served 0.549 hits   29011 usable_n   28873 written  227558 bypass       0 res 162.0 est 158.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) wslru2nd:100 usable 0.331 served 0.351 hits   18543 usable_n   17470 written   22581 bypass  227155 res 1470.0 est 2519.9 ghost 171803 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-27-reuse-window-prefetch/infer/conversation-cap10987-replay.csv

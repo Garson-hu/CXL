@@ -1,0 +1,25 @@
+cap   1831 ( 120.0 GiB) lru          usable 0.137 served 0.137 hits    7248 usable_n    7248 written  273356 bypass       0 res 24.0 est 16.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) slru         usable 0.154 served 0.154 hits    8155 usable_n    8155 written  271177 bypass       0 res 18.0 est 9.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) 2nd          usable 0.213 served 0.213 hits   11246 usable_n   11246 written   81071 bypass  182789 res 72.0 est 79.3 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) 2nd_int      usable 0.289 served 0.289 hits   15254 usable_n   15254 written   31431 bypass  225863 res 168.0 est 139.3 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) 2nd_int_auto usable 0.294 served 0.294 hits   15559 usable_n   15559 written   28244 bypass  228984 res 141.0 est 94.4 ghost 180959 forgot 0 fp 0 thr 0.0 regime filter switches 0 
+cap   1831 ( 120.0 GiB) oracle       usable 0.645 served 0.645 hits   34103 usable_n   34103 written   48382 bypass  168980 res 87.0 est 35.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:10     usable 0.137 served 0.137 hits    7247 usable_n    7247 written  273410 bypass       0 res 24.0 est 16.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:30     usable 0.138 served 0.138 hits    7311 usable_n    7311 written  273175 bypass       0 res 24.0 est 16.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:50     usable 0.139 served 0.139 hits    7368 usable_n    7368 written  272899 bypass       0 res 24.0 est 16.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:100    usable 0.145 served 0.145 hits    7638 usable_n    7638 written  272153 bypass       0 res 23.998999999999796 est 16.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:200    usable 0.153 served 0.153 hits    8063 usable_n    8063 written  270846 bypass       0 res 21.0 est 15.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru:300    usable 0.155 served 0.155 hits    8207 usable_n    8207 written  270793 bypass       0 res 21.0 est 15.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:10      usable 0.137 served 0.137 hits    7248 usable_n    7248 written  273356 bypass       0 res 24.0 est 16.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:30      usable 0.137 served 0.137 hits    7243 usable_n    7243 written  273361 bypass       0 res 24.0 est 16.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:50      usable 0.138 served 0.138 hits    7306 usable_n    7306 written  273152 bypass       0 res 24.0 est 16.2 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:100     usable 0.143 served 0.143 hits    7540 usable_n    7540 written  272607 bypass       0 res 24.0 est 16.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:200     usable 0.143 served 0.143 hits    7539 usable_n    7539 written  272356 bypass       0 res 23.999000000000024 est 15.9 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wlfu:300     usable 0.143 served 0.143 hits    7571 usable_n    7571 written  272023 bypass       0 res 23.999000000000024 est 15.8 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:10  usable 0.121 served 0.121 hits    6391 usable_n    6391 written     269 bypass  274539 res None est None ghost 182521 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:30  usable 0.176 served 0.180 hits    9527 usable_n    9290 written    3223 bypass  264313 res 2108.999 est 2318.7 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:50  usable 0.206 served 0.213 hits   11261 usable_n   10860 written    8014 bypass  257238 res 825.0 est 736.0 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:100 usable 0.267 served 0.275 hits   14530 usable_n   14117 written   24623 bypass  234518 res 240.0 est 195.4 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:200 usable 0.276 served 0.280 hits   14775 usable_n   14595 written   41119 bypass  216960 res 108.0 est 75.1 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap   1831 ( 120.0 GiB) wslru2nd:300 usable 0.259 served 0.259 hits   13694 usable_n   13694 written   54903 bypass  205439 res 66.0 est 75.3 ghost 180959 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-27-reuse-window-prefetch/infer/conversation-cap1831-replay.csv

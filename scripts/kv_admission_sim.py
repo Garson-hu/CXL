@@ -27,6 +27,10 @@ Features:
   * an optional GPU front cache; walk-forward scoring ranges, cold start, freezing; --audit (prefix-semantics
     invariants); --dec-log (per-decision log of the gap rules with the block's future next-use gap for ACCOUNTING only).
 Policies: lru slru 2q arc tinylfu wtinylfu 2nd 2nd_int 2nd_int_auto adapt2 adaptive lhd oracle
+  + window-based reuse policies (2026-10-27 exploratory study, suffix ':W' = window in seconds): wslru:W (LRU with a protected segment for
+    blocks with >= 2 accesses inside the last W s; protection expires after W s without access), wlfu:W (evict, among the K least recently
+    used, the block with the fewest accesses in the last W s), wslru2nd:W / wlfu2nd:W (the same with admission only of blocks looked up
+    within the last W s, first blocks of a request always admitted)
 usage: kv_admission_sim.py <trace.jsonl> <out_dir> <tag> [--mooncake] [--caps 3200] [--policies ...] [options]"""
 import argparse, collections, csv, hashlib, heapq, json, math, os, random
 OD = collections.OrderedDict
@@ -190,8 +194,10 @@ class Tables:
 
 def run(policy, cap):
     base = policy.split("+")[0]
+    base, _, wstr = base.partition(":"); WIN = float(wstr) if wstr else 0.0       # window-based policies: "wslru:60", "wlfu:60", "wslru2nd:60", "wlfu2nd:60" (W in seconds; 2026-10-27 exploratory study)
+    wbased = base in ("wslru", "wlfu", "wslru2nd", "wlfu2nd"); wacc = {}                 # wacc[h] = deque of access times within the last W seconds
     auto = base == "2nd_int_auto"
-    use_ghost = base in ("2nd", "2nd_int", "2nd_int_auto", "adaptive", "adapt2") or A.shadow
+    use_ghost = base in ("2nd", "2nd_int", "2nd_int_auto", "adaptive", "adapt2", "wslru2nd", "wlfu2nd") or A.shadow
     feats = ["c"] if base in ("adapt2", "2nd_int_auto") else FEAT
     ghost = Ghost(cap); tab = Tables() if (base in ("adaptive", "adapt2", "2nd_int", "2nd_int_auto") or A.shadow) else None
     use_slru = base == "slru" or (auto and A.normal_mode == "slru")
@@ -245,7 +251,7 @@ def run(policy, cap):
     def scored(i): ri = acc[i][2]; return LO <= ri < HI and R[ri]["task"] >= 0
     # ---- eviction / admission hooks ----
     def on_evict(h, t):
-        where.pop(h, None); lru.pop(h, None); prob.pop(h, None); prot.pop(h, None); nuv.pop(h, None)
+        where.pop(h, None); lru.pop(h, None); prob.pop(h, None); prot.pop(h, None); nuv.pop(h, None); wacc.pop(h, None)
         m = rmeta.pop(h, None)
         if m is not None and use_ghost and ghost.bloom is None: ghost.put(h, m)
         if base == "lhd":
@@ -288,8 +294,27 @@ def run(policy, cap):
             if ghost.bloom is None: ghost.put(h, [t, min(3, c_ + 1), k])
             else: ghost.bloom_put(h)
     # ---- LRU-family cache ----
+    def wprune(h, t):
+        d = wacc.get(h)
+        if d is None: return 0
+        while d and d[0] < t - WIN: d.popleft()
+        return len(d)
     def lru_victim(t):
         if use_slru: return next(iter(prob)) if prob else next(iter(prot))
+        if base in ("wslru", "wslru2nd"):                                   # time-expiring protection: a protected block with no access for W seconds is demoted to the probation tail
+            while prot:
+                tail = next(iter(prot))
+                if rmeta[tail][0] < t - WIN: prot.pop(tail); prob[tail] = True; prob.move_to_end(tail, last=False)
+                else: break
+            return next(iter(prob)) if prob else next(iter(prot))
+        if base in ("wlfu", "wlfu2nd"):                                     # among the K least recently used blocks, the one with the fewest accesses in the last W seconds (ties: the least recent)
+            K = min(64, max(8, cap // 16)); best = None; bc = INF; k_ = 0
+            for b in lru:
+                c = wprune(b, t)
+                if c < bc: best, bc = b, c
+                k_ += 1
+                if k_ >= K or bc == 0: break
+            return best
         if base == "lhd":
             win_ = min(64, max(4, cap // 16)); best = None; bc = INF; k_ = 0
             for b in lru:
@@ -302,9 +327,17 @@ def run(policy, cap):
     def lru_insert(h, t, i, kk):
         if len(where) >= cap: on_evict(lru_victim(t), t)
         on_admit(h, t, i, kk); lru[h] = True
-        if use_slru: prob[h] = True
+        if use_slru or base in ("wslru", "wslru2nd"): prob[h] = True
+        if wbased: wacc[h] = collections.deque([t])
         if base == "oracle": nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h))
         if use_ghost and ghost.bloom is not None: ghost.bloom_put(h)
+    def w_hit(h, t):
+        """window policies on a hit: record the access; wslru promotes a block with >= 2 accesses inside the window to the protected segment."""
+        lru.move_to_end(h); wprune(h, t); wacc.setdefault(h, collections.deque()).append(t)
+        if base in ("wslru", "wslru2nd"):
+            if h in prot: prot.move_to_end(h)
+            elif len(wacc[h]) >= 2: prob.pop(h, None); prot[h] = True
+            else: prob.move_to_end(h)
     def lru_hit(h, t, i):
         lru.move_to_end(h)
         if use_slru:
@@ -507,6 +540,7 @@ def run(policy, cap):
         if not gpu_hit and h in where:
             hit = True
             if base in ("lru", "slru", "2nd", "2nd_int", "2nd_int_auto", "adaptive", "adapt2", "lhd", "tinylfu", "oracle"): lru_hit(h, t, i)
+            elif wbased: w_hit(h, t)
             elif base == "arc": arc_access(h, t, i, k)
             elif base == "2q": q2_access(h, t, i, k)
             elif base == "wtinylfu": wtl_access(h, t, i, k)
@@ -556,6 +590,7 @@ def run(policy, cap):
             on_admit(h, t, i, k); lru[h] = True; nuv[h] = nu[i]; heapq.heappush(heap, (-nu[i], h)); continue
         admit = True; cl = None; Rn = None
         if base == "2nd": admit = (c_ >= 1) or j == 0
+        elif base in ("wslru2nd", "wlfu2nd"): admit = (c_ >= 1 and dt_ is not None and dt_ <= WIN) or j == 0   # seen (looked up) within the last W seconds
         elif base in ("2nd_int", "2nd_int_auto"):
             if auto and t - plan_t[0] >= A.replan: regime_eval(t); plan_t[0] = t
             Rn = residence(t)
@@ -600,7 +635,7 @@ def run(policy, cap):
         bad = any(v for kk, v in audit.items() if kk != "served_behind_a_hole_not_counted")
         print(f"  audit {policy} cap {cap}: " + ", ".join(f"{kk}={v}" for kk, v in sorted(audit.items())) + ("" if bad else " (invariants hold)"), flush=True)
     st_res.sort(); st_res_dead.sort(); n_cls = len([kk for kk in (tab.c if tab is not None else {}) if None not in kk])
-    return dict(policy=policy, cap=cap, cap_GiB=round(cap * BLOCK_MB / 1024, 1), ghost=A.ghost, ghost_ttl=A.ghost_ttl, ghost_bloom=A.ghost_bloom, gpu_blocks=GPU, ghost_src=A.ghost_src, feat=A.feat, label=A.label, fixed_th=A.fixed_th, fixed_w=A.fixed_w, res_mode=A.res_mode, chain=not A.no_chain, tau=A.tau, replan=A.replan, prior=A.prior, freeze_at=A.freeze_at, cold_start=A.cold_start, score_range=A.score_range,
+    return dict(policy=policy, window_s=WIN, cap=cap, cap_GiB=round(cap * BLOCK_MB / 1024, 1), ghost=A.ghost, ghost_ttl=A.ghost_ttl, ghost_bloom=A.ghost_bloom, gpu_blocks=GPU, ghost_src=A.ghost_src, feat=A.feat, label=A.label, fixed_th=A.fixed_th, fixed_w=A.fixed_w, res_mode=A.res_mode, chain=not A.no_chain, tau=A.tau, replan=A.replan, prior=A.prior, freeze_at=A.freeze_at, cold_start=A.cold_start, score_range=A.score_range,
                 regime=A.regime if auto else "", regime_q=A.regime_q, regime_margin=A.regime_margin, regime_hold=A.regime_hold, normal_mode=A.normal_mode if auto else "", churn=A.churn, thin=A.thin,
                 acc=st["acc"], reuse=st["reuse"], hits=st["hit"], gpu_hits=st["gpu_hit"], served=st["served"], usable=st["usable"], usable_hit_share=st["usable"] / max(1, st["reuse"]), reuse_hit_share=st["hit"] / max(1, st["reuse"]), served_share=st["served"] / max(1, st["reuse"]),
                 misses=st["miss"], recomputed_tokens=st["miss"] * TOK, usable_tokens=st["usable_tok"], ttft_s=round(st["ttft"], 2),

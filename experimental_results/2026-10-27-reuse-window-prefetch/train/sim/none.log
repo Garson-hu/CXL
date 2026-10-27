@@ -1,0 +1,13 @@
+184320 demands over 3 epochs, 61440 files, dataset 165.8 GiB, span 2609 s at speed 1x (70.6 samples/s = 204.7 MB/s), channel 0.82 GB/s, avail none
+C   15.0 GiB W     0 s: hit 0.004 (retained 509, prefetched 0) miss cold 122371 late 0 storage 354.7 GB (prefetch 0.0) stall 1079 s occ 14.8 GiB lead p50 None wasted 0
+C   30.0 GiB W     0 s: hit 0.018 (retained 2183, prefetched 0) miss cold 120697 late 0 storage 349.8 GB (prefetch 0.0) stall 1056 s occ 29.1 GiB lead p50 None wasted 0
+C   45.0 GiB W     0 s: hit 0.040 (retained 4947, prefetched 0) miss cold 117933 late 0 storage 341.8 GB (prefetch 0.0) stall 1021 s occ 43.0 GiB lead p50 None wasted 0
+C   60.0 GiB W     0 s: hit 0.075 (retained 9239, prefetched 0) miss cold 113641 late 0 storage 329.4 GB (prefetch 0.0) stall 968 s occ 56.5 GiB lead p50 None wasted 0
+C   90.0 GiB W     0 s: hit 0.186 (retained 22834, prefetched 0) miss cold 100046 late 0 storage 290.0 GB (prefetch 0.0) stall 812 s occ 82.1 GiB lead p50 None wasted 0
+C  120.0 GiB W     0 s: hit 0.368 (retained 45213, prefetched 0) miss cold 77667 late 0 storage 225.1 GB (prefetch 0.0) stall 585 s occ 105.5 GiB lead p50 None wasted 0
+C  150.0 GiB W     0 s: hit 0.679 (retained 83413, prefetched 0) miss cold 39467 late 0 storage 114.4 GB (prefetch 0.0) stall 258 s occ 126.8 GiB lead p50 None wasted 0
+C  180.0 GiB W     0 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 0.0 GB (prefetch 0.0) stall 0 s occ 137.1 GiB lead p50 None wasted 0
+C  240.0 GiB W     0 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 0.0 GB (prefetch 0.0) stall 0 s occ 137.1 GiB lead p50 None wasted 0
+C  360.0 GiB W     0 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 0.0 GB (prefetch 0.0) stall 0 s occ 137.1 GiB lead p50 None wasted 0
+C    inf GiB W     0 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 0.0 GB (prefetch 0.0) stall 0 s occ 137.1 GiB lead p50 None wasted 0
+wrote experimental_results/2026-10-27-reuse-window-prefetch/train/sim/none.csv

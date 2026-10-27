@@ -9,6 +9,15 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-10-27 addendum — EXPLORATORY BRANCH `explore/reuse-window-prefetch` CLOSED (not merged; main line unchanged).** Dr.
+Mueller's questions: (training) a real CosmoFlow run on the A100 with an explicit seeded schedule shows the batch order is known an
+epoch ahead, yet a prefetch window of 0.1–0.25 s already gives ~100% hits when storage out-paces the trainer (≥ 1.15×), 50–100 s at
+a ±10% margin, nothing when storage is slower; H = H0(C) + (1 − H0)(1 − e^(−W/τ)), τ from the bandwidth margin, H0(c) = c + (1 − c)
+ln(1 − c) (LRU under reshuffling, matched ±0.002); CXL capacity = retention and independence from storage, not prefetch depth.
+(inference) window-based retention ≈ LRU; window admission +0.05 … +0.19 over LRU but below the RQ1 adaptive rule, best window =
+the residence (grows with capacity); 60 → 180 GiB worth +0.04 to LRU, +0.155 / +0.073 to reuse-aware admission. Report
+`docs/experiments/2026-10-27-reuse-window-prefetch.md`; awaiting the user's decision on what to bring back.
+
 **2026-10-22 addendum — PHASE 3 HARDWARE VALIDATION CLOSED: THE FILTERED-WRITE CLAIM HOLDS ON c28 (DRAM SIDE).** The
 Phase 3 write decisions replayed physically (NT stores, CCDs 6–7) beside the real Adam step: admit-all breaks the 7% SLO
 everywhere (p99 +8.3 … +25%), the RQ1-filtered stream stays inside with margin (+1.6 … +2.8%, +4.0% at 70B 8×), the live
@@ -263,6 +272,21 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-27 (session 35, exploratory branch: reuse windows, future-aware prefetching and cache capacity)
+
+- Branch `explore/reuse-window-prefetch` from `evaluation` 8e2d9e3; separate directories; CHARTER / decision report / gates untouched.
+- Training: the group's CosmoFlow TF benchmark and the 61,440-file (178 GB) mini set on BeeGFS; `train/train_trace.py` (explicit
+  seeded per-epoch permutation, per-file pull and per-step stamps) run on c33 (A100): pilot `train_1024` (2 epochs, 5.4 → 9.9
+  samples/s) and the full 3-epoch run (63.5 / 74.9 / 74.9 samples/s = 205 MB/s mean demand, jobs 322134 / 322135); BeeGFS cold
+  reads measured from c33 and c28 (0.064 GB/s one stream … 0.82 at 32); PyTorch sampler lookahead measured on c28. New
+  `scripts/train_prefetch_sim.py` (window / capacity / bandwidth / availability; pins as counts; protection of resident data inside
+  the window), `train_window_tables.py`, `train_window_fit.py`; sweeps in `train/sim/run_sweep.sh` (three passes; the first two
+  discarded after corrections recorded there).
+- Inference: `kv_admission_sim.py` gained `wslru:W`, `wlfu:W`, `wslru2nd:W` (existing policies unchanged); campaign `infer/run_all.sh`
+  (2 traces × 6 capacities × 24 policies), `kv_window_stats.py` (historical-window statistics), `kv_horizon_eval.py` (future
+  horizons), `kv_window_tables.py`, `window_figs.py`.
+- Results and the eight answers in the experiment file; INDEX row marked EXPLORATORY; nothing merged.
 
 ### 2026-10-21/22 (session 34, fourth round: Phase 3 hardware validation of the filtered-write interference claim)
 

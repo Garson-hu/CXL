@@ -1,0 +1,1066 @@
+{
+ "sweep": "all-bw0.82-x16.csv",
+ "forms": {
+  "exp": {
+   "per_capacity": {
+    "30.0": {
+     "H0": 0.0178,
+     "H1": 0.0178,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "60.0": {
+     "H0": 0.0752,
+     "H1": 0.0752,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "120.0": {
+     "H0": 0.3679,
+     "H1": 0.3679,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "180.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "360.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "inf": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    }
+   },
+   "rmse_fit": 0.0,
+   "rmse_loo": 0.27931015342439697,
+   "max_abs_loo": 0.3988106972325183
+  },
+  "rat": {
+   "per_capacity": {
+    "30.0": {
+     "H0": 0.0178,
+     "H1": 0.0178,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "60.0": {
+     "H0": 0.0752,
+     "H1": 0.0752,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "120.0": {
+     "H0": 0.3679,
+     "H1": 0.3679,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "180.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "360.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "inf": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    }
+   },
+   "rmse_fit": 0.0,
+   "rmse_loo": 0.27672150532896445,
+   "max_abs_loo": 0.3987276289764815
+  },
+  "ramp": {
+   "per_capacity": {
+    "30.0": {
+     "H0": 0.0178,
+     "H1": 0.0178,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "60.0": {
+     "H0": 0.0752,
+     "H1": 0.0752,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "120.0": {
+     "H0": 0.3679,
+     "H1": 0.3679,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "180.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "360.0": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    },
+    "inf": {
+     "H0": 1.0,
+     "H1": 1.0,
+     "p": 0.25,
+     "rmse": 0.0
+    }
+   },
+   "rmse_fit": 0.0,
+   "rmse_loo": 0.2793101534819671,
+   "max_abs_loo": 0.3988106972325183
+  }
+ },
+ "best": "rat",
+ "held_out": {
+  "file": "/home/ghu4/CXL/experimental_results/2026-10-27-reuse-window-prefetch/train/sim/pass2/all-bw0.25.csv",
+  "rmse": 0.579906247647502
+ },
+ "points": [
+  {
+   "C": 30.0,
+   "W": 0.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 5.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 10.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 25.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 50.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 100.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 150.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 200.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 300.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 600.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 1200.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 0.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 5.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 10.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 25.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 50.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 100.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 150.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 200.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 300.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 600.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 60.0,
+   "W": 1200.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 0.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 5.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 10.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 25.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 50.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 100.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 150.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 200.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 300.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 600.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 120.0,
+   "W": 1200.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 180.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 360.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": Infinity,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": false
+  },
+  {
+   "C": 30.0,
+   "W": 0.0,
+   "measured": 0.0178,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 30.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 0.0178,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 0.0,
+   "measured": 0.0752,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 60.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 0.0752,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 0.0,
+   "measured": 0.3679,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 120.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 0.3679,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 180.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": 360.0,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 0.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 5.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 10.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 25.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 50.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 100.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 150.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 300.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 600.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  },
+  {
+   "C": Infinity,
+   "W": 1200.0,
+   "measured": 1.0,
+   "fitted": 1.0,
+   "held_out": true
+  }
+ ],
+ "form": "H = H0 + (H1 \u2212 H0) W/(W + \u03c4)"
+}

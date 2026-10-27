@@ -1,0 +1,35 @@
+c33
+GPU 0: NVIDIA A100 80GB PCIe (UUID: GPU-ad222fa6-2ed8-9aa7-97a7-7c8491d49757)
+              total        used        free      shared  buff/cache   available
+Mem:            125           0          59           1          65         122
+beegfs cold read from c33 streams 1 GB 1.38 s 21.7 GBps 0.064
+beegfs cold read from c33 streams 4 GB 1.40 s 4.2 GBps 0.332
+beegfs cold read from c33 streams 8 GB 1.39 s 2.7 GBps 0.517
+beegfs cold read from c33 streams 16 GB 1.40 s 2.1 GBps 0.656
+beegfs cold read from c33 streams 32 GB 1.38 s 1.7 GBps 0.817
+2026-10-27 14:21:44.467348: E tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:9342] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-10-27 14:21:44.467388: E tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc:609] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-10-27 14:21:44.467394: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:1518] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-10-27 14:21:48.961363: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:49.129673: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:49.130874: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+[5.9] 1024 training files, 3.0 GB (2.8 GiB), mean 2.90 MB
+[5.9] epoch 0 schedule: permutation of 1024 ids computed in 0.76 ms (0.01 MB)
+[5.9] epoch 1 schedule: permutation of 1024 ids computed in 0.20 ms (0.01 MB)
+2026-10-27 14:21:50.651115: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.652436: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.653562: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.832553: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.857812: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.858676: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:21:50.859414: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1886] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 79191 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe, pci bus id: 0000:81:00.0, compute capability: 8.0
+[8.1] model built; 256 steps per epoch at batch 4; starting
+2026-10-27 14:21:54.079178: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:442] Loaded cuDNN version 8907
+2026-10-27 14:21:58.942853: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7f92c5879370 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2026-10-27 14:21:58.942895: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA A100 80GB PCIe, Compute Capability 8.0
+2026-10-27 14:21:59.190731: I ./tensorflow/compiler/jit/device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0094s vs `on_train_batch_end` time: 0.0366s). Check your callbacks.
+[197.2] epoch 0: 1024 samples in 189.1 s = 5.42 samples/s (15.7 MB/s of files), loss 0.33509
+[300.6] epoch 1: 1024 samples in 103.4 s = 9.91 samples/s (28.7 MB/s of files), loss 0.28116
+[300.8] done
+PILOTDONE

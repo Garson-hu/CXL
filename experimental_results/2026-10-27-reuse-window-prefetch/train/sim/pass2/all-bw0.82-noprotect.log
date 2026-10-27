@@ -1,0 +1,24 @@
+184320 demands over 3 epochs, 61440 files, dataset 165.8 GiB, span 2609 s at speed 1x (70.6 samples/s = 204.7 MB/s), channel 0.82 GB/s, avail all
+C   60.0 GiB W     0 s: hit 0.075 (retained 9239, prefetched 0) miss cold 113641 late 0 storage 329.4 GB (prefetch 0.0) stall 968 s occ 56.5 GiB lead p50 None wasted 0
+C   60.0 GiB W     5 s: hit 0.998 (retained 8986, prefetched 113641) miss cold 253 late 0 storage 508.1 GB (prefetch 507.4) stall 2 s occ 56.6 GiB lead p50 4.95 wasted 0
+C   60.0 GiB W    10 s: hit 0.996 (retained 8738, prefetched 113637) miss cold 505 late 0 storage 508.9 GB (prefetch 507.4) stall 4 s occ 56.7 GiB lead p50 9.96 wasted 0
+C   60.0 GiB W    25 s: hit 0.989 (retained 7931, prefetched 113612) miss cold 1337 late 0 storage 511.2 GB (prefetch 507.3) stall 10 s occ 57.1 GiB lead p50 24.96 wasted 0
+C   60.0 GiB W    50 s: hit 0.979 (retained 6752, prefetched 113542) miss cold 2586 late 0 storage 514.6 GB (prefetch 507.1) stall 19 s occ 57.6 GiB lead p50 49.96 wasted 0
+C   60.0 GiB W   100 s: hit 0.960 (retained 4705, prefetched 113293) miss cold 4882 late 0 storage 520.6 GB (prefetch 506.4) stall 38 s occ 58.4 GiB lead p50 99.96 wasted 0
+C   60.0 GiB W   150 s: hit 0.945 (retained 3113, prefetched 112972) miss cold 6795 late 0 storage 525.2 GB (prefetch 505.5) stall 54 s occ 59.1 GiB lead p50 149.96 wasted 0
+C   60.0 GiB W   200 s: hit 0.943 (retained 3125, prefetched 112705) miss cold 7050 late 0 storage 525.1 GB (prefetch 504.7) stall 56 s occ 59.6 GiB lead p50 199.97 wasted 0
+C   60.0 GiB W   300 s: hit 0.978 (retained 7125, prefetched 113100) miss cold 2655 late 0 storage 513.5 GB (prefetch 505.9) stall 20 s occ 60.0 GiB lead p50 299.94 wasted 0
+C   60.0 GiB W   600 s: hit 1.000 (retained 9239, prefetched 113641) miss cold 0 late 0 storage 507.4 GB (prefetch 507.4) stall 0 s occ 60.0 GiB lead p50 297.23 wasted 0
+C   60.0 GiB W  1200 s: hit 1.000 (retained 9239, prefetched 113641) miss cold 0 late 0 storage 507.4 GB (prefetch 507.4) stall 0 s occ 60.0 GiB lead p50 297.23 wasted 0
+C  180.0 GiB W     0 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 0.0 GB (prefetch 0.0) stall 0 s occ 137.1 GiB lead p50 None wasted 0
+C  180.0 GiB W     5 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 137.4 GiB lead p50 None wasted 0
+C  180.0 GiB W    10 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 137.7 GiB lead p50 None wasted 0
+C  180.0 GiB W    25 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 138.6 GiB lead p50 None wasted 0
+C  180.0 GiB W    50 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 140.2 GiB lead p50 None wasted 0
+C  180.0 GiB W   100 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 143.1 GiB lead p50 None wasted 0
+C  180.0 GiB W   150 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 145.8 GiB lead p50 None wasted 0
+C  180.0 GiB W   200 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 148.3 GiB lead p50 None wasted 0
+C  180.0 GiB W   300 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 152.7 GiB lead p50 None wasted 0
+C  180.0 GiB W   600 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 162.0 GiB lead p50 None wasted 0
+C  180.0 GiB W  1200 s: hit 1.000 (retained 122880, prefetched 0) miss cold 0 late 0 storage 178.1 GB (prefetch 178.1) stall 0 s occ 165.8 GiB lead p50 None wasted 0
+wrote experimental_results/2026-10-27-reuse-window-prefetch/train/sim/all-bw0.82-noprotect.csv

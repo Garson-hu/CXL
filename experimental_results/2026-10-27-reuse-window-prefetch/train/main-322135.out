@@ -1,0 +1,36 @@
+c33
+GPU 0: NVIDIA A100 80GB PCIe (UUID: GPU-ad222fa6-2ed8-9aa7-97a7-7c8491d49757)
+              total        used        free      shared  buff/cache   available
+Mem:            125           1          58           1          66         122
+Tue Oct 27 14:28:02 EDT 2026
+2026-10-27 14:28:03.663572: E tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:9342] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2026-10-27 14:28:03.663613: E tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc:609] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2026-10-27 14:28:03.663620: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:1518] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2026-10-27 14:28:08.416117: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:08.525841: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:08.527045: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+[8.1] 61440 training files, 178.1 GB (165.8 GiB), mean 2.90 MB
+[8.1] epoch 0 schedule: permutation of 61440 ids computed in 11.08 ms (0.49 MB)
+[8.1] epoch 1 schedule: permutation of 61440 ids computed in 10.04 ms (0.49 MB)
+[8.1] epoch 2 schedule: permutation of 61440 ids computed in 10.21 ms (0.49 MB)
+2026-10-27 14:28:10.998379: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:10.999696: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:11.000819: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:11.126420: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:11.128017: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:11.128782: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:894] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2026-10-27 14:28:11.129496: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1886] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 79191 MB memory:  -> device: 0, name: NVIDIA A100 80GB PCIe, pci bus id: 0000:81:00.0, compute capability: 8.0
+[8.7] model built; 15360 steps per epoch at batch 4; starting
+2026-10-27 14:28:12.636916: I tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:442] Loaded cuDNN version 8907
+2026-10-27 14:28:15.108360: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7facb95475e0 initialized for platform CUDA (this does not guarantee that XLA will be used). Devices:
+2026-10-27 14:28:15.108393: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): NVIDIA A100 80GB PCIe, Compute Capability 8.0
+2026-10-27 14:28:15.191532: I ./tensorflow/compiler/jit/device_compiler.h:186] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0105s vs `on_train_batch_end` time: 0.0349s). Check your callbacks.
+[976.3] epoch 0: 61440 samples in 967.6 s = 63.50 samples/s (184.0 MB/s of files), loss 0.20370
+WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0168s vs `on_train_batch_end` time: 0.0427s). Check your callbacks.
+[1797.0] epoch 1: 61440 samples in 820.7 s = 74.86 samples/s (217.0 MB/s of files), loss 0.17112
+WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0133s vs `on_train_batch_end` time: 0.0428s). Check your callbacks.
+[2617.8] epoch 2: 61440 samples in 820.8 s = 74.85 samples/s (216.9 MB/s of files), loss 0.12632
+[2618.1] done
+Tue Oct 27 15:11:45 EDT 2026
+MAINDONE

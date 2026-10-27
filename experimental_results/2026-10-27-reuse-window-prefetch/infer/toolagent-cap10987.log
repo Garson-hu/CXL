@@ -1,0 +1,7 @@
+cap  10987 ( 719.9 GiB) lru          usable 0.840 served 0.840 hits   94729 usable_n   94729 written  218302 bypass       0 res 159.0 est 164.1 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) slru         usable 0.858 served 0.858 hits   96728 usable_n   96728 written  215875 bypass       0 res 114.00099999999998 est 121.0 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) 2nd_int_auto usable 0.858 served 0.858 hits   96728 usable_n   96728 written  211190 bypass    6972 res 114.0 est 121.0 ghost 172313 forgot 0 fp 0 thr 0.0 regime normal switches 1 96:n
+cap  10987 ( 719.9 GiB) oracle       usable 1.000 served 1.000 hits  112712 usable_n  112712 written   39481 bypass  143819 res 678.0 est None ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) wslru:100    usable 0.824 served 0.826 hits   93097 usable_n   92912 written  221278 bypass       0 res 165.0 est 172.5 ghost 0 forgot 0 fp 0 thr 0.0 regime  switches 0 
+cap  10987 ( 719.9 GiB) wslru2nd:100 usable 0.717 served 0.726 hits   81872 usable_n   80851 written   22710 bypass  221546 res 1527.0 est 2499.1 ghost 172313 forgot 0 fp 0 thr 0.0 regime  switches 0 
+wrote experimental_results/2026-10-27-reuse-window-prefetch/infer/toolagent-cap10987-replay.csv

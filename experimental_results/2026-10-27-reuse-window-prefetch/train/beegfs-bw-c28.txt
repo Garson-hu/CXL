@@ -1,0 +1,4 @@
+# cold reads of the full dataset's test split from c28, 2026-10-27
+streams 1 GB 1.46 s 25.7 GBps 0.057
+streams 4 GB 1.45 s 4.5 GBps 0.322
+streams 8 GB 1.44 s 2.9 GBps 0.491
