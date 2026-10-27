@@ -286,6 +286,21 @@ from different places (a link bandwidth vs an eviction age), so no single window
 8. **Not worth more investment:** window-based retention for KV blocks (two families, six windows, six capacities: nothing); fixed
    admission windows (dominated by the adaptive rule); longer future windows for training; a unified window function.
 
+## Related work (LIT, not our findings)
+NoPFS (Dryden et al., SC'21, "clairvoyant prefetching") rests on exactly the premise of the training question: the SGD access order is
+a function of the sampler's seed, so where and when every sample will be read is known in advance; it reports up to 5.4× training-I/O
+speedups on ImageNet-1k/22k and CosmoFlow. Quiver (Kumar & Sivathanu, FAST'20) avoids thrashing when the cache is much smaller than
+the working set with *substitutable* hits (any cached sample instead of a specific one) and shares the cache across jobs. SHADE (Khan
+et al., FAST'23) caches by sample importance and reports up to 4.5× the hit ratio of LRU at the same size. HVAC (ORNL, CLUSTER'22) is a
+transparent node-local read cache for Summit (67–85% of training time in PFS I/O at scale); FitCache (IPDPS'26, this group) adds
+multi-tier fastest-responder reads (−40% training time on Frontier). SOLAR (SC'22) precomputes the shuffle lists of all epochs and
+orders them to maximize reuse between consecutive epochs; Lee & Bahn show that full per-epoch reshuffling defeats the OS buffer cache.
+The known rule of thumb for an LRU cache under per-epoch reshuffling is "hit rate ≈ the cached fraction of the dataset" (cloud-storage
+studies); none of these papers gives a window-vs-hit function, which is what this study measures. Material in the group's tree used
+here: the CosmoFlow TensorFlow/Keras benchmark (NERSC implementation, MLPerf HPC v1.0 data) with the HVAC client and FitCache++, the
+CosmoFlow dataset on BeeGFS (524,288 TFRecords = 1.7 TB; the `_mini` subset `train_61440`); DeepCAM / dinov2 / Megatron-LM checkouts have
+no data on this cluster. Inference material: the Mooncake conversation and tool-agent traces and the RQ1 admission simulator.
+
 ## Evidence boundaries
 - The training cache is simulated on the real demand timeline of a GPU-bound run (epochs 1–2 partly served by c33's page cache, which
   is what makes the timeline compute-bound); the storage channel is a single FIFO link at the measured BeeGFS bandwidths; the replay
@@ -309,3 +324,5 @@ from different places (a link bandwidth vs an eviction age), so no single window
   the 180 GiB value; at 60 GiB it is 4.25 TB (the conclusion is unchanged). Saturation is now stated from the data as the first
   window within 0.01 of a curve's maximum (0.1 s in the comfortable regime, where the first version said 0.1–0.25 s). The first
   version's text is in commit 7ad141b. Main line untouched.
+- 2026-10-27 (same revision, follow-up): the first version's Task A literature paragraph, dropped by mistake in the rewrite, restored as
+  "Related work (LIT, not our findings)".
