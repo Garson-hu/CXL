@@ -16,7 +16,8 @@ a ±10% margin, nothing when storage is slower; H = H0(C) + (1 − H0)(1 − e^(
 ln(1 − c) (LRU under reshuffling, matched ±0.002); CXL capacity = retention and independence from storage, not prefetch depth.
 (inference) window-based retention ≈ LRU; window admission +0.05 … +0.19 over LRU but below the RQ1 adaptive rule, best window =
 the residence (grows with capacity); 60 → 180 GiB worth +0.04 to LRU, +0.155 / +0.073 to reuse-aware admission. Report
-`docs/experiments/2026-10-27-reuse-window-prefetch.md`; awaiting the user's decision on what to bring back.
+`docs/experiments/2026-10-27-reuse-window-prefetch.md` (reorganized 2026-10-27 around six data figures + one table in
+`experimental_results/2026-10-27-reuse-window-prefetch/figs/`); awaiting the user's decision on what to bring back.
 
 **2026-10-22 addendum — PHASE 3 HARDWARE VALIDATION CLOSED: THE FILTERED-WRITE CLAIM HOLDS ON c28 (DRAM SIDE).** The
 Phase 3 write decisions replayed physically (NT stores, CCDs 6–7) beside the real Adam step: admit-all breaks the 7% SLO
@@ -272,6 +273,19 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-10-27 (session 36, exploratory branch: figure revision of the reuse-window report)
+
+- Data organization, Matplotlib figures and report only (no new policies, no main-line change). New `scripts/window_report_figs.py` →
+  `figs/` (PNG 300 dpi + PDF + one CSV per figure): fig1 hit rate vs future window per capacity (B = 0.52 measured 8-stream BeeGFS and
+  0.20 GB/s), fig2 per storage bandwidth at 60 GiB, fig3 hit rate vs capacity per window, fig4 storage read traffic (60 GiB DRAM-only
+  329 GB per two epochs vs 60 + 120 GiB CXL 0 GB, at every window and bandwidth), fig5 window-protected LRU / window-LFU vs LRU (within
+  −0.03 … +0.04), fig6 window admission vs the RQ1 adaptive admission (below it at every capacity), table-infer-admission.
+- Extra grid points for the figures with the unchanged simulator (`run_sweep.sh` block of 16:40: B = 0.52 GB/s, fine windows at every
+  capacity, 15–360 GiB); the 106 points shared with the third pass reproduce it exactly.
+- Report rewritten around the figures (evidence types kept apart: REAL demand trace / trace-driven SIM / measured BeeGFS bandwidth;
+  retention vs prefetch hits vs usable-prefix hits defined); one correction (the 60 GiB W = 300 s write volume is 4.25 TB, not 3.09,
+  which was the 180 GiB value); saturation stated from the data (0.1 s in the comfortable regime). INDEX untouched; nothing merged.
 
 ### 2026-10-27 (session 35, exploratory branch: reuse windows, future-aware prefetching and cache capacity)
 

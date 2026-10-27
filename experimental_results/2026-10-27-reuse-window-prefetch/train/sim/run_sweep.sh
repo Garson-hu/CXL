@@ -35,3 +35,17 @@ echo "SWEEPDONE $(date)"
 # (spurious cold misses at W >= 200 s); pins are now counts of pending in-window demands (train_prefetch_sim.py).
 # NOTE 2026-10-27 16:30: third pass after a bookkeeping change — prefetch bytes are now counted for the scored epochs only (as the demand
 # misses are), so the storage-traffic columns compare like with like; hit rates are unchanged (the second pass is kept in pass2/ for the record).
+# ---- added 2026-10-27 16:40 for the figure revision (same simulator as the third pass, scripts/train_prefetch_sim.py unchanged since
+# commit 7ad141b): the requested figures need (a) the measured 8-stream BeeGFS point 0.52 GB/s (the real run read 8 files concurrently)
+# and (b) the fine windows 0.1-2 s at EVERY capacity, plus the finer capacity grid 15-360 GiB of none.csv at W > 0. Full grids:
+# windows 0-1200 s x capacities 15..360 GiB, inf at B = 0.52 (grid-bw0.52) and B = 0.20 (grid-bw0.2); fine windows at 60 / 180 GiB
+# for B = 0.064 and 0.15 (fine-bw0.064, fine-bw0.15). Overlapping points must reproduce the third-pass CSVs exactly (checked).
+WG=0,0.1,0.25,0.5,1,2,5,10,25,50,100,150,200,300,600,1200; CG=15,30,45,60,90,120,150,180,240,360,inf
+for bw in 0.52 0.2; do
+  lab=grid-bw$bw; [ -f $S/$lab.csv ] || nohup python3 scripts/train_prefetch_sim.py $R $S/$lab.csv --windows $WG --caps-gib $CG --bw-gbps $bw --avail all --label "avail all, B=$bw GB/s" > $S/$lab.log 2>&1 &
+done
+for bw in 0.064 0.15; do
+  lab=fine-bw$bw; [ -f $S/$lab.csv ] || nohup python3 scripts/train_prefetch_sim.py $R $S/$lab.csv --windows 0,0.1,0.25,0.5,1,2,5,10,25 --caps-gib 60,180 --bw-gbps $bw --avail all --label "fine windows, avail all, B=$bw GB/s" > $S/$lab.log 2>&1 &
+done
+wait
+echo "GRIDDONE $(date)"
