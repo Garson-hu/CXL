@@ -1,0 +1,81 @@
+# inspection 2026-11-04 2026-11-04T17:14:30-05:00 on c28
+## slurm
+JobId=326741 JobName=cxl
+   RunTime=04:01:39 TimeLimit=3-00:00:00 TimeMin=N/A
+   StartTime=2026-11-04T13:12:51 EndTime=2026-11-07T13:12:51 Deadline=N/A
+   ReqNodeList=c28 ExcNodeList=(null)
+   NodeList=c28
+   AllocTRES=cpu=256,node=1,billing=256
+## gpu
+name, memory.total [MiB], memory.used [MiB], driver_version, pcie.link.gen.current, pcie.link.width.current
+NVIDIA GeForce RTX 4060 Ti, 8188 MiB, 2 MiB, 580.65.06, 1, 8
+## dax
+crw------- 1 root root 252, 0 Oct 20 15:32 /dev/dax0.0
+crw------- 1 root root 252, 1 Oct 20 15:32 /dev/dax1.0
+crw------- 1 root root 252, 2 Oct 20 15:32 /dev/dax2.0
+uid=412504(ghu4) gid=108(ncsu) groups=108(ncsu),9(kmem)
+## dax open test
+/dev/dax0.0 FAIL: [Errno 13] Permission denied: '/dev/dax0.0'
+/dev/dax1.0 FAIL: [Errno 13] Permission denied: '/dev/dax1.0'
+/dev/dax2.0 FAIL: [Errno 13] Permission denied: '/dev/dax2.0'
+## daxctl
+[
+  {
+    "chardev":"dax1.0",
+    "size":289373421568,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax2.0",
+    "size":549755813888,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  },
+  {
+    "chardev":"dax0.0",
+    "size":260382392320,
+    "target_node":1,
+    "align":2097152,
+    "mode":"devdax"
+  }
+]
+## numa
+available: 1 nodes (0)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255
+node 0 size: 773129 MB
+node 0 free: 755720 MB
+node distances:
+              total        used        free      shared  buff/cache   available
+Mem:            755          11         738           1           5         736
+Swap:             0           0           0
+## disks
+NAME      SIZE MODEL                                    ROTA
+nvme1n1   3.5T SOLIDIGM SBFPFABU038T                       0
+nvme0n1 894.3G SAMSUNG MZ1L2960HCJR-00A07                  0
+Filesystem       Size  Used Avail Use% Mounted on
+/dev/nvme1n1p1   3.5T   53G  3.3T   2% /mnt/local
+10.1.1.10:/home   91T   13T   79T  14% /home
+## kernel
+6.14.11+
+BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.14.11+ root=UUID=25fd6d13-5a3b-4aee-a34e-21f9f58d62a5 ro console=tty0 console=ttyS1,115200 net.ifnames=1 biosdevname=1 namespace.unpriv_enable=1 intel_pstate=disable rd.driver.blacklist=nouveau rd.driver.blacklist=nova-core memhp_default_state=offline initcall_blacklist=algif_aead_init
+## versions
+python 3.12.15
+vllm 0.31.0
+lmcache 0.5.5
+torch 2.13.0+cu130 cuda 13.0
+aiohttp                                  3.14.4
+lmcache                                  0.5.5
+nvidia-ml-py                             13.615.71
+torch                                    2.13.0
+transformers                             5.17.0
+vllm                                     0.31.0
+## models
+models--Qwen--Qwen2.5-1.5B-Instruct
+models--Qwen--Qwen2.5-3B-Instruct-AWQ
+## perf_event_paranoid
+2
+## git
+8e2d9e3 Hardware validation figure: legend of fig-hwval-slowdown moved below the axes
