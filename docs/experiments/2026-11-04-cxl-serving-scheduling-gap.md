@@ -76,6 +76,17 @@ that use future knowledge or ignore a cost, never implementable policies. Trace 
   records join exactly. Clocks: client and EngineCore use `CLOCK_MONOTONIC`, LMCache events the wall clock; the hook
   records the wall–monotonic offset at start-up (same host). Overhead measured by a hook-less control run.
 
+### 1.2 Instrumentation control and the GPU's PCIe link power state (MEASURED 2026-11-04, `A/a-3b-dram-nohooks`)
+The hook-less, sampler-less control run reproduces the cold and GPU-hit TTFTs of the instrumented run within 1–2 ms
+(cold 1k / 4k / 16k: 154.7 / 651.4 / 3401.0 vs 154.9 / 650.5 / 3402.2 ms; GPU hit 19.9 / 21.8 / 33.9 vs 20.1 / 22.4 /
+35.2 ms) but its **host hits are 20–34 ms slower** (1k / 4k / 16k: 56.3 / 65.2 / 106.6 vs 22.5 / 34.8 / 85.1 ms). The
+instrumentation does not slow anything; it keeps the GPU's PCIe link awake: `nvidia-smi` reports the link at **Gen 1** when
+the GPU is idle (`inspect/environment.txt`, `pcie.link.gen.current = 1`) and Gen 4 while serving; the NVML counter poll of
+`gpu_sampler.py` (~1 ms) keeps it at Gen 4, so a host→GPU KV load after an idle gap starts on a 2.5 GT/s link and pays the
+retraining. Two control variants (hooks only / samplers only) are queued to attribute the effect; all concurrent-serving
+runs below keep the sampler on (busy-link condition) and one sampler-less B/E variant quantifies the idle-link penalty under
+load. This is a real deployment effect of a lightly loaded server, not an artefact to hide.
+
 ## 2. Experiments (plan; results are appended per family as they close)
 | family | question | status |
 |---|---|---|
@@ -85,6 +96,65 @@ that use future knowledge or ignore a cost, never implementable policies. Trace 
 | D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays | planned |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | planned |
 | F workload sensitivity | both traces, controlled variations | planned |
+
+## 3. Experiment A — single-request KV retrieval cost (MEASURED 2026-11-04, `A/`, tables `A/tables-a.md`, figures `A/figs/`)
+**Why.** A host-tier hit avoids prefill compute but must move the KV into the GPU; before any scheduling question we
+need the real cost of a hit per prefix length and tier, as the serving stack actually delivers it (lookup, transfer,
+scheduling, the 1-token step), not as a bandwidth number.
+
+**How.** `run_a.py`: one server configuration per run (3B-AWQ unless stated, CUDA graphs, GPU KV capped at 49,152 tokens,
+chunk 256, L1 20 GB DRAM); per prefix length L ∈ {256 … 16,384} and 8 repetitions with fresh pseudo-random prompts:
+`cold` (never seen: recompute + store), `gpu` (the same prompt again: vLLM's GPU prefix cache), `flush` (4 × 16,320-token
+filler prompts, themselves LMCache hits, evict the prompt from the GPU cache), `host` (the same prompt after the flush:
+served by LMCache). Tiers: DRAM L1; `fs` L2 on the NVMe with `skip_l1` (an SSD hit; the first run let the page cache serve
+the reads — kept as the "page cache" row — the O_DIRECT rerun is the SSD number); vLLM alone (no LMCache: `cold`, `gpu`
+and recompute-after-flush); the 1.5B fp16 model on the DRAM tier; a hook-less control. 8 output tokens, TTFT at the
+client. Every request's time line is reconstructed from the three records (Figure A3).
+
+**Result (Table A-1, Figures A1–A3).**
+- Recompute costs 0.14 ms per token plus 8.2 ns per token² of position (fit of `calib_c.py` within 1%): 45 ms at 256
+  tokens, 155 ms at 1k, 651 ms at 4k, 3.40 s at 16k (3B-AWQ); the 1.5B model is 1.9× faster (79 ms at 1k, 1.76 s at 16k).
+- A DRAM host hit costs 19.4 ms at 256 tokens, 22.5 ms at 1k, 34.8 ms at 4k, 51.7 ms at 8k, 85.1 ms at 16k (3B;
+  1.5B: 22.7 / 24.8 / 35.6 / 48.9 / 77.3 ms). Its stages (Table A-2): lookup 1.3 ms, host→GPU transfer at **11.3–12.0 GB/s =
+  the PCIe 4.0 ×8 link** (3.4 ms per 1k tokens = 37.7 MB at 36 KiB/token; 50 ms for 604 MB at 16k), transfer end →
+  scheduled 2.5–3.4 ms (the worker reports the finished load at the end of an engine step, the scheduler re-queues the
+  request), the 1-token step that recomputes the last token 10 ms (the CUDA-graph floor; 20 ms in eager mode), client and
+  frontend legs 1–8 ms. So TTFT(host hit) ≈ 16 ms + 3.4 ms/1k tokens; TTFT(recompute) ≈ 0.14 ms/token: **the host hit is
+  cheaper than recompute from ~100 tokens on, 7× at 1k, 19× at 4k, 40× at 16k**.
+- A GPU prefix hit with LMCache in the loop costs 18.6–35 ms; vLLM alone serves the same hit in 11.8–40 ms (12.8 vs 20.1 ms at
+  1k). The difference is the mechanism of §1.1: the asynchronous lookup (1.3 ms + a scheduler step), a 1-chunk (9.4 MB)
+  load of the dropped partial block (1.0 ms) and the WAITING_FOR_REMOTE_KVS round trip (~3 ms) add ~7 ms to every repeat
+  request; at 16k vLLM alone recomputes 16 tokens (its 16-token block tail) where LMCache's chunk covers all but one, so
+  there the two paths cross (39.9 vs 35.3 ms).
+- The SSD tier through the page cache (the files just written were still in the 755 GiB of DRAM) costs 22–160 ms; here
+  the L2→L1 prefetch happens inside the lookup phase (lookup 3.8 ms at 256 tokens → 63 ms at 16k, a CPU copy at
+  ~10 GB/s) and is followed by the same GPU transfer. Note that with an L2 the lookup prefetches the whole prompt from L2
+  **even when vLLM's GPU cache holds it** (the `gpu` case: +50 ms of lookup at 16k), because the lookup runs before vLLM
+  decides what it needs.
+- **SSD hit with O_DIRECT (`a-3b-ssd-odirect`, the real NVMe path):** 24.3 ms at 256 tokens, 37.5 at 1k, 68.8 at 2k,
+  110 at 4k, 170 at 8k, 318 ms at 16k — i.e. 3.4× a DRAM hit at 4k and 3.7× at 16k, still 11× faster than recompute at
+  16k. The extra time is the L2→L1 prefetch inside the lookup phase: 16 ms at 1k, 58 at 4k, 114 at 8k, 220 ms at 16k =
+  **2.7 GB/s from the NVMe** (604 MB at 16k; the device's O_DIRECT read rate measured 2.6–2.9 GiB/s on 2026-10-07), followed
+  by the unchanged 12 GB/s GPU transfer. The same prefetch also delays GPU-prefix hits (25 → 288 ms from 256 to 16k
+  tokens) and, in this run, the "cold" prompts: the fs L2 directory is persistent and the run reused the seeds of the
+  page-cache run, so its `cold` cases were SSD hits from a cold L1 and GPU (37–306 ms, n = 8 per L, the same stages); the
+  harness now uses one directory per run (deleted at stop) and a clean rerun is queued. The `host` rows are unaffected
+  (the prompt was on disk, not in L1 or in the GPU, in both runs).
+- Repetitions agree within 1–2 ms on the 3B model (min–max in Table A-1) except sporadic tail events: in the 1.5B run 7
+  of 112 hit requests took 160–400 ms, attributed by their time lines to a lookup that took 120–300 ms (5 cases), a
+  finished load noticed by the scheduler 130 ms late (1) and a single-token step of 166 ms (1); the 3B runs show 0–2
+  such events per 112 (max 84 and 105 ms). They are recorded in `A/*-timeline.csv`, not explained.
+
+**Explanation / what CXL changes (PREVIOUSLY MEASURED).** The host-hit cost is the PCIe link plus fixed scheduling costs;
+the host tier's own read speed does not appear because the link is 12 GB/s and the GPU reads a CUDA-registered CXL devdax
+mapping at the same 12.48 GiB/s as pinned DRAM (`2026-10-07-read-cost.md`, 1 GiB copies, 10 repetitions within 1%), the
+3B-AWQ DRAM-vs-devdax microbenchmark of 2026-10-18 found the same TTFT (58–67 ms from devdax vs 79–121 ms from DRAM for
+7.7k tokens in eager mode, both within the noise of the floor), and the 2026-10-11 replay with a pure devdax L1 was
+indistinguishable from DRAM (hits 0.080 vs 0.080, paired TTFT within ±0.04 s). On this platform a CXL KV hit therefore
+costs what a DRAM hit costs; what CXL adds is capacity at that cost (Experiment D) — and on the CPU side a 1.7× slower
+dependent read and 51 vs 280 GiB/s of streaming bandwidth, which the GPU path does not exercise. Where a faster link
+(PCIe 5.0 ×16, ~50 GB/s) exists, the CXL pair's ~50 GiB/s read ceiling would become the limit for concurrent loads
+(Experiment E); that regime cannot be measured here.
 
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.

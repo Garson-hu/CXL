@@ -28,6 +28,7 @@ class Cfg:
     tier: str = "dram"
     l1_gb: float = 40.0
     ssd_path: str = "/mnt/local/ghu4/kvl2"
+    keep_ssd: bool = False          # keep the run's fs L2 directory after stop() (default: delete it)
     ssd_odirect: bool = True      # O_DIRECT file reads/writes in the fs adapter (otherwise the page cache serves the "SSD" hits)
     dax_path: str = "/dev/dax1.0"
     chunk: int = 256
@@ -90,8 +91,9 @@ class ServingEnv:
                    "--l2-prefetch-max-in-flight", str(c.l2_prefetch_max_in_flight), "--l1-size-gb", f"{c.l1_gb:g}"]
             if c.tier == "dax": srv += ["--l1-devdax-path", c.dax_path, "--no-l1-use-lazy", "--shm-name", ""]
             elif c.tier == "ssd":
-                os.makedirs(c.ssd_path, exist_ok=True)
-                srv += ["--l2-adapter", json.dumps({"type": "fs", "base_path": c.ssd_path, "use_odirect": bool(c.ssd_odirect)}), "--l2-store-policy", "skip_l1"]
+                # one directory per run: the fs L2 is persistent, and a second run with the same prompts would otherwise find them on disk
+                self.ssd_dir = os.path.join(c.ssd_path, c.tag); os.makedirs(self.ssd_dir, exist_ok=True)
+                srv += ["--l2-adapter", json.dumps({"type": "fs", "base_path": self.ssd_dir, "use_odirect": bool(c.ssd_odirect)}), "--l2-store-policy", "skip_l1"]
             elif c.tier != "dram": raise ValueError(c.tier)
             if c.extra_lm: srv += c.extra_lm.split()
             lm_env = dict(env)
@@ -159,6 +161,8 @@ class ServingEnv:
                 try: self.p[name].wait(timeout=120)
                 except subprocess.TimeoutExpired:
                     os.killpg(self.p[name].pid, signal.SIGKILL); self.p[name].wait()
+        if getattr(self, "ssd_dir", None) and not self.c.keep_ssd:
+            import shutil; shutil.rmtree(self.ssd_dir, ignore_errors=True)
         self.mark("stopped"); self.meta.close()
 
 if __name__ == "__main__":

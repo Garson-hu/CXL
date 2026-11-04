@@ -13,8 +13,9 @@ Scenarios (each request id = <tag>-<scenario>-<index>-<type>-L<len>; scenario bo
   s1  closed loop, concurrency c in CONC: the same 64-request mixed sequence (50 % host / 50 % cold; L in 1k/2k/4k/8k)
   s2  open loop, Poisson arrivals at RATES req/s over the same 96-request mixed sequence (seeded exponential gaps)
   s3  bursts of k in BURSTS simultaneous mixed requests, 4 bursts per k, 4 s apart
+  s4  (Experiment F) open loop at F_RATE req/s, 48 requests, hit share in SHARES x length class short (1k / 2k) or long (8k)
 Every request asks for OUT output tokens (ignore_eos). Pool: 64 prompts (16 per length 1k/2k/4k/8k).
-usage: run_b.py <out> <tag> [scenarios=s0,s1,s2,s3] [conc=1,2,4,8,16] [rates=0.5,1,2,4] [bursts=4,8,16] [reps=5] [out_tokens=32]
+usage: run_b.py <out> <tag> [scenarios=s0,s1,s2,s3] [conc=1,2,4,8,16] [rates=0.5,1,2,4] [bursts=4,8,16] [reps=5] [out_tokens=32] [f_rate=2] [shares=0,0.25,0.5,0.75,1]
                 [prio=none|hits_first|cold_first] [Cfg key=value ...]   (e.g. eager_prefetch=true gpu_workers=4 sched_policy=priority)"""
 import asyncio, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +26,7 @@ out, tag = sys.argv[1:3]; kv = dict(a.split("=", 1) for a in sys.argv[3:])
 SCEN = kv.pop("scenarios", "s0,s1,s2,s3").split(","); CONC = [int(x) for x in kv.pop("conc", "1,2,4,8,16").split(",")]
 RATES = [float(x) for x in kv.pop("rates", "0.5,1,2,4").split(",")]; BURSTS = [int(x) for x in kv.pop("bursts", "4,8,16").split(",")]
 REPS = int(kv.pop("reps", "5")); OUT = int(kv.pop("out_tokens", "32")); PRIO = kv.pop("prio", "none")
+F_RATE = float(kv.pop("f_rate", "2")); SHARES = [float(x) for x in kv.pop("shares", "0,0.25,0.5,0.75,1").split(",")]
 cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=40.0, enforce_eager=False))
 if PRIO != "none": cfg.sched_policy = "priority"
 LENS = [1024, 2048, 4096, 8192]; POOL = [(500_000 + i, LENS[i % 4]) for i in range(64)]     # (seed, L)
@@ -45,6 +47,19 @@ def mixed_sequence(n, seed):
             while j == last: j = rng.randrange(64)
             last = j; s, Lp = POOL[j]; seq.append(("host", Lp, prompt(s, Lp)))
         else: seq.append(("cold", L, cold_prompt(L)))
+    return seq
+
+def share_sequence(n, seed, share, cls):
+    """n requests with a `share` of pool hits (random pool entries of the length class), the rest cold prompts of the class"""
+    rng = random.Random(seed); lens = [1024, 2048] if cls == "short" else [8192]; seq = []; last = -1
+    cand = [j for j in range(64) if POOL[j][1] in lens]
+    for i in range(n):
+        if rng.random() < share:
+            j = rng.choice(cand)
+            while j == last and len(cand) > 1: j = rng.choice(cand)
+            last = j; s_, Lp = POOL[j]; seq.append(("host", Lp, prompt(s_, Lp)))
+        else:
+            L = rng.choice(lens); seq.append(("cold", L, cold_prompt(L)))
     return seq
 
 async def flush(cl, name):
@@ -87,6 +102,13 @@ async def main():
                     seq = mixed_sequence(k, 1000 + 10 * k + b); await flush(cl, f"s3-k{k}-b{b}")
                     reqs = [req(f"{tag}-s3-k{k}-b{b}-{i}-{t}-L{L}", t, L, p, grp=f"s3-k{k}", rep=b) for i, (t, L, p) in enumerate(seq)]
                     await cl.burst(reqs); await asyncio.sleep(4.0)
+        if "s4" in SCEN:
+            for cls in ("short", "long"):
+                for sh in SHARES:
+                    seq = share_sequence(48, 4000 + int(sh * 100) + (0 if cls == "short" else 1), sh, cls)
+                    env.mark("s4", f"share={sh:g} class={cls}"); await flush(cl, f"s4-{cls}-h{sh:g}")
+                    reqs = [req(f"{tag}-s4-{cls}-h{sh:g}-{i}-{t}-L{L}", t, L, p, grp=f"s4-{cls}-h{sh:g}") for i, (t, L, p) in enumerate(seq)]
+                    await cl.open_loop(reqs, F_RATE, seed=500 + int(sh * 100)); await asyncio.sleep(2.0)
         env.mark("bench_end")
 
 try: asyncio.run(main())

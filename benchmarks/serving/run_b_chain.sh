@@ -12,4 +12,5 @@ run b-workers4  tier=dram gpu_workers=4
 run b-prio-hits tier=dram prio=hits_first
 run b-prio-cold tier=dram prio=cold_first
 run b-none      tier=none
+run b-default-nosamp tier=dram samplers=false scenarios=s2,s3
 log "chain done"

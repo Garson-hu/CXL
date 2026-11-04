@@ -2,7 +2,7 @@
 """Experiment C (2026-11-04): a calibrated discrete-event model of one vLLM + LMCache server, used ONLY as an offline
 scheduling reference (SIMULATED; never a measurement). It replays a measured request sequence (arrival instants, prompt
 lengths, output lengths and the tier each request was served from) through:
-  GPU   one engine step at a time. A step takes  c_step + sum over its prefill tokens of r(p) + n_decode * c_dec  where
+  GPU   one engine step at a time. A step takes  max(c_min, c_step + sum over its prefill tokens of r(p) + n_decode * c_dec)  where
         r(p) = r0 + r1 * p is the measured per-token prefill cost at prompt position p, c_step the fixed step cost, c_dec
         the per-sequence decode cost; a step carries at most `chunk` prefill tokens (vLLM's token budget) and at most
         `max_seqs` sequences; a request's first token comes out at the end of the step that completes its prefill.
@@ -22,7 +22,7 @@ usage (library): sim = Sim(params); res = sim.run(requests, policy)  ->  list of
 usage (cli):     sched_sim.py <requests.csv of analyze_b.py> <grp> <params.json> [policy ...]"""
 import csv, heapq, json, sys
 
-DEFAULT = dict(r0=0.000134, r1=9.4e-9, c_step=0.010, c_dec=0.0003, chunk=2048, max_seqs=16, kv_bytes=36864, bw=12.0e9, n_ch=1, lookup=0.0013, ready=0.003, notice=True)
+DEFAULT = dict(r0=0.000134, r1=9.4e-9, c_step=0.003, c_min=0.0102, c_dec=0.0003, chunk=2048, max_seqs=16, kv_bytes=36864, bw=12.0e9, n_ch=1, lookup=0.0013, ready=0.003, notice=True)
 
 class Sim:
     def __init__(self, p): self.p = dict(DEFAULT, **p)
@@ -76,7 +76,7 @@ class Sim:
                 nxt += [load_done[i] for i in waiting if state[i] == "loading"] + [ready_at[i] for i in waiting if state[i] == "ready" and ready_at[i] > t]
                 if not nxt: break
                 t = max(t, min(nxt)); continue
-            dt = P["c_step"] + tokens + n_dec * P["c_dec"]; t_end = t + dt
+            dt = max(P["c_min"], P["c_step"] + tokens + n_dec * P["c_dec"]); t_end = t + dt     # c_min = the measured 1-token step floor
             for i, k in batch:
                 if k > 0:
                     prefill_left[i] -= k; pos[i] += k

@@ -8,4 +8,5 @@ run() { local tag=$1; shift; log "start $tag $*"; timeout 3600 taskset -c 80-87 
 run e-workers1 tier=dram gpu_workers=1
 run e-workers4 tier=dram gpu_workers=4
 run e-ssd      tier=ssd l1_gb=10 gpu_workers=1 scenarios=e1
+run e-workers1-nosamp tier=dram gpu_workers=1 samplers=false scenarios=e1
 log "chain done"
