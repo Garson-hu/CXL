@@ -93,36 +93,38 @@ def timeline_panel(ax, tag, grp, rep):
     R = [r for r in D[tag]["requests"] if r["grp"] == grp and r["rep"] == rep and r["case"] in ("host", "gpu", "cold")]
     if not R: ax.text(0.5, 0.5, "no data", ha="center"); return
     R.sort(key=lambda r: r["send_mono"]); t0 = min(r["send_mono"] for r in R)
-    rows = []
     for k, r in enumerate(R):
-        base = (r["send_mono"] - t0) * 1000; y = len(R) - k
-        segs = []
-        if r.get("queued_ms") is not None:
-            segs.append((base, base + r["queued_ms"], C[7], "client → engine queue"))
-            if r.get("kv_wait_ms") is not None:
-                segs.append((base + r["queued_ms"], base + r["kv_wait_ms"], C[0], "waiting (lookup pending / not yet scheduled)"))
-                if r.get("kv_arrived_ms") is not None:
-                    segs.append((base + r["kv_wait_ms"], base + r["kv_arrived_ms"], C[1], "KV load in flight (host → GPU)"))
-                    if r.get("scheduled_ms") is not None: segs.append((base + r["kv_arrived_ms"], base + r["scheduled_ms"], C[3], "KV ready, waiting for the GPU"))
-            elif r.get("scheduled_ms") is not None: segs.append((base + r["queued_ms"], base + r["scheduled_ms"], C[0], "waiting (lookup pending / not yet scheduled)"))
-            if r.get("scheduled_ms") is not None and r.get("first_token_engine_ms") is not None: segs.append((base + r["scheduled_ms"], base + r["first_token_engine_ms"], C[2], "scheduled → first token (prefill)"))
-        for a, b, col, lab in segs: ax.barh(y, b - a, left=a, color=col, height=0.6, label=lab)
-        ax.text(base + r["ttft_client_ms"] + 3, y, f"{r['rid'].split('-')[-1]} {r['tier']} L={int(r['L'])}  TTFT {r['ttft_client_ms']:.0f} ms", va="center", fontsize=7)
-    steps = [s for s in D[tag]["steps"] if s["t_end"] is not None and s["tok"] > 0 and s["t1"] >= t0 - 0.05 and s["t1"] <= t0 + max(r["ttft_client_ms"] for r in R) / 1000 + 0.3]
-    for s in steps: ax.barh(0, (s["t_end"] - s["t1"]) * 1000, left=(s["t1"] - t0) * 1000, color="k", alpha=0.5, height=0.4)
-    ax.text(0, -0.55, "GPU steps with tokens (engine)", fontsize=7)
-    ax.set_yticks([]); ax.set_xlabel("ms after the first request of the burst was sent"); ax.grid(alpha=.3, axis="x")
+        base = (r["send_mono"] - t0) * 1000; y = len(R) - k; g = lambda key: (base + r[key]) if r.get(key) is not None else None
+        pts = [("client → engine queue", 0.0, g("queued_ms"), C[7])]
+        if g("kv_wait_ms") is not None:
+            pts.append(("waiting: lookup pending / not yet considered by the scheduler", g("queued_ms"), g("kv_wait_ms"), C[0]))
+            if g("retrieve_start_ms") is not None and g("retrieve_end_ms") is not None:
+                pts.append(("blocks allocated, transfer not started", g("kv_wait_ms"), g("retrieve_start_ms"), C[9]))
+                pts.append(("transfer host → GPU", g("retrieve_start_ms"), g("retrieve_end_ms"), C[1]))
+                pts.append(("load done, waiting for a step boundary to be noticed", g("retrieve_end_ms"), g("kv_arrived_ms"), C[3]))
+            else: pts.append(("KV load in flight", g("kv_wait_ms"), g("kv_arrived_ms"), C[1]))
+            pts.append(("KV ready, waiting for the GPU", g("kv_arrived_ms"), g("scheduled_ms"), C[4]))
+        elif g("scheduled_ms") is not None: pts.append(("waiting: lookup pending / not yet considered by the scheduler", g("queued_ms"), g("scheduled_ms"), C[0]))
+        pts.append(("scheduled → first token (prefill step)", g("scheduled_ms"), g("first_token_engine_ms"), C[2]))
+        for lab, a, b, col in pts:
+            if a is None or b is None or b <= a: continue
+            ax.barh(y, b - a, left=a, color=col, height=0.6, label=lab)
+        ax.text(base + r["ttft_client_ms"] + 5, y, f"{r['rid'].split('-')[-1]} {r['tier']} L={int(r['L'])}  TTFT {r['ttft_client_ms']:.0f} ms", va="center", fontsize=7)
+    tmax = max((r["send_mono"] - t0) * 1000 + r["ttft_client_ms"] for r in R) / 1000
+    steps = [s_ for s_ in D[tag]["steps"] if s_["t_end"] is not None and s_["tok"] > 0 and s_["t1"] >= t0 - 0.05 and s_["t1"] <= t0 + tmax + 0.2]
+    for s_ in steps: ax.barh(0, (s_["t_end"] - s_["t1"]) * 1000, left=(s_["t1"] - t0) * 1000, color="k", alpha=0.45, height=0.4, edgecolor="white", linewidth=0.5)
+    ax.set_yticks([0]); ax.set_yticklabels(["engine steps\nwith tokens"], fontsize=7); ax.set_xlabel("ms after the first request of the burst was sent", fontsize=8); ax.grid(alpha=.3, axis="x"); ax.set_xlim(left=0)
 tags4 = [t for t in ("b-default", "b-prio-hits", "b-eager") if t in D][:2]
 if tags4:
     orders = ["s0-ABCD", "s0-DCBA", "s0-CADB"]
-    fig, axes = plt.subplots(len(orders), len(tags4), figsize=(6.2 * len(tags4), 2.6 * len(orders)), squeeze=False)
+    fig, axes = plt.subplots(len(orders), len(tags4), figsize=(8.5 * len(tags4), 2.7 * len(orders)), squeeze=False)
     for j, tag in enumerate(tags4):
         for i, o in enumerate(orders):
             timeline_panel(axes[i][j], tag, o, 0); axes[i][j].set_title(f"{LABEL.get(tag, tag)} — order {o[3:]}", fontsize=9)
     h, l = axes[0][0].get_legend_handles_labels(); seen = {}; [seen.setdefault(lab, hh) for hh, lab in zip(h, l)]
-    fig.legend(seen.values(), seen.keys(), fontsize=7, loc="upper center", ncol=5, bbox_to_anchor=(0.5, 0.995))
-    fig.suptitle("Figure B4 — the four-request burst (A = 8k host hit, B = 1k GPU hit, C = 4k cold, D = 4k host hit, sent 5 ms apart; MEASURED time lines, repetition 0)", fontsize=9, y=0.955)
-    fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(f"{FIG}/figB4-timelines.png", dpi=300); fig.savefig(f"{FIG}/figB4-timelines.pdf"); plt.close(fig)
+    fig.legend(seen.values(), seen.keys(), fontsize=6.5, loc="upper center", ncol=3, bbox_to_anchor=(0.5, 0.985))
+    fig.suptitle("Figure B4 — the four-request burst: A = 8k host hit, B = 1k GPU hit, C = 4k cold, D = 4k host hit, sent 5 ms apart (MEASURED, repetition 0)", fontsize=9, y=0.915)
+    fig.tight_layout(rect=(0, 0, 1, 0.885)); fig.savefig(f"{FIG}/figB4-timelines.png", dpi=300); fig.savefig(f"{FIG}/figB4-timelines.pdf"); plt.close(fig)
 
 # ---- figB5 ----
 if "b-default" in D:

@@ -84,14 +84,14 @@ async def main():
                     reqs = [req(f"{tag}-s0-{oname}-r{rep}-{ch}", items[ch][0], items[ch][1], items[ch][2], grp=f"s0-{oname}", rep=rep) for ch in order]
                     await cl.burst(reqs, spacing_ms=5.0); await asyncio.sleep(1.0)
         if "s1" in SCEN:
-            seq = mixed_sequence(64, 11)
             for c in CONC:
+                seq = mixed_sequence(64, 11)          # same types / lengths / pool entries at every level; the cold prompts are fresh (LMCache keeps the earlier ones)
                 env.mark("s1", f"conc={c}"); await flush(cl, f"s1-c{c}")
                 gen = (req(f"{tag}-s1-c{c}-{i}-{t}-L{L}", t, L, p, grp=f"s1-c{c}") for i, (t, L, p) in enumerate(seq))
                 await cl.closed_loop(gen, c, len(seq)); await asyncio.sleep(1.0)
         if "s2" in SCEN:
-            seq = mixed_sequence(96, 12)
             for r in RATES:
+                seq = mixed_sequence(96, 12)
                 env.mark("s2", f"rate={r}"); await flush(cl, f"s2-r{r:g}")
                 reqs = [req(f"{tag}-s2-r{r:g}-{i}-{t}-L{L}", t, L, p, grp=f"s2-r{r:g}") for i, (t, L, p) in enumerate(seq)]
                 await cl.open_loop(reqs, r, seed=100 + int(r * 10)); await asyncio.sleep(2.0)

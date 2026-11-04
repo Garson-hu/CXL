@@ -42,11 +42,14 @@ def load_gpu(out, tag):
 
 def gpu_busy(steps, t_lo, t_hi):
     """share of [t_lo, t_hi] (monotonic s) covered by engine steps that scheduled tokens (schedule end -> model output)"""
-    busy = 0.0
-    for s in steps:
-        if s["tok"] > 0 and s["t_end"] is not None:
-            a, b = max(s["t1"], t_lo), min(s["t_end"], t_hi)
-            if b > a: busy += b - a
+    iv = sorted((max(s["t1"], t_lo), min(s["t_end"], t_hi)) for s in steps if s["tok"] > 0 and s["t_end"] is not None and min(s["t_end"], t_hi) > max(s["t1"], t_lo))
+    busy = 0.0; cur = None
+    for a, b in iv:                                   # union of the intervals (with async scheduling two steps overlap)
+        if cur is None or a > cur[1]:
+            if cur: busy += cur[1] - cur[0]
+            cur = [a, b]
+        else: cur[1] = max(cur[1], b)
+    if cur: busy += cur[1] - cur[0]
     return busy / (t_hi - t_lo) if t_hi > t_lo else None
 
 def summarize_group(rows, steps, U, C):
