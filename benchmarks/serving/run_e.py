@@ -28,7 +28,7 @@ async def flush(cl, name):
 async def main():
     async with Client(env.url(), cfg.model, env.f("client.jsonl")) as cl:
         env.mark("warmup"); await cl.sequential([dict(rid=f"{tag}-warm{i}", tokens=prompt(10_000 + i, 1024), case="warm", max_tokens=4) for i in range(3)])
-        pool = {L: [prompt(800_000 + 100 * L + i, L) for i in range(max(KS))] for L in LS}
+        pool = {L: [prompt(800_000 + 100 * L + i, L) for i in range(max(max(KS), 8))] for L in LS}
         env.mark("populate")
         for L in LS:
             for i, p in enumerate(pool[L]): await cl.one(f"{tag}-pop-L{L}-{i}", p, case="populate", L=L, max_tokens=1)

@@ -14,8 +14,9 @@ changed in vLLM's behaviour, the wrappers only append JSON lines to `$VLLMEVT_OU
         {"ev":"step", i, t0, t1 (monotonic before / after schedule()), tok (scheduled tokens), new, cached (requests
         scheduled), run / wait / hold / wfr (running, waiting, kv-holding-waiting queue lengths and the number of
         requests in WAITING_FOR_REMOTE_KVS after this schedule()), fin (finished ids)}
-        {"ev":"end", i, t (monotonic when the model output of step i was received), fr: ids whose asynchronous KV
-        load the worker reported finished in this step}
+        {"ev":"end", i, t (monotonic when the model output of step i was received; i is the index of the completed
+        step, which with async scheduling is one behind the last schedule()), fr: ids whose asynchronous KV load the
+        worker reported finished in this step}
         {"ev":"req", rid, kv_wait_mono (first schedule() that left the request in WAITING_FOR_REMOTE_KVS),
         kv_arrived_mono (the update_from_output that received its finished load), run_mono (first schedule() that
         put it in RUNNING)}  -- written when the request finishes.
@@ -69,6 +70,8 @@ if _OUT:
             t0 = time.monotonic(); out = orig_schedule(self, *a, **k); t1 = time.monotonic()
             try:
                 st["i"] += 1; i = st["i"]; n_wfr = 0
+                try: out._vllmevt_i = i          # so that update_from_output can name the step it completes (async scheduling runs one step ahead)
+                except Exception: pass
                 for rid, r in self.requests.items():
                     s = r.status
                     if s == RS.WAITING_FOR_REMOTE_KVS:
@@ -92,7 +95,7 @@ if _OUT:
                 kvo = getattr(model_runner_output, "kv_connector_output", None)
                 fr = tuple(getattr(kvo, "finished_recving", None) or ()) if kvo is not None else ()
                 for rid in fr: st["arrived"].setdefault(rid, t)
-                _w("step").write({"ev": "end", "i": st["i"], "t": t, "fr": list(fr)})
+                _w("step").write({"ev": "end", "i": getattr(scheduler_output, "_vllmevt_i", st["i"]), "t": t, "fr": list(fr)})
             except Exception as e:
                 sys.stderr.write(f"vllmevt end: {e!r}\n")
             return orig_update(self, scheduler_output, model_runner_output, *a, **k)

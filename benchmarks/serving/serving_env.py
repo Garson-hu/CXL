@@ -52,6 +52,8 @@ class Cfg:
     gpu_sampler_cpu: str = "95"
     cpu_sampler_cpu: str = "94"
     hooks: bool = True
+    hooks_vllm: bool = True         # the vLLM post-import hook (effective only with hooks=true)
+    hooks_lm: bool = True           # the LMCache event-bus mirror (effective only with hooks=true)
     samplers: bool = True
     vport: int = 8100; mpport: int = 5555; hport: int = 8200
     extra_vllm: str = ""            # extra vllm serve args, space separated
@@ -97,7 +99,7 @@ class ServingEnv:
             elif c.tier != "dram": raise ValueError(c.tier)
             if c.extra_lm: srv += c.extra_lm.split()
             lm_env = dict(env)
-            if c.hooks: lm_env.update(PYTHONPATH=f"{REPO}/benchmarks/agent/kvevt", KVEVT_OUT=self.f("kvevents.jsonl"))
+            if c.hooks and c.hooks_lm: lm_env.update(PYTHONPATH=f"{REPO}/benchmarks/agent/kvevt", KVEVT_OUT=self.f("kvevents.jsonl"))
             self.p["lmcache"] = subprocess.Popen(["taskset", "-c", c.lm_cpus] + srv, stdout=open(self.f("lmcache.log"), "w"), stderr=subprocess.STDOUT, env=lm_env, start_new_session=True)
             self._wait(f"http://127.0.0.1:{c.hport}/healthcheck", self.p["lmcache"], "lmcache server", 600); self.mark("lmcache_ready")
         vl = [f"{ENV_BIN}/vllm", "serve", c.model, "--port", str(c.vport), "--max-model-len", str(c.max_model_len), "--max-num-seqs", str(c.max_num_seqs),
@@ -115,7 +117,7 @@ class ServingEnv:
             vl += ["--kv-transfer-config", json.dumps(kv)]
         if c.extra_vllm: vl += c.extra_vllm.split()
         v_env = dict(env)
-        if c.hooks: v_env.update(PYTHONPATH=f"{HERE}/vllmevt", VLLMEVT_OUT=self.f("vllmevt"))
+        if c.hooks and c.hooks_vllm: v_env.update(PYTHONPATH=f"{HERE}/vllmevt", VLLMEVT_OUT=self.f("vllmevt"))
         self.p["vllm"] = subprocess.Popen(["taskset", "-c", c.vllm_cpus] + vl, stdout=open(self.f("server.log"), "w"), stderr=subprocess.STDOUT, env=v_env, start_new_session=True)
         self._wait(f"{self.url()}/health", self.p["vllm"], "vllm", 1500); self.mark("vllm_ready")
         if c.samplers:

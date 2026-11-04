@@ -80,12 +80,20 @@ that use future knowledge or ignore a cost, never implementable policies. Trace 
 The hook-less, sampler-less control run reproduces the cold and GPU-hit TTFTs of the instrumented run within 1–2 ms
 (cold 1k / 4k / 16k: 154.7 / 651.4 / 3401.0 vs 154.9 / 650.5 / 3402.2 ms; GPU hit 19.9 / 21.8 / 33.9 vs 20.1 / 22.4 /
 35.2 ms) but its **host hits are 20–34 ms slower** (1k / 4k / 16k: 56.3 / 65.2 / 106.6 vs 22.5 / 34.8 / 85.1 ms). The
-instrumentation does not slow anything; it keeps the GPU's PCIe link awake: `nvidia-smi` reports the link at **Gen 1** when
-the GPU is idle (`inspect/environment.txt`, `pcie.link.gen.current = 1`) and Gen 4 while serving; the NVML counter poll of
-`gpu_sampler.py` (~1 ms) keeps it at Gen 4, so a host→GPU KV load after an idle gap starts on a 2.5 GT/s link and pays the
-retraining. Two control variants (hooks only / samplers only) are queued to attribute the effect; all concurrent-serving
-runs below keep the sampler on (busy-link condition) and one sampler-less B/E variant quantifies the idle-link penalty under
-load. This is a real deployment effect of a lightly loaded server, not an artefact to hide.
+instrumentation does not slow anything; it keeps the GPU awake. Attribution (`A/a-3b-dram-{hooksonly,samplersonly,
+lmhookonly,vllmhookonly}`, 4 repetitions): host hits are fast (19 / 22 / 34 / 85 ms at 256 / 1k / 4k / 16k) with the
+samplers alone, with the LMCache event-bus mirror alone (its subscriber makes LMCache launch host callbacks on the
+server's CUDA stream) and with both hooks, and slow (62 / 120 / 69 / 96 ms) with the vLLM hook alone, which touches no GPU
+state. The idle-gap control (`A/a-3b-idle`, no instrumentation at all, L = 4096, 6 repetitions per gap) settles it:
+a host hit sent immediately after the previous request costs 34.4 ms (34–35), the same as in the instrumented runs, but
+after an idle gap of 0.05 / 0.2 / 1 / 3 s it costs 75 / 63 / 71 / 94 ms (min 42–54), and a GPU-prefix hit goes from 22.2 ms
+to 37 / 68 / 60 / 62 ms; recompute (652 ms) is unaffected. So **after ≥ 50 ms without GPU work the next short request pays
+~30–40 ms** — a power-state ramp of this consumer GPU (persistence mode is disabled; at long idle `nvidia-smi` shows the
+PCIe link at Gen 1, `inspect/environment.txt`; a query after a 3 s gap already shows Gen 4 / P2 because the query itself
+wakes the device). NVML polling and LMCache's stream callbacks keep the GPU awake. All concurrent-serving runs below keep
+the sampler on (busy-GPU condition, which a loaded server is in anyway); the sampler-less B/E variants quantify the
+penalty under light load. This is a real deployment effect of a lightly loaded server on this hardware, not an artefact
+to hide, and it is not specific to host-tier hits.
 
 ## 2. Experiments (plan; results are appended per family as they close)
 | family | question | status |
