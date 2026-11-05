@@ -112,7 +112,7 @@ to hide, and it is not specific to host-tier hits.
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
 | B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes done (§4); real-trace configurations running (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
-| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation sweep done, tool-agent sweep and lighter-load sweep running (§7) |
+| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run queued), lighter-load 0–200 s sweep queued (§7.3) |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
 | F workload sensitivity | both traces, controlled variations | queued |
 
@@ -464,23 +464,127 @@ and 1 % in p99 (same offered sequence, same GPU work).
 
 **Explanation.** Two mechanisms, both visible in the step log (`*-steps.csv`). First, the server is bound by GPU KV-cache
 capacity, not by compute or by `max_num_seqs`: whenever requests are waiting, 5–11 sequences are running (p50 8, never
-16), because 121,792 tokens of KV hold about ten sequences of 11 k prompt + output tokens. A host-tier hit saves the
-prefill compute of its prefix but still needs the full GPU blocks for it, so it does not raise concurrency; a GPU-prefix
-hit shares its blocks with the earlier turn, needs fewer new blocks and is schedulable when the KV budget is tight —
-that is why GPU hits see a lower TTFT and host hits do not. Second, under overload the TTFT is queueing time (10 of
+16), because 121,792 tokens of KV hold about ten sequences of 11 k prompt + output tokens. A host-tier hit must reserve GPU blocks for its
+whole prefix before its load is issued and is not admitted until they are free at once (§7.2c: in this run the 11
+host-dominant hits wait 22.9 s p50 from queueing to scheduling against 11.3 s for GPU-prefix hits and 10.6 s for misses,
+10.3 s of it between the lookup result and the load), so it neither raises concurrency nor gets in early; a GPU-prefix
+hit's blocks are resident and it needs new blocks only for its uncached tail — that is why GPU hits see a lower TTFT and
+host hits do not. Second, under overload the TTFT is queueing time (10 of
 16 s), first-come-first-served and independent of whether the request has a hit, consistent with B (§4) and C (§6): the
 scheduler consults the host tier only when a request reaches the head of the queue, and the finished load is noticed at
 step boundaries. On this GPU the capacity that binds is therefore the 4.5 GB of GPU KV, and a host tier — DRAM, SSD or
 CXL — relieves compute, not that; the lighter-load sweep (§7.3) measures the host tier where the queue is not saturated.
 
-_[pending 2026-11-05 01:10: §7.2b tool-agent trace at 0.08× (8 runs in progress); §7.3 lighter-load sweep (0–200 s at
-0.04×, 2 / 80 / 320 GB and vLLM alone, both traces; queued); figures D3 / D4 reading.]_
+### 7.2b Measured sweep, tool-agent trace at 0.08× (figures D1–D4, `replay/tables-d-tool.md`)
+Same server, same replay speed; the window holds 544 requests and 4.61 M prompt tokens (prompt p50 6.2 k, p90 19 k
+tokens; 0.42 req/s, 3.56 k offered prompt tokens/s over ≈ 1,290 wall s). `d-tool-dram2` is re-run at the head of
+`queue_i2.sh` (its first run was contaminated by the incident of §15.C) and is added when it lands.
+
+| run | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % TTFT p50 (s) [n] | miss TTFT p50 (s) [n] | request time p50 (s) | computed tok/s | KV host→GPU / GPU→host (GB) | evicted chunks | L1 max (GB) | GPU busy | backlog max |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| d-tool-dram5 | 0.323 (0.084 / 0.239) | 14.6 / 46.0 / 53.1 | 13.3 [290] | 15.7 [187] | 27.4 | 2,407 | 14.2 / 74.8 | 7,524 | 4.4 | 0.88 | 41 |
+| d-tool-dram10 | 0.332 (0.097 / 0.235) | 13.2 / 44.6 / 50.1 | 12.4 [302] | 14.9 [177] | 26.2 | 2,380 | 16.5 / 76.1 | 7,221 | 8.8 | 0.88 | 41 |
+| d-tool-dram20 | 0.332 (0.095 / 0.237) | 13.1 / 44.6 / 50.1 | 12.4 [302] | 14.9 [177] | 26.2 | 2,380 | 16.2 / 76.2 | 6,517 | 17.2 | 0.88 | 41 |
+| d-tool-dram40 | 0.335 (0.093 / 0.242) | 12.9 / 44.0 / 49.2 | 12.3 [305] | 14.5 [175] | 25.5 | 2,374 | 15.8 / 76.3 | 5,089 | 34.3 | 0.88 | 41 |
+| d-tool-dram80 | 0.354 (0.110 / 0.243) | 12.7 / 40.9 / 48.1 | 12.4 [313] | 13.8 [167] | 23.5 | 2,322 | 18.7 / 74.6 | 1,455 | 68.5 | 0.87 | 41 |
+| d-tool-ssd (10 GB L1 + NVMe L2) | 0.310 (0.057 / 0.252) | 15.6 / 45.6 / 54.2 | 13.6 [271] | 21.0 [207] | 28.2 | 2,443 | 9.8 / 99.0 | 14,160 (L1) | 1.0 | 0.88 | 40 |
+| d-tool-none (vLLM alone) | 0.256 (0.000 / 0.256) | 18.5 / 58.4 / 72.7 | 12.6 [226] | 23.8 [250] | 32.5 | 2,586 | 0 / 0 | 0 | – | 0.89 | 46 |
+
+All 544 requests of every run completed. Columns as in §7.2.
+
+**Result.** The tool-agent window overloads the server as well (GPU busy 0.87–0.89, backlog up to 41–46, TTFT p50
+13–19 s), but here the host tier matters from the smallest capacity, because this trace's reuse is short-distance
+(§7.1): the GPU prefix cache alone serves 25.6 % of the prompt tokens (vLLM alone), 5 GB of DRAM adds 8.4 points from the
+host tier and 80 GB 11.0 points (cached share 0.323 → 0.354). The measured cached shares match the offline LRU of §7.1
+within one point (0.325 at 4.5 GB, 0.363 at 80 GB), which validates the trace analysis as a predictor of hit share for
+this replay. The hits pay off through removed work: computed prefill falls 10 % (2,586 → 2,322 tok/s), and the
+saturated queue amplifies that into TTFT p50 −31 % (18.5 → 12.7 s), p95 −30 %, p99 −34 % and request completion p50
+−28 % (32.5 → 23.5 s); 5 GB already gives −21 / −21 / −27 %. Between 10 and 40 GB nothing changes (host share
+9.3–9.7 %, TTFT p50 12.9–13.2 s), as the window offers no more reuse in that range (§7.1: 0.333 at 20 GB). Stores are
+75–76 GB per window in every DRAM run, above the 80 GB tier's watermark (0.8 × 80 GB = 64 GB), so even the largest tier
+evicts within 100 trace-seconds (1,455 chunks; 7,524 at 5 GB). The SSD-backed configuration finds *fewer* hits than 5 GB
+of DRAM (host share 5.7 % vs 8.4 %; its lookups report 17 % of prompt tokens — 2 % in the 10 GB L1, 15 % in the NVMe
+L2 — against 30 % for the 5 GB DRAM L1): joined request by request in trace order, the SSD run retrieved fewer host
+tokens on 59 requests and more on 28, losing 0.27 M of the 0.39 M host tokens the DRAM run retrieved, and the lost hits
+arrive late in the window (p50 874 s vs 492 s for the kept ones). Its TTFT p50 is 15.6 s (−16 % vs vLLM alone) and it
+writes 99 GB to the NVMe over the window. The cause is not isolated in this session; the candidate consistent with the
+late losses is the asynchronous L2 store path (a chunk becomes visible to lookups only after its NVMe write completes,
+while this trace re-uses prefixes within seconds). On the conversation trace, whose reuse is long-distance and where the
+L2 never evicts, the same configuration found more hits than 40 GB of DRAM (§7.2).
+
+Figures D3 / D4 over both traces: computed prefill falls with capacity (conversation 2,445 → 2,396 tok/s, tool-agent
+2,586 → 2,322) while the GPU stays saturated (busy share 0.884 → 0.877 and 0.895 → 0.869: the GPU is never idle, the
+hits only shorten the queue); stores are 75–79 GB per window at every capacity (everything computed is stored);
+retrieves grow from 0 to 3.5 GB (conversation) and 14 to 19 GB (tool-agent); evictions fall from ≈ 8,000 chunks at
+2–5 GB to ≈ 1,450 at 80 GB on both traces.
+
+### 7.2c Which requests the host tier helps under overload (both traces; `replay/tables-d-hitcat.md`, `hitcat_d.py`)
+`hitcat_d.py` groups the requests of a run by where their prefix came from — host-dominant hits (≥ 50 % of the prompt
+retrieved from LMCache), GPU-prefix hits (≥ 50 % served by vLLM's prefix cache), partial hits (10–50 % cached) and misses
+(< 10 %) — and reads the per-request timeline of the hooks (§1.1):
+
+| run | category | n | prompt tok p50 | uncached tok p50 | TTFT p50 (s) | queue→sched p50 (s) | lookup p50 (s) | lookup result→load issued p50 (s) | KV load wait p50 (s) | transfer p50 (s) | prefill p50 (s) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| d-tool-dram80 | host ≥ 50 % | 95 | 6,169 | 592 | 21.0 | 19.7 | 0.66 | 7.1 | 0.86 | 0.09 | 0.34 |
+| d-tool-dram80 | GPU ≥ 50 % | 215 | 6,231 | 525 | 6.8 | 5.9 | 0.46 | 1.1 | 0.22 | 0.02 | 0.42 |
+| d-tool-dram80 | 10–50 % | 64 | 2,038 | 1,504 | 10.9 | 8.8 | 0.46 | 8.4 | 0.87 | 0.09 | 0.78 |
+| d-tool-dram80 | miss < 10 % | 167 | 13,886 | 13,374 | 13.8 | 9.3 | 0.54 | – | – | – | 3.31 |
+| d-tool-dram5 | host ≥ 50 % | 79 | 6,188 | 572 | 26.2 | 25.5 | 0.59 | 8.3 | 0.88 | 0.08 | 0.37 |
+| d-tool-dram5 | GPU ≥ 50 % | 211 | 6,214 | 568 | 10.4 | 8.9 | 0.47 | 12.5 | 0.30 | 0.02 | 0.43 |
+| d-tool-dram5 | miss < 10 % | 187 | 13,544 | 13,032 | 15.7 | 11.8 | 0.49 | – | – | – | 3.13 |
+| d-tool-none | GPU ≥ 50 % | 226 | 6,221 | 573 | 12.8 | 11.6 | – | – | – | – | 0.83 |
+| d-tool-none | miss < 10 % | 250 | 9,271 | 8,847 | 23.8 | 21.1 | – | – | – | – | 2.57 |
+| d-conv-dram80 | host ≥ 50 % | 11 | 7,833 | 665 | 23.8 | 22.9 | 0.61 | 10.3 | 0.18 | 0.11 | 0.42 |
+| d-conv-dram80 | GPU ≥ 50 % | 28 | 906 | 394 | 12.9 | 11.3 | 0.55 | – | – | – | 0.58 |
+| d-conv-dram80 | miss < 10 % | 186 | 13,886 | 13,374 | 15.1 | 10.6 | 0.60 | – | – | – | 3.50 |
+
+At equal backlog at arrival (fewer than 20 requests outstanding) the ordering is the same: tool-agent 80 GB host-dominant
+hits 16.8 s p50 [69] against 2.7 s for GPU-prefix hits [166] and 11.5 s for misses [139]; 5 GB 15.0 / 5.3 / 11.6 s;
+conversation 80 GB 23.8 / 11.9 / 14.4 s. ("GPU ≥ 50 %" requests also issue one small LMCache retrieve for the chunk
+beyond the GPU prefix, the 1-chunk load of §3; the lookup itself takes 0.5–0.7 s p50 under this load against
+milliseconds when idle, §3 — not isolated further.)
+
+**Result.** A host-dominant hit — 6.2 k prompt tokens of which 0.6 k must be computed, the same length as a GPU-prefix
+hit and half a miss — has the longest TTFT of all categories in every run with host hits: 3–6× a GPU-prefix hit and
+1.4–1.6× a miss twice its length. Its transfer takes 90 ms and the wait for the finished load to be noticed 0.9 s; the
+time is between the lookup result and the moment the load is issued: 7.1 s p50 at 80 GB, 8.3 s at 5 GB, and among the
+57 of 95 host hits with a gap above 2 s, 12.5 s p50 / 26 s p90. Few requests overtake a waiting host hit (38 of the
+≈ 330 requests first scheduled during such gaps at 80 GB arrived after it), so the queue behind it waits as well.
+
+**Explanation (SOURCE INSPECTION, `vllm/v1/core/sched/scheduler.py` of vLLM 0.31, the waiting loop of `schedule()`).**
+When the connector reports external tokens with `load_kv_async`, the scheduler schedules no new tokens for the request
+and instead allocates slots for *all* external tokens at once (`allocate_slots(…, num_external_computed_tokens,
+delay_cache_blocks=True, reserved_blocks=…)`), with `reserved_blocks` = the blocks the in-flight prefills still need
+plus the speculative-decode step blocks: "An async load holds its blocks for the whole transfer with no forward progress
+and isn't preemptible here. Admit it only if it fits in (free − other in-flight reservations)". If the allocation fails,
+the scan `break`s ("The request cannot be scheduled"), the request stays at the head of the waiting queue, and nothing
+falls back to computing the prefix. A miss is admitted with slots for one 2,048-token chunk and then grows as a running
+request, which the running loop serves before the waiting queue is scanned; a GPU-prefix hit's blocks are resident and
+it needs new slots only for its uncached tail. Once a load is issued it finishes in 90 ms, the finished load is noticed
+at the next step boundary and the request is drained ahead of the plain queue (`kv_holding_waiting` precedes `waiting`).
+Under GPU-KV saturation (§7.2: 5–11 sequences fill the 121,792-token cache; every freed block is claimed by decode growth
+and by the in-flight prefills' reservations before the waiting queue is scanned) the whole-prefix reservation — 6.2 k
+tokens, 5 % of the GPU KV cache, in one piece — is the hardest allocation in the system, so the requests the host tier
+could serve with 90 ms of transfer are admitted last. The capacity effect of §7.2 / §7.2b therefore comes entirely from
+the work the hits remove from the GPU (shorter queue for everyone), not from the hits being fast; the hits themselves are
+the slowest requests. What would change that is scheduling policy in vLLM, not memory: admitting an async load
+incrementally (chunked, as prefill is), reserving blocks for pending loads ahead of new chunked misses, or computing the
+prefix when the reservation fails while the KV sits 90 ms away. None of these was implemented or measured here (the
+study does not modify vLLM or LMCache); they are inferences from the source and the timeline, and they are the concrete
+form of the Q2 / Q4 scheduling opportunity under GPU-KV-bound overload. Bidaw's loading-latency-aware ordering (§14)
+addresses the related but different problem of ordering by *transfer* cost; here the transfer is not the cost.
+
+_[pending 2026-11-05 04:30: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
+`queue_i2.sh`, after the B real-trace chain, F, G, H); `d-tool-dram2` re-run.]_
 
 ## 10. Unexpected and negative results (collected; each points to the section with the numbers)
 1. **A host hit stops being faster than a miss as soon as the server is loaded** (§4, §6, §7.2): the transfer is 16–40 ms,
    but a hit waits for the scheduler's queue scan (stops when the 2,048-token budget is spent), is submitted one step
    late under async scheduling, and its finished load is noticed only at an engine-step boundary (0.3–1.4 s). Under
-   overload (§7.2) hit requests are even slower than misses (16.9 vs 15.0 s p50 at 80 GB) while GPU-prefix hits are faster.
+   overload host-dominant hits are the *slowest* requests of all (§7.2c): vLLM admits an async load only when the blocks for
+   its entire prefix are free at once and otherwise stops the scan, so at equal backlog they wait 3–6× longer than
+   GPU-prefix hits of the same length (tool-agent 80 GB: 16.8 vs 2.7 s p50) and longer than misses twice their length
+   (11.5 s); the capacity benefit comes from the work removed, never from the hits being fast.
 2. **Eager prefetch does nothing measurable** (§4): it moves the lookup to arrival, not the load.
 3. **Four transfer threads = one** (§5): LMCache routes an engine's requests to one worker (affinity by ZMQ identity), so
    16 simultaneous 8k hits take 428 ms p50 either way and the PCIe link is never the limit.
@@ -495,7 +599,8 @@ _[pending 2026-11-05 01:10: §7.2b tool-agent trace at 0.08× (8 runs in progres
    capacity: the faster hits keep more cold prefill in flight at any time. End-to-end benefit shows in capacity and
    open-loop TTFT, not in closed-loop quantiles.
 8. **The 100-s trace windows carry almost no capacity-sensitive reuse** (§7.1): conversation 4.5 % at GPU size vs 8.5 % at
-   80 GB and 9.3 % unbounded; the planned 0–50 s mini-sweep would have been blind as well. Reuse that needs capacity is
+   80 GB and 9.3 % unbounded, tool-agent 32.5 % vs 36.3 % and 36.9 % (the measured hit shares of §7.2b match these within
+   one point); the planned 0–50 s mini-sweep would have been blind as well. Reuse that needs capacity is
    long-distance (hundreds of GB over the hour for a 3B model), so a capacity experiment needs long windows or a
    trace-driven cache model, not faster replay.
 9. **The replayed load is bound by GPU KV capacity, not compute** (§7.2): 121,792 tokens of GPU KV hold ~10 of the trace's
@@ -510,6 +615,10 @@ _[pending 2026-11-05 01:10: §7.2b tool-agent trace at 0.08× (8 runs in progres
     `b-noasync`, the `KeyError` priority runs, two "Server disconnected" answers in a 16-request burst, LMCache
     "preempted" warnings (6 per conversation replay: vLLM preempted a request whose KV had been loaded), and the premature
     start of the lighter-load queue that contaminated `d-tool-dram2` (re-run). None changes a conclusion; all are recorded.
+14. **The SSD-backed tier finds fewer of the tool-agent trace's short-distance hits than 5 GB of DRAM** (§7.2b): host share
+    5.7 % vs 8.4 %, lookups 17 % vs 30 % of prompt tokens, the losses late in the window; on the conversation trace
+    (long-distance reuse, no L2 eviction) it found more than 40 GB of DRAM. Cause not isolated (candidate: the asynchronous
+    L2 store path makes a chunk visible only after its NVMe write completes).
 
 ## 11. Limitations
 - **CXL was not exercised.** The DAX devices are root-only since the 2026-10-18 reboot, so every capacity point is pinned
@@ -632,3 +741,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §7 Experiment D: trace reuse analysis (D0) and the conversation-trace capacity sweep at 0.08× (overloaded, GPU-KV-bound); tool-agent sweep and lighter-load sweep pending; §2 table updated.
 - 2026-11-05 — §14 related work (verified references; Bidaw FAST'26 identified as the closest work to the scheduling gap).
 - 2026-11-05 — §10 unexpected/negative results, §11 limitations, §15 appendix (configuration, excluded runs; matrix pending) drafted.
+- 2026-11-05 — §7.2b tool-agent sweep at 0.08× and §7.2c hit-category / admission analysis (host-tier hits admitted last under GPU-KV saturation: whole-prefix block reservation, source-inspected; `hitcat_d.py`, `replay/tables-d-hitcat.md`); §7.2 explanation sharpened; §10 items 1, 8, 14; §2 table; figure D2 legend moved.

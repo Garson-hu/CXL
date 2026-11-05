@@ -23,7 +23,7 @@ def cap_series(tr):
     return sorted(out)
 def ref(tr, kind): return rows.get(f"d-{tr}-{kind}")
 
-def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd")):
+def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd"), legend_loc="best"):
     for i, tr in enumerate(TR):
         S = cap_series(tr)
         if not S: continue
@@ -34,7 +34,7 @@ def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd")):
         for kind, mk in zip(refs, ("x", "^")):
             r = ref(tr, kind)
             if r and r.get(key_list[0][0]) is not None: ax.plot([x[-1] * 1.6], [r[key_list[0][0]]], marker=mk, ms=8, ls="none", color=C[i], label=f"{TR[tr]}: {'vLLM alone' if kind == 'none' else 'SSD-backed (fs L2, O_DIRECT)'}")
-    ax.set_xscale("log", base=2); ax.set_xlabel("host-cache (L1) capacity, GB of pinned DRAM (references drawn right of the axis)"); ax.set_ylabel(ylabel); ax.set_title(title, fontsize=10); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=6.5)
+    ax.set_xscale("log", base=2); ax.set_xlabel("host-cache (L1) capacity, GB of pinned DRAM (references drawn right of the axis)"); ax.set_ylabel(ylabel); ax.set_title(title, fontsize=10); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=6.5, loc=legend_loc)
     if logy: ax.set_yscale("log")
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
@@ -42,7 +42,7 @@ panel(ax, [("cached_share", "-", "cached share of prompt tokens (vLLM)"), ("host
 fig.suptitle("Figure D1 — capacity vs KV-cache hit share\n(MEASURED replay: trace seconds 0–100 at 0.08×, 3B-AWQ, LMCache LRU, watermark 0.8)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.png", dpi=300); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.pdf"); plt.close(fig)
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
-panel(ax, [("ttft_p50", "-", "TTFT p50"), ("ttft_p95", "--", "TTFT p95"), ("ttft_p99", ":", "TTFT p99")], "ms (log)", "TTFT vs host-cache capacity", logy=True)
+panel(ax, [("ttft_p50", "-", "TTFT p50"), ("ttft_p95", "--", "TTFT p95"), ("ttft_p99", ":", "TTFT p99")], "ms (log)", "TTFT vs host-cache capacity", logy=True, legend_loc="center left")
 fig.suptitle("Figure D2 — capacity vs TTFT (MEASURED replay, offered load unchanged across runs)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft.png", dpi=300); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft.pdf"); plt.close(fig)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
