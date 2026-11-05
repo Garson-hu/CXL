@@ -38,7 +38,7 @@ for tag in TAGS:
         base = dict(tag=tag, grp=grp, n=len(reqs), policy="measured", mean_ms=sum(meas) / len(meas) * 1000, p50_ms=q(meas, .5) * 1000, p95_ms=q(meas, .95) * 1000, p99_ms=q(meas, .99) * 1000)
         summary.append(base)
         p_ch = dict(P, n_ch=4) if tag == "b-workers4" else P
-        for pol in ("vllm", "zero", "srpt", "hits"):
+        for pol in ("vllm", "vllm_scanall", "vllm_early", "zero", "hits", "srpt"):
             res = Sim(p_ch).run(reqs, pol); v = [x["ttft_s"] for x in res if x["ttft_s"] is not None]
             if not v: continue
             row = dict(tag=tag, grp=grp, n=len(v), policy=pol, mean_ms=sum(v) / len(v) * 1000, p50_ms=q(v, .5) * 1000, p95_ms=q(v, .95) * 1000, p99_ms=q(v, .99) * 1000)
