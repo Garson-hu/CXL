@@ -1,0 +1,13 @@
+M config 1309085077727477 wall=1793833513.372698 {"out": ".", "tag": "smokeb", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "samplers": true, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1309094148921807 wall=1793833522.443892 
+M vllm_ready 1309121250659521 wall=1793833549.545630 
+M env_ready 1309121341735240 wall=1793833549.636705 
+M warmup 1309121397580589 wall=1793833549.692550 
+M populate 1309122817668195 wall=1793833551.112638 
+M s0 1309191481362360 wall=1793833619.776332 
+M s1 1309204065803209 wall=1793833632.360773 conc=2
+M s2 1309242074147628 wall=1793833670.369117 rate=2.0
+M s3 1309293120580586 wall=1793833721.415550 k=4
+M bench_end 1309323052264157 wall=1793833751.347234 
+M stop 1309325054707207 wall=1793833753.349677 
+M stopped 1309333577639934 wall=1793833761.872611 

@@ -1,0 +1,56 @@
+[2026-11-04T17:57:40-05:00] A chain done; ssd odirect rerun
+[2026-11-04T18:01:01-05:00] a-3b-ssd-odirect rc=0
+[2026-11-04T18:03:07-05:00] a-3b-dram-hooksonly rc=0
+[2026-11-04T18:05:12-05:00] a-3b-dram-samplersonly rc=0
+[2026-11-04T18:09:21-05:00] smokeb rc=0
+[2026-11-04T18:11:09-05:00] smokee rc=1
+[2026-11-04T18:11:09-05:00] B chain
+[2026-11-04T18:32:00-05:00] B chain (restart with fixed sequences)
+[2026-11-04T20:03:18-05:00] B chain done
+[2026-11-04T20:03:18-05:00] E chain
+[2026-11-04T20:55:22-05:00] E chain done
+[2026-11-04T20:55:22-05:00] replay chain D
+[2026-11-04T20:55:22-05:00] replay chain B
+[2026-11-04T20:55:22-05:00] all done
+[2026-11-04T20:55:50-05:00] F: s4 default
+[2026-11-04T20:55:50-05:00] f-default rc=1
+[2026-11-04T20:55:50-05:00] F: s4 none
+[2026-11-04T20:55:50-05:00] f-none rc=1
+[2026-11-04T20:55:50-05:00] F done
+[2026-11-04T20:56:03-05:00] G: clean ssd odirect rerun
+[2026-11-04T20:56:03-05:00] a-3b-ssd-odirect2 rc=1
+[2026-11-04T20:56:03-05:00] G done
+[2026-11-04T20:56:59-05:00] H: b-prio-hits-chunk512
+[2026-11-04T20:56:59-05:00] b-prio-hits-chunk512 rc=1
+[2026-11-04T20:56:59-05:00] H done
+[2026-11-04T20:59:09-05:00] part 3 start (results now on /mnt/local, symlinked)
+[2026-11-04T20:59:09-05:00] b-noasync rerun
+[2026-11-04T21:13:55-05:00] E chain
+[2026-11-04T21:32:20-05:00] E chain done
+[2026-11-04T21:32:20-05:00] replay chain D
+[2026-11-05T00:37:44-05:00] queue_i replaced by queue_i2 (0-200 s at 0.04x; dram2/dram80/dram320/none) — waits for 'all done 3'
+[2026-11-05T00:38:43-05:00] I2: dl-conv-dram2
+[2026-11-05T00:45:04-05:00] queue_i2 restarted with an anchored trigger after a premature start at 00:38 (its dl-conv-dram2 run and the concurrent d-tool-dram2 are invalid; d-tool-dram2 is re-run first in queue_i2)
+[2026-11-05T03:31:50-05:00] replay chain B
+[2026-11-05T05:01:24-05:00] F: s4 default
+[2026-11-05T05:10:09-05:00] f-default rc=0
+[2026-11-05T05:10:09-05:00] F: s4 none
+[2026-11-05T05:23:34-05:00] f-none rc=0
+[2026-11-05T05:23:34-05:00] G: clean ssd odirect rerun
+[2026-11-05T05:27:24-05:00] a-3b-ssd-odirect2 rc=0
+[2026-11-05T05:27:24-05:00] H: b-prio-hits-chunk512
+[2026-11-05T05:42:23-05:00] b-prio-hits-chunk512 rc=0
+[2026-11-05T05:42:23-05:00] all done 3
+[2026-11-05T05:42:38-05:00] I2: d-tool-dram2 rerun
+[2026-11-05T06:05:01-05:00] I2: dl-conv-dram2
+[2026-11-05T07:28:46-05:00] I2: dl-conv-dram80
+[2026-11-05T08:52:35-05:00] I2: dl-conv-dram320
+[2026-11-05T10:16:35-05:00] I2: dl-conv-none
+[2026-11-05T11:40:11-05:00] I2: dl-tool-dram2
+[2026-11-05T13:03:57-05:00] I2: dl-tool-dram80
+[2026-11-05T14:27:49-05:00] I2: dl-tool-dram320
+[2026-11-05T15:51:50-05:00] I2: dl-tool-none
+[2026-11-05T17:15:30-05:00] I2 done
+[2026-11-05T17:15:47-05:00] F2: s4 default l1=160
+[2026-11-05T17:24:14-05:00] f-default-l1-160 rc=0
+[2026-11-05T17:24:14-05:00] F2 done

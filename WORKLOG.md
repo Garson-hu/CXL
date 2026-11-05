@@ -9,6 +9,21 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-11-05 addendum — EXPLORATORY SERVING STUDY CLOSED (branch `explore/cxl-serving-scheduling-gap`, not merged):
+CXL-SCALE CAPACITY PAYS AT A SUSTAINABLE LOAD; THE SCHEDULER'S WEAK POINT IS ADMISSION, NOT RETRIEVAL.** vLLM 0.31 +
+LMCache 0.5.5 on c28's 4060 Ti with a 2–320 GB pinned-DRAM tier standing in for CXL (DAX still root 0600; GPU data path
+PREVIOUSLY MEASURED equal): a host hit costs 19–85 ms and the transfer never limits anything; under overload (0.08×
+replays) capacity acts only through removed prefill work (conversation 80 GB −11 % TTFT p50, tool-agent −31 %) while host
+hits are the slowest requests — vLLM issues an asynchronous external load only after reserving GPU KV blocks for the whole
+prefix at once, misses enter chunk by chunk (source-inspected); at a sustainable load (0.04×, 200-s windows) 320 GB gives
+−19 % / −36 % TTFT p50 and −11 / −21 % request time, hits answer in 0.8 s against 5.2 s for misses, and the measured cached
+share tracks the offline LRU of the trace within 2 points; the admission penalty survives inside the tool-agent trace's
+bursts (host hits 3.3 s vs 0.3 s GPU-prefix hits). No CXL-specific problem found; RQ1 / Phase 3 conclusions unchanged.
+Report: `docs/experiments/2026-11-04-cxl-serving-scheduling-gap.md` (executive summary at the top); small raw artifacts
+in `experimental_results/2026-11-04-cxl-serving-scheduling-gap/`, bulky logs on `/mnt/local/ghu4/results/`. Next, if
+pursued: a bounded-reservation / chunked external-load admission policy behind a flag in a vLLM fork, validated on the
+tool-agent window at 320 GB, then on an 80-GB GPU.
+
 **2026-10-22 addendum — PHASE 3 HARDWARE VALIDATION CLOSED: THE FILTERED-WRITE CLAIM HOLDS ON c28 (DRAM SIDE).** The
 Phase 3 write decisions replayed physically (NT stores, CCDs 6–7) beside the real Adam step: admit-all breaks the 7% SLO
 everywhere (p99 +8.3 … +25%), the RQ1-filtered stream stays inside with margin (+1.6 … +2.8%, +4.0% at 70B 8×), the live
@@ -263,6 +278,23 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-11-04 → 2026-11-05 (session 35, exploratory branch `explore/cxl-serving-scheduling-gap`: CXL-enabled LLM serving — end-to-end scheduling and KV retrieval study)
+
+- Brief: end-to-end benefit of host-tier KV hits (Q1), how the scheduler handles retrieval (Q2), whether capacity moves
+  the bottleneck (Q3), remaining scheduling opportunity (Q4); experiments A–F; deliverables D1–D7; no vLLM / LMCache code
+  changes, no DAX / system changes; never merge the branch.
+- Found first: CXL DAX still root 0600 → every capacity point is pinned DRAM (data path PREVIOUSLY MEASURED equal);
+  `/home` quota filled at 20:55 → results moved to `/mnt/local` behind a symlink (small artifacts collected back at the
+  end with `benchmarks/serving/collect_small.sh`; bulky logs stay there).
+- New: `benchmarks/serving/` harness (`serving_env.py`, `client.py`, `run_a/b/e.py`, `replay.py`, the logging-only
+  `vllmevt/sitecustomize.py` hook, `analyze_*` / `table_*` / `figs_*` / `hitcat_d.py` / `matrix.py` / `trace_reuse.py`,
+  `sched_sim.py` + `calib_c.py` + `run_c.py` SIMULATED reference, queue scripts); 66 server runs 2026-11-04 17:30 →
+  2026-11-05 17:24 (A 12, B 10, BR 4, D 16, DL 8, E 4, F 3, smoke 4; 5 quarantined).
+- Results: `docs/experiments/2026-11-04-cxl-serving-scheduling-gap.md` (§1–§15 plus the executive summary); headline
+  numbers in the Current Status addendum above; ranked directions in §12 (1 admission policy for external loads under
+  GPU-KV saturation, 2 reuse-aware scan / ordering / hand-over, 3 CXL-scale capacity for long-distance reuse, 4 SSD-tier
+  lookup / prefetch); RQ1 / Phase 3 conclusions unchanged (§13).
 
 ### 2026-10-21/22 (session 34, fourth round: Phase 3 hardware validation of the filtered-write interference claim)
 

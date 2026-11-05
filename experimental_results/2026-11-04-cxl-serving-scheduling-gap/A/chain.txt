@@ -1,0 +1,11 @@
+[2026-11-04T17:29:04-05:00] start a-3b-dram tier=dram Ls=256,512,1024,2048,4096,8192,16384 reps=8
+[2026-11-04T17:32:16-05:00] end a-3b-dram rc=0
+[2026-11-04T17:32:21-05:00] start a-3b-ssd tier=ssd l1_gb=10 Ls=256,512,1024,2048,4096,8192,16384 reps=8
+[2026-11-04T17:36:09-05:00] end a-3b-ssd rc=0
+[2026-11-04T17:36:14-05:00] start a-3b-none tier=none Ls=256,512,1024,2048,4096,8192,16384 reps=8
+[2026-11-04T17:52:10-05:00] end a-3b-none rc=0
+[2026-11-04T17:52:16-05:00] start a-3b-dram-nohooks tier=dram Ls=256,512,1024,2048,4096,8192,16384 reps=4 hooks=false samplers=false
+[2026-11-04T17:54:24-05:00] end a-3b-dram-nohooks rc=0
+[2026-11-04T17:54:29-05:00] start a-15b-dram tier=dram model=Qwen/Qwen2.5-1.5B-Instruct Ls=256,512,1024,2048,4096,8192,16384 reps=8
+[2026-11-04T17:57:29-05:00] end a-15b-dram rc=0
+[2026-11-04T17:57:35-05:00] chain done

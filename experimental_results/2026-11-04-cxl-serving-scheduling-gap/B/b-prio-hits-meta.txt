@@ -1,0 +1,29 @@
+M config 1313421292207184 wall=1793837849.587177 {"out": ".", "tag": "b-prio-hits", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "priority", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1313430415838787 wall=1793837858.710809 
+M vllm_ready 1313456522098318 wall=1793837884.817068 
+M env_ready 1313456706108565 wall=1793837885.001078 
+M warmup 1313456822562525 wall=1793837885.117532 
+M stop 1313458831411645 wall=1793837887.126381 
+M stopped 1313464947230598 wall=1793837893.242201 
+M config 1316170385622190 wall=1793840598.680592 {"out": ".", "tag": "b-prio-hits", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "priority", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1316177496309848 wall=1793840605.791280 
+M vllm_ready 1316204604699747 wall=1793840632.899670 
+M env_ready 1316204719012453 wall=1793840633.013982 
+M warmup 1316204719621371 wall=1793840633.014591 
+M populate 1316206157606783 wall=1793840634.452576 
+M s0 1316276046525565 wall=1793840704.341495 
+M s1 1316340541693114 wall=1793840768.836663 conc=1
+M s1 1316388490237443 wall=1793840816.785207 conc=2
+M s1 1316425543412081 wall=1793840853.838382 conc=4
+M s1 1316458281418382 wall=1793840886.576388 conc=8
+M s1 1316490123418476 wall=1793840918.418388 conc=16
+M s2 1316520393914133 wall=1793840948.688884 rate=0.5
+M s2 1316764285743459 wall=1793841192.580713 rate=1.0
+M s2 1316860040587068 wall=1793841288.335557 rate=2.0
+M s2 1316910854207890 wall=1793841339.149178 rate=4.0
+M s3 1316950770220882 wall=1793841379.065191 k=4
+M s3 1316983508335700 wall=1793841411.803306 k=8
+M s3 1317024553846384 wall=1793841452.848816 k=16
+M bench_end 1317073115893652 wall=1793841501.410864 
+M stop 1317075119121785 wall=1793841503.414092 
+M stopped 1317081184422773 wall=1793841509.479394 

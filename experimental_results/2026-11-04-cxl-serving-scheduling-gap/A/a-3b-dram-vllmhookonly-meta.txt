@@ -1,0 +1,25 @@
+M config 1309539547247971 wall=1793833967.842218 {"out": ".", "tag": "a-3b-dram-vllmhookonly", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 20.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3072, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": false, "samplers": false, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1309547607086938 wall=1793833975.902057 
+M vllm_ready 1309577707122072 wall=1793834006.002093 
+M env_ready 1309577707521611 wall=1793834006.002491 
+M warmup_start 1309577717727468 wall=1793834006.012697 
+M fill_store_start 1309578423916053 wall=1793834006.718886 
+M case 1309592200774890 wall=1793834020.495744 rep=0 L=256 start
+M case 1309593803550386 wall=1793834022.098520 rep=0 L=1024 start
+M case 1309595431014131 wall=1793834023.725983 rep=0 L=4096 start
+M case 1309597759924154 wall=1793834026.054894 rep=0 L=16384 start
+M case 1309604066284581 wall=1793834032.361254 rep=1 L=256 start
+M case 1309605649728643 wall=1793834033.944698 rep=1 L=1024 start
+M case 1309607836554321 wall=1793834036.131524 rep=1 L=4096 start
+M case 1309609933050481 wall=1793834038.228020 rep=1 L=16384 start
+M case 1309614829773189 wall=1793834043.124743 rep=2 L=256 start
+M case 1309616383024066 wall=1793834044.677994 rep=2 L=1024 start
+M case 1309618213642854 wall=1793834046.508612 rep=2 L=4096 start
+M case 1309620381429499 wall=1793834048.676399 rep=2 L=16384 start
+M case 1309625381256629 wall=1793834053.676226 rep=3 L=256 start
+M case 1309626955767934 wall=1793834055.250737 rep=3 L=1024 start
+M case 1309628610395544 wall=1793834056.905365 rep=3 L=4096 start
+M case 1309630889299639 wall=1793834059.184269 rep=3 L=16384 start
+M bench_end 1309636027174378 wall=1793834064.322144 
+M stop 1309638027948419 wall=1793834066.322918 
+M stopped 1309642113946041 wall=1793834070.408917 

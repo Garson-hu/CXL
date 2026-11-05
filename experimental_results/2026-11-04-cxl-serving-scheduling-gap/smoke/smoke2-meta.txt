@@ -1,0 +1,11 @@
+M config 1306725447232223 wall=1793831153.742202 {"out": ".", "tag": "smoke2", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 20.0, "ssd_path": "/mnt/local/ghu4/kvl2", "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3072, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "samplers": true, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1306733517183202 wall=1793831161.812153 
+M vllm_ready 1306831591340082 wall=1793831259.886311 
+M env_ready 1306831693075980 wall=1793831259.988046 
+M warmup_start 1306831757978930 wall=1793831260.052948 
+M fill_store_start 1306832415612677 wall=1793831260.710582 
+M case 1306846176922064 wall=1793831274.471891 rep=0 L=1024 start
+M case 1306847778622586 wall=1793831276.073592 rep=0 L=4096 start
+M bench_end 1306849918328846 wall=1793831278.213298 
+M stop 1306851918745583 wall=1793831280.213715 
+M stopped 1306857985097333 wall=1793831286.280068 

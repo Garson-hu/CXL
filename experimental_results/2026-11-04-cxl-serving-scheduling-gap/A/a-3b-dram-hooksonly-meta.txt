@@ -1,0 +1,37 @@
+M config 1308833841231927 wall=1793833262.136202 {"out": ".", "tag": "a-3b-dram-hooksonly", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 20.0, "ssd_path": "/mnt/local/ghu4/kvl2", "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3072, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "samplers": false, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1308841900444830 wall=1793833270.195415 
+M vllm_ready 1308869075036206 wall=1793833297.370007 
+M env_ready 1308869075287805 wall=1793833297.370257 
+M warmup_start 1308869146532492 wall=1793833297.441502 
+M fill_store_start 1308869816855103 wall=1793833298.111825 
+M case 1308883591835306 wall=1793833311.886805 rep=0 L=256 start
+M case 1308885173077760 wall=1793833313.468047 rep=0 L=512 start
+M case 1308886869624947 wall=1793833315.164594 rep=0 L=1024 start
+M case 1308888544684616 wall=1793833316.839654 rep=0 L=2048 start
+M case 1308890374849201 wall=1793833318.669819 rep=0 L=4096 start
+M case 1308892524094027 wall=1793833320.819063 rep=0 L=8192 start
+M case 1308895399413450 wall=1793833323.694383 rep=0 L=16384 start
+M case 1308900285840369 wall=1793833328.580810 rep=1 L=256 start
+M case 1308901719301312 wall=1793833330.014271 rep=1 L=512 start
+M case 1308903316924517 wall=1793833331.611894 rep=1 L=1024 start
+M case 1308904878564084 wall=1793833333.173533 rep=1 L=2048 start
+M case 1308907666661738 wall=1793833335.961631 rep=1 L=4096 start
+M case 1308909866783504 wall=1793833338.161753 rep=1 L=8192 start
+M case 1308912864566327 wall=1793833341.159536 rep=1 L=16384 start
+M case 1308917880865865 wall=1793833346.175835 rep=2 L=256 start
+M case 1308919320864090 wall=1793833347.615833 rep=2 L=512 start
+M case 1308920971569280 wall=1793833349.266538 rep=2 L=1024 start
+M case 1308922576902706 wall=1793833350.871872 rep=2 L=2048 start
+M case 1308924288948471 wall=1793833352.583918 rep=2 L=4096 start
+M case 1308926447547842 wall=1793833354.742517 rep=2 L=8192 start
+M case 1308929423469940 wall=1793833357.718439 rep=2 L=16384 start
+M case 1308934341231299 wall=1793833362.636201 rep=3 L=256 start
+M case 1308935892759852 wall=1793833364.187729 rep=3 L=512 start
+M case 1308939029273512 wall=1793833367.324243 rep=3 L=1024 start
+M case 1308940842841819 wall=1793833369.137811 rep=3 L=2048 start
+M case 1308942642977931 wall=1793833370.937947 rep=3 L=4096 start
+M case 1308944777159705 wall=1793833373.072129 rep=3 L=8192 start
+M case 1308947972912624 wall=1793833376.267882 rep=3 L=16384 start
+M bench_end 1308952929243699 wall=1793833381.224214 
+M stop 1308954930016258 wall=1793833383.224986 
+M stopped 1308958964266429 wall=1793833387.259237 

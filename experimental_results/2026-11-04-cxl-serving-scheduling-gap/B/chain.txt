@@ -1,0 +1,32 @@
+[2026-11-04T18:12:47-05:00] a-3b-dram-lmhookonly rc=0
+[2026-11-04T18:14:30-05:00] a-3b-dram-vllmhookonly rc=0
+[2026-11-04T18:17:18-05:00] a-3b-idle rc=0
+[2026-11-04T18:17:18-05:00] start b-default tier=dram
+[2026-11-04T18:30:29-05:00] end b-default rc=0
+[2026-11-04T18:30:35-05:00] start b-eager tier=dram eager_prefetch=true
+[2026-11-04T18:31:59-05:00] b-default and the partial b-eager moved to flawed/ (s1/s2 sequences reused their cold prompts across levels: fixed in run_b.py, chain restarted)
+[2026-11-04T18:32:00-05:00] start b-default tier=dram
+[2026-11-04T18:47:03-05:00] end b-default rc=0
+[2026-11-04T18:47:09-05:00] start b-eager tier=dram eager_prefetch=true
+[2026-11-04T19:02:12-05:00] end b-eager rc=0
+[2026-11-04T19:02:17-05:00] start b-workers4 tier=dram gpu_workers=4
+[2026-11-04T19:17:23-05:00] end b-workers4 rc=0
+[2026-11-04T19:17:29-05:00] start b-prio-hits tier=dram prio=hits_first
+[2026-11-04T19:18:13-05:00] end b-prio-hits rc=1
+[2026-11-04T19:18:18-05:00] start b-prio-cold tier=dram prio=cold_first
+[2026-11-04T19:19:00-05:00] end b-prio-cold rc=1
+[2026-11-04T19:19:06-05:00] start b-none tier=none
+[2026-11-04T19:52:04-05:00] end b-none rc=0
+[2026-11-04T19:52:10-05:00] start b-default-nosamp tier=dram samplers=false scenarios=s2,s3
+[2026-11-04T20:03:13-05:00] end b-default-nosamp rc=0
+[2026-11-04T20:03:18-05:00] chain done
+[2026-11-04T20:03:18-05:00] start b-prio-hits prio=hits_first
+[2026-11-04T20:18:29-05:00] end b-prio-hits rc=0
+[2026-11-04T20:18:34-05:00] start b-prio-cold prio=cold_first
+[2026-11-04T20:33:41-05:00] end b-prio-cold rc=0
+[2026-11-04T20:33:46-05:00] start b-chunk512 max_batched=512
+[2026-11-04T20:49:20-05:00] end b-chunk512 rc=0
+[2026-11-04T20:49:25-05:00] start b-noasync async_sched=off
+[2026-11-04T20:54:57-05:00] end b-noasync rc=0
+[2026-11-04T20:59:09-05:00] b-noasync (truncated by the home quota) moved to flawed/; rerun queued
+[2026-11-04T21:13:55-05:00] end b-noasync rc=0

@@ -8,7 +8,7 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 F, FIG = sys.argv[1], sys.argv[2]; os.makedirs(FIG, exist_ok=True)
 TAGS = (sys.argv[3].split("=", 1)[1] if len(sys.argv) > 3 else "f-default,f-none").split(",")
-LABEL = {"f-default": "DRAM host tier (default)", "f-none": "vLLM alone (recompute)"}
+LABEL = {"f-default": "DRAM host tier (40 GB L1)", "f-default-l1-160": "DRAM host tier (160 GB L1, re-run)", "f-none": "vLLM alone (recompute)"}
 C = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 def fl(v):
     try: return float(v)

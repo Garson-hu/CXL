@@ -1,0 +1,3 @@
+after 3.0 s idle:
+pcie.link.gen.current, pcie.link.width.current, clocks.current.sm [MHz], clocks.current.memory [MHz], pstate, power.draw [W]
+4, 8, 2535 MHz, 8751 MHz, P2, 23.61 W

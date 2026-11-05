@@ -1,0 +1,27 @@
+M config 1320723223978774 wall=1793845151.518949 {"out": ".", "tag": "e-workers4", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 4, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 32, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1320729231283843 wall=1793845157.526254 
+M vllm_ready 1320753238824885 wall=1793845181.533795 
+M env_ready 1320753260636135 wall=1793845181.555606 
+M warmup 1320753260991564 wall=1793845181.555961 
+M populate 1320753879221257 wall=1793845182.174191 
+M e1 1320787301805019 wall=1793845215.596774 k=1 L=4096
+M e1 1320821762547936 wall=1793845250.057517 k=2 L=4096
+M e1 1320830437056075 wall=1793845258.732026 k=4 L=4096
+M e1 1320839410204365 wall=1793845267.705174 k=8 L=4096
+M e1 1320848794890853 wall=1793845277.089860 k=16 L=4096
+M e1 1320858981975396 wall=1793845287.276945 k=1 L=8192
+M e1 1320867681678580 wall=1793845295.976648 k=2 L=8192
+M e1 1320876588421971 wall=1793845304.883391 k=4 L=8192
+M e1 1320885880109245 wall=1793845314.175079 k=8 L=8192
+M e1 1320895867513646 wall=1793845324.162483 k=16 L=8192
+M e2 1320907206437241 wall=1793845335.501407 k=1 L=8192
+M e2 1320918491779041 wall=1793845346.786749 k=2 L=8192
+M e2 1320932416212111 wall=1793845360.711182 k=4 L=8192
+M e2 1320951911834728 wall=1793845380.206804 k=8 L=8192
+M e3 1320982438376135 wall=1793845410.733346 k=4 out=1
+M e3 1320991354849401 wall=1793845419.649819 k=4 out=64
+M e3 1321003909029053 wall=1793845432.203999 k=8 out=1
+M e3 1321013291431056 wall=1793845441.586401 k=8 out=64
+M bench_end 1321027499978682 wall=1793845455.794948 
+M stop 1321029501718248 wall=1793845457.796688 
+M stopped 1321033960538453 wall=1793845462.255509 

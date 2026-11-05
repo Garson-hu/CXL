@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/serving/run_e.py", line 64, in <module>
+    try: asyncio.run(main())
+         ^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/ghu4/CXL/benchmarks/serving/run_e.py", line 60, in main
+    await cl.burst([dict(rid=f"{tag}-e3-k{k}-o{o}-r{rep}-{i}", tokens=pool[L][i], case="host", L=L, rep=rep, grp=f"e3-k{k}-o{o}", max_tokens=o) for i in range(k)], spacing_ms=20.0)
+                                                                      ~~~~~~~^^^
+IndexError: list index out of range

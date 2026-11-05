@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/ghu4/CXL/benchmarks/serving/run_b.py", line 73, in main
+    for i, (s, L) in enumerate(POOL): await cl.one(f"{tag}-pop{i}", prompt(s, L), case="populate", L=L, max_tokens=1)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ghu4/CXL/benchmarks/serving/client.py", line 46, in one
+    async for raw in resp.content:
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/aiohttp/streams.py", line 46, in __anext__
+    rv = await self.read_func()
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/aiohttp/streams.py", line 370, in readline
+    return await self.readuntil(max_size=max_line_length)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/aiohttp/streams.py", line 418, in readuntil
+    await self._wait("readuntil")
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/aiohttp/streams.py", line 365, in _wait
+    await waiter
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/serving/run_b.py", line 114, in <module>
+    try: asyncio.run(main())
+         ^^^^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/mnt/local/ghu4/envs/lmcache/lib/python3.12/asyncio/runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt

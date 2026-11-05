@@ -1,0 +1,9 @@
+[2026-11-04T21:13:55-05:00] start e-workers1 tier=dram gpu_workers=1
+[2026-11-04T21:19:06-05:00] end e-workers1 rc=0
+[2026-11-04T21:19:11-05:00] start e-workers4 tier=dram gpu_workers=4
+[2026-11-04T21:24:22-05:00] end e-workers4 rc=0
+[2026-11-04T21:24:27-05:00] start e-ssd tier=ssd l1_gb=10 gpu_workers=1 scenarios=e1
+[2026-11-04T21:28:59-05:00] end e-ssd rc=0
+[2026-11-04T21:29:04-05:00] start e-workers1-nosamp tier=dram gpu_workers=1 samplers=false scenarios=e1
+[2026-11-04T21:32:15-05:00] end e-workers1-nosamp rc=0
+[2026-11-04T21:32:20-05:00] chain done
