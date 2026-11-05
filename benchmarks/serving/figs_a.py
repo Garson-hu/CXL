@@ -26,13 +26,14 @@ def series(rows, case, key):
     for r in rows:
         if r["case"] == case and r.get(key) is not None: out.setdefault(int(r["L"]), []).append(r[key])
     Ls = sorted(out); return Ls, [med(out[L]) for L in Ls], [med(out[L]) - min(out[L]) for L in Ls], [max(out[L]) - med(out[L]) for L in Ls]
-R = {t: load(t) for t in ("a-3b-dram", "a-3b-ssd", "a-3b-ssd-odirect", "a-3b-none", "a-15b-dram", "a-3b-dram-nohooks")}
+R = {t: load(t) for t in ("a-3b-dram", "a-3b-ssd", "a-3b-ssd-odirect", "a-3b-ssd-odirect2", "a-3b-none", "a-15b-dram", "a-3b-dram-nohooks")}
+SSD = "a-3b-ssd-odirect2" if R["a-3b-ssd-odirect2"] else "a-3b-ssd-odirect"  # the clean per-run-L2 rerun (G) replaces the first O_DIRECT run when present
 C = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 
 # ---- figA1 ----
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), sharey=True)
 for ax, (title, items) in zip(axes, [("Qwen2.5-3B-Instruct-AWQ", [("a-3b-dram", "cold", "recompute (cold, LMCache DRAM tier)", C[0], "-"), ("a-3b-none", "cold", "recompute, vLLM alone", C[0], ":"),
-                                                                   ("a-3b-dram", "host", "host hit: DRAM L1", C[1], "-"), ("a-3b-ssd-odirect", "host", "host hit: SSD (fs L2 on NVMe, O_DIRECT)", C[3], "-"), ("a-3b-ssd", "host", "host hit: SSD files in the page cache", C[3], ":"),
+                                                                   ("a-3b-dram", "host", "host hit: DRAM L1", C[1], "-"), (SSD, "host", "host hit: SSD (fs L2 on NVMe, O_DIRECT)", C[3], "-"), ("a-3b-ssd", "host", "host hit: SSD files in the page cache", C[3], ":"),
                                                                    ("a-3b-dram", "gpu", "GPU prefix-cache hit (LMCache in the loop)", C[2], "-"), ("a-3b-none", "gpu", "GPU prefix-cache hit, vLLM alone", C[2], ":")]),
                                    ("Qwen2.5-1.5B-Instruct (fp16)", [("a-15b-dram", "cold", "recompute (cold)", C[0], "-"), ("a-15b-dram", "host", "host hit: DRAM L1", C[1], "-"), ("a-15b-dram", "gpu", "GPU prefix-cache hit", C[2], "-")])]):
     for tag, case, label, col, ls in items:
@@ -47,7 +48,7 @@ fig.tight_layout(); fig.savefig(f"{FIG}/figA1-ttft-vs-length.png", dpi=300); fig
 # ---- figA2 ----
 fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
 ax = axes[0]
-for tag, label, col in (("a-3b-dram", "DRAM L1", C[1]), ("a-3b-ssd-odirect", "SSD L2 (O_DIRECT)", C[3])):
+for tag, label, col in (("a-3b-dram", "DRAM L1", C[1]), (SSD, "SSD L2 (O_DIRECT)", C[3])):
     rows = R[tag]
     for key, name, ls in (("lookup_ms", "lookup (hash + index)", ":"), ("retrieve_ms", "GPU transfer (retrieve start→end on the stream)", "-"), ("ttft_client_ms", "TTFT", "--")):
         Ls, m, lo, hi = series(rows, "host", key)
@@ -61,7 +62,7 @@ for tag, label, col in (("a-3b-dram", "DRAM L1", C[1]), ("a-3b-ssd-odirect", "SS
 ax.set_xscale("log", base=2); ax.set_yscale("log"); ax.set_xlabel("prefix length L (tokens)"); ax.set_ylabel("ms (log)"); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=7, loc="upper left")
 ax.set_xticks([256, 512, 1024, 2048, 4096, 8192, 16384]); ax.set_xticklabels(["256", "512", "1k", "2k", "4k", "8k", "16k"]); ax.set_title("(a) stages of a host hit, 3B-AWQ (median; whiskers min/max)", fontsize=10)
 ax = axes[1]
-for tag, label, col in (("a-3b-dram", "DRAM L1 → GPU", C[1]), ("a-3b-ssd-odirect", "SSD L2 → L1 → GPU (transfer part)", C[3]), ("a-15b-dram", "DRAM L1 → GPU, 1.5B", C[4])):
+for tag, label, col in (("a-3b-dram", "DRAM L1 → GPU", C[1]), (SSD, "SSD L2 → L1 → GPU (transfer part)", C[3]), ("a-15b-dram", "DRAM L1 → GPU, 1.5B", C[4])):
     Ls, m, lo, hi = series(R[tag], "host", "retrieve_GBps")
     if Ls: ax.errorbar(Ls, m, yerr=[lo, hi], label=label, color=col, marker="o", ms=4, capsize=2, lw=1.4)
 ax.axhline(12.5 * 1.0737, color="gray", ls="--", lw=1); ax.text(300, 12.5 * 1.0737 + 0.3, "cudaMemcpy pinned DRAM → GPU, 12.5 GiB/s (2026-10-07; CXL devdax identical)", fontsize=7, color="gray")
@@ -77,7 +78,7 @@ STAGES = [("client → vLLM arrival", lambda r: r.get("arrival_ms")), ("arrival 
           ("host → GPU transfer", lambda r: r.get("retrieve_ms")), ("transfer end → scheduled", lambda r: r.get("kv_end_to_sched_ms")),
           ("queued → scheduled (no host load)", lambda r: r["scheduled_ms"] - r["queued_ms"] if r.get("retrieve_ms") is None and r.get("scheduled_ms") is not None and r.get("queued_ms") is not None else None),
           ("scheduled → first token (prefill / 1-token step)", lambda r: r.get("prefill_ms")), ("engine → client", lambda r: r.get("engine_to_client_ms"))]
-paths = [("GPU prefix hit\n(vLLM alone)", "a-3b-none", "gpu"), ("GPU prefix hit\n(LMCache in the loop)", "a-3b-dram", "gpu"), ("DRAM L1 hit", "a-3b-dram", "host"), ("SSD L2 hit\n(O_DIRECT)", "a-3b-ssd-odirect", "host"), ("SSD L2 hit\n(page cache)", "a-3b-ssd", "host")]
+paths = [("GPU prefix hit\n(vLLM alone)", "a-3b-none", "gpu"), ("GPU prefix hit\n(LMCache in the loop)", "a-3b-dram", "gpu"), ("DRAM L1 hit", "a-3b-dram", "host"), ("SSD L2 hit\n(O_DIRECT)", SSD, "host"), ("SSD L2 hit\n(page cache)", "a-3b-ssd", "host")]
 Lsel = [1024, 4096, 16384]
 fig, axes = plt.subplots(1, 3, figsize=(13, 4.4), sharey=False)
 for ax, L in zip(axes, Lsel):

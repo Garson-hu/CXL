@@ -16,18 +16,18 @@ def med(v): v = sorted(v); return v[len(v) // 2]
 def cell(rows, case, L, key="ttft_client_ms"):
     v = [r[key] for r in rows if r["case"] == case and int(r["L"]) == L and r.get(key) is not None]
     return f"{med(v):.1f} ({min(v):.1f}–{max(v):.1f}, n={len(v)})" if v else "–"
-R = {t: load(t) for t in ("a-3b-dram", "a-3b-ssd-odirect", "a-3b-ssd", "a-3b-none", "a-3b-dram-nohooks", "a-15b-dram")}
+R = {t: load(t) for t in ("a-3b-dram", "a-3b-ssd-odirect", "a-3b-ssd", "a-3b-ssd-odirect2", "a-3b-none", "a-3b-dram-nohooks", "a-15b-dram")}
 Ls = [256, 512, 1024, 2048, 4096, 8192, 16384]; out = []
 out.append("### Table A-1 — TTFT at the client per path and prefix length (ms; median (min–max, n); MEASURED, 8 output tokens, CUDA graphs)\n")
 paths = [("recompute (cold), LMCache DRAM tier", "a-3b-dram", "cold"), ("recompute (cold), vLLM alone", "a-3b-none", "cold"), ("GPU prefix hit, LMCache in the loop", "a-3b-dram", "gpu"), ("GPU prefix hit, vLLM alone", "a-3b-none", "gpu"),
-         ("host hit, DRAM L1", "a-3b-dram", "host"), ("host hit, SSD L2 (O_DIRECT)", "a-3b-ssd-odirect", "host"), ("host hit, SSD L2 (page cache)", "a-3b-ssd", "host"),
+         ("host hit, DRAM L1", "a-3b-dram", "host"), ("host hit, SSD L2 (O_DIRECT)", "a-3b-ssd-odirect", "host"), ("host hit, SSD L2 (O_DIRECT, clean rerun with a per-run L2 directory)", "a-3b-ssd-odirect2", "host"), ("recompute (cold), SSD tier, clean rerun", "a-3b-ssd-odirect2", "cold"), ("host hit, SSD L2 (page cache)", "a-3b-ssd", "host"),
          ("1.5B: recompute (cold)", "a-15b-dram", "cold"), ("1.5B: host hit, DRAM L1", "a-15b-dram", "host"), ("1.5B: GPU prefix hit", "a-15b-dram", "gpu")]
 out.append("| path | " + " | ".join(f"L = {L}" for L in Ls) + " |"); out.append("|---|" + "---|" * len(Ls))
 for name, tag, case in paths:
     if R[tag]: out.append(f"| {name} | " + " | ".join(cell(R[tag], case, L) for L in Ls) + " |")
 out.append("\n### Table A-2 — stages of a host hit (ms, medians; MEASURED)\n")
 out.append("| tier | L | lookup (incl. L2→L1 prefetch) | host→GPU transfer | transfer GB/s | transfer end → scheduled | scheduled → first token | queued → scheduled | TTFT |"); out.append("|---|---|---|---|---|---|---|---|---|")
-for name, tag in (("DRAM L1", "a-3b-dram"), ("SSD L2 O_DIRECT", "a-3b-ssd-odirect"), ("SSD L2 page cache", "a-3b-ssd"), ("1.5B DRAM L1", "a-15b-dram")):
+for name, tag in (("DRAM L1", "a-3b-dram"), ("SSD L2 O_DIRECT", "a-3b-ssd-odirect"), ("SSD L2 O_DIRECT, clean rerun", "a-3b-ssd-odirect2"), ("SSD L2 page cache", "a-3b-ssd"), ("1.5B DRAM L1", "a-15b-dram")):
     for L in Ls:
         rows = [r for r in R[tag] if r["case"] == "host" and int(r["L"]) == L]
         if not rows: continue
