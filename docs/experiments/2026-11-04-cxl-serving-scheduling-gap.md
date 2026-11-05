@@ -227,6 +227,26 @@ re-used across levels is kept in `B/flawed/` and not used.
   moves to arrival, but the load still starts only when the scheduler reaches the request and is still noticed at a
   step boundary.
 - *Four transfer threads*: no change (transfers were never the wait).
+- *Priority scheduling, hits first* (vLLM's own `--scheduling-policy priority`; the client marks pool requests priority 0
+  and cold requests 1; no code change): no effect up to concurrency 2 / 2 req/s, then the host hits' TTFT p50 falls
+  from 766 to 433 ms at concurrency 4, 3,428 → 1,967 ms at concurrency 16 (p95 8,235 → 4,273), 6,134 → 3,079 ms in the
+  overloaded 4 req/s run and 3,419 → 2,084 / 2,848 → 1,973 ms in the 8- / 16-request bursts, while the cold requests
+  lose 2–15 % (3,159 → 3,648 ms at concurrency 16). Table B-2 shows what changed: "queued → load start" drops from 1,206 to
+  34 ms at concurrency 16 and from 4,430 to 1,150 ms at 4 req/s — the hits are now considered before the budget is spent,
+  so their lookups and loads start at once — but "load done → noticed" stays at 1.0–1.3 s and "scheduled → first token"
+  grows to 0.4–0.7 s, because the loaded hit still has to wait for the running prefill chunks and then shares its step
+  with them. Ordering removes the scan problem, not the step-granularity problem.
+- *vLLM alone (no host cache, `b-none`)*: every pool request is a recompute. Open loop at 1 req/s: TTFT p50 1,541 ms
+  against 652 ms with the DRAM tier (cold requests 1,551 vs 652: the hits' absence also delays the cold ones); at
+  2 req/s vLLM alone is overloaded (1.5 req/s completed, TTFT 12.9 s) where the cached server keeps up (2.1 req/s,
+  942 ms). Closed loop: 1.5 completed requests/s at concurrency 8–16 (6.0 k prompt tokens/s) against 2.3–2.4 (9.2–9.4 k)
+  with the cache — the host tier adds ~55 % of capacity on this 50 % mix — but the TTFT quantiles at concurrency 16 are
+  *lower* without the cache (2,259 vs 3,336 ms p50): in a closed loop the faster completions of the hits keep 16
+  requests in flight with more cold prefill among them at any time, and the hits themselves wait a full chunk step.
+  The end-to-end benefit of the host tier shows in capacity and in open-loop TTFT, not in closed-loop TTFT quantiles.
+- *Default without the GPU sampler* (`b-default-nosamp`, s2 / s3 only): within noise of the instrumented default
+  (host 52 vs 54 ms at 0.5 req/s, 265 vs 263 at 1 req/s, 640 vs 640 at 2 req/s): at ≥ 0.5 req/s the GPU is never idle
+  long enough for the §1.2 penalty.
 
 **Explanation.** The existing scheduler does what §1.1 says: it overlaps loads with compute and never blocks the GPU on a
 load. The waits come from three design points that are independent of CXL or of the tier: load completion is sampled
