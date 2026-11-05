@@ -329,7 +329,7 @@ load. The waits come from three design points that are independent of CXL or of 
 at step granularity, the queue is scanned in arrival order only as far as the token budget reaches, and the step that
 finally serves a loaded request is shared with chunks of other requests' prefill. With a 2048-token prefill chunk at
 0.14 ms/token each of these is a few hundred milliseconds — the same order as recomputing a 2–4k prompt, which is why
-hits stop being faster than misses once the GPU is busy. These are generic serving-scheduler issues (Q4 of §13: they
+hits stop being faster than misses once the GPU is busy. These are generic serving-scheduler issues (Q4 of §12: they
 would exist with a DRAM-only host cache; CXL only makes more requests hit).
 
 ## 5. Experiment E — concurrent KV retrieval (MEASURED 2026-11-04, `E/`, figures `E/figs/`)
@@ -701,6 +701,105 @@ the tier's medium: the host tier's transfer (12 GB/s, §3 / §5) is never the li
 capacity would behave the same (PREVIOUSLY MEASURED: CXL = pinned DRAM on this GPU link, 2026-10-07); what CXL changes is
 the capacity, and this run shows a working set that 40 GB does not hold.
 
+## 9. Cross-experiment analysis (what the families say together; each number keeps the evidence label of its section)
+_[2026-11-05 06:00: written on A–F, the 0.08× replays and the SIMULATED reference; the lighter-load sweep (§7.3), the
+hits-first + chunk-512 run and the 160 GB re-run of F are folded in when they land.]_
+
+### 9.1 Where a request's time goes (D5: scheduling and retrieval time lines)
+Table 9-1 follows the same kind of request — a host-tier hit — through the four load regimes the study measured, with
+the legs of the instrumentation (§1.1; Figures A3, B4, C2; `replay/tables-d-hitcat.md`). Times in ms unless marked.
+
+| regime (source) | TTFT | before the load is issued | transfer host → GPU | load done → noticed | ready → scheduled | scheduled → first token | dominant leg |
+|---|---|---|---|---|---|---|---|
+| one 8k hit on an idle server (§3, DRAM L1, Table A-2) | 52 | lookup 1.2 | 25 (12 GB/s) | 3.2 | ≈ 0 | 11.7 | the transfer plus ≈ 16 ms of fixed cost |
+| 8k hit in the four-request burst, order ABCD (§4, Figure B4) | 701 | ≈ 10 | ≈ 30 | ≈ 640 | ≈ 0 | ≈ 20 | the step boundary: the cold 4k request's prefill chunks are running |
+| host hits at 4 req/s, overloaded (§6, `C/c-decomposition.csv`, means of 39 hits) | 5,576 | 4,028 (queued → load start) | allocation → load done 961 (queues behind other loads on the one thread, §5) | 574 | 154 | 284 | the budget-limited scan: 72 % of the TTFT passes before the load is issued |
+| host-dominant hits in the tool-agent replay, 80 GB, overloaded and GPU-KV-bound (§7.2c, p50 of 95 hits) | 21.0 s | queue → scheduled 19.7 s, of which lookup 0.66 s and lookup result → load 7.1 s | 0.09 s | (KV wait 0.86 s) | – | 0.34 s | the whole-prefix block reservation: the hit is admitted after the misses |
+
+Three things hold across the rows. The transfer is never the dominant leg: 25 ms alone, 90 ms p50 in the replay, and
+under 1 s even when it queues behind other loads at 4 req/s — for TTFTs of 0.7 s, 5.6 s and 21 s. What grows with load
+is the time *before* the load is issued — the scan that stops at the token budget (B/C: 12 ms at concurrency 2,
+1.2 s at concurrency 16, 4.0 s at 4 req/s) and, when the GPU KV cache is the scarce resource, the reservation of every
+block of the prefix (D: 7–13 s between lookup result and load) — followed by the step-granular hand-over of a finished
+load (0.3–1.4 s under load, B). And the cold request in the same regime waits in the same queue: 653 ms alone, 5.2 s at
+4 req/s (4.3 s queued → scheduled), 13.8 s in the replay (9.3 s queue → scheduled, 3.3 s prefill); the hit's one-token
+step buys it no place in the line. For Q2 that means: the scheduler does overlap loads with compute (Figure B4: C's
+prefill runs while A's and D's KV loads are in flight; GPU busy 1.0 from concurrency 2 on, loads never left the GPU
+idle) and ready requests do run while others wait for KV, but a loaded request is served only at a step boundary, a
+request is looked up only when the scan reaches it, and under GPU-KV saturation a host hit is admitted only when a
+prefix' worth of blocks is free at once.
+
+### 9.2 Does a high hit rate lower TTFT? Only through removed work, and only where the GPU is the bottleneck
+- *Alone or at light load* a hit is faster than a recompute by the recompute's prefill time and nothing else changes:
+  A 19–85 ms vs 45–3,402 ms (256–16k tokens); B at concurrency 1 / 0.5 req/s 34 / 54 ms vs 319 / 653 ms; F short
+  prompts 26–93 ms vs 308–349 ms while the cold requests stay at 311–349 ms whatever the hit share.
+- *Under load the hit's own advantage disappears* — B concurrency 16: host 3,428 vs cold 3,159 ms; D tool-agent 80 GB:
+  host-dominant 21.0 s vs miss 13.8 s; F long prompts at 23 of 48 hits: 17.8 vs 18.2 s — because the hit waits in the
+  same FCFS queue, behind the same running prefill chunks, and (§7.2c) for a full-prefix reservation that a miss does
+  not need.
+- *What a hit does deliver under load is work removed from a saturated GPU*, and the saturated queue amplifies it for
+  every request: D conversation 80 GB, 2.9 % of prompt tokens from the host tier → TTFT p50 −11 %, request time −17 %;
+  D tool-agent 80 GB, −10 % computed prompt tokens → TTFT p50 −31 % (18.5 → 12.7 s), request time −28 %; F long prompts,
+  30 of 48 hits → completed 0.6 → 1.4 req/s and cold TTFT 27.7 → 6.0 s (vLLM alone, whose prefix cache catches 16 of
+  them: 0.9 req/s, 15.5 s); B closed loop → +55 % capacity (1.5 → 2.3–2.4 req/s). The offline LRU of §7.1 predicts the
+  measured hit shares within 1 point (tool-agent 0.325 / 0.363 predicted vs 0.323 / 0.354 measured at 4.5 / 80 GB), so
+  the hit share is a property of the trace and the capacity, not of the serving stack.
+- So: for the hit itself, a lower TTFT only at light load; for the system, a lower TTFT only at saturation, through
+  work removed; never through the retrieval being fast.
+
+### 9.3 Does more capacity mean more retrieval traffic, and does traffic touch the GPU?
+Retrieval grows with capacity and stays negligible for the link: tool-agent 14.2 → 18.7 GB retrieved per 1,250-s
+window from 5 → 80 GB (conversation 0.45 GB at 40 GB), i.e. ≤ 15 MB/s averaged — at 12 GB/s the link carries the loads
+in < 0.2 % of the window. Stores are the larger flow (75–99 GB per window: LMCache stores every prompt's KV), 4–170×
+the retrieval volume, and they are what fills the tier and drives the evictions (Figure D4: 7,524 chunks evicted at
+5 GB, 1,455 at 80 GB; §8: a 40 GB tier exhausted in 7 minutes). The GPU busy share does not move with capacity (0.88 at
+every capacity in both traces, 0.89 for vLLM alone): loads run on the server's stream beside the engine's steps, and the
+GPU is saturated by the prefill of the misses, not by the loads. Concurrent loads (E) serialize on one thread per
+engine — 16 simultaneous 8k hits 428 ms p50, 7.7–11.9 GB/s over the burst — so a burst waits on LMCache's transfer
+path, not on bandwidth; only the SSD tier is bandwidth-bound (3.3 GB/s device, prefetch inside the lookup: an 8k SSD
+hit at k ≥ 2 costs more than a quarter of its recompute). KV retrieval is therefore not a bottleneck of concurrent
+serving on this platform with a DRAM tier and (PREVIOUSLY MEASURED, same 12.5 GiB/s GPU read rate) not with the CXL
+tier either; the regime where the CXL pair's ~50 GiB/s read ceiling would bind needs a faster link than this host has.
+
+### 9.4 Does asynchronous loading hide retrieval latency?
+It hides the transfer: the GPU never waits for a load (busy 1.0 under load in every regime; the hit's step is issued
+only once its KV is resident). The hiding is coarse-grained, though: a finished load is noticed at the end of a step
+(done → noticed 309 / 357 / 1,415 ms at concurrency 2 / 4 / 16; 574 ms mean at 4 req/s), with asynchronous scheduling
+the load is submitted one step after the request was considered (360 ms in the DCBA burst), and before any of that the
+request must be reached by the scan and must get its blocks. Eager prefetch moves only the lookup (§4, both traces:
+load issued at the same 23.0 s), four transfer threads change nothing (§4, §5). The two measured knobs that help trade
+one wait for another: synchronous scheduling removes the one-step lag (−14 % mean TTFT at concurrency 16, hits
+3,428 → 2,800 ms, free in this regime); prefill chunk 512 cuts the step-granularity wait by 50–80 % but stops the scan
+sooner and costs 7–8 % throughput, so at high load the hits end up worse.
+
+### 9.5 Does concurrency expose a scheduling bottleneck, and is it specific to CXL?
+C puts numbers on what B shows: at concurrency ≤ 2 or ≤ 0.5 req/s the feasible references are within 1–5 % of the
+existing scheduler (nothing to recover); at concurrency 16 / 4 req/s the model attributes 23 % of mean TTFT to the
+budget-limited scan, 10 % to load latency itself, 29 % to serving hits first, 42 % (60 % under overload) to clairvoyant
+SRPT; the measured knobs land where the model puts them (synchronous −14 %; hits-first −43 % for the hits, −12 %
+overall). Every mechanism in the list is exercised with a 40 GB DRAM tier and would be with any tier that makes hits
+frequent — nothing in it reads a CXL line. CXL enters as the capacity that makes hits frequent where the reuse is
+long-distance: the conversation hour offers 5 % reusable tokens at the GPU's 4.5 GB and 13 / 23 / 31 / 37 % at 80 / 160 /
+320 / 640 GB of KV (TRACE ANALYSIS, ×8.9 GB for a 70B fp16 model), the tool-agent hour 38 → 59 %; the measured windows
+so far (100 s at 0.08×) hold little of that reuse (§7.3 pending).
+
+### 9.6 Do different workloads behave differently?
+Yes, and the difference is the reuse distance, not the serving stack: at the same load and capacities the conversation
+window gets 0–2.9 % of its prompt tokens from the host tier and 4.4 % from the GPU prefix cache, the tool-agent window
+8–11 % and 24–26 %; the TTFT gain at 80 GB is −11 % vs −31 %; in the tool-agent window 5 GB of DRAM already finds 8.4 of
+the 11 points, and the SSD-backed tier finds fewer short-distance hits than 5 GB of DRAM (§7.2b). F adds the length
+axis: short prompts at light load buy latency for the hits, long prompts at overload buy capacity for everyone. And
+the metric must match the regime: in B's closed loop the TTFT quantiles are *higher* with the cache (3,336 vs 2,259 ms
+p50 at concurrency 16) while capacity is +55 %, because faster completions keep 16 requests in flight with more cold
+prefill among them.
+
+### 9.7 How close is the existing scheduler to the reference?
+The calibrated model reproduces the measured scheduler within 7–27 % (optimistic); against that model, the feasible
+non-clairvoyant references (scan the whole queue; submit loads at once; hits first) are 20–40 % lower in mean TTFT at
+concurrency 8–16 and 4 req/s and indistinguishable at light load; clairvoyant SRPT is ~20 points further and raises p95
+under overload. The gap is real, bounded, and generic; the measured knobs recover part of it (synchronous −14 %,
+hits-first −12 % overall) without code changes.
+
 ## 10. Unexpected and negative results (collected; each points to the section with the numbers)
 1. **A host hit stops being faster than a miss as soon as the server is loaded** (§4, §6, §7.2): the transfer is 16–40 ms,
    but a hit waits for the scheduler's queue scan (stops when the 2,048-token budget is spent), is submitted one step
@@ -779,6 +878,162 @@ the capacity, and this run shows a working set that 40 GB does not hold.
   `/mnt/local` behind a symlink, which departs from the repo convention of raw data under `experimental_results/`.
 - **Scope**: single engine, no tensor parallelism, no prefill–decode disaggregation, no multi-tenant host memory, no real
   users; the study is about the engine–cache coupling, not about a complete serving system.
+
+## 12. Final research analysis (the five questions of the brief; D6 research opportunity assessment)
+_[2026-11-05 06:00: provisional where marked; the lighter-load sweep (§7.3), the hits-first + chunk-512 run and the
+160 GB re-run of F are pending.]_
+
+### Question 1 — Does CXL expansion provide meaningful end-to-end serving benefits?
+**What was measurable here.** The CXL devdax path is blocked (root 0600 since 2026-10-18), so every serving number is
+from a DRAM host tier; the transfer from the CXL tier was PREVIOUSLY MEASURED at the DRAM rate on this GPU link
+(12.48 GiB/s, 2026-10-07; same TTFT with a devdax L1, 2026-10-11 / 10-18), so the DRAM-tier results are the CXL-tier
+results at equal capacity, and capacity is what CXL adds (1.06 TiB on c28 against the GPU's 4.5 GB of KV and whatever
+DRAM the host can spare).
+**Where the benefit is, with numbers.** (i) Latency for the hits, at light load: 19–85 ms instead of 45–3,402 ms per
+request (§3); 26–93 vs 308–349 ms at 2 req/s (§8). (ii) Capacity at saturation, for everyone, in proportion to the
+prefill work the hits remove: −31 % TTFT p50 and −28 % request time in the tool-agent replay at 80 GB for −10 % work
+(§7.2b); −11 % / −17 % in the conversation replay for 2.9 % host-served tokens (§7.2); 0.6 → 1.9 req/s with 8k prompts
+at 2 req/s when every request hits (§8); +55 % closed-loop capacity on a 50 % mix (§4). (iii) How much work the tier
+removes is set by the workload's reuse distance against the capacity: short-distance reuse (tool-agent) is mostly
+captured by 5 GB of DRAM (+8.4 of +11 points), long-distance reuse (conversation) needs CXL-scale capacity — 5 % of the
+hour's prompt tokens are reusable at 4.5 GB, 13 % at 80 GB, 31 % at 320 GB, 37 % at 640 GB (TRACE ANALYSIS; ×8.9 for a
+70B model's KV) — and that is the one place where CXL, rather than a DRAM tier, is the enabler.
+**Conditions.** The benefit requires the GPU to be the bottleneck (saturated prefill) or the hits to be the majority of
+requests; it does not appear when the GPU KV cache itself is the scarce resource (§7.2c: then host hits are admitted
+last and only the removed work counts), and it does not appear as fast hits under load in any regime.
+**Verdict (provisional).** Meaningful and measured for short-distance reuse at modest capacity; for the long-distance
+reuse that justifies CXL-scale capacity the measured evidence is the 80 GB conversation point (−11 %) and the trace
+analysis; the 200-s windows at 320 GB (§7.3) are the test of that claim on this platform.
+
+### Question 2 — What prevents the system from fully exploiting cached prefixes?
+Diagnosis per candidate cause, with the evidence:
+- **Cache misses — the first-order limit.** 93 % (conversation) and 65 % (tool-agent) of prompt tokens are computed
+  even at 80 GB (§7.2, §7.2b); the misses' prefill is what saturates the GPU (busy 0.88). Capacity is bounded in this
+  study (≤ 80 GB measured at 0.08×; 320 GB in §7.3; CXL blocked) and the tier stores everything, so a 40 GB tier
+  evicts its own working set (§8).
+- **KV retrieval and host → GPU movement — not a limit with DRAM (or CXL).** 12 GB/s per load, 25 ms per 8k prefix,
+  0.09–0.3 s p50 under load, < 0.2 % of the link's time per window (§3, §7, §9.3); concurrent loads serialize on
+  LMCache's one transfer thread per engine (§5), which is a software limit. The SSD tier is device-bound (3.3 GB/s) and
+  prefetches inside the lookup, even for GPU-prefix hits (§3, §5).
+- **Request scheduling — the limit under load.** Four mechanisms, all measured: the waiting-queue scan stops at the
+  token budget (1.2 s at concurrency 16, 4.0–4.4 s at 4 req/s before a hit is even looked up; 23 % of mean TTFT in the
+  model); a finished load is noticed at a step boundary (0.3–1.4 s); the load is submitted one step late with
+  asynchronous scheduling; and under GPU-KV saturation a host hit must reserve blocks for its whole prefix at once
+  while misses enter chunk by chunk (host hits 16.8 s vs GPU hits 2.7 s vs misses 11.5 s at the same backlog, §7.2c).
+- **GPU resource contention — yes, twofold.** Compute: prefill of misses saturates the GPU in every loaded regime.
+  Memory: the 121,792-token GPU KV cache limits the running set to 5–11 sequences in the replays, which is what turns
+  the reservation rule into a penalty on host hits.
+- **CXL bandwidth — not a factor on this platform.** Not exercised (blocked); PREVIOUSLY MEASURED same read rate as
+  DRAM for the GPU; the CXL pair's ~50 GiB/s ceiling is 4× the link.
+- **Software overhead — second order, but real.** ≈ 16 ms fixed per hit (lookup 1.3, hand-over 3, one-token step
+  10 ms); a GPU-prefix hit costs 18.6 ms with LMCache in the loop vs 11.8 ms without; the L2 prefetch inside the lookup
+  adds 50–200 ms to GPU hits on the SSD tier; one transfer thread per engine; store-everything.
+**Ranking by weight:** misses (capacity and what it holds) > scheduling under load > software overheads > the
+transfer; CXL bandwidth does not appear.
+
+### Question 3 — Is the existing scheduler already effective?
+**What it handles well.** It never blocks the GPU on a load (busy 1.0 under load; loads on a separate stream), serves a
+loaded request at the very next step (ready → scheduled 0.1 ms), lets ready requests run while others wait for KV, and
+at light load is within 1–5 % of the feasible references (§6) — at concurrency ≤ 2 or ≤ 0.5 req/s there is nothing to
+recover.
+**Where it struggles.** Under load: the budget-limited scan, the step-granular notice, the one-step-late submission,
+FCFS ordering that gives a one-token hit no advantage over a 2,048-token chunk, and the whole-prefix reservation that
+starves host hits when the GPU KV cache is full. Its own knobs do not fix these: eager prefetch and transfer threads do
+nothing, chunk 512 trades one wait for another and loses at high load.
+**Are the problems important in realistic workloads?** The trace replays at 0.08× are overloaded (GPU busy 0.88,
+backlog 26–41), which is where every one of these waits is large (host hits 21 s p50) — but overload is also a choice
+of the replay speed; the same traces at 0.04× (§7.3) will say how much survives at a sustainable rate.
+**How much opportunity remains.** 20–40 % of mean TTFT at high load (SIMULATED, from two scheduler decisions that do
+not depend on the tier), of which measured knobs already recover −14 % (synchronous scheduling) and −43 % for the hits
+(hits-first ordering); the admission penalty of §7.2c is not bounded by a reference (no policy was implemented); the
+ceiling of the GPU-prefix-hit category (2.7–6.8 s p50 against 16.8–21.0 s for host hits) is the natural target.
+
+### Question 4 — Does CXL introduce a distinct systems problem?
+- **General LLM-serving issues** (present with any tier, measured here with DRAM): budget-limited scan, step-granular
+  hand-over, FCFS vs reuse-aware ordering, GPU-KV-bound admission. All of §4, §6 and §7.2c.
+- **Generic tiered-caching issues:** store-everything filling the tier (§8), LRU losing short-distance hits with an SSD
+  L2 (§7.2b), L2 prefetch inside the lookup (§3, §5), one transfer thread per engine (§5). None depends on the medium.
+- **Issues that grow with CXL's capacity:** with capacity the hit share rises from a few percent to tens of percent
+  (TRACE ANALYSIS; measured 33–35 % cached tokens in the tool-agent replay), so the host-hit admission path (§7.2c) is
+  taken by a large share of requests instead of a handful, the value of reuse-aware ordering scales with the hit
+  share (C: hits-first 29 % at 16 concurrent requests), and the store / eviction volume scales with the tier (D4).
+  These are the problems a CXL-sized tier makes important.
+- **Issues caused by CXL's own memory and transfer characteristics:** none measured. The GPU reads the devdax mapping
+  at the DRAM rate; the CPU-side differences (1.7× dependent-read latency, 51 vs 280 GiB/s streaming; Phase 2 / 3) do
+  not lie on the GPU load path; the one candidate — a GPU link faster than the CXL pair's ~50 GiB/s — cannot be
+  produced on this host. On this platform the fourth category is empty, and the brief's warning stands: nothing here
+  requires it to exist.
+
+### Question 5 — What system should be built next, if any? (D6)
+Ranked by strength of evidence and feasibility; each entry: problem, evidence, what existing mechanisms lack, a design
+sketch (an inference — nothing below was implemented), expected gain, complexity, uncertainty.
+1. **Admission of host-tier hits under GPU-KV saturation (a vLLM scheduler policy).** *Problem:* an asynchronous
+   external load must reserve blocks for its whole prefix (minus in-flight reservations) before it is issued, and a
+   failed reservation ends the waiting scan with no fallback, while misses enter chunk by chunk and grow as running
+   requests; host hits become the slowest class (16.8 s vs 2.7 s GPU hits vs 11.5 s misses at the same backlog;
+   7–13 s between lookup result and load; 330 requests scheduled past 57 waiting hits, §7.2c), and the knobs that look
+   relevant (eager prefetch) do not touch it (§4). *Existing mechanisms:* vLLM's chunked prefill does for misses what
+   nothing does for loads; LMCache can load partial prefixes but the scheduler asks for all-or-nothing. *Design
+   sketch:* chunked external loads (reserve and load the prefix in prefill-chunk-sized pieces, as blocks free up),
+   or a bounded reservation for pending loads so that misses cannot take every freed block, or compute-when-
+   reservation-fails for the uncached tail. *Expected gain:* host hits from 16.8–21.0 s toward the GPU-hit category's
+   2.7–6.8 s p50 at the same backlog; nothing for misses, nothing at light load. *Complexity:* moderate (scheduler
+   admission + connector chunking; no new data path). *Uncertainty:* the regime needs the GPU KV cache to be the
+   binding resource — true on a 4.5-GB KV cache with 3B and 6–14k prompts, and on a large GPU only with proportionally
+   larger models or contexts; to be confirmed on an 80-GB-class GPU (c33 / c29) before it is called general. Evidence:
+   MEASURED + SOURCE INSPECTION, strongest in the study.
+2. **Reuse-aware queue scan, ordering and hand-over (generic scheduler changes).** *Problem:* hits lose their advantage
+   under load (§4, §6). *Evidence:* scan 23 %, step-granularity 10 %, ordering 29 % of mean TTFT at concurrency 16
+   (SIMULATED); synchronous scheduling −14 % and hits-first −43 % for the hits measured. *Existing mechanisms lack:*
+   a scan past the budget for lookups (lookups are asynchronous and cheap, 1.3 ms); planning a step with the loads
+   that have actually finished; remaining-work ordering. *Design:* scan the whole queue for lookups/loads, notice
+   loads inside the step or run synchronous scheduling where the CPU cost is hidden anyway, order by remaining work
+   with a starvation bound. *Expected:* 20–40 % of mean TTFT at high load, 0 at light load. *Complexity:* low to
+   moderate. *Uncertainty:* Bidaw (FAST '26) already orders by KV-loading latency and size for two-tier host/SSD
+   stores; what it does not address is the admission rule of item 1 or the budget-limited scan — the overlap must be
+   checked mechanism by mechanism before any claim.
+3. **CXL-scale capacity for long-distance reuse (the only CXL-specific lever).** *Problem:* the conversation
+   workload's reuse lives at hundreds of GB of KV. *Evidence:* TRACE ANALYSIS (5 → 31 % at 320 GB; 37 % at 640 GB) and
+   one measured point (80 GB: −11 % TTFT at overload); §7.3 pending. *Existing mechanisms lack:* nothing on the data
+   path — a devdax L1 serves at the DRAM rate (PREVIOUSLY MEASURED); what is missing is what the tier holds (RQ1's
+   admission, since LMCache stores everything and evicts its working set, §8) and the hardware access on this node.
+   *Expected:* hit share × prefill cost at saturation (tool-agent: 10 % work → 31 % TTFT). *Complexity:* low (configuration
+   plus the existing admission policy). *Uncertainty:* high until the DAX path is back and the longer windows are
+   measured; the 3B model's 36 KiB/token understates a 70B deployment's capacity need by 8.9×.
+4. **Tier-aware lookup and prefetch for SSD-backed tiers (generic).** L2 prefetch inside the lookup, even for GPU
+   hits; device-bound concurrent hits; fewer short-distance hits than 5 GB of DRAM. Measured (§3, §5, §7.2b) but
+   secondary to this study's question and partly covered by Bidaw's tier-aware grouping.
+**If the system already works well:** at light load it does — no direction above applies below ~1 req/s on this
+server, and a study aimed there would find nothing (§6). The directions exist only where the GPU is saturated, which
+is also where a serving operator cares.
+
+## 13. Relationship to previous research (RQ1, Phase 2 / 3; conclusions unchanged)
+- **RQ1 (reuse-aware admission: gap rule + regime switch on SLRU) stays relevant and gains a reason.** LMCache stores
+  the KV of every prompt: 75–99 GB per 1,250-s replay window (§7.2b), about 55 GB in a 7-minute controlled run that
+  exhausted a 40 GB tier and evicted its own working set (§8), with 1,455–7,524 chunks evicted per replay window (§7).
+  What the tier holds, not how fast it serves, decides the benefit (§9.2) — admission is the mechanism that decides it.
+- **Does the adaptive admission policy help real serving performance?** Not tested in the serving loop (the policy
+  was not wired into LMCache's store path; no admission experiment was run), so no claim either way. The serving
+  evidence says what it would act on (the store volume above) and what it cannot change (the admission penalty of
+  §7.2c sits in vLLM, after the hit is found).
+- **Does capacity expansion change the importance of admission?** For the hit rate, admission matters less once the
+  capacity exceeds the working set (the 160 GB re-run of F and the 320 GB sweep of §7.3 test this directly); for the
+  write traffic it does not — the stores are the larger flow at every capacity (§9.3) and writes are the interference
+  channel of Phase 3. Unchanged.
+- **Do the bandwidth / interference measurements predict serving behaviour?** Not on this platform's GPU path: the
+  host tier is read at 12 GB/s through the PCIe link, far below the CXL pair's 51 GiB/s streaming and 50 GiB/s read
+  ceilings, and the store stream (60–80 MB/s averaged over a window) is orders of magnitude below the GB/s writers of
+  the Phase 2 / 3 interference regime. Those measurements remain the CPU-side characterization they were; they would
+  predict serving behaviour only for a CPU-side consumer of CXL (CPU prefill, host-side attention offload) or a GPU
+  link faster than the CXL pair.
+- **The negative joint-benefit conclusion (Phase 3: H2 not supported) holds** — this study ran no joint placement and
+  produced nothing that bears on it.
+- **Older results that remain independent characterizations:** the write-drain cliff and overlap rule, the zero-line
+  write finding, the CCD pairing (Phase 2) — all CPU-side; none appears in the serving path measured here.
+- **The three RQs are not redefined.** This study adds a serving-level characterization: on the serving side the
+  bottleneck under GPU-KV saturation is vLLM's admission of external loads (a scheduler policy), not memory
+  management; on the capacity side the trace analysis and the 80 GB point say where CXL-scale capacity would matter.
+  Whether a broader CXL-enabled serving direction is justified is answered in the executive summary once §7.3 is in.
 
 ## 14. Related work (only references verified in this session or in `Related.md`, 2026-07; no venue is claimed that was not checked)
 
@@ -876,3 +1131,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §4: real-trace replays under eager prefetch and 4 transfer threads (Table B-3, figure BR, `replay/tables-br-hitcat.md`; no effect; replay repeatability 0.02 % on TTFT p50); §2 B row; §10 items 2–3; pending marker.
 - 2026-11-05 — §8 Experiment F (hit share × prompt length at 2 req/s, DRAM tier vs vLLM alone; Tables F-1 / F-2, figures F1–F2; the 40 GB tier evicts its pool during the long-prompt points → `f-default-l1-160` queued in `queue_f2.sh`); §2 F row; §10 item 15; figure F2(b) label corrected (served, not computed, prompt tokens).
 - 2026-11-05 — §3: clean SSD O_DIRECT rerun (`a-3b-ssd-odirect2`) added to the SSD-hit paragraph, Tables A-1 / A-2 and figures A1–A3 rebuilt; §15.C row updated.
+- 2026-11-05 — §9 cross-experiment analysis (D5 time-line table 9-1, 9.2–9.7), §12 final research analysis (Questions 1–5, D6 ranked directions) and §13 relationship to previous research drafted on A–F and the 0.08× replays (provisional markers for §7.3, H and the F re-run); §4 cross-reference fixed (Q4 of §12).
