@@ -95,6 +95,13 @@ the sampler on (busy-GPU condition, which a loaded server is in anyway); the sam
 penalty under light load. This is a real deployment effect of a lightly loaded server on this hardware, not an artefact
 to hide, and it is not specific to host-tier hits.
 
+### 1.3 Operational notes
+- 2026-11-04 20:55: the home directory hit its 40 GB quota (not this study's data: 0.6 GB; the rest is older
+  content of the account). The `b-noasync` run was truncated and every queued run failed instantly for 2 minutes; the
+  study's results directory was moved to `/mnt/local/ghu4/results/2026-11-04-cxl-serving-scheduling-gap` and
+  symlinked from `experimental_results/`, the truncated run archived in `B/flawed/`, and the queue restarted (part 3)
+  with the same runs. Which runs were affected is visible in `queue.txt` and the experiment matrix.
+
 ## 2. Experiments (plan; results are appended per family as they close)
 | family | question | status |
 |---|---|---|
@@ -244,6 +251,13 @@ re-used across levels is kept in `B/flawed/` and not used.
   tokens/s at concurrency 16, 2.75 → 2.56 req/s at 4 req/s), and at high load the hits end up worse (3,428 → 4,978 ms
   at concurrency 16; 640 → 1,437 ms at 2 req/s). The two waits trade against each other through the token budget; the
   combination hits-first + chunk 512 is queued.
+- *Synchronous scheduling* (`--no-async-scheduling`; vLLM enables async scheduling by default): the hits improve at every
+  level, modestly — the four-request burst 723 → 684 / 777 → 752 / 735 → 674 ms, concurrency 8: 1,879 → 1,560 ms,
+  concurrency 16: 3,428 → 2,800 ms (cold 3,159 → 2,223), 2 req/s: 640 → 611 ms — at no throughput cost in this regime
+  (completed requests/s within 1–2 % of the default: the CPU-side work that async scheduling hides is small next to
+  300-ms prefill steps). Table B-2: "load done → noticed" 407 → 48 ms in the ABCD burst and 1,415 → 689 ms at
+  concurrency 16, and "scheduled → first token" 21–295 → 12–60 ms, because a step is now planned with the loads that
+  have actually finished and the load of a request is submitted in the step that considered it, not one later.
 - *Priority, cold first* (the mirror image): hits lose (6,134 → 7,636 ms at 4 req/s, 2,848 → 5,159 ms in the 16-request
   burst), cold requests gain 5–13 % (3,159 → 2,742 ms at concurrency 16); no change at light load. Together the two
   priority runs show that under load the order in which the waiting queue is scanned decides which class pays the
