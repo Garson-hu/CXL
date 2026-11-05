@@ -119,7 +119,7 @@ to hide, and it is not specific to host-tier hits.
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
 | B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes and real-trace configurations done (§4; real traces in Table B-3 and figure BR); hits-first + chunk 512 combination done (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
-| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run queued), lighter-load 0–200 s sweep queued (§7.3) |
+| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run done), lighter-load 0–200 s sweep running (§7.3) |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
 | F workload sensitivity | both traces, controlled variations | controlled hit-share × prompt-length sweep done (§8; 160 GB re-run of the long-prompt points queued, `queue_f2.sh`); trace sensitivity = §7.2 vs §7.2b and §7.3 |
 
@@ -534,11 +534,11 @@ CXL — relieves compute, not that; the lighter-load sweep (§7.3) measures the 
 
 ### 7.2b Measured sweep, tool-agent trace at 0.08× (figures D1–D4, `replay/tables-d-tool.md`)
 Same server, same replay speed; the window holds 544 requests and 4.61 M prompt tokens (prompt p50 6.2 k, p90 19 k
-tokens; 0.42 req/s, 3.56 k offered prompt tokens/s over ≈ 1,290 wall s). `d-tool-dram2` is re-run at the head of
-`queue_i2.sh` (its first run was contaminated by the incident of §15.C) and is added when it lands.
+tokens; 0.42 req/s, 3.56 k offered prompt tokens/s over ≈ 1,290 wall s). `d-tool-dram2` was re-run at the head of the lighter-load queue (2026-11-05 05:42–06:04) after its first run was contaminated (§15.C); the table shows the re-run.sh` (its first run was contaminated by the incident of §15.C) and is added when it lands.
 
 | run | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % TTFT p50 (s) [n] | miss TTFT p50 (s) [n] | request time p50 (s) | computed tok/s | KV host→GPU / GPU→host (GB) | evicted chunks | L1 max (GB) | GPU busy | backlog max |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| d-tool-dram2 (re-run 2026-11-05 05:42–06:04) | 0.312 (0.073 / 0.239) | 15.8 / 49.8 / 54.9 | 14.2 [275] | 17.4 [202] | 29.9 | 2,436 | 12.4 / 74.5 | 7,721 | 1.9 | 0.88 | 45 |
 | d-tool-dram5 | 0.323 (0.084 / 0.239) | 14.6 / 46.0 / 53.1 | 13.3 [290] | 15.7 [187] | 27.4 | 2,407 | 14.2 / 74.8 | 7,524 | 4.4 | 0.88 | 41 |
 | d-tool-dram10 | 0.332 (0.097 / 0.235) | 13.2 / 44.6 / 50.1 | 12.4 [302] | 14.9 [177] | 26.2 | 2,380 | 16.5 / 76.1 | 7,221 | 8.8 | 0.88 | 41 |
 | d-tool-dram20 | 0.332 (0.095 / 0.237) | 13.1 / 44.6 / 50.1 | 12.4 [302] | 14.9 [177] | 26.2 | 2,380 | 16.2 / 76.2 | 6,517 | 17.2 | 0.88 | 41 |
@@ -567,7 +567,7 @@ arrive late in the window (p50 874 s vs 492 s for the kept ones). Its TTFT p50 i
 writes 99 GB to the NVMe over the window. The cause is not isolated in this session; the candidates consistent with the late losses are the asynchronous L2 store path (a chunk becomes visible to lookups
 only after its NVMe write completes, while this trace re-uses prefixes within seconds) and the L2 → L1 prefetch that
 runs inside the lookup (§1.1; bounded to 8 in flight) not keeping up with 40 outstanding requests. On the conversation trace, whose reuse is long-distance and where the
-L2 never evicts, the same configuration found more hits than 40 GB of DRAM (§7.2).
+L2 never evicts, the same configuration found more hits than 40 GB of DRAM (§7.2). The 2 GB point — below the GPU cache's own 4.5 GB — already adds 7.3 points of host-served tokens (0.312 vs 0.256 cached; offline LRU 0.300) and takes TTFT p50 from 18.5 to 15.8 s; from 2 to 80 GB the host share is 7.3 / 8.4 / 9.7 / 9.5 / 9.3 / 11.0 % and TTFT p50 15.8 / 14.6 / 13.2 / 13.1 / 12.9 / 12.7 s.
 
 Figures D3 / D4 over both traces: computed prefill falls with capacity (conversation 2,445 → 2,396 tok/s, tool-agent
 2,586 → 2,322) while the GPU stays saturated (busy share 0.884 → 0.877 and 0.895 → 0.869: the GPU is never idle, the
@@ -631,8 +631,7 @@ study does not modify vLLM or LMCache); they are inferences from the source and 
 form of the Q2 / Q4 scheduling opportunity under GPU-KV-bound overload. Bidaw's loading-latency-aware ordering (§14)
 addresses the related but different problem of ordering by *transfer* cost; here the transfer is not the cost.
 
-_[pending 2026-11-05 05:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
-`queue_i2.sh`, after F, G, H); `d-tool-dram2` re-run.]_
+_[pending 2026-11-05 06:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces; `queue_i2.sh`, running since 06:05, ≈ 83 min per run).]_
 
 ## 8. Experiment F — workload sensitivity (MEASURED 2026-11-05 05:01–05:23, `F/`, per-point tables `F/f-default-scenarios.csv` / `F/f-none-scenarios.csv`, figures `F/figs/`)
 **Why.** A–E fix the request mix and D replays two traces whose hit shares the traces dictate. The question here is how the
@@ -852,7 +851,7 @@ hits-first −12 % overall) without code changes.
 13. **Run-hygiene incidents** (§15.C): the first `b-default` (sequences re-used across levels), the quota-truncated
     `b-noasync`, the `KeyError` priority runs, two "Server disconnected" answers in a 16-request burst, LMCache
     "preempted" warnings (6 per conversation replay: vLLM preempted a request whose KV had been loaded), and the premature
-    start of the lighter-load queue that contaminated `d-tool-dram2` (re-run). None changes a conclusion; all are recorded.
+    start of the lighter-load queue that contaminated `d-tool-dram2` (re-run 2026-11-05, valid). None changes a conclusion; all are recorded.
 14. **The SSD-backed tier finds fewer of the tool-agent trace's short-distance hits than 5 GB of DRAM** (§7.2b): host share
     5.7 % vs 8.4 %, lookups 17 % vs 30 % of prompt tokens, the losses late in the window; on the conversation trace
     (long-distance reuse, no L2 eviction) it found more than 40 GB of DRAM. Cause not isolated (candidate: the asynchronous
@@ -1130,7 +1129,7 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 | `B/flawed/b-noasync` (first) | truncated when `/home` hit its 40 GB quota (2026-11-04 20:55) | rerun after moving the results to `/mnt/local` |
 | `B/b-prio-hits`, `b-prio-cold` (first) | driver `KeyError: 'warm'` in the priority map | fixed (`.get(t, 1)`), reruns succeeded |
 | `B` s3-k16 | two flush requests answered "Server disconnected" | recorded in the client file, excluded from the statistics |
-| `replay/flawed/dl-conv-dram2`, `d-tool-dram2` (first) | the lighter-load queue started while `d-tool-dram2` ran (its trigger string appeared in a note appended to `queue.txt`); the stray driver sent 599 conversation requests to the running server for 6 min | both quarantined; `d-tool-dram2` re-run first in `queue_i2.sh` |
+| `replay/flawed/dl-conv-dram2`, `d-tool-dram2` (first) | the lighter-load queue started while `d-tool-dram2` ran (its trigger string appeared in a note appended to `queue.txt`); the stray driver sent 599 conversation requests to the running server for 6 min | both quarantined; `d-tool-dram2` re-run first in `queue_i2.sh` Re-run of `d-tool-dram2` completed 2026-11-05 05:42–06:04 and is the 2 GB row of the §7.2b table. |
 | `B/b-prio-hits-chunk512` (s2 warm-up `flush0`) | one 16,320-token filler request failed with `ServerDisconnectedError`; 876 of 877 requests completed, every measured request present | run kept and used (§4); the flush is an eviction filler of the warm-up, not a measurement |
 
 ## Change history
@@ -1144,3 +1143,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §3: clean SSD O_DIRECT rerun (`a-3b-ssd-odirect2`) added to the SSD-hit paragraph, Tables A-1 / A-2 and figures A1–A3 rebuilt; §15.C row updated.
 - 2026-11-05 — §9 cross-experiment analysis (D5 time-line table 9-1, 9.2–9.7), §12 final research analysis (Questions 1–5, D6 ranked directions) and §13 relationship to previous research drafted on A–F and the 0.08× replays (provisional markers for §7.3, H and the F re-run); §4 cross-reference fixed (Q4 of §12).
 - 2026-11-05 — §4: hits-first + prefill chunk 512 combination (`b-prio-hits-chunk512`); `B/tables-b.md` rebuilt with it; §2 B row, §10 item 4, §12 Question 3, §15.C (one failed filler request), §9 / §12 markers.
+- 2026-11-05 — §7.2b: `d-tool-dram2` re-run added (2 GB row; capacity curve monotone 2–80 GB); `replay/tables-d-tool.md` and figures D1–D4 rebuilt; §2 D row, §10, §15.C, pending marker updated.
