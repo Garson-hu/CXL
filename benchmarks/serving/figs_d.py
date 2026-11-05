@@ -5,12 +5,16 @@
   figD3  capacity vs computed prompt tokens per second and completed requests per second
   figD4  capacity vs KV traffic on the GPU link (retrieved bytes, PCIe RX; stored bytes, PCIe TX) and host-cache evictions
   figBR  the real-trace scheduler configurations (default 40 GB vs eager prefetch vs 4 transfer threads): TTFT and waits
-usage: figs_d.py <replay dir> <fig dir>"""
+usage: figs_d.py <replay dir> <fig dir> [prefix=d] [window=trace seconds 0–100 at 0.08×]
+  prefix selects the tag family (d = the 0.08× sweep, dl = the lighter-load 0–200 s sweep at 0.04×); with a prefix other than
+  d the figure files get a -<prefix> suffix and the real-trace configuration figure (BR) is skipped"""
 import csv, os, sys
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 R, FIG = sys.argv[1], sys.argv[2]; os.makedirs(FIG, exist_ok=True)
+KW = dict(a.split("=", 1) for a in sys.argv[3:] if "=" in a); PFX = KW.get("prefix", "d"); WIN = KW.get("window", "trace seconds 0–100 at 0.08×")
+SFX = "" if PFX == "d" else f"-{PFX}"
 rows = {}
 for r in csv.DictReader(open(f"{R}/replay-summary.csv")):
     rows[r["tag"]] = {k: (v if k == "tag" else (float(v) if v not in ("", None) else None)) for k, v in r.items()}
@@ -19,9 +23,9 @@ TR = {"conv": "Mooncake conversation", "tool": "Mooncake tool-agent"}
 def cap_series(tr):
     out = []
     for t, r in rows.items():
-        if t.startswith(f"d-{tr}-dram"): out.append((float(t.split("dram")[1]), r))
+        if t.startswith(f"{PFX}-{tr}-dram"): out.append((float(t.split("dram")[1]), r))
     return sorted(out)
-def ref(tr, kind): return rows.get(f"d-{tr}-{kind}")
+def ref(tr, kind): return rows.get(f"{PFX}-{tr}-{kind}")
 
 def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd"), legend_loc="best"):
     for i, tr in enumerate(TR):
@@ -39,25 +43,26 @@ def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd"), legend_
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
 panel(ax, [("cached_share", "-", "cached share of prompt tokens (vLLM)"), ("host_share", "--", "served from the host tier"), ("local_share", ":", "served from the GPU prefix cache")], "share of prompt tokens", "cached prompt tokens vs host-cache capacity", refs=("none",))
-fig.suptitle("Figure D1 — capacity vs KV-cache hit share\n(MEASURED replay: trace seconds 0–100 at 0.08×, 3B-AWQ, LMCache LRU, watermark 0.8)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.png", dpi=300); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.pdf"); plt.close(fig)
+fig.suptitle(f"Figure D1{SFX} — capacity vs KV-cache hit share\n(MEASURED replay: {WIN}, 3B-AWQ, LMCache LRU, watermark 0.8)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD1-capacity-vs-hit{SFX}.png", dpi=300); fig.savefig(f"{FIG}/figD1-capacity-vs-hit{SFX}.pdf"); plt.close(fig)
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
 panel(ax, [("ttft_p50", "-", "TTFT p50"), ("ttft_p95", "--", "TTFT p95"), ("ttft_p99", ":", "TTFT p99")], "ms (log)", "TTFT vs host-cache capacity", logy=True, legend_loc="center left")
-fig.suptitle("Figure D2 — capacity vs TTFT (MEASURED replay, offered load unchanged across runs)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft.png", dpi=300); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft.pdf"); plt.close(fig)
+fig.suptitle(f"Figure D2{SFX} — capacity vs TTFT (MEASURED replay: {WIN}; offered load unchanged across runs)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft{SFX}.png", dpi=300); fig.savefig(f"{FIG}/figD2-capacity-vs-ttft{SFX}.pdf"); plt.close(fig)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
 panel(axes[0], [("computed_tok_per_s", "-", "prompt tokens computed / s")], "tokens / s", "(a) prefill work the GPU actually did")
 panel(axes[1], [("gpu_busy_steps", "-", "GPU busy (engine steps with tokens)")], "share of wall time", "(b) GPU busy share")
-fig.suptitle("Figure D3 — capacity vs computed prefill work and GPU busy share\n(MEASURED replay; the request rate is the trace's, so throughput = offered load unless the server falls behind)", fontsize=9)
-fig.tight_layout(); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.png", dpi=300); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.pdf"); plt.close(fig)
+fig.suptitle(f"Figure D3{SFX} — capacity vs computed prefill work and GPU busy share\n(MEASURED replay: {WIN}; the request rate is the trace's, so throughput = offered load unless the server falls behind)", fontsize=9)
+fig.tight_layout(); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput{SFX}.png", dpi=300); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput{SFX}.pdf"); plt.close(fig)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
 panel(axes[0], [("retrieve_GB", "-", "KV retrieved host → GPU (LMCache retrieve events)"), ("store_GB", "--", "KV stored GPU → host (LMCache store events)")], "GB over the window", "(a) KV traffic between host cache and GPU", refs=("ssd",))
 panel(axes[1], [("evicted_chunks", "-", "evicted 256-token chunks")], "chunks", "(b) host-cache evictions", refs=())
-fig.suptitle("Figure D4 — capacity vs KV retrieval traffic and evictions (MEASURED replay)", fontsize=9)
-fig.tight_layout(); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic.png", dpi=300); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic.pdf"); plt.close(fig)
+fig.suptitle(f"Figure D4{SFX} — capacity vs KV retrieval traffic and evictions (MEASURED replay: {WIN})", fontsize=9)
+fig.tight_layout(); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic{SFX}.png", dpi=300); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic{SFX}.pdf"); plt.close(fig)
 
 # real-trace scheduler configurations
+if PFX != "d": sys.exit(print("figures written to", FIG))
 cfgs = [("d-{tr}-dram40", "default (40 GB)"), ("br-{tr}-eager", "eager prefetch"), ("br-{tr}-workers4", "4 transfer threads")]
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
 for i, tr in enumerate(TR):

@@ -581,7 +581,7 @@ study does not modify vLLM or LMCache); they are inferences from the source and 
 form of the Q2 / Q4 scheduling opportunity under GPU-KV-bound overload. Bidaw's loading-latency-aware ordering (§14)
 addresses the related but different problem of ordering by *transfer* cost; here the transfer is not the cost.
 
-_[pending 2026-11-05 04:30: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
+_[pending 2026-11-05 03:50: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
 `queue_i2.sh`, after the B real-trace chain, F, G, H); `d-tool-dram2` re-run.]_
 
 ## 10. Unexpected and negative results (collected; each points to the section with the numbers)
