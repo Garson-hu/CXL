@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 B, FIG = sys.argv[1], sys.argv[2]; os.makedirs(FIG, exist_ok=True)
 TAGS = (sys.argv[3].split("=", 1)[1] if len(sys.argv) > 3 else "b-default,b-eager,b-workers4,b-prio-hits,b-prio-cold,b-none").split(",")
 LABEL = {"b-default": "default (async load, eager prefetch off, 1 transfer thread)", "b-eager": "eager prefetch (lookup at arrival)", "b-workers4": "4 server transfer threads",
-         "b-prio-hits": "priority: hits before cold", "b-prio-cold": "priority: cold before hits", "b-none": "vLLM alone (no host cache)"}
+         "b-prio-hits": "priority: hits before cold", "b-prio-cold": "priority: cold before hits", "b-none": "vLLM alone (no host cache)",
+         "b-chunk512": "prefill chunk 512 tokens", "b-noasync": "synchronous scheduling", "b-default-nosamp": "default, no GPU sampler", "b-prio-hits-chunk512": "priority hits first + chunk 512"}
 C = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 def fl(v):
     try: return float(v)
@@ -45,7 +46,7 @@ for i, tag in enumerate(D):
     for key, ls in (("all_ttft_p50", "-"), ("all_ttft_p95", "--"), ("all_ttft_p99", ":")):
         y = [S[g].get(key) for g in xs]
         if any(v is not None for v in y): ax.plot(x, y, ls=ls, color=C[i % 10], marker="o", ms=3, label=f"{LABEL.get(tag, tag)}" if ls == "-" else None)
-ax.set_xlabel("offered arrival rate (requests/s, Poisson)"); ax.set_ylabel("TTFT (ms, log)"); ax.set_yscale("log"); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=7, loc="upper left")
+ax.set_xlabel("offered arrival rate (requests/s, Poisson)"); ax.set_ylabel("TTFT (ms, log)"); ax.set_yscale("log"); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=6.5, loc="lower right")
 ax.set_title("(a) all requests: p50 (solid), p95 (dashed), p99 (dotted)", fontsize=10)
 ax = axes[1]
 if "b-default" in D:
@@ -54,7 +55,7 @@ if "b-default" in D:
         for key, ls in ((f"{ty}_ttft_p50", "-"), (f"{ty}_ttft_p95", "--")):
             y = [S[g].get(key) for g in xs]
             if any(v is not None for v in y): ax.plot(x, [v if v is not None else float("nan") for v in y], ls=ls, color=C[j], marker="o", ms=3, label=name if ls == "-" else None)
-ax.set_xlabel("offered arrival rate (requests/s)"); ax.set_yscale("log"); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=8); ax.set_title("(b) default configuration, by the tier that served the request (p50 solid, p95 dashed)", fontsize=10)
+ax.set_xlabel("offered arrival rate (requests/s)"); ax.set_yscale("log"); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=8); ax.set_title("(b) default, by the tier that served the request (p50 solid, p95 dashed)", fontsize=10)
 fig.suptitle("Figure B1 — arrival rate vs TTFT (MEASURED, open-loop mixed sequence of 96 requests: 50 % pool hits / 50 % cold, L ∈ {1k, 2k, 4k, 8k}, 32 output tokens, 3B-AWQ)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figB1-rate-vs-ttft.png", dpi=300); fig.savefig(f"{FIG}/figB1-rate-vs-ttft.pdf"); plt.close(fig)
 
@@ -84,7 +85,8 @@ for i, tag in enumerate(D):
     axes[1].plot(x, [S[g].get("all_ttft_p50") for g in xs], color=C[i % 10], marker="o", ms=3, label=LABEL.get(tag, tag)); axes[1].plot(x, [S[g].get("all_ttft_p95") for g in xs], color=C[i % 10], marker="o", ms=3, ls="--")
 axes[0].set_xlabel("closed-loop concurrency"); axes[0].set_ylabel("share of wall time"); axes[0].set_title("(a) GPU busy: engine steps with tokens (solid) and NVML utilization (dotted)", fontsize=10); axes[0].set_ylim(0, 1.05)
 axes[1].set_xlabel("closed-loop concurrency"); axes[1].set_ylabel("TTFT (ms, log)"); axes[1].set_yscale("log"); axes[1].set_title("(b) TTFT p50 (solid) / p95 (dashed)", fontsize=10)
-for ax in axes: ax.grid(alpha=.3, which="both"); ax.legend(fontsize=7); ax.set_xscale("log", base=2)
+for ax, loc in zip(axes, ("lower right", "upper left")): ax.grid(alpha=.3, which="both"); ax.legend(fontsize=6.5, loc=loc); ax.set_xscale("log", base=2)
+axes[1].legend(fontsize=6.5, loc="lower right")
 fig.suptitle("Figure B3 — GPU utilization and TTFT vs concurrency (MEASURED, closed loop, mixed sequence)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figB3-gpu-vs-concurrency.png", dpi=300); fig.savefig(f"{FIG}/figB3-gpu-vs-concurrency.pdf"); plt.close(fig)
 

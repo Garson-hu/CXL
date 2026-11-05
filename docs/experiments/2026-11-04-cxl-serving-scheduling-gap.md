@@ -53,7 +53,11 @@ that use future knowledge or ignore a cost, never implementable policies. Trace 
   reads the pinned host objects directly (CUDA IPC; `lmcache_driven_transfer.py:1287–1530`, `transfer_kv_per_object_group`
   H2D), and is reported finished through `get_transfer_results` at the end of a later step; the scheduler then caches
   the blocks and re-queues the request (`_update_waiting_for_remote_kv`). No CPU staging copy and no pinned bounce buffer
-  on the load path; the server has **one** GPU transfer thread by default (`--max-gpu-workers 1`).
+  on the load path; the server has **one** GPU transfer thread by default (`--max-gpu-workers 1`), and more threads do
+  not help a single engine: STORE / RETRIEVE requests are routed by an affinity key that is the ZMQ identity of the
+  requesting worker process (`mq.py:571–574`, `affinity_pool.py`), so all transfers of one GPU worker are serialized
+  on one thread and one CUDA stream whatever the pool size (confirmed in Experiment E: 4 threads = 1 thread to the
+  millisecond).
 - **Ready requests run while loads are in flight, and loaded requests go first.** The waiting loop drains
   `kv_holding_waiting` (requests that already hold GPU blocks, including those whose KV just arrived) before `waiting`
   (`scheduler.py:887`), and a skipped request keeps its queue position.
@@ -281,6 +285,44 @@ finally serves a loaded request is shared with chunks of other requests' prefill
 0.14 ms/token each of these is a few hundred milliseconds — the same order as recomputing a 2–4k prompt, which is why
 hits stop being faster than misses once the GPU is busy. These are generic serving-scheduler issues (Q4 of §13: they
 would exist with a DRAM-only host cache; CXL only makes more requests hit).
+
+## 5. Experiment E — concurrent KV retrieval (MEASURED 2026-11-04, `E/`, figures `E/figs/`)
+**Why.** Hits that arrive together load together; the question is which resource bounds concurrent retrieval on this
+platform — the host memory, the PCIe link, LMCache's transfer path, or the SSD — and what that does to TTFT.
+
+**How.** `run_e.py`: 3B-AWQ, L1 40 GB DRAM (or the fs L2 on the NVMe with O_DIRECT), 16 host-resident prompts of 4k and
+8k tokens (151 / 302 MB of KV each); the GPU cache is flushed, then k ∈ {1, 2, 4, 8, 16} of them are requested at once
+(e1, 4 bursts per point, 4 output tokens); e2 adds k cold 4k prompts to k 8k hits; e3 sends k hits with 1 or 64
+output tokens. Configurations: 1 and 4 server transfer threads, the SSD tier, and the default without the GPU sampler.
+
+**Result.**
+- *DRAM, one engine: loads serialize on one thread and one stream.* k = 1 / 2 / 4 / 8 / 16 hits of 8k tokens: TTFT p50
+  51 / 100 / 158 / 256 / 428 ms, max 51 / 103 / 199 / 372 / 719 ms; the last request of a 16-burst gets its KV 573 ms
+  after allocation. The per-request transfer interval (retrieve start → end on the stream) grows from 25 to 40 ms
+  because the transfer kernels queue on the server's stream; bytes over the span from the first start to the last end
+  give 11.9 / 10.1 / 8.7 / 8.0 / 7.7 GB/s — the link is not saturated by a burst, the serialization leaves gaps
+  (lookup, per-request submission, the step-boundary notice between loads). 4k tokens: 35 / 77 / 105 / 157 / 257 ms.
+- *Four transfer threads: identical to one* (every number within 1 ms), for the reason given in §1.1 (affinity routing
+  by worker identity). Only a multi-engine server would use more threads.
+- *SSD tier (O_DIRECT)*: the L2→L1 prefetch that runs inside the lookup serializes on the NVMe: 110 / 199 / 392 / 776 /
+  1,453 ms for k = 1 … 16 hits of 8k (4.8 GB in 1.45 s = 3.3 GB/s, the device's rate), TTFT p50 160 / 298 / 533 / 984 /
+  1,536 ms; 4k: 89 / 175 / 287 / 538 / 743 ms. Concurrent SSD hits are device-bandwidth-bound; beyond k ≈ 2 an 8k hit
+  from the SSD costs more than a quarter of its recompute (1.43 s).
+- *Loads beside prefill (e2)*: k 8k hits + k 4k cold prompts at once: the hits' TTFT is 702 / 1,355 / 1,692 / 1,759 ms
+  for k = 1 / 2 / 4 / 8 (cold: 660 / 1,333 / 2,347 / 3,513 ms) — the §4 step-boundary wait again: the hits' loads finish
+  in tens of ms but are served only after the cold prefill chunks that are running (one chunk per 4k prompt per step).
+- *Loads beside decode (e3)*: k = 4 / 8 hits with 64 output tokens instead of 1: TTFT 155 / 214 ms instead of 69 / 86 ms,
+  because the loads are noticed at the boundaries of the decode steps of the requests already running (≈ 20–30 ms
+  each at this batch size) and the hits join a step that also decodes.
+- *CPU staging*: none on this path (the transfer kernel reads the pinned objects directly); the LMCache server's CPU time
+  per retrieved GB is in `E/*-cpu.txt` (P lines) — the lookup and bookkeeping, not a copy.
+
+**Explanation.** On this platform the bound for concurrent DRAM hits is not host memory bandwidth (the DRAM side can feed
+> 200 GiB/s) nor the PCIe link (12 GB/s, reached by a single load) but the serialization of transfers per engine in
+LMCache and the step-granular hand-over to vLLM; for the SSD it is the device (≈ 3 GB/s). A CXL tier would sit between
+the two: its ~50 GiB/s read ceiling (2026-10-07) is above the link, so on this host it would behave exactly like DRAM
+for the GPU path; on a host whose link is faster than the CXL pair, concurrent hits would hit the CXL ceiling before
+the link — a regime this machine cannot show.
 
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.
