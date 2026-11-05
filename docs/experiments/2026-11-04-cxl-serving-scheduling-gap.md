@@ -98,8 +98,8 @@ to hide, and it is not specific to host-tier hits.
 ## 2. Experiments (plan; results are appended per family as they close)
 | family | question | status |
 |---|---|---|
-| A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | running |
-| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering | planned |
+| A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
+| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | running (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | planned |
 | D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays | planned |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | planned |
@@ -163,6 +163,78 @@ costs what a DRAM hit costs; what CXL adds is capacity at that cost (Experiment 
 dependent read and 51 vs 280 GiB/s of streaming bandwidth, which the GPU path does not exercise. Where a faster link
 (PCIe 5.0 ×16, ~50 GB/s) exists, the CXL pair's ~50 GiB/s read ceiling would become the limit for concurrent loads
 (Experiment E); that regime cannot be measured here.
+
+## 4. Experiment B — concurrent serving and scheduling behaviour (MEASURED 2026-11-04, `B/`, tables `B/tables-b.md`, figures `B/figs/`)
+**Why.** One request shows what a hit costs; it does not show whether the scheduler lets a hit *use* its advantage when
+other requests are present: whether loads overlap compute, whether loaded requests are served promptly, and where a
+hit's time goes under load.
+
+**How.** `run_b.py`: 3B-AWQ, CUDA graphs, L1 40 GB DRAM, `max_num_seqs` 16, chunked prefill with vLLM's default budget of
+2048 tokens per step, 32 output tokens per request. A pool of 64 prompts (16 each of 1k / 2k / 4k / 8k tokens) is stored
+once; the scenarios draw "host" requests from the pool and "cold" requests from fresh prompts; the tier that actually
+served each request is classified afterwards from vLLM's `cached_tokens` and LMCache's retrieve bytes (`host` = more than
+one chunk retrieved, `gpu` = vLLM's own prefix cache, `cold` = nothing cached). Scenarios, identical in every
+configuration: **s0** the four-request burst of the brief (A = 8k host hit, B = 1k GPU hit, C = 4k cold, D = 4k host hit,
+5 ms apart, three orders, 5 repetitions); **s1** closed loop at concurrency 1 / 2 / 4 / 8 / 16 over the same 64-request
+sequence (50 % pool hits / 50 % cold, lengths 1k–8k); **s2** open loop (Poisson) at 0.5 / 1 / 2 / 4 req/s over the same
+96-request sequence; **s3** bursts of 4 / 8 / 16 simultaneous requests. Configurations: default (asynchronous load,
+eager prefetch off, 1 transfer thread), eager prefetch, 4 transfer threads, priority scheduling with hits first / cold
+first (vLLM's `--scheduling-policy priority`, the request's `priority` field set by the client), prefill chunk 512
+(`--max-num-batched-tokens 512`), synchronous scheduling (`--no-async-scheduling`), vLLM alone, and the default without
+the GPU sampler (the idle-GPU penalty of §1.2 under light load). Two caveats: in s3 most pool prompts had already been
+evicted by LRU (the run's stores exceed the 32 GB watermark of the 40 GB L1 by then), so s3 is a mostly-cold burst with a
+few hits (the per-request tier is known, the mix is just not the intended 50 %); a first run whose s1/s2 cold prompts were
+re-used across levels is kept in `B/flawed/` and not used.
+
+**Result, default configuration (Table B-1 / B-2, Figures B1–B5).**
+- *Alone (s1, concurrency 1; s2 at 0.5 req/s)* a host hit costs 34 / 54 ms p50 against 319 / 653 ms for a cold request of
+  the same length mix, a GPU hit 22 ms: the single-request picture of §3.
+- *Under load the hit's advantage disappears in TTFT terms.* Closed loop at concurrency 2 / 4 / 8 / 16: host hits 363 /
+  766 / 1,879 / 3,428 ms p50 against cold 329 / 731 / 1,519 / 3,159 ms — the hit is no faster than a recompute of the
+  same length, although its GPU work is one token. Open loop at 1 / 2 / 4 req/s: host 263 / 640 / 6,134 ms vs cold 652 /
+  995 / 5,420 ms (at 4 req/s the server is overloaded: GPU busy 1.0, 2.8 req/s completed). In the four-request burst
+  every order gives the two host hits 720–780 ms and the GPU hit 690–780 ms, i.e. the TTFT of the cold request (650 ms)
+  plus one step.
+- *Where the time goes (Table B-2, Figure B4).* The transfer itself is short and does overlap compute: 16 / 39 / 318 ms
+  at concurrency 2 / 4 / 16 (the last one queues behind other loads on the single transfer thread). What the hit waits
+  for is (i) **load done → noticed**: the worker reports finished loads only when an engine step ends, and under load the
+  steps are 2048-token prefill chunks of other requests (300–600 ms each); the "load wait" (allocation → noticed) is
+  309 / 357 / 1,415 ms at concurrency 2 / 4 / 16 for a 16–318 ms transfer; (ii) **queued → load start**: the waiting-queue
+  scan stops when the step's token budget is spent (`scheduler.py:887 ff.`), so a request behind a cold prefill is not
+  even looked up until that prefill has consumed its chunks: 12 / 21 / 1,206 ms at concurrency 2 / 4 / 16, 350 ms at
+  2 req/s, 646 ms in the CADB order of the burst (A and D sit behind C); (iii) with asynchronous scheduling the load is
+  submitted when the step in which the request was considered *executes*, one step later (the cyan segments of Figure
+  B4: 360 ms in the DCBA order). "KV ready → scheduled" is 0.1 ms: once noticed, a loaded request is scheduled at the
+  very next step (kv-holding requests go first), but its single token then shares that step with other requests'
+  prefill chunks, so "scheduled → first token" is 21 / 37 / 295 ms instead of 10 ms.
+- *Ordering matters only through those mechanisms.* The cold request's TTFT is the same in all three burst orders
+  (651–656 ms); the hits pay 70–130 ms more when they are behind it (CADB) than ahead of it, because their lookup starts
+  later, not because the GPU is busier.
+- *GPU utilization.* Engine steps with tokens cover 1.0 of the wall time from concurrency 2 on (0.3–0.5 at 0.5–1 req/s);
+  NVML's coarse utilization agrees (0.9–1.0). Retrieval never left the GPU idle; the idle time at low load is the
+  arrival process.
+- *Throughput.* 1.5 / 1.9 / 2.1 / 2.3 / 2.4 completed requests/s at concurrency 1 / 2 / 4 / 8 / 16 (5.8 → 9.4 k prompt
+  tokens/s); open loop completes the offered load up to 2 req/s and 2.8 of 4 req/s.
+- *Lookup latency under load* is a further cost not visible alone: 1.3 ms for a single request, 9–37 ms median at
+  concurrency 2–16, 10 ms at 1 req/s but 295 ms at 2 req/s, and 31–340 ms in the four-request bursts (LMCache's lookup
+  pool has one CPU worker by default, and lookups queue behind the stores of the running prefill).
+- *Frontend.* client → engine queue is 3–9 ms median up to 1 req/s (means 27–85 ms: a few requests wait behind the
+  API-server process's streaming of other requests' tokens), 66 ms median at 2 req/s and 158 ms when overloaded.
+
+**Configurations.** (Table B-1 / B-2; filled as the chain completes.)
+- *Eager prefetch* (lookup at arrival): no change at any level (host p50 within ±15 ms of the default except
+  concurrency 4: 448 vs 766 ms, where the earlier lookup lets some loads start before the budget runs out). The lookup
+  moves to arrival, but the load still starts only when the scheduler reaches the request and is still noticed at a
+  step boundary.
+- *Four transfer threads*: no change (transfers were never the wait).
+
+**Explanation.** The existing scheduler does what §1.1 says: it overlaps loads with compute and never blocks the GPU on a
+load. The waits come from three design points that are independent of CXL or of the tier: load completion is sampled
+at step granularity, the queue is scanned in arrival order only as far as the token budget reaches, and the step that
+finally serves a loaded request is shared with chunks of other requests' prefill. With a 2048-token prefill chunk at
+0.14 ms/token each of these is a few hundred milliseconds — the same order as recomputing a 2–4k prompt, which is why
+hits stop being faster than misses once the GPU is busy. These are generic serving-scheduler issues (Q4 of §13: they
+would exist with a DRAM-only host cache; CXL only makes more requests hit).
 
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.

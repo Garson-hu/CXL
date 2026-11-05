@@ -34,7 +34,7 @@ FILL = [prompt(20_000 + i, 16320) for i in range(8)]                            
 env = ServingEnv(cfg).start()
 cold_seed = [900_000]
 def cold_prompt(L): cold_seed[0] += 1; return prompt(cold_seed[0], L)
-def prio(t): return None if PRIO == "none" else ({"host": 0, "gpu": 0, "cold": 1} if PRIO == "hits_first" else {"host": 1, "gpu": 1, "cold": 0})[t]
+def prio(t): return None if PRIO == "none" else ({"host": 0, "gpu": 0, "cold": 1} if PRIO == "hits_first" else {"host": 1, "gpu": 1, "cold": 0}).get(t, 1)   # warm / populate / flush: low priority
 def req(rid, t, L, p, **k): return dict(rid=rid, tokens=p, case=t, L=L, max_tokens=OUT, priority=prio(t), **k)
 
 def mixed_sequence(n, seed):

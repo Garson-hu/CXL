@@ -35,7 +35,8 @@ fig.suptitle(f"Figure C1 — measured TTFT vs the calibrated model and the sched
 fig.tight_layout(); fig.savefig(f"{FIG}/figC1-measured-vs-reference.png", dpi=300); fig.savefig(f"{FIG}/figC1-measured-vs-reference.pdf"); plt.close(fig)
 
 # figC2: decomposition per tier for the open-loop rates
-LEGS = [("client_to_queued", "client → engine queue"), ("queued_to_load_start", "queued → load start (lookup / first scheduling attempt)"), ("kv_load", "KV load (host → GPU)"), ("ready_to_sched", "KV ready → scheduled (waiting for the GPU)"),
+LEGS = [("client_to_queued", "client → engine queue"), ("queued_to_load_start", "queued → load start (lookup / first scheduling attempt)"), ("alloc_to_transfer", "blocks allocated → transfer start"), ("transfer", "transfer host → GPU"),
+        ("done_to_noticed", "load done → noticed at a step boundary"), ("ready_to_sched", "KV ready → scheduled (waiting for the GPU)"),
         ("queued_to_sched_no_load", "queued → scheduled (no host load)"), ("compute", "scheduled → first token (prefill)"), ("engine_to_client", "engine → client")]
 grps = sorted({d["grp"] for d in Dd if d["tag"] == TAG and d["grp"].startswith("s2-r")}, key=lambda g: float(g[4:]))
 fig, axes = plt.subplots(1, len(grps) or 1, figsize=(3.2 * max(1, len(grps)), 4.6), sharey=False)

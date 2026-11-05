@@ -51,6 +51,9 @@ for tag in TAGS:
             sel = [r for r in rs if tier == "all" or r["tier"] == tier]
             if not sel: continue
             legs = {"client_to_queued": [fl(r["queued_ms"]) for r in sel], "queued_to_load_start": [fl(r["kv_wait_ms"]) - fl(r["queued_ms"]) if fl(r["kv_wait_ms"]) is not None and fl(r["queued_ms"]) is not None else None for r in sel],
+                    "alloc_to_transfer": [fl(r["retrieve_start_ms"]) - fl(r["kv_wait_ms"]) if fl(r["retrieve_start_ms"]) is not None and fl(r["kv_wait_ms"]) is not None else None for r in sel],
+                    "transfer": [fl(r["retrieve_ms"]) for r in sel],
+                    "done_to_noticed": [fl(r["kv_arrived_ms"]) - fl(r["retrieve_end_ms"]) if fl(r["kv_arrived_ms"]) is not None and fl(r["retrieve_end_ms"]) is not None else None for r in sel],
                     "kv_load": [fl(r["kv_load_wait_ms"]) for r in sel], "ready_to_sched": [fl(r["ready_to_sched_ms"]) for r in sel],
                     "queued_to_sched_no_load": [fl(r["scheduled_ms"]) - fl(r["queued_ms"]) if fl(r["kv_wait_ms"]) is None and fl(r["scheduled_ms"]) is not None and fl(r["queued_ms"]) is not None else None for r in sel],
                     "compute": [fl(r["prefill_ms"]) for r in sel], "engine_to_client": [fl(r["engine_to_client_ms"]) for r in sel], "ttft": [fl(r["ttft_client_ms"]) for r in sel]}
