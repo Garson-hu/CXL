@@ -29,7 +29,8 @@ def summarize(out, tag):
     U, C = load_gpu(out, tag); cw = [c for c in C if t0 <= c[0] <= t1]
     s["pcie_rx_GB"] = sum(c[2] for c in cw) / 1e9; s["pcie_tx_GB"] = sum(c[1] for c in cw) / 1e9
     u = [x[1] for x in U if t0 <= x[0] <= t1]; s["gpu_util_nvml"] = sum(u) / len(u) / 100 if u else None
-    busy = sum((st["t_end"] - st["t1"]) for st in steps if st["tok"] > 0 and st["t_end"] and t0 <= st["t1"] <= t1); s["gpu_busy_steps"] = busy / W
+    from analyze_b import gpu_busy
+    s["gpu_busy_steps"] = gpu_busy(steps, t0, t1)
     # host cache occupancy and evictions
     p = f"{out}/{tag}-status.txt"; used = []
     if os.path.exists(p):

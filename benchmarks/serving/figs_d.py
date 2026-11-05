@@ -52,7 +52,7 @@ fig.suptitle("Figure D3 — capacity vs computed prefill work and GPU busy share
 fig.tight_layout(); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.png", dpi=300); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.pdf"); plt.close(fig)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
-panel(axes[0], [("pcie_rx_GB", "-", "host → GPU (PCIe RX, retrieves)"), ("pcie_tx_GB", "--", "GPU → host (PCIe TX, stores)")], "GB over the window", "(a) KV traffic on the GPU link")
+panel(axes[0], [("retrieve_GB", "-", "KV retrieved host → GPU (LMCache retrieve events)"), ("store_GB", "--", "KV stored GPU → host (LMCache store events)")], "GB over the window", "(a) KV traffic between host cache and GPU", refs=("ssd",))
 panel(axes[1], [("evicted_chunks", "-", "evicted 256-token chunks")], "chunks", "(b) host-cache evictions", refs=())
 fig.suptitle("Figure D4 — capacity vs KV retrieval traffic and evictions (MEASURED replay)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic.png", dpi=300); fig.savefig(f"{FIG}/figD4-capacity-vs-traffic.pdf"); plt.close(fig)
