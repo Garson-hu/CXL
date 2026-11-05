@@ -326,5 +326,60 @@ the two: its ~50 GiB/s read ceiling (2026-10-07) is above the link, so on this h
 for the GPU path; on a host whose link is faster than the CXL pair, concurrent hits would hit the CXL ceiling before
 the link — a regime this machine cannot show.
 
+## 6. Experiment C — scheduling gap analysis (SIMULATED reference, calibrated and validated on the measured runs; `C/`, figures `C/figs/`)
+**Why.** The waits of §4 are measured; whether removing them is worth a system needs a bound: how much TTFT would a
+scheduler with the same resources recover, and which decision accounts for the difference.
+
+**How.** `sched_sim.py` replays each measured request sequence (arrival instants, prompt lengths, tier served, bytes)
+through a discrete-event model of one engine: steps of at most 2048 prefill tokens with the measured per-token cost
+(r₀ = 0.139 ms, r₁ = 8.2 ns/token², fitted within 1 % on the cold requests of §3), the measured 10.2 ms minimum step,
+decode cost per sequence from the engine-step log (1.26 ms per sequence per step), a single transfer channel at the
+measured 11.9 GB/s with the measured lookup (1.3 ms) and hand-over (3.2 ms), loads noticed only at step boundaries,
+at most 16 running sequences. Policies: **vllm** = the inspected scheduler (arrival order with loaded requests first,
+the queue scan stops when the token budget is spent, loads submitted one step late as async scheduling does);
+**vllm_sync** and **vllm_hits** mirror the measured synchronous and hits-first configurations; **vllm_scanall** lets the
+scan continue past the budget (loads start for every waiting request); **vllm_early** additionally submits loads at
+once; **zero** = instantaneous loads (ZERO-DELAY reference, not implementable); **hits** = hits before cold without the
+scan limit; **srpt** = CLAIRVOYANT shortest-remaining-prefill-first (needs the future; the mean-TTFT-optimal order for
+one server). Objective reported: mean and p95 TTFT; constraints: the GPU, the one transfer channel, the step
+granularity, 16 sequences.
+
+**Validation (the measured configuration against its model variant, mean TTFT, `C/c-summary.csv`).** Default: measured
+969 / 3,477 / 997 / 1,116 / 2,383 ms vs model 711 / 3,115 / 899 / 992 / 2,227 ms at concurrency 4 / 16, 1 / 2 req/s, 8-burst
+(−27 / −10 / −10 / −11 / −7 %; per-request error median −30 to −240 ms, p90 |error| 330–1,430 ms ≈ one prefill chunk).
+Synchronous: 901 / 2,982 / 955 / 1,081 / 2,333 vs 698 / 2,619 / 877 / 936 / 2,096 ms (−23 … −8 %). Hits-first: 874 / 3,073 /
+962 / 1,069 / 2,069 vs 665 / 2,599 / 816 / 943 / 2,072 ms (−24 … 0 %). The model reproduces the direction and most of the size
+of every configuration effect and is 7–27 % optimistic (it has no lookup queueing, no frontend delay and no decode-batch
+inefficiency); the reference gains below carry that bias.
+
+**Result (default sequence and arrivals, mean / p95 TTFT in ms; Figures C1–C3).**
+| load | measured | model of the existing scheduler | scan past the budget | + loads at once | zero-delay loads | hits first (no scan limit) | clairvoyant SRPT |
+|---|---|---|---|---|---|---|---|
+| concurrency 4 | 969 / 1,850 | 711 / 1,611 | 692 / 1,591 | 690 / 1,591 | 552 / 1,593 | 690 / 1,591 | 690 / 1,591 |
+| concurrency 8 | 1,623 / 4,606 | 1,322 / 4,468 | 1,179 / 3,150 | 1,155 / 3,154 | 1,181 / 3,192 | 1,108 / 3,159 | 1,050 / 2,948 |
+| concurrency 16 | 3,477 / 8,234 | 3,115 / 6,702 | 2,404 / 6,152 | 2,367 / 6,152 | 2,795 / 6,416 | 2,215 / 6,152 | 1,817 / 5,132 |
+| 1 req/s | 997 / 3,440 | 899 / 3,107 | 795 / 2,499 | 755 / 2,501 | 786 / 2,841 | 720 / 2,321 | 648 / 1,742 |
+| 2 req/s | 1,116 / 2,661 | 992 / 2,652 | 844 / 2,002 | 821 / 2,002 | 850 / 2,000 | 809 / 2,002 | 809 / 2,002 |
+| 4 req/s (overload) | 5,547 / 10,883 | 4,694 / 8,935 | 3,443 / 8,794 | 3,349 / 8,787 | 4,359 / 8,648 | 2,893 / 8,839 | 1,869 / 10,382 |
+| burst of 8 | 2,383 / 4,244 | 2,227 / 4,458 | 1,922 / 4,038 | 1,881 / 4,041 | 1,953 / 4,460 | 1,881 / 4,041 | 1,629 / 3,688 |
+| burst of 16 | 3,801 / 7,569 | 3,499 / 7,224 | 2,668 / 7,309 | 2,644 / 7,309 | 3,126 / 7,261 | 2,529 / 7,139 | 2,038 / 6,003 |
+
+- *Which decision accounts for the gap.* At concurrency 16 the model's mean TTFT falls 23 % when the scan continues
+  past the budget (every waiting hit's load starts at its first step), 1 % more when loads are submitted at once, and
+  only 10 % with instantaneous loads under the existing scan — **the budget-limited scan is the larger of the two
+  load-side problems, the load latency itself the smaller**. Ordering adds the rest: hits first 29 %, clairvoyant SRPT
+  42 % (60 % under overload, where it also raises p95 by starving long cold prompts).
+- *At light load there is nothing to recover*: ≤ 0.5 req/s or concurrency ≤ 2 the references are within 1–5 % of the
+  existing scheduler (hits are served from an idle GPU already).
+- *The measured knobs sit where the model puts them*: synchronous scheduling ≈ the "+ loads at once" column
+  (measured −14 % at concurrency 16), hits-first priority ≈ the "hits first" column for the hits (measured −43 % for the
+  hits, −12 % overall).
+
+**Explanation.** The opportunity is real but bounded: 20–40 % of mean TTFT at high load from two scheduler decisions
+that are independent of the memory tier (scan the whole queue for loads; serve loaded requests without waiting for a
+chunk boundary), nothing at light load, and the clairvoyant bound is only ~20 points further. None of it needs CXL; all
+of it applies to any host tier that makes hits frequent. The reference is a model with a stated 7–27 % optimism, not a
+measurement.
+
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.
