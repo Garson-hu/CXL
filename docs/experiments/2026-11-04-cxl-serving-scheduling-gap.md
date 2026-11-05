@@ -117,7 +117,7 @@ to hide, and it is not specific to host-tier hits.
 | family | question | status |
 |---|---|---|
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
-| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes done (§4); real-trace configurations running (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
+| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes and real-trace configurations done (§4; real traces in Table B-3 and figure BR); hits-first + chunk 512 combination queued (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
 | D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run queued), lighter-load 0–200 s sweep queued (§7.3) |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
@@ -284,6 +284,39 @@ re-used across levels is kept in `B/flawed/` and not used.
 - *Default without the GPU sampler* (`b-default-nosamp`, s2 / s3 only): within noise of the instrumented default
   (host 52 vs 54 ms at 0.5 req/s, 265 vs 263 at 1 req/s, 640 vs 640 at 2 req/s): at ≥ 0.5 req/s the GPU is never idle
   long enough for the §1.2 penalty.
+
+**Real-trace replays (MEASURED 2026-11-05 03:31–05:01; `replay/br-*`; figure BR `replay/figs/figBR-trace-configs.png`;
+`replay/tables-br-hitcat.md`).** The two Mooncake windows of Experiment D (trace seconds 0–100 at 0.08×, 40 GB DRAM L1;
+the default is the D sweep's `d-conv-dram40` / `d-tool-dram40`) replayed with eager prefetch (`br-*-eager`) and with
+4 transfer threads (`br-*-workers4`). Only these two connector-side variants were replayed on the traces; the priority
+and chunk-512 variants were run on the controlled mixes above, where the client knows which requests are hits and marks
+them. Table B-3 (one row per run; `replay/replay-summary.csv`):
+
+| trace | configuration | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % p50 (s) [n] | miss p50 (s) [n] | request time p50 (s) | computed prompt tok/s | retrieved / stored (GB) | KV load wait p50 (s) | queue → scheduled p50 (s) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| conversation | default | 0.048 (0.004 / 0.044) | 16.1 / 47.3 / 54.6 | 17.5 [32] | 16.1 [194] | 42.9 | 2,440 | 0.45 / 77.8 | 1.11 | 11.3 |
+| conversation | eager prefetch | 0.048 (0.004 / 0.044) | 16.0 / 47.2 / 54.5 | 17.5 [32] | 16.1 [194] | 42.9 | 2,440 | 0.45 / 77.7 | 0.88 | 11.3 |
+| conversation | 4 transfer threads | 0.048 (0.004 / 0.044) | 16.1 / 47.3 / 54.6 | 17.5 [32] | 16.1 [194] | 42.9 | 2,440 | 0.45 / 77.8 | 1.11 | 11.3 |
+| tool-agent | default | 0.335 (0.093 / 0.242) | 12.9 / 44.0 / 49.2 | 12.3 [305] | 14.5 [175] | 25.5 | 2,374 | 15.8 / 76.3 | 0.86 | 10.6 |
+| tool-agent | eager prefetch | 0.335 (0.095 / 0.240) | 13.0 / 43.9 / 49.1 | 12.1 [305] | 14.4 [175] | 25.5 | 2,374 | 16.1 / 76.1 | 0.86 | 10.6 |
+| tool-agent | 4 transfer threads | 0.335 (0.093 / 0.242) | 12.9 / 44.0 / 49.2 | 12.3 [305] | 14.5 [175] | 25.5 | 2,374 | 15.8 / 76.3 | 0.86 | 10.6 |
+
+*Result.* Neither variant changes the replay: every aggregate is within 0.3 % of the default, the hit and miss counts are
+identical, and request by request (same trace order) the 4-thread run differs from the default by 4 ms median and 34 ms
+at most in TTFT (tool-agent), the eager run by 16 ms median, 148 ms p90 and one request of 4.0 s. The 4-thread run is in
+effect a repeat of the default (one engine's transfers go to one worker whatever the pool size, §1.1 / §5), so the pair
+is also the repeatability measurement of the replay method: TTFT p50 / p99 within 0.02 % / 0.1 % (conversation 16.06 vs
+16.06 s, tool-agent 12.94 vs 12.94 s); differences of a percent or more in §7.2 / §7.2b are therefore real.
+
+*Explanation.* Eager prefetch moves the lookup and nothing else (tool-agent host-dominant hits, n = 89 / 90, medians
+after arrival): the lookup is submitted 0.23 s after arrival instead of 7.0 s (the first scheduling visit), its result is
+taken up 7.6 s after arrival instead of 9.8 s, but the load is issued at 23.0 s in both runs, the request is scheduled
+at 23.5 vs 23.6 s and its TTFT is 24.2 vs 24.3 s. The server publishes the end of a lookup only when the connector polls
+the job (`lookup.py:342–409`, `query_prefetch_status`), which the scheduler does at its visits, so the eager lookup's
+result is taken up at the first visit, and the distance between result and load grows by exactly what the lookup gained
+(15.4 vs 13.2 s between the medians): the load waits for the block reservation of §7.2c, not for the lookup. (This is
+also why `tables-br-hitcat.md` shows a 7.3-s "lookup" for the eager run: submission to first poll, not server work.)
+Four threads: retrieve p50 118 ms in both runs. Figure BR shows the three configurations as flat lines for both traces.
 
 **Explanation.** The existing scheduler does what §1.1 says: it overlaps loads with compute and never blocks the GPU on a
 load. The waits come from three design points that are independent of CXL or of the tier: load completion is sampled
@@ -581,8 +614,8 @@ study does not modify vLLM or LMCache); they are inferences from the source and 
 form of the Q2 / Q4 scheduling opportunity under GPU-KV-bound overload. Bidaw's loading-latency-aware ordering (§14)
 addresses the related but different problem of ordering by *transfer* cost; here the transfer is not the cost.
 
-_[pending 2026-11-05 03:50: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
-`queue_i2.sh`, after the B real-trace chain, F, G, H); `d-tool-dram2` re-run.]_
+_[pending 2026-11-05 05:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
+`queue_i2.sh`, after F, G, H); `d-tool-dram2` re-run.]_
 
 ## 10. Unexpected and negative results (collected; each points to the section with the numbers)
 1. **A host hit stops being faster than a miss as soon as the server is loaded** (§4, §6, §7.2): the transfer is 16–40 ms,
@@ -592,9 +625,12 @@ _[pending 2026-11-05 03:50: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 8
    its entire prefix are free at once and otherwise stops the scan, so at equal backlog they wait 3–6× longer than
    GPU-prefix hits of the same length (tool-agent 80 GB: 16.8 vs 2.7 s p50) and longer than misses twice their length
    (11.5 s); the capacity benefit comes from the work removed, never from the hits being fast.
-2. **Eager prefetch does nothing measurable** (§4): it moves the lookup to arrival, not the load.
+2. **Eager prefetch does nothing measurable** (§4, controlled mixes and both traces): it moves the lookup to arrival, not
+   the load — on the tool-agent trace the host hits' lookup result is known 2.2 s earlier and the load is still issued
+   23.0 s after arrival, because the load waits for the block reservation (item 1).
 3. **Four transfer threads = one** (§5): LMCache routes an engine's requests to one worker (affinity by ZMQ identity), so
-   16 simultaneous 8k hits take 428 ms p50 either way and the PCIe link is never the limit.
+   16 simultaneous 8k hits take 428 ms p50 either way and the PCIe link is never the limit. On the traces the 4-thread
+   replay repeats the default to 34 ms per request (§4, Table B-3).
 4. **Priority ordering only moves the wait between classes** (§4): hits-first −43 % hit TTFT at concurrency 16, cold +2–15 %;
    cold-first the mirror image; total work unchanged. **Prefill chunk 512** trades the step-granularity wait for a longer
    scan wait and costs 7–8 % of throughput; at high load the hits end up worse (3.4 → 5.0 s at concurrency 16).
@@ -749,3 +785,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §14 related work (verified references; Bidaw FAST'26 identified as the closest work to the scheduling gap).
 - 2026-11-05 — §10 unexpected/negative results, §11 limitations, §15 appendix (configuration, excluded runs; matrix pending) drafted.
 - 2026-11-05 — §7.2b tool-agent sweep at 0.08× and §7.2c hit-category / admission analysis (host-tier hits admitted last under GPU-KV saturation: whole-prefix block reservation, source-inspected; `hitcat_d.py`, `replay/tables-d-hitcat.md`); §7.2 explanation sharpened; §10 items 1, 8, 14; §2 table; figure D2 legend moved.
+- 2026-11-05 — §4: real-trace replays under eager prefetch and 4 transfer threads (Table B-3, figure BR, `replay/tables-br-hitcat.md`; no effect; replay repeatability 0.02 % on TTFT p50); §2 B row; §10 items 2–3; pending marker.
