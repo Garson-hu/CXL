@@ -236,6 +236,18 @@ re-used across levels is kept in `B/flawed/` and not used.
   so their lookups and loads start at once — but "load done → noticed" stays at 1.0–1.3 s and "scheduled → first token"
   grows to 0.4–0.7 s, because the loaded hit still has to wait for the running prefill chunks and then shares its step
   with them. Ordering removes the scan problem, not the step-granularity problem.
+- *Prefill chunk 512* (`--max-num-batched-tokens 512`, steps of ≤ 512 tokens ≈ 80 ms): the step-granularity wait
+  shrinks as expected — "load done → noticed" 309 → 62 ms at concurrency 2, 1,415 → 443 ms at concurrency 16, 1,017 →
+  501 ms at 4 req/s — and the hits gain where that wait dominated (concurrency 2: 363 → 180 ms; the ABCD burst 723 →
+  699 ms). But the smaller budget also stops the queue scan sooner, so "queued → load start" grows (1,206 → 3,013 ms at
+  concurrency 16, 4,430 → 5,753 ms at 4 req/s), the per-step overhead costs 7–8 % of throughput (9.4 → 8.6 k prompt
+  tokens/s at concurrency 16, 2.75 → 2.56 req/s at 4 req/s), and at high load the hits end up worse (3,428 → 4,978 ms
+  at concurrency 16; 640 → 1,437 ms at 2 req/s). The two waits trade against each other through the token budget; the
+  combination hits-first + chunk 512 is queued.
+- *Priority, cold first* (the mirror image): hits lose (6,134 → 7,636 ms at 4 req/s, 2,848 → 5,159 ms in the 16-request
+  burst), cold requests gain 5–13 % (3,159 → 2,742 ms at concurrency 16); no change at light load. Together the two
+  priority runs show that under load the order in which the waiting queue is scanned decides which class pays the
+  scan-and-budget wait; the total work does not change.
 - *vLLM alone (no host cache, `b-none`)*: every pool request is a recompute. Open loop at 1 req/s: TTFT p50 1,541 ms
   against 652 ms with the DRAM tier (cold requests 1,551 vs 652: the hits' absence also delays the cold ones); at
   2 req/s vLLM alone is overloaded (1.5 req/s completed, TTFT 12.9 s) where the cached server keeps up (2.1 req/s,
