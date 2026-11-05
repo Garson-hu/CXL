@@ -58,6 +58,13 @@ that use future knowledge or ignore a cost, never implementable policies. Trace 
   requesting worker process (`mq.py:571–574`, `affinity_pool.py`), so all transfers of one GPU worker are serialized
   on one thread and one CUDA stream whatever the pool size (confirmed in Experiment E: 4 threads = 1 thread to the
   millisecond).
+- **An async load is admitted only when the GPU blocks for its whole prefix are free at once.** Before issuing the load
+  the scheduler allocates slots for all external tokens (`scheduler.py:1195–1230`: `allocate_slots(…,
+  num_external_computed_tokens, delay_cache_blocks=True, reserved_blocks=…)`, where `reserved_blocks` keeps the blocks
+  the in-flight prefills still need — "an async load holds its blocks for the whole transfer with no forward progress and
+  isn't preemptible here"); if that fails the waiting scan `break`s and the request stays at the head of the queue — no
+  fallback to computing the prefix. A miss is admitted chunk by chunk (2,048 tokens) and grows as a running request.
+  Under GPU-KV saturation this makes host-tier hits the last requests admitted (§7.2c).
 - **Ready requests run while loads are in flight, and loaded requests go first.** The waiting loop drains
   `kv_holding_waiting` (requests that already hold GPU blocks, including those whose KV just arrived) before `waiting`
   (`scheduler.py:887`), and a skipped request keeps its queue position.
@@ -507,9 +514,9 @@ of DRAM (host share 5.7 % vs 8.4 %; its lookups report 17 % of prompt tokens —
 L2 — against 30 % for the 5 GB DRAM L1): joined request by request in trace order, the SSD run retrieved fewer host
 tokens on 59 requests and more on 28, losing 0.27 M of the 0.39 M host tokens the DRAM run retrieved, and the lost hits
 arrive late in the window (p50 874 s vs 492 s for the kept ones). Its TTFT p50 is 15.6 s (−16 % vs vLLM alone) and it
-writes 99 GB to the NVMe over the window. The cause is not isolated in this session; the candidate consistent with the
-late losses is the asynchronous L2 store path (a chunk becomes visible to lookups only after its NVMe write completes,
-while this trace re-uses prefixes within seconds). On the conversation trace, whose reuse is long-distance and where the
+writes 99 GB to the NVMe over the window. The cause is not isolated in this session; the candidates consistent with the late losses are the asynchronous L2 store path (a chunk becomes visible to lookups
+only after its NVMe write completes, while this trace re-uses prefixes within seconds) and the L2 → L1 prefetch that
+runs inside the lookup (§1.1; bounded to 8 in flight) not keeping up with 40 outstanding requests. On the conversation trace, whose reuse is long-distance and where the
 L2 never evicts, the same configuration found more hits than 40 GB of DRAM (§7.2).
 
 Figures D3 / D4 over both traces: computed prefill falls with capacity (conversation 2,445 → 2,396 tok/s, tool-agent
