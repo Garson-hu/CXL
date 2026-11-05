@@ -314,6 +314,8 @@ output tokens. Configurations: 1 and 4 server transfer threads, the SSD tier, an
 - *Loads beside decode (e3)*: k = 4 / 8 hits with 64 output tokens instead of 1: TTFT 155 / 214 ms instead of 69 / 86 ms,
   because the loads are noticed at the boundaries of the decode steps of the requests already running (≈ 20–30 ms
   each at this batch size) and the hits join a step that also decodes.
+- *Without the GPU sampler*: 52 / 103 / 159 / 257 / 430 ms for k = 1 … 16 (8k) against 51 / 100 / 158 / 256 / 426 ms —
+  the bursts follow the flush within 0.5 s, so the idle-GPU penalty of §1.2 does not appear.
 - *CPU staging*: none on this path (the transfer kernel reads the pinned objects directly); the LMCache server's CPU time
   per retrieved GB is in `E/*-cpu.txt` (P lines) — the lookup and bookkeeping, not a copy.
 

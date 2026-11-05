@@ -12,7 +12,7 @@ from analyze_b import load_gpu, q
 
 E, FIG = sys.argv[1], sys.argv[2]; os.makedirs(FIG, exist_ok=True)
 TAGS = (sys.argv[3].split("=", 1)[1] if len(sys.argv) > 3 else "e-workers1,e-workers4,e-ssd").split(",")
-LABEL = {"e-workers1": "DRAM L1, 1 transfer thread (default)", "e-workers4": "DRAM L1, 4 transfer threads", "e-ssd": "SSD L2 (O_DIRECT), 1 thread"}
+LABEL = {"e-workers1": "DRAM L1, 1 transfer thread (default)", "e-workers4": "DRAM L1, 4 transfer threads", "e-ssd": "SSD L2 (O_DIRECT), 1 thread", "e-workers1-nosamp": "DRAM L1, 1 thread, no GPU sampler"}
 C = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 def fl(v):
     try: return float(v)
