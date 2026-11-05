@@ -117,7 +117,7 @@ to hide, and it is not specific to host-tier hits.
 | family | question | status |
 |---|---|---|
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
-| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes and real-trace configurations done (§4; real traces in Table B-3 and figure BR); hits-first + chunk 512 combination queued (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
+| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes and real-trace configurations done (§4; real traces in Table B-3 and figure BR); hits-first + chunk 512 combination done (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
 | D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run queued), lighter-load 0–200 s sweep queued (§7.3) |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
@@ -266,8 +266,19 @@ re-used across levels is kept in `B/flawed/` and not used.
   699 ms). But the smaller budget also stops the queue scan sooner, so "queued → load start" grows (1,206 → 3,013 ms at
   concurrency 16, 4,430 → 5,753 ms at 4 req/s), the per-step overhead costs 7–8 % of throughput (9.4 → 8.6 k prompt
   tokens/s at concurrency 16, 2.75 → 2.56 req/s at 4 req/s), and at high load the hits end up worse (3,428 → 4,978 ms
-  at concurrency 16; 640 → 1,437 ms at 2 req/s). The two waits trade against each other through the token budget; the
-  combination hits-first + chunk 512 is queued.
+  at concurrency 16; 640 → 1,437 ms at 2 req/s). The two waits trade against each other through the token budget; the combination with hits-first ordering is the next bullet.
+- *Hits first + prefill chunk 512 together* (`b-prio-hits-chunk512`, 2026-11-05 05:27–05:42): the two mechanisms add up where
+  the load is highest and cancel elsewhere. At 4 req/s the host hits' TTFT p50 is 2,459 ms against 6,134 (default), 3,079
+  (hits first) and 7,148 ms (chunk 512 alone), p95 4,132 vs 10,883 / 4,386 / 13,732 ms — the ordering keeps the hits ahead
+  of the budget and the smaller chunk shortens what they then wait for (KV load wait 433 ms vs 1,022 ms with hits first
+  alone) — and in the 16-request burst 1,162 vs 2,848 / 1,973 / 3,046 ms. The cold requests pay for both (4 req/s: 7,124
+  vs 5,420 / 5,810 / 6,758 ms; concurrency 16: 5,341 vs 3,159 / 3,648 / 3,779 ms) and so does throughput (2.56 vs
+  2.75 req/s at 4 req/s, 2.17 vs 2.38 at concurrency 16: the chunk-512 cost, −7–9 %). At moderate load the chunk cost
+  dominates and the combination is worse than hits first alone (2 req/s: hits 946 vs 660 ms, cold 1,349 vs 1,006 ms;
+  concurrency 16 closed loop: hits 2,661 vs 1,967 ms), and "KV ready → scheduled" grows to 0.3–1.1 s (307 ms with chunk
+  512 alone, 0.1–0.3 ms in every other configuration), consistent with a loaded hit now waiting for budget behind the
+  512-token chunks of the running requests, which the scheduler serves first (§1.1). One filler (flush) request of the
+  s2 warm-up failed with a server disconnect (§15.C); no measured request was affected (876 of 877 completed).
 - *Synchronous scheduling* (`--no-async-scheduling`; vLLM enables async scheduling by default): the hits improve at every
   level, modestly — the four-request burst 723 → 684 / 777 → 752 / 735 → 674 ms, concurrency 8: 1,879 → 1,560 ms,
   concurrency 16: 3,428 → 2,800 ms (cold 3,159 → 2,223), 2 req/s: 640 → 611 ms — at no throughput cost in this regime
@@ -702,8 +713,7 @@ capacity would behave the same (PREVIOUSLY MEASURED: CXL = pinned DRAM on this G
 the capacity, and this run shows a working set that 40 GB does not hold.
 
 ## 9. Cross-experiment analysis (what the families say together; each number keeps the evidence label of its section)
-_[2026-11-05 06:00: written on A–F, the 0.08× replays and the SIMULATED reference; the lighter-load sweep (§7.3), the
-hits-first + chunk-512 run and the 160 GB re-run of F are folded in when they land.]_
+_[2026-11-05 05:50: written on A–F, the 0.08× replays and the SIMULATED reference; the lighter-load sweep (§7.3) and the 160 GB re-run of F are folded in when they land.]_
 
 ### 9.1 Where a request's time goes (D5: scheduling and retrieval time lines)
 Table 9-1 follows the same kind of request — a host-tier hit — through the four load regimes the study measured, with
@@ -816,7 +826,9 @@ hits-first −12 % overall) without code changes.
    replay repeats the default to 34 ms per request (§4, Table B-3).
 4. **Priority ordering only moves the wait between classes** (§4): hits-first −43 % hit TTFT at concurrency 16, cold +2–15 %;
    cold-first the mirror image; total work unchanged. **Prefill chunk 512** trades the step-granularity wait for a longer
-   scan wait and costs 7–8 % of throughput; at high load the hits end up worse (3.4 → 5.0 s at concurrency 16).
+   scan wait and costs 7–8 % of throughput; at high load the hits end up worse (3.4 → 5.0 s at concurrency 16). Hits first + chunk 512 together give the hits the lowest
+   TTFT of any configuration at the highest loads (−60 % at 4 req/s) but cost the cold requests 31–69 % and 7–9 % of
+   throughput (§4).
 5. **Synchronous scheduling is a free 10–20 %** for the hits in this regime (§4), the only knob that helped everywhere.
 6. **The host tier costs something when it has nothing to serve** (§3, §7.2): a GPU-prefix hit pays a lookup and a 1-chunk
    load (19–35 ms vs 12–40 ms without LMCache); with no host hits the LMCache configurations are 2.5 % slower in TTFT p50
@@ -880,8 +892,7 @@ hits-first −12 % overall) without code changes.
   users; the study is about the engine–cache coupling, not about a complete serving system.
 
 ## 12. Final research analysis (the five questions of the brief; D6 research opportunity assessment)
-_[2026-11-05 06:00: provisional where marked; the lighter-load sweep (§7.3), the hits-first + chunk-512 run and the
-160 GB re-run of F are pending.]_
+_[2026-11-05 05:50: provisional where marked; the lighter-load sweep (§7.3) and the 160 GB re-run of F are pending.]_
 
 ### Question 1 — Does CXL expansion provide meaningful end-to-end serving benefits?
 **What was measurable here.** The CXL devdax path is blocked (root 0600 since 2026-10-18), so every serving number is
@@ -944,8 +955,7 @@ nothing, chunk 512 trades one wait for another and loses at high load.
 backlog 26–41), which is where every one of these waits is large (host hits 21 s p50) — but overload is also a choice
 of the replay speed; the same traces at 0.04× (§7.3) will say how much survives at a sustainable rate.
 **How much opportunity remains.** 20–40 % of mean TTFT at high load (SIMULATED, from two scheduler decisions that do
-not depend on the tier), of which measured knobs already recover −14 % (synchronous scheduling) and −43 % for the hits
-(hits-first ordering); the admission penalty of §7.2c is not bounded by a reference (no policy was implemented); the
+not depend on the tier), of which measured knobs already recover −14 % (synchronous scheduling), −43 % for the hits (hits-first ordering) and −60 % for the hits at 4 req/s with hits-first + chunk 512, the latter at +31 % for the cold requests and −7 % throughput (§4); the admission penalty of §7.2c is not bounded by a reference (no policy was implemented); the
 ceiling of the GPU-prefix-hit category (2.7–6.8 s p50 against 16.8–21.0 s for host hits) is the natural target.
 
 ### Question 4 — Does CXL introduce a distinct systems problem?
@@ -1121,6 +1131,7 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 | `B/b-prio-hits`, `b-prio-cold` (first) | driver `KeyError: 'warm'` in the priority map | fixed (`.get(t, 1)`), reruns succeeded |
 | `B` s3-k16 | two flush requests answered "Server disconnected" | recorded in the client file, excluded from the statistics |
 | `replay/flawed/dl-conv-dram2`, `d-tool-dram2` (first) | the lighter-load queue started while `d-tool-dram2` ran (its trigger string appeared in a note appended to `queue.txt`); the stray driver sent 599 conversation requests to the running server for 6 min | both quarantined; `d-tool-dram2` re-run first in `queue_i2.sh` |
+| `B/b-prio-hits-chunk512` (s2 warm-up `flush0`) | one 16,320-token filler request failed with `ServerDisconnectedError`; 876 of 877 requests completed, every measured request present | run kept and used (§4); the flush is an eviction filler of the warm-up, not a measurement |
 
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.
@@ -1132,3 +1143,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §8 Experiment F (hit share × prompt length at 2 req/s, DRAM tier vs vLLM alone; Tables F-1 / F-2, figures F1–F2; the 40 GB tier evicts its pool during the long-prompt points → `f-default-l1-160` queued in `queue_f2.sh`); §2 F row; §10 item 15; figure F2(b) label corrected (served, not computed, prompt tokens).
 - 2026-11-05 — §3: clean SSD O_DIRECT rerun (`a-3b-ssd-odirect2`) added to the SSD-hit paragraph, Tables A-1 / A-2 and figures A1–A3 rebuilt; §15.C row updated.
 - 2026-11-05 — §9 cross-experiment analysis (D5 time-line table 9-1, 9.2–9.7), §12 final research analysis (Questions 1–5, D6 ranked directions) and §13 relationship to previous research drafted on A–F and the 0.08× replays (provisional markers for §7.3, H and the F re-run); §4 cross-reference fixed (Q4 of §12).
+- 2026-11-05 — §4: hits-first + prefill chunk 512 combination (`b-prio-hits-chunk512`); `B/tables-b.md` rebuilt with it; §2 B row, §10 item 4, §12 Question 3, §15.C (one failed filler request), §9 / §12 markers.
