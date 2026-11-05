@@ -119,7 +119,7 @@ to hide, and it is not specific to host-tier hits.
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
 | B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes and real-trace configurations done (§4; real traces in Table B-3 and figure BR); hits-first + chunk 512 combination done (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
-| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run done), lighter-load 0–200 s sweep running (§7.3) |
+| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run done), lighter-load 0–200 s sweep at 0.04×: conversation done (§7.3), tool-agent running |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
 | F workload sensitivity | both traces, controlled variations | controlled hit-share × prompt-length sweep done (§8; 160 GB re-run of the long-prompt points queued, `queue_f2.sh`); trace sensitivity = §7.2 vs §7.2b and §7.3 |
 
@@ -631,7 +631,59 @@ study does not modify vLLM or LMCache); they are inferences from the source and 
 form of the Q2 / Q4 scheduling opportunity under GPU-KV-bound overload. Bidaw's loading-latency-aware ordering (§14)
 addresses the related but different problem of ordering by *transfer* cost; here the transfer is not the cost.
 
-_[pending 2026-11-05 06:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces; `queue_i2.sh`, running since 06:05, ≈ 83 min per run).]_
+### 7.3 Lighter-load sweep, trace seconds 0–200 at 0.04× (both traces; `replay/tables-dl-conv.md`, `replay/tables-dl-tool.md`, `replay/tables-dl-hitcat.md`; figures D1–D4 with suffix `-dl`)
+**Why.** §7.2 / §7.2b measured capacity under overload (GPU busy 0.88, queue → scheduled 10 s), where the host tier acts
+only through the work its hits remove and the hits themselves are admitted last (§7.2c). Q1 and Q3 need the other regime
+as well: a load the server sustains, where a request's TTFT is its own path and not the queue in front of it. The sweep
+halves the replay speed (0.04×) and doubles the trace window (seconds 0–200: 599 conversation requests, 6.85 M prompt
+tokens; 1,159 tool-agent requests, 9.76 M), so that the cache sees the same reuse distances in trace time with twice as
+many requests, and adds a 320 GB tier: the offline LRU of §7.1 shows that 320 GB holds the whole window's reuse for both
+traces (conversation 0.183 cached share at 320 GB = unbounded, 0.116 at 80 GB, 0.045 at 2 GB; tool-agent 0.447 = unbounded,
+0.400 at 80 GB, 0.317 at 2 GB), i.e. it stands for a CXL-scale tier that never evicts within the window.
+
+**How.** Same server and instrumentation as §7.2; `replay.py` at speed 0.04 over trace seconds 0–200 (4,982 wall s per
+run, ≈ 83 min); DRAM L1 2 / 80 / 320 GB (LMCache LRU, watermark 0.8) and vLLM alone; `queue_i2.sh`, 2026-11-05
+06:05–17:15. Offered load: conversation 0.12 req/s and 1,382 prompt tokens/s (half of §7.2's 2,560), tool-agent 0.23 req/s
+and 1,960 tokens/s. The same analysis scripts as §7.2 (`analyze_replay.py`, `table_d.py`, `hitcat_d.py`, `figs_d.py
+prefix=dl`).
+
+**Conversation trace (MEASURED 2026-11-05 06:05–11:40, `dl-conv-*`):**
+| run | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % TTFT p50 (s) [n] | miss TTFT p50 (s) [n] | request time p50 (s) | computed tok/s | KV host→GPU / GPU→host (GB) | evicted chunks | L1 max (GB) | GPU busy | backlog max |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| dl-conv-dram2 | 0.044 (0.000 / 0.044) | 4.30 / 29.3 / 37.6 | 1.26 [54] | 5.45 [405] | 17.8 | 1,320 | 0.0 / 232.6 | 24,488 | 1.9 | 0.52 | 16 |
+| dl-conv-dram80 | 0.088 (0.043 / 0.044) | 3.98 / 26.6 / 35.5 | 1.14 [86] | 5.44 [379] | 17.2 | 1,261 | 11.0 / 218.2 | 16,006 | 68.8 | 0.51 | 16 |
+| dl-conv-dram320 | 0.164 (0.120 / 0.044) | 3.46 / 26.6 / 33.9 | 0.62 [129] | 5.17 [339] | 15.9 | 1,155 | 30.4 / 198.4 | 0 | 198.4 | 0.49 | 16 |
+| dl-conv-none (vLLM alone) | 0.044 (0.000 / 0.044) | 4.26 / 29.1 / 37.5 | 1.22 [54] | 5.63 [405] | 17.6 | 1,320 | 0.0 / 0.0 | 0 | – | 0.52 | 16 |
+
+All 599 requests of every run completed. Hit-category breakdown (`replay/tables-dl-hitcat.md`, same columns as §7.2c):
+host-dominant hits at 80 GB — 28 requests, prompt p50 9,553 tokens of which 544 uncached — TTFT p50 1.2 s (queue → scheduled
+0.2 s, lookup 0.16 s, lookup result → load issued 0.0 s, KV load wait 0.10 s, transfer 0.06 s, prefill 0.19 s); at 320 GB —
+65 requests, 9,871 / 594 tokens — 0.8 s (0.2 / 0.02 / 0.0 / 0.11 / 0.07 / 0.21 s). GPU-prefix hits (54 requests, 901 tokens,
+389 uncached): 1.3 / 1.1 / 0.2 / 1.2 s at 2 / 80 / 320 GB / vLLM alone. Misses (13.7–13.9 k tokens): 5.5 / 5.4 / 5.2 / 5.6 s,
+of which prefill 3.0–3.3 s. Host hits whose load was issued more than 2 s after the lookup result: 5 of 28 at 80 GB (gap
+p50 9.1 s), 11 of 65 at 320 GB (7.3 s p50, 19.6 s p90).
+
+**Result (conversation).** At this load the server is not saturated (GPU busy 0.49–0.52, backlog at most 16 = the decode
+slots, queue → scheduled p50 0.09–0.17 s against 10 s in §7.2), and capacity now pays at the request level. 320 GB raises
+the cached share from 0.044 (GPU prefix cache only; identical in vLLM alone) to 0.164 — 0.120 from the host tier, 90 % of
+the 0.183 the offline LRU offers — removes 12.5 % of the prefill work (1,320 → 1,155 computed tokens/s), and lowers TTFT
+p50 by 19 % (4.30 → 3.46 s; 4.26 s for vLLM alone), p95 by 9 %, p99 by 10 % and request completion time p50 by 11 %
+(17.8 → 15.9 s). 80 GB lands half-way (host share 0.043 against the offline 0.116 − 0.045 = 0.071; TTFT p50 −7 %). Unlike
+§7.2, the hits are now the fastest requests: a host-dominant hit (9.6–9.9 k tokens, 0.6 k to compute) has TTFT p50 1.2 s at
+80 GB and 0.8 s at 320 GB against 5.2–5.4 s for a miss (13.7–13.9 k tokens, 3 s of prefill) and 1.1–1.3 s for a GPU-prefix
+hit; inside a hit the retrieval path of §1.1 costs what §3 measured in isolation — lookup 20–160 ms, load noticed 100 ms
+after it was issued, 60–70 ms of transfer, 0.2 s of prefill for the uncached tail. The cost side is small: the 2 GB tier,
+which serves no host hits, matches vLLM alone within 0.7 % in TTFT p50 (4.30 vs 4.26 s) and 1 % in request time while
+storing 233 GB of KV to the host over the window (every prompt is stored; 218 GB at 80 GB and 198 GB at 320 GB, since hits
+are not re-stored) and evicting 24,488 chunks (16,006 at 80 GB; none at 320 GB, where L1 reaches 198 GB); averaged over
+the window that is under 0.1 GB/s of PCIe traffic. Two residues of §7.2c remain visible: the bursts (TTFT p95 27–29 s in
+every run; backlog 16) still hold a sixth of the host hits for more than 2 s between the lookup result and the load (p50
+7–9 s), which is why the tail improves less than the median; and the LMCache lookup of a request whose prefix is present
+takes 0.48 s p50 at 2 GB and 0.37 s at 80 GB against 17 ms at 320 GB (misses: 20 ms in every run) — consistent with the
+lookup serialising behind the evictor in the two configurations that evict, not isolated further.
+
+_[pending 2026-11-05 11:50: tool-agent half of §7.3 (`dl-tool-dram2/80/320/none`, running since 11:40, ≈ 83 min each),
+figures D1–D4 `-dl`, and the joint explanation; the §9 / §12 text is updated when it lands.]_
 
 ## 8. Experiment F — workload sensitivity (MEASURED 2026-11-05 05:01–05:23, `F/`, per-point tables `F/f-default-scenarios.csv` / `F/f-none-scenarios.csv`, figures `F/figs/`)
 **Why.** A–E fix the request mix and D replays two traces whose hit shares the traces dictate. The question here is how the
@@ -1130,6 +1182,7 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 | `B/b-prio-hits`, `b-prio-cold` (first) | driver `KeyError: 'warm'` in the priority map | fixed (`.get(t, 1)`), reruns succeeded |
 | `B` s3-k16 | two flush requests answered "Server disconnected" | recorded in the client file, excluded from the statistics |
 | `replay/flawed/dl-conv-dram2`, `d-tool-dram2` (first) | the lighter-load queue started while `d-tool-dram2` ran (its trigger string appeared in a note appended to `queue.txt`); the stray driver sent 599 conversation requests to the running server for 6 min | both quarantined; `d-tool-dram2` re-run first in `queue_i2.sh` Re-run of `d-tool-dram2` completed 2026-11-05 05:42–06:04 and is the 2 GB row of the §7.2b table. |
+| `smoke/smokee` (`run_e.py` smoke test) | driver `IndexError` in the e3 burst: the prompt pool held fewer prompts than the burst size k | fixed before the E runs; the smoke run is listed as not completed in the matrix and not used |
 | `B/b-prio-hits-chunk512` (s2 warm-up `flush0`) | one 16,320-token filler request failed with `ServerDisconnectedError`; 876 of 877 requests completed, every measured request present | run kept and used (§4); the flush is an eviction filler of the warm-up, not a measurement |
 
 ## Change history
@@ -1144,3 +1197,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §9 cross-experiment analysis (D5 time-line table 9-1, 9.2–9.7), §12 final research analysis (Questions 1–5, D6 ranked directions) and §13 relationship to previous research drafted on A–F and the 0.08× replays (provisional markers for §7.3, H and the F re-run); §4 cross-reference fixed (Q4 of §12).
 - 2026-11-05 — §4: hits-first + prefill chunk 512 combination (`b-prio-hits-chunk512`); `B/tables-b.md` rebuilt with it; §2 B row, §10 item 4, §12 Question 3, §15.C (one failed filler request), §9 / §12 markers.
 - 2026-11-05 — §7.2b: `d-tool-dram2` re-run added (2 GB row; capacity curve monotone 2–80 GB); `replay/tables-d-tool.md` and figures D1–D4 rebuilt; §2 D row, §10, §15.C, pending marker updated.
+- 2026-11-05 — §7.3 lighter-load sweep (0–200 s at 0.04×), conversation half: capacity pays at sustainable load (320 GB: cached share 0.044 → 0.164, TTFT p50 −19 %, host hits 0.8 s vs misses 5.2 s); tool-agent half pending; §2 table; §15.C smoke-run row.
