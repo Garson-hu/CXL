@@ -39,7 +39,7 @@ def panel(ax, key_list, ylabel, title, logy=False, refs=("none", "ssd")):
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
 panel(ax, [("cached_share", "-", "cached share of prompt tokens (vLLM)"), ("host_share", "--", "served from the host tier"), ("local_share", ":", "served from the GPU prefix cache")], "share of prompt tokens", "cached prompt tokens vs host-cache capacity", refs=("none",))
-fig.suptitle("Figure D1 — capacity vs KV-cache hit share (MEASURED replay: trace seconds 0–100 at 0.08×, 3B-AWQ, LMCache LRU, watermark 0.8)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.png", dpi=300); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.pdf"); plt.close(fig)
+fig.suptitle("Figure D1 — capacity vs KV-cache hit share\n(MEASURED replay: trace seconds 0–100 at 0.08×, 3B-AWQ, LMCache LRU, watermark 0.8)", fontsize=9); fig.tight_layout(); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.png", dpi=300); fig.savefig(f"{FIG}/figD1-capacity-vs-hit.pdf"); plt.close(fig)
 
 fig, ax = plt.subplots(figsize=(7.5, 4.4))
 panel(ax, [("ttft_p50", "-", "TTFT p50"), ("ttft_p95", "--", "TTFT p95"), ("ttft_p99", ":", "TTFT p99")], "ms (log)", "TTFT vs host-cache capacity", logy=True)
@@ -48,7 +48,7 @@ fig.suptitle("Figure D2 — capacity vs TTFT (MEASURED replay, offered load unch
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
 panel(axes[0], [("computed_tok_per_s", "-", "prompt tokens computed / s")], "tokens / s", "(a) prefill work the GPU actually did")
 panel(axes[1], [("gpu_busy_steps", "-", "GPU busy (engine steps with tokens)")], "share of wall time", "(b) GPU busy share")
-fig.suptitle("Figure D3 — capacity vs computed prefill work and GPU busy share (MEASURED replay; the request rate is the trace's, so throughput = offered load unless the server falls behind)", fontsize=9)
+fig.suptitle("Figure D3 — capacity vs computed prefill work and GPU busy share\n(MEASURED replay; the request rate is the trace's, so throughput = offered load unless the server falls behind)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.png", dpi=300); fig.savefig(f"{FIG}/figD3-capacity-vs-throughput.pdf"); plt.close(fig)
 
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.4))
@@ -78,3 +78,22 @@ for ax in axes: ax.grid(alpha=.3, which="both"); ax.legend(fontsize=6.5)
 fig.suptitle("Figure BR — real-trace replay under the supported scheduler / connector configurations (MEASURED, 40 GB DRAM L1)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figBR-trace-configs.png", dpi=300); fig.savefig(f"{FIG}/figBR-trace-configs.pdf"); plt.close(fig)
 print("figures written to", FIG)
+
+# figD0: offline reuse potential of the traces vs cache capacity (TRACE ANALYSIS from trace_reuse.py --csv), for the replayed
+# 0-100 s windows (Experiment D at 0.08x), the 0-200 s windows (lighter-load sweep) and the full hour
+if os.path.exists(f"{R}/trace-reuse.csv"):
+    T = [r for r in csv.DictReader(open(f"{R}/trace-reuse.csv"))]
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=False)
+    for i, tr in enumerate(TR):
+        ax = axes[i]
+        for w, ls in ((100, ":"), (200, "--"), (3600, "-")):
+            rr = [r for r in T if r["trace"] == tr and int(r["window_s"]) == w and r["cap_gb"] != "inf"]
+            inf = [float(r["share"]) for r in T if r["trace"] == tr and int(r["window_s"]) == w and r["cap_gb"] == "inf"]
+            ax.plot([float(r["cap_gb"]) for r in rr], [float(r["share"]) for r in rr], ls=ls, marker="o", ms=3, color=C[i], label=f"window 0–{w} s ({rr[0]['n']} requests); unbounded cache {inf[0]:.3f}")
+        ax.axvline(4.49, color="gray", ls="--", lw=1); ax.text(4.49 * 1.08, 0.56, "GPU KV cache of the 4060 Ti\n(121,792 tokens = 4.5 GB)", fontsize=7, color="gray")
+        ax.axvline(80, color="gray", ls=":", lw=1); ax.text(80 * 1.08, 0.56, "largest DRAM L1\nreplayed (80 GB)", fontsize=7, color="gray")
+        ax.axvline(1160, color="gray", ls="-.", lw=1); ax.text(1160 * 1.08, 0.56, "c28's 4× CZ120\n(1.06 TiB)", fontsize=7, color="gray")
+        ax.set_xscale("log", base=2); ax.set_xlabel("LRU cache capacity, GB of KV at 36 KiB/token (3B-AWQ; ×8.9 for a 70B fp16 model)", fontsize=8); ax.set_ylabel("reusable share of prompt tokens"); ax.set_title(f"{TR[tr]}", fontsize=10); ax.grid(alpha=.3, which="both"); ax.legend(fontsize=7, loc="upper left", bbox_to_anchor=(0, 0.88)); ax.set_ylim(0, 0.65)
+    fig.suptitle("Figure D0 — prefix reuse the traces offer vs cache capacity (TRACE ANALYSIS: LRU over 512-token hash blocks, prefix semantics, prompts cut at 31,736 tokens; not a measurement)", fontsize=9)
+    fig.tight_layout(); fig.savefig(f"{FIG}/figD0-trace-reuse-vs-capacity.png", dpi=300); fig.savefig(f"{FIG}/figD0-trace-reuse-vs-capacity.pdf"); plt.close(fig)
+    print("figD0 written")

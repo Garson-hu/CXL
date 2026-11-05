@@ -110,11 +110,11 @@ to hide, and it is not specific to host-tier hits.
 | family | question | status |
 |---|---|---|
 | A single-request retrieval cost | TTFT and its stages for cold / GPU hit / DRAM hit / SSD hit / vLLM alone, L = 256 … 16,384 | done (§3) |
-| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | running (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
-| C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | planned |
-| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays | planned |
-| E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | planned |
-| F workload sensitivity | both traces, controlled variations | planned |
+| B concurrent serving and scheduling | controlled mixes and real-trace windows; default vs eager prefetch vs 4 transfer threads vs priority ordering vs prefill chunk 512 vs synchronous scheduling vs vLLM alone | controlled mixes done (§4); real-trace configurations running (a first `b-default` run whose s1/s2 sequences re-used their cold prompts across levels is kept in `B/flawed/`, not used) |
+| C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
+| D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation sweep done, tool-agent sweep and lighter-load sweep running (§7) |
+| E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
+| F workload sensitivity | both traces, controlled variations | queued |
 
 ## 3. Experiment A — single-request KV retrieval cost (MEASURED 2026-11-04, `A/`, tables `A/tables-a.md`, figures `A/figs/`)
 **Why.** A host-tier hit avoids prefill compute but must move the KV into the GPU; before any scheduling question we
@@ -381,5 +381,254 @@ chunk boundary), nothing at light load, and the clairvoyant bound is only ~20 po
 of it applies to any host tier that makes hits frequent. The reference is a model with a stated 7–27 % optimism, not a
 measurement.
 
+## 7. Experiment D — host-cache capacity on trace replays (MEASURED 2026-11-04/05, `replay/`, table `replay/tables-d.md`, figures `replay/figs/`; TRACE ANALYSIS `replay/trace-reuse.csv`)
+
+**Why.** Q3 asks whether more host-tier capacity — the resource CXL adds — moves the serving bottleneck. Capacity acts only
+through the hit share it buys, so the family has two halves: what prefix reuse the traces *offer* at each capacity (an
+offline property of the trace: TRACE ANALYSIS, §7.1) and what the measured server *makes* of those hits (MEASURED replay,
+§7.2–7.3). CXL DAX is blocked (root 0600 since 2026-10-18, §1.3), so capacity is pinned DRAM standing in for CXL. PREVIOUSLY
+MEASURED on this node: the GPU reads a CXL-backed and a pinned-DRAM buffer at the same 12.5 GiB/s (2026-10-07), and a
+DAX-backed LMCache L1 gave the same TTFT as a DRAM one (2026-10-11, 2026-10-18), so the capacity axis transfers to CXL; the
+host-side interference axis (CXL writes on the reader's CCD; cxlpath, Phase 3) is not represented here.
+
+**How.** `replay.py` replays trace seconds 0–100 of the Mooncake conversation window (291 requests, 3.34 M prompt tokens;
+prompt p50 8.8 k, p90 27.7 k tokens; output p50 398 tokens, 0.7 % capped at 1,024) and of the tool-agent window (544
+requests) at 0.08× speed (1,250 wall s; 0.22 req/s and 2.56 k offered prompt tokens/s for the conversation trace), prompts
+cut at `max_model_len − output − 8` (≈ 31.7 k), requests that share a quantized timestamp spread over their second; each
+512-token hash block of the trace becomes a fixed pseudo-random token sequence, so shared blocks are shared prefixes.
+Configurations: DRAM L1 2 / 5 / 10 / 20 / 40 / 80 GB (LMCache LRU, watermark 0.8), SSD-backed (10 GB L1 + fs L2 on the
+local NVMe, O_DIRECT, `skip_l1` store policy), vLLM alone (`tier=none`: recompute). Server settings as in B: 3B-AWQ, CUDA
+graphs, `max_num_seqs` 16, `max_model_len` 32,768, GPU memory utilisation 0.85 → GPU KV cache 121,792 tokens (3.7
+full-length requests), chunked prefill 2,048, async scheduling, the logging-only hooks and the GPU / CPU samplers.
+`trace_reuse.py` runs an LRU over 512-token hash blocks with prefix semantics (a request's hit is its longest prefix all
+of whose blocks are cached; the request's blocks are then inserted) for the replayed 0–100 s windows, the 0–200 s windows
+of the lighter-load sweep (§7.3) and the full hour, at 36 KiB/token (the 3B-AWQ's KV size); one block = 18.9 MB.
+
+### 7.1 What the traces offer (TRACE ANALYSIS, figure D0, `replay/trace-reuse.csv`)
+Reusable share of prompt tokens under an LRU of the given capacity (GB of KV at 36 KiB/token; 4.5 GB = the GPU KV cache
+of this configuration):
+
+| trace, window | requests | prompt tokens | 2 GB | 4.5 GB | 20 GB | 80 GB | 160 GB | 320 GB | 640 GB | unbounded |
+|---|---|---|---|---|---|---|---|---|---|---|
+| conversation 0–100 s | 291 | 3.3 M | 0.045 | 0.045 | 0.045 | 0.085 | 0.093 | 0.093 | 0.093 | 0.093 |
+| conversation 0–200 s | 599 | 6.9 M | 0.045 | 0.045 | 0.051 | 0.116 | 0.181 | 0.183 | 0.183 | 0.183 |
+| conversation 0–3,600 s | 12,031 | 123 M | 0.050 | 0.050 | 0.055 | 0.126 | 0.226 | 0.309 | 0.370 | 0.383 |
+| tool-agent 0–100 s | 544 | 4.6 M | 0.300 | 0.325 | 0.333 | 0.363 | 0.369 | 0.369 | 0.369 | 0.369 |
+| tool-agent 0–200 s | 1,159 | 9.8 M | 0.317 | 0.343 | 0.355 | 0.400 | 0.446 | 0.447 | 0.447 | 0.447 |
+| tool-agent 0–3,600 s | 23,608 | 185 M | 0.350 | 0.380 | 0.388 | 0.435 | 0.503 | 0.558 | 0.593 | 0.595 |
+
+Three facts. (i) The reuse a GPU-sized cache already captures is 4.5 % of prompt tokens on the conversation trace and
+32–38 % on the tool-agent trace (consecutive turns and tool calls arrive within seconds of each other); everything a host
+tier adds is reuse at a longer distance. (ii) That capacity-sensitive reuse is a long-distance phenomenon: over the full
+hour the conversation trace grows from 5 % at GPU size to 13 % at 80 GB, 23 % at 160 GB, 31 % at 320 GB and 37 % at
+640 GB — the knee lies at 100–600 GB for this 3B model, i.e. at 1–5 TB for a 70B fp16 model whose KV is ~9× larger per
+token — and the tool-agent trace from 38 % to 43 / 50 / 56 / 59 %. The hour of the conversation trace produces 4.5 TB of
+KV at 36 KiB/token, so even c28's 1.06 TiB of CXL holds a quarter of it. (iii) A 100-s replay window cannot show this:
+within 100 s the conversation trace holds 9.3 % reusable tokens in total (8.5 % at 80 GB) and the tool-agent trace
+36.9 % (36.3 % at 80 GB); a 200-s window shows part of the effect (conversation 4.5 → 18.1 % at 160 GB, tool-agent 34 →
+45 %). The 0.08× replays below are therefore measurements of what the server does with few host hits, not of the capacity
+effect itself; that is the reason for the lighter-load 200-s sweep of §7.3 (queued 2026-11-05 00:50, `queue_i2.sh`,
+replacing the 0–50 s mini-sweep planned the evening before, which the table shows would have had no capacity signal).
+
+### 7.2 Measured sweep, conversation trace at 0.08× (figures D1–D4, `replay/tables-d.md`)
+| run | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % TTFT p50 (s) [n] | miss TTFT p50 (s) [n] | request time p50 (s) | computed tok/s | KV host→GPU / GPU→host (GB) | evicted chunks | L1 max (GB) | GPU busy | backlog max |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| d-conv-dram2 | 0.044 (0.000 / 0.044) | 16.0 / 48.6 / 56.3 | 12.9 [28] | 16.8 [195] | 43.8 | 2,445 | 0.0 / 77.4 | 8,043 | 1.9 | 0.88 | 26 |
+| d-conv-dram5 | 0.044 (0.000 / 0.044) | 16.1 / 48.5 / 56.3 | 12.9 [28] | 16.7 [195] | 42.9 | 2,445 | 0.0 / 77.6 | 7,784 | 4.4 | 0.88 | 26 |
+| d-conv-dram10 | 0.044 (0.000 / 0.044) | 16.0 / 48.5 / 56.2 | 12.9 [28] | 16.8 [195] | 43.3 | 2,445 | 0.0 / 77.5 | 7,406 | 8.7 | 0.88 | 26 |
+| d-conv-dram20 | 0.044 (0.000 / 0.044) | 16.0 / 48.5 / 56.3 | 12.9 [28] | 16.7 [195] | 43.3 | 2,445 | 0.0 / 77.5 | 6,528 | 17.3 | 0.88 | 26 |
+| d-conv-dram40 | 0.048 (0.004 / 0.044) | 16.1 / 47.3 / 54.6 | 17.5 [32] | 16.1 [194] | 42.9 | 2,440 | 0.5 / 77.8 | 5,085 | 34.6 | 0.88 | 26 |
+| d-conv-dram80 | 0.073 (0.029 / 0.044) | 14.3 / 42.8 / 48.5 | 16.9 [39] | 15.0 [186] | 36.0 | 2,396 | 3.5 / 79.1 | 1,454 | 68.4 | 0.88 | 23 |
+| d-conv-ssd (10 GB L1 + NVMe L2) | 0.058 (0.013 / 0.044) | 14.5 / 44.5 / 53.2 | 12.9 [33] | 15.6 [191] | 37.4 | 2,420 | 1.6 / 102.8 | 11,659 (L1) | 0.7 | 0.88 | 24 |
+| d-conv-none (vLLM alone) | 0.044 (0.000 / 0.044) | 15.6 / 47.5 / 55.1 | 12.8 [28] | 16.3 [195] | 42.7 | 2,448 | 0 / 0 | 0 | – | 0.88 | 26 |
+
+All 291 requests of every run completed (no errors). "GPU busy" is the union of engine steps with tokens over the window;
+"computed tok/s" counts prompt tokens that were neither GPU- nor host-cached; "KV GB" are the LMCache retrieve / store
+event bytes (the raw PCIe counters carry a ~30 GB per-direction baseline from vLLM itself, §1.3).
+
+**Result.** The server is overloaded at this speed: GPU busy share 0.88 in every run, backlog up to 26 requests against
+16 decode slots, TTFT p50 16 s / p99 56 s, queue → scheduled p50 10–11 s. Capacity does nothing up to 40 GB, because the
+window offers no reuse beyond what the GPU prefix cache already serves (host share 0.000–0.004; the 4.4 % cached share
+is identical in the vLLM-alone run). At 80 GB the host tier serves 2.9 % of the prompt tokens (3.5 GB retrieved over the
+window) and removes 2 % of the prefill work (2,396 vs 2,445 computed tok/s); TTFT p50 falls 11 % (16.0 → 14.3 s), p95
+12 %, p99 14 %, and request completion time p50 falls 17 % (43 → 36 s) — far more than the 2 % of work removed, because
+a saturated queue amplifies small reductions of service demand. The SSD-backed configuration lands in between (host
+share 1.3 %, TTFT p50 14.5 s): its NVMe L2 never evicts (the 11,659 evictions are from the 10 GB L1), so it finds more
+hits than 40 GB of DRAM, and at this load O_DIRECT reads at 2.7 GB/s are not the limit. The host tier's cost is visible
+as well: with no hits to serve (≤ 40 GB) the LMCache configurations are 2.5 % slower in TTFT p50 than vLLM alone
+(16.0 vs 15.6 s) while storing 77 GB of KV to the host over the window (103 GB in the SSD configuration). Hit requests
+do not get a shorter TTFT than misses under this load: in the 80 GB run the 39 requests with ≥ 50 % prefix hits have
+TTFT p50 16.9 s against 15.0 s for the 186 misses, whereas GPU-prefix hits do (12.9 vs 16.8 s in every run, vLLM alone
+included). Run-to-run reproducibility is good: the four configurations without host hits agree within 0.4 % in TTFT p50
+and 1 % in p99 (same offered sequence, same GPU work).
+
+**Explanation.** Two mechanisms, both visible in the step log (`*-steps.csv`). First, the server is bound by GPU KV-cache
+capacity, not by compute or by `max_num_seqs`: whenever requests are waiting, 5–11 sequences are running (p50 8, never
+16), because 121,792 tokens of KV hold about ten sequences of 11 k prompt + output tokens. A host-tier hit saves the
+prefill compute of its prefix but still needs the full GPU blocks for it, so it does not raise concurrency; a GPU-prefix
+hit shares its blocks with the earlier turn, needs fewer new blocks and is schedulable when the KV budget is tight —
+that is why GPU hits see a lower TTFT and host hits do not. Second, under overload the TTFT is queueing time (10 of
+16 s), first-come-first-served and independent of whether the request has a hit, consistent with B (§4) and C (§6): the
+scheduler consults the host tier only when a request reaches the head of the queue, and the finished load is noticed at
+step boundaries. On this GPU the capacity that binds is therefore the 4.5 GB of GPU KV, and a host tier — DRAM, SSD or
+CXL — relieves compute, not that; the lighter-load sweep (§7.3) measures the host tier where the queue is not saturated.
+
+_[pending 2026-11-05 01:10: §7.2b tool-agent trace at 0.08× (8 runs in progress); §7.3 lighter-load sweep (0–200 s at
+0.04×, 2 / 80 / 320 GB and vLLM alone, both traces; queued); figures D3 / D4 reading.]_
+
+## 10. Unexpected and negative results (collected; each points to the section with the numbers)
+1. **A host hit stops being faster than a miss as soon as the server is loaded** (§4, §6, §7.2): the transfer is 16–40 ms,
+   but a hit waits for the scheduler's queue scan (stops when the 2,048-token budget is spent), is submitted one step
+   late under async scheduling, and its finished load is noticed only at an engine-step boundary (0.3–1.4 s). Under
+   overload (§7.2) hit requests are even slower than misses (16.9 vs 15.0 s p50 at 80 GB) while GPU-prefix hits are faster.
+2. **Eager prefetch does nothing measurable** (§4): it moves the lookup to arrival, not the load.
+3. **Four transfer threads = one** (§5): LMCache routes an engine's requests to one worker (affinity by ZMQ identity), so
+   16 simultaneous 8k hits take 428 ms p50 either way and the PCIe link is never the limit.
+4. **Priority ordering only moves the wait between classes** (§4): hits-first −43 % hit TTFT at concurrency 16, cold +2–15 %;
+   cold-first the mirror image; total work unchanged. **Prefill chunk 512** trades the step-granularity wait for a longer
+   scan wait and costs 7–8 % of throughput; at high load the hits end up worse (3.4 → 5.0 s at concurrency 16).
+5. **Synchronous scheduling is a free 10–20 %** for the hits in this regime (§4), the only knob that helped everywhere.
+6. **The host tier costs something when it has nothing to serve** (§3, §7.2): a GPU-prefix hit pays a lookup and a 1-chunk
+   load (19–35 ms vs 12–40 ms without LMCache); with no host hits the LMCache configurations are 2.5 % slower in TTFT p50
+   than vLLM alone and store 77 GB of KV per 100 trace-seconds of the conversation trace.
+7. **Closed-loop TTFT quantiles are *lower* without the host tier at concurrency 16** (§4) although the tier adds ~55 % of
+   capacity: the faster hits keep more cold prefill in flight at any time. End-to-end benefit shows in capacity and
+   open-loop TTFT, not in closed-loop quantiles.
+8. **The 100-s trace windows carry almost no capacity-sensitive reuse** (§7.1): conversation 4.5 % at GPU size vs 8.5 % at
+   80 GB and 9.3 % unbounded; the planned 0–50 s mini-sweep would have been blind as well. Reuse that needs capacity is
+   long-distance (hundreds of GB over the hour for a 3B model), so a capacity experiment needs long windows or a
+   trace-driven cache model, not faster replay.
+9. **The replayed load is bound by GPU KV capacity, not compute** (§7.2): 121,792 tokens of GPU KV hold ~10 of the trace's
+   requests, so 5–11 sequences run when requests wait; a host-tier hit frees compute but not GPU blocks.
+10. **The first SSD runs measured the page cache, then the previous run's disk** (§3): the fs L2 is persistent across
+    runs and the lookup prefetches from L2 even for GPU hits; fixed with O_DIRECT and per-run directories.
+11. **The hook-less control was *slower* on host hits** (§1.2): the GPU's idle-power ramp (≥ 50 ms idle → +30–40 ms on the
+    next short request), not instrumentation cost; busy servers are unaffected (`b-default-nosamp` within noise).
+12. **vLLM alone moves ~20–30 GB of PCIe traffic per direction per run with no KV tier** (§1.3, §7.2): an unexplained
+    baseline, so KV traffic is taken from LMCache's retrieve / store events, not from the PCIe counters.
+13. **Run-hygiene incidents** (§15.C): the first `b-default` (sequences re-used across levels), the quota-truncated
+    `b-noasync`, the `KeyError` priority runs, two "Server disconnected" answers in a 16-request burst, LMCache
+    "preempted" warnings (6 per conversation replay: vLLM preempted a request whose KV had been loaded), and the premature
+    start of the lighter-load queue that contaminated `d-tool-dram2` (re-run). None changes a conclusion; all are recorded.
+
+## 11. Limitations
+- **CXL was not exercised.** The DAX devices are root-only since the 2026-10-18 reboot, so every capacity point is pinned
+  DRAM. The transfer to CXL rests on PREVIOUSLY MEASURED equalities (GPU reads from CXL and pinned DRAM at the same
+  12.5 GiB/s, 2026-10-07; a devdax-backed L1 gave the same TTFT, 2026-10-11 and 2026-10-18). Not represented: the host-side
+  interference of CXL writes on the reader's CCD (Phase 3, cxlpath), CXL's higher load latency on the LMCache server's own
+  CPU-side work (lookups, chunk bookkeeping, eviction), and any NUMA effect of a 1 TiB tier.
+- **One small GPU, one small model.** An RTX 4060 Ti (8 GiB, PCIe 4.0 ×8) serving a 3B AWQ model (36 KiB KV/token). The
+  GPU KV cache (121,792 tokens) binds concurrency at the replayed loads; an H100 serving a 70B model has ~9× the bytes per
+  token, 10× the KV capacity and a 4× faster link, so the *magnitudes* here do not transfer — the mechanisms (asynchronous
+  lookup/load, step-boundary notice, budget-bounded scan, one transfer thread per engine, GPU blocks needed by a hit) are
+  properties of the engine and do.
+- **Trace replay is time-scaled and synthetic.** Windows of 100 / 200 trace-seconds at 0.08× / 0.04× keep the request
+  sequence and the reuse structure but stretch inter-arrival times, truncate reuse distance (§7.1), and cap outputs at
+  1,024 tokens; prompts are pseudo-random token ids built from the trace's hash blocks, so generation quality is
+  meaningless and output lengths come from the trace, not the model. One replay per configuration (the controlled
+  experiments have 4 repetitions).
+- **The scheduling reference is a model** (§6): calibrated and validated at 7–27 % optimism; its zero-delay and clairvoyant
+  variants are bounds, not policies, and are labelled so throughout.
+- **Instrumentation is logging-only but not free of side effects**: the GPU idle-power effect adds 30–40 ms to isolated
+  short requests (§1.2); loaded servers are unaffected.
+- **Software versions**: vLLM 0.31.0 with async scheduling on by default and LMCache 0.5.5 multi-process mode (one
+  transfer thread per engine, asynchronous lookup); later versions may move the step-boundary notice or the affinity
+  routing. "Avoid modifying core vLLM or LMCache behaviour" was respected: every configuration is a command-line flag.
+- **Storage**: the SSD tier is this node's NVMe at 2.7 GB/s O_DIRECT; the first SSD runs were invalid (§15.C).
+- **Operational**: the home quota filled during the night of 2026-11-04 (older account content); the raw data lives on
+  `/mnt/local` behind a symlink, which departs from the repo convention of raw data under `experimental_results/`.
+- **Scope**: single engine, no tensor parallelism, no prefill–decode disaggregation, no multi-tenant host memory, no real
+  users; the study is about the engine–cache coupling, not about a complete serving system.
+
+## 14. Related work (only references verified in this session or in `Related.md`, 2026-07; no venue is claimed that was not checked)
+
+- **vLLM** — Kwon et al., *Efficient Memory Management for Large Language Model Serving with PagedAttention*, SOSP 2023
+  (arXiv 2309.06180). The engine measured here (0.31.0): paged GPU KV blocks, prefix caching, chunked prefill, the
+  WAITING / WAITING_FOR_REMOTE_KVS queue and the token-budget scan whose behaviour §4 and §6 quantify. Its KV-connector
+  interface is what LMCache plugs into; the step-boundary notice of finished loads (§1.1) is a property of this interface.
+- **LMCache** — arXiv 2510.09665 (the project's paper; the 0.5.5 multi-process server used here). KV tiering substrate
+  (GPU → pinned host memory → disk / remote) with chunked prefix lookup and CUDA-IPC transfer. §3 and §5 measure its
+  retrieval cost and its per-engine serialisation; the results are about the vLLM–LMCache coupling, not LMCache alone.
+- **CacheGen** — Liu et al., *CacheGen: KV Cache Compression and Streaming for Fast Large Language Model Serving*, 2024
+  (UChicago knowledge record 4r8rp-nx329). Compresses KV 3.5–4.3× and streams it adaptively; relevant to §5 because
+  compression shrinks the bytes per hit, which only matters where the link is the bottleneck — on c28 it is not (§5: loads
+  serialise on one thread well below the 12.5 GiB/s link).
+- **SGLang / RadixAttention** — Zheng et al., *SGLang: Efficient Execution of Structured Language Model Programs*, NeurIPS
+  2024. Radix-tree prefix reuse inside GPU memory; the GPU-prefix hits of §7 (4.4 % of the conversation trace, 32–38 % of
+  the tool-agent trace at GPU size) are the regime it exploits; a host tier only adds the longer-distance reuse of §7.1.
+- **Mooncake** — Qin et al., FAST 2025 (arXiv 2407.00079). Disaggregated KV-centric serving with a DRAM/SSD/RDMA KV pool,
+  prefill–decode separation and overload rejection; the source of the two traces replayed in §7–8. Their trace-level reuse
+  is reproduced by `trace_reuse.py` (§7.1): the capacity that pays is hundreds of GB per 3B-sized model.
+- **CachedAttention / AttentionStore** — Gao et al., ATC 2024. Multi-turn KV persistence across HBM/DRAM/SSD with
+  layer-wise prefetch and scheduler-aware eviction; the earliest statement of the problem §4 measures (loads must be
+  overlapped with the scheduler) and a reference design for the "prefetch at arrival" behaviour that LMCache's
+  `eager_prefetch` only partially provides (§4: no measurable effect).
+- **Bidaw** — Hu, Zhang, Zhou, Wei, Zhong, Chen, *Bidaw: Enhancing Key-Value Caching for Interactive LLM Serving via
+  Bidirectional Computation–Storage Awareness*, FAST 2026, pp. 101–116. Two-tier host-memory + SSD KV store for multi-turn
+  serving; the compute engine schedules requests by KV-loading latency and KV size, the store uses the generated responses
+  to predict reuse at eviction; reports up to 3.58× lower latency and 1.83× higher throughput than prior work, approaching
+  the all-in-host-memory bound. This is the closest published work to the scheduling gap of §4 and §6 (tier-aware,
+  size-aware ordering of requests that need retrieval): the opportunity those sections quantify is one Bidaw already
+  claims, on a different engine; no CXL in it.
+- **KVCache Cache in the Wild** — arXiv 2506.02634: characterisation of KV-cache reuse at a large cloud provider; the
+  same long-distance reuse structure that §7.1 finds in the Mooncake traces.
+- **CXL-based KV storage** — *Exploring CXL-based KV Cache Storage for LLM Serving* (NeurIPS 2024 ML-for-Systems
+  workshop), **Beluga** (SIGMOD 2026, arXiv 2511.20172; real CXL switch pool, flat KV pool), **TraCT** (arXiv 2512.18194;
+  emulated CXL, phase- and recency-aware KV placement), **CXL-SpecKV** (FPGA 2026, arXiv 2512.11920; FPGA near-data KV).
+  All treat CXL as capacity or transfer substrate; none measures what the serving scheduler does with the hits, which is
+  the gap §4–6 fill on commodity parts, nor the GPU-KV-capacity bound of §7.2.
+- **Tiered-memory systems** — Memstrata (Zhong et al., OSDI 2024; the project's inspiration), Pond (ASPLOS 2023), TPP
+  (ASPLOS 2023): VM/page-granular CXL tiering; they bound the host-side interference axis that this study does not
+  exercise (CXL blocked) and that the project's Phase 3 results cover (§13).
+- **Phase disaggregation and offloading** — DistServe (OSDI 2024, arXiv 2401.09670), InfiniGen (OSDI 2024), FlexGen (ICML
+  2023): background for why prefill compute, not decode, is what a host-tier hit saves (§3: 0.14 ms/token + 8.2 ns/token²).
+
+## 15. Appendix
+
+### 15.A Configuration (exact, from `*-meta.txt` and the process list)
+- **Node** c28 (Slurm job 326741, 2026-11-04 → 2026-11-07 13:12): AMD EPYC Turin, 755 GiB DRAM (NPS1), RTX 4060 Ti 8 GiB on
+  PCIe 4.0 ×8 (cudaMemcpy pinned → GPU 12.5 GiB/s, PREVIOUSLY MEASURED 2026-10-07), local NVMe `/mnt/local` (O_DIRECT reads
+  2.6–2.9 GiB/s), 4× CZ120 as devdax `/dev/dax0.0–2.0` (root 0600, unusable). Kernel 6.14.11. Details: `inspect/environment.txt`.
+- **Software** Python 3.12.15, vLLM 0.31.0, LMCache 0.5.5 (g05a013b2), torch 2.13.0+cu130, env `/mnt/local/ghu4/envs/lmcache`;
+  figures with matplotlib 3.11.2 from `/mnt/local/ghu4/envs/agent`. Models `Qwen/Qwen2.5-3B-Instruct-AWQ` (36 KiB KV/token,
+  primary) and `Qwen/Qwen2.5-1.5B-Instruct` (28 KiB/token, §3 only). Traces `workloads/mooncake_conversation_trace.jsonl`
+  (12,031 requests / 3,600 s) and `workloads/mooncake_toolagent_trace.jsonl` (23,608 / 3,600 s).
+- **vLLM server (default configuration)** — `vllm serve Qwen/Qwen2.5-3B-Instruct-AWQ --port 8100 --max-model-len 32768
+  --max-num-seqs 16 --gpu-memory-utilization 0.85 --dtype float16 --enable-prompt-tokens-details --disable-uvicorn-access-log
+  --scheduling-policy fcfs --kv-transfer-config '{"kv_connector": "LMCacheMPConnector", "kv_connector_module_path":
+  "lmcache.integration.vllm.lmcache_mp_connector", "kv_role": "kv_both", "kv_connector_extra_config": {"lmcache.mp.host":
+  "tcp://127.0.0.1", "lmcache.mp.port": 5555, "lmcache.mp.eager_prefetch": false}}'`; pinned to CPUs 96–119; variants add
+  `--max-num-batched-tokens 512`, `--no-async-scheduling`, `--scheduling-policy priority`, `--enforce-eager`, or drop the
+  connector (`tier=none`). GPU KV cache with CUDA graphs: 121,792 tokens.
+- **LMCache server (default)** — `lmcache server --host 127.0.0.1 --port 5555 --http-host 127.0.0.1 --http-port 8200
+  --chunk-size 256 --eviction-policy LRU --eviction-trigger-watermark 0.8 --max-gpu-workers 1 --max-cpu-workers 1
+  --supported-transfer-mode lmcache_driven --l2-prefetch-max-in-flight 8 --l1-size-gb <L1>`; pinned to CPUs 120–127; the
+  SSD tier adds `--l2-adapter '{"type":"fs","base_path":"/mnt/local/ghu4/kvl2/<run>","use_odirect":true}' --l2-store-policy
+  skip_l1` (directory deleted when the run stops); variants `--max-gpu-workers 4`.
+- **Client / drivers** `benchmarks/serving/client.py` (streaming chat completions, `X-Request-Id`, prompts = pseudo-random
+  token ids in [1000, 150000)); drivers pinned to CPUs 80–87; GPU sampler (NVML, 5 ms PCIe counters) on CPU 95, CPU sampler
+  on CPU 94. Logging-only hooks: `vllmevt/sitecustomize.py` (engine), `benchmarks/agent/kvevt/sitecustomize.py` (LMCache).
+- **Raw data** `/mnt/local/ghu4/results/2026-11-04-cxl-serving-scheduling-gap/` (symlinked from
+  `experimental_results/2026-11-04-cxl-serving-scheduling-gap/` after the home-quota incident of 2026-11-04, §1.3); per run:
+  `<tag>-client.jsonl`, `-meta.txt`, `-server.log`, `-lmcache.log`, `-kvevents.jsonl`, `-vllmevt.req/step.*.jsonl`, `-gpu.txt`,
+  `-cpu.txt`, `-status.txt`, `-driver.txt`, and the analysis outputs `-requests.csv`, `-steps.csv`, `-scenarios.csv`, `-replay.json`.
+
+### 15.B Experiment matrix
+_[pending: `matrix.py` output over all runs once the queue finishes — one row per run with configuration, status, request counts and errors.]_
+
+### 15.C Runs excluded or failed
+| run | problem | disposition |
+|---|---|---|
+| `B/flawed/b-default` (first) | s1/s2 mixed sequences generated once per scenario: cold prompts of one level were hits at the next | kept in `B/flawed/`, superseded by the per-level regeneration |
+| `A/a-3b-ssd` (first SSD run) | no O_DIRECT → served by the page cache | `host` rows kept and labelled; O_DIRECT reruns (`a-3b-ssd-odirect`, `-odirect2`) |
+| `A/a-3b-ssd-odirect` | found its prompts already on disk (persistent fs L2 of the previous run) for the cold cases | `host` rows valid; clean rerun `a-3b-ssd-odirect2` with a per-run L2 directory |
+| `B/flawed/b-noasync` (first) | truncated when `/home` hit its 40 GB quota (2026-11-04 20:55) | rerun after moving the results to `/mnt/local` |
+| `B/b-prio-hits`, `b-prio-cold` (first) | driver `KeyError: 'warm'` in the priority map | fixed (`.get(t, 1)`), reruns succeeded |
+| `B` s3-k16 | two flush requests answered "Server disconnected" | recorded in the client file, excluded from the statistics |
+| `replay/flawed/dl-conv-dram2`, `d-tool-dram2` (first) | the lighter-load queue started while `d-tool-dram2` ran (its trigger string appeared in a note appended to `queue.txt`); the stray driver sent 599 conversation requests to the running server for 6 min | both quarantined; `d-tool-dram2` re-run first in `queue_i2.sh` |
+
 ## Change history
 - 2026-11-04 — file created with the environment and source inspection; experiments started.
+- 2026-11-05 — §7 Experiment D: trace reuse analysis (D0) and the conversation-trace capacity sweep at 0.08× (overloaded, GPU-KV-bound); tool-agent sweep and lighter-load sweep pending; §2 table updated.
+- 2026-11-05 — §14 related work (verified references; Bidaw FAST'26 identified as the closest work to the scheduling gap).
+- 2026-11-05 — §10 unexpected/negative results, §11 limitations, §15 appendix (configuration, excluded runs; matrix pending) drafted.
