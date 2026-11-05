@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Figures of Experiment F (workload sensitivity, scenario s4 of run_b.py: open loop at 2 req/s, 48 requests per point, host-hit
 share 0 / 0.25 / 0.5 / 0.75 / 1 x length class short (1k/2k) or long (8k); default DRAM tier vs vLLM alone) from analyze_b.py's
-<tag>-scenarios.csv.  figF1: TTFT p50 / p95 of all, host-hit and cold requests vs hit share;  figF2: completed req/s, computed
+<tag>-scenarios.csv.  figF1: TTFT p50 / p95 of all, host-hit and cold requests vs hit share;  figF2: completed req/s, served
 prompt tokens/s and GPU busy share vs hit share.   usage: figs_f.py <F dir> <fig dir> [tags=f-default,f-none]"""
 import csv, os, sys
 import matplotlib; matplotlib.use("Agg")
@@ -39,7 +39,7 @@ for i, t in enumerate(TAGS):
         for ax, key in zip(axes, ("req_per_s", "prompt_tok_per_s", "gpu_busy_steps")):
             x, y = series(t, cls, key)
             if x: ax.plot(x, y, ls="-" if cls == "short" else "--", marker="o" if cls == "short" else "s", ms=4, color=C[i], label=f"{LABEL.get(t, t)}: {cls}")
-for ax, yl, ti in zip(axes, ("completed requests / s", "computed prompt tokens / s", "GPU busy share"), ("(a) completed request rate (offered: 2 req/s)", "(b) prompt tokens the GPU computed per second", "(c) GPU busy share")):
+for ax, yl, ti in zip(axes, ("completed requests / s", "served prompt tokens / s (cached included)", "GPU busy share"), ("(a) completed request rate (offered: 2 req/s)", "(b) prompt tokens served per second (completed requests, cached tokens included)", "(c) GPU busy share")):
     ax.set_xlabel("host-hit share"); ax.set_ylabel(yl); ax.set_title(ti, fontsize=9); ax.grid(alpha=.3); ax.legend(fontsize=6.5)
 fig.suptitle("Figure F2 — throughput and GPU work vs host-hit share (MEASURED)", fontsize=9)
 fig.tight_layout(); fig.savefig(f"{FIG}/figF2-throughput-vs-share.png", dpi=300); fig.savefig(f"{FIG}/figF2-throughput-vs-share.pdf"); plt.close(fig)

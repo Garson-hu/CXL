@@ -121,7 +121,7 @@ to hide, and it is not specific to host-tier hits.
 | C scheduling gap | calibrated offline reference (zero-delay, clairvoyant resource-constrained) vs measured | done (§6) |
 | D capacity | L1 sweep (DRAM; CXL blocked) + SSD-backed + recompute-only on trace replays; offline trace reuse vs capacity | conversation and tool-agent sweeps at 0.08× done (§7.2, §7.2b, admission analysis §7.2c; `d-tool-dram2` re-run queued), lighter-load 0–200 s sweep queued (§7.3) |
 | E concurrent retrieval bandwidth | k simultaneous hits, PCIe RX, per-request retrieve time, transfer threads | done (§5) |
-| F workload sensitivity | both traces, controlled variations | queued |
+| F workload sensitivity | both traces, controlled variations | controlled hit-share × prompt-length sweep done (§8; 160 GB re-run of the long-prompt points queued, `queue_f2.sh`); trace sensitivity = §7.2 vs §7.2b and §7.3 |
 
 ## 3. Experiment A — single-request KV retrieval cost (MEASURED 2026-11-04, `A/`, tables `A/tables-a.md`, figures `A/figs/`)
 **Why.** A host-tier hit avoids prefill compute but must move the KV into the GPU; before any scheduling question we
@@ -617,6 +617,84 @@ addresses the related but different problem of ordering by *transfer* cost; here
 _[pending 2026-11-05 05:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 80 / 320 GB and vLLM alone, both traces;
 `queue_i2.sh`, after F, G, H); `d-tool-dram2` re-run.]_
 
+## 8. Experiment F — workload sensitivity (MEASURED 2026-11-05 05:01–05:23, `F/`, per-point tables `F/f-default-scenarios.csv` / `F/f-none-scenarios.csv`, figures `F/figs/`)
+**Why.** A–E fix the request mix and D replays two traces whose hit shares the traces dictate. The question here is how the
+end-to-end benefit of the host tier scales with the two workload variables a deployment does not choose — how many
+requests have a cached prefix and how long the prompts are — at one fixed offered rate; trace sensitivity is the
+comparison of the two Mooncake windows under identical load (§7.2 vs §7.2b, and §7.3 for the longer windows).
+
+**How.** `run_b.py` scenario s4: open loop at 2 req/s (Poisson), 48 requests per point, 32 output tokens, the server of
+§4 (3B-AWQ, 40 GB DRAM L1, `max_num_seqs` 16, prefill chunk 2048). Two length classes — short (1k / 2k tokens, 3.0–3.8 k
+offered prompt tokens/s) and long (8k tokens, 16 k offered prompt tokens/s against the 5.2 k/s the server sustains on
+this class without hits: overloaded by design) — each at a nominal share 0 / 0.25 / 0.5 / 0.75 / 1 of requests drawn from
+the 64-prompt pool stored at the start of the run (the draws are random: 14 / 17 / 31 / 48 pool requests per short point,
+8 / 23 / 30 / 48 per long point); the other requests are fresh prompts. Two servers: the DRAM tier (`f-default`) and
+vLLM alone (`f-none`: a pool request is recomputed unless vLLM's own prefix cache still holds it). The tier that served
+each request is classified as in §4 (host = retrieved from LMCache, GPU = vLLM's prefix cache, cold = computed).
+
+**Result (Tables F-1 / F-2, Figures F1–F2).** Table F-1, short prompts (TTFT in ms; "n: p50" = requests served from that
+tier and their median):
+
+| pool requests of 48 | DRAM tier: all p50 / p95 | host hits n: p50 | GPU-prefix hits n: p50 | cold n: p50 | vLLM alone: all p50 / p95 | GPU-prefix hits n: p50 | cold n: p50 |
+|---|---|---|---|---|---|---|---|
+| 0 | 346 / 959 | – | – | 48: 346 | 331 / 916 | – | 48: 331 |
+| 14 | 311 / 722 | 14: 31 | – | 34: 349 | 331 / 782 | – | 48: 331 |
+| 17 | 311 / 574 | 13: 93 | 4: 39 | 31: 311 | 309 / 864 | 4: 16 | 44: 309 |
+| 31 | 95 / 604 | 21: 55 | 10: 21 | 17: 346 | 279 / 564 | 10: 15 | 38: 309 |
+| 48 | 26 / 99 | 26: 26 | 22: 23 | – | 168 / 652 | 22: 21 | 26: 308 |
+
+Table F-2, long prompts (TTFT in s; completed requests/s against 2 offered; GPU busy = share of engine steps with tokens):
+
+| pool requests of 48 | DRAM tier: all p50 / p95 | host n: p50 | GPU n: p50 | cold n: p50 | req/s | GPU busy | vLLM alone: all p50 / p95 | GPU n: p50 | cold n: p50 | req/s | GPU busy |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 27.7 / 48.8 | – | – | 48: 27.7 | 0.6 | 1.0 | 27.4 / 48.2 | – | 48: 27.4 | 0.6 | 1.0 |
+| 8 | 26.6 / 50.8 | 1: 7.2 | – | 47: 26.6 | 0.6 | 1.0 | 26.4 / 50.3 | – | 48: 26.4 | 0.6 | 1.0 |
+| 23 | 18.2 / 32.3 | 14: 17.8 | 2: 16.0 | 32: 18.2 | 0.9 | 1.0 | 28.2 / 50.3 | 2: 23.1 | 46: 26.7 | 0.7 | 1.0 |
+| 30 | 6.4 / 11.0 | 15: 6.3 | 15: 7.6 | 18: 6.0 | 1.4 | 1.0 | 15.7 / 28.8 | 16: 20.6 | 32: 15.5 | 0.9 | 1.0 |
+| 48 | 0.07 / 0.48 | 17: 0.07 | 30: 0.03 | 1: 1.4 | 1.9 | 0.5 | 6.6 / 9.9 | 30: 7.3 | 17: 5.2 | 1.6 | 1.0 |
+
+- *Short prompts, light load (GPU busy 0.5–0.8).* The benefit is a latency gain for the hits only, growing with the hit
+  share: a host hit answers in 26–93 ms against 308–349 ms for a cold request of the same length (the §3 single-request
+  cost plus a little queueing), the cold requests do not change (346 → 311–349 ms with the tier; 331 → 309 ms without),
+  and the all-request p50 moves only once hits are the majority (346 → 95 ms at 31 of 48, 26 ms at 48 of 48). vLLM alone
+  gets part of the same gain from its own prefix cache — the pool prompts repeat within a point and the GPU cache keeps
+  the recent ones (22 of 48 at share 1, 21 ms) — and the host tier adds the other 26 (26 ms instead of a 308-ms recompute),
+  so at share 1 the all-request p50 is 26 vs 168 ms and p95 99 vs 652 ms. Completed rate = offered rate in both servers
+  (1.9–2.5 req/s: the spread is the Poisson sending window).
+- *Long prompts, overloaded (TTFT p50 27.7 s at share 0 with or without the tier).* The benefit is capacity. Every pool
+  request served from a cache removes 8k tokens (1.1 s) of prefill, and the saturated queue turns the removed work into
+  completion rate and TTFT for everyone, cold requests included: at 30 pool requests of 48 the DRAM tier completes
+  1.4 req/s at a cold TTFT of 6.0 s, vLLM alone 0.9 req/s at 15.5 s; at 48 of 48 the tier keeps up with the offered rate
+  (1.9 req/s, GPU busy 0.5, host hits 67 ms) while vLLM alone, whose prefix cache catches 30 of the 48 but recomputes the
+  other 17 × 8k, is still saturated (1.6 req/s, p50 6.6 s). Under overload the hits wait in the same queue as the cold
+  requests (host p50 17.8 s vs cold 18.2 s at 23 of 48; 6.3 vs 6.0 s at 30 of 48) — the scan, step-granularity and
+  admission waits of §4 / §7.2c, not the transfer (host load wait p50 0.6–1.7 s) — and are fast only once the pressure
+  is gone (share 1: 67 ms). Same mechanism as the trace replays of §7.2 / §7.2b.
+- *Achieved vs nominal hit share: the 40 GB tier ran out of capacity inside this run.* LMCache stores the KV of every
+  prompt (cold ones included; 75–99 GB of stores per 1,250-s replay in §7.2b), the pool is stored at the start, and the
+  run stores about 55 GB against an effective 32 GB (40 GB × watermark 0.8). The LRU started evicting 202 s into the run,
+  during the long share-0 point, and had removed 3,630 chunks (34 GB) by the end of the share-0.75 point
+  (`f-default-kvevents.jsonl`, `l1.keys.evicted`). The 4k / 8k pool entries — stored first and untouched during the
+  short points — went first: of the 8 / 23 / 30 / 48 pool requests of the long points only 1 / 14 / 15 / 17 were served
+  from the host tier (0 / 2 / 15 / 30 from the GPU prefix cache, 7 / 7 / 0 / 1 recomputed), consistent with the later
+  hits being pool prompts repeated within a point and re-stored after their recompute. The short points were not
+  affected (every pool request served from a cache). Figure F1(b) therefore understates what a tier that holds the
+  working set does at the intermediate shares; a re-run with a 160 GB L1 (`f-default-l1-160`, `queue_f2.sh`) is queued
+  after the §7.3 sweep. The eviction is itself the capacity statement of this experiment: a 7-minute run of 480
+  requests at 2 req/s with 8k prompts stores more KV than a 40 GB host tier holds.
+- *Trace sensitivity (§7.2 vs §7.2b, same server, same load, same capacities).* The conversation window's reuse is
+  long-distance (host share 0 at ≤ 40 GB, 2.9 % at 80 GB), the tool-agent window's short-distance (8–11 % host plus
+  24–26 % GPU prefix at every capacity); the TTFT gain follows the removed work (p50 −11 % vs −31 % at 80 GB). What the
+  tier can serve is decided by the trace, not by the tier.
+
+**Explanation.** Figures F1–F2 show two regimes of the same server. Below saturation the host tier changes only the hits'
+own latency (Experiment A's numbers survive at 2 req/s because the queue is short) and nothing else; at saturation
+it changes throughput, and the TTFT of every request through the queue, in proportion to the prefill work the hits
+remove — while the hits themselves get no latency advantage until the overload clears. Both regimes are independent of
+the tier's medium: the host tier's transfer (12 GB/s, §3 / §5) is never the limit, so a CXL-backed tier of the same
+capacity would behave the same (PREVIOUSLY MEASURED: CXL = pinned DRAM on this GPU link, 2026-10-07); what CXL changes is
+the capacity, and this run shows a working set that 40 GB does not hold.
+
 ## 10. Unexpected and negative results (collected; each points to the section with the numbers)
 1. **A host hit stops being faster than a miss as soon as the server is loaded** (§4, §6, §7.2): the transfer is 16–40 ms,
    but a hit waits for the scheduler's queue scan (stops when the 2,048-token budget is spent), is submitted one step
@@ -662,6 +740,10 @@ _[pending 2026-11-05 05:10: §7.3 lighter-load sweep (0–200 s at 0.04×, 2 / 8
     5.7 % vs 8.4 %, lookups 17 % vs 30 % of prompt tokens, the losses late in the window; on the conversation trace
     (long-distance reuse, no L2 eviction) it found more than 40 GB of DRAM. Cause not isolated (candidate: the asynchronous
     L2 store path makes a chunk visible only after its NVMe write completes).
+
+15. **A 40 GB host tier is exhausted by a 7-minute controlled run** (§8): LMCache stores every prompt's KV, so 480 requests at
+   2 req/s with 8k prompts (about 55 GB stored) evicted the pool stored at the start; the long-prompt points of Experiment F
+   reached 1 / 14 / 15 / 17 host hits of the 8 / 23 / 30 / 48 intended (160 GB re-run queued).
 
 ## 11. Limitations
 - **CXL was not exercised.** The DAX devices are root-only since the 2026-10-18 reboot, so every capacity point is pinned
@@ -786,3 +868,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §10 unexpected/negative results, §11 limitations, §15 appendix (configuration, excluded runs; matrix pending) drafted.
 - 2026-11-05 — §7.2b tool-agent sweep at 0.08× and §7.2c hit-category / admission analysis (host-tier hits admitted last under GPU-KV saturation: whole-prefix block reservation, source-inspected; `hitcat_d.py`, `replay/tables-d-hitcat.md`); §7.2 explanation sharpened; §10 items 1, 8, 14; §2 table; figure D2 legend moved.
 - 2026-11-05 — §4: real-trace replays under eager prefetch and 4 transfer threads (Table B-3, figure BR, `replay/tables-br-hitcat.md`; no effect; replay repeatability 0.02 % on TTFT p50); §2 B row; §10 items 2–3; pending marker.
+- 2026-11-05 — §8 Experiment F (hit share × prompt length at 2 req/s, DRAM tier vs vLLM alone; Tables F-1 / F-2, figures F1–F2; the 40 GB tier evicts its pool during the long-prompt points → `f-default-l1-160` queued in `queue_f2.sh`); §2 F row; §10 item 15; figure F2(b) label corrected (served, not computed, prompt tokens).
