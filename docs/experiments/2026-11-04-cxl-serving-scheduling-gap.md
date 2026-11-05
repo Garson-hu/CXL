@@ -157,15 +157,21 @@ client. Every request's time line is reconstructed from the three records (Figur
   ~10 GB/s) and is followed by the same GPU transfer. Note that with an L2 the lookup prefetches the whole prompt from L2
   **even when vLLM's GPU cache holds it** (the `gpu` case: +50 ms of lookup at 16k), because the lookup runs before vLLM
   decides what it needs.
-- **SSD hit with O_DIRECT (`a-3b-ssd-odirect`, the real NVMe path):** 24.3 ms at 256 tokens, 37.5 at 1k, 68.8 at 2k,
-  110 at 4k, 170 at 8k, 318 ms at 16k — i.e. 3.4× a DRAM hit at 4k and 3.7× at 16k, still 11× faster than recompute at
-  16k. The extra time is the L2→L1 prefetch inside the lookup phase: 16 ms at 1k, 58 at 4k, 114 at 8k, 220 ms at 16k =
-  **2.7 GB/s from the NVMe** (604 MB at 16k; the device's O_DIRECT read rate measured 2.6–2.9 GiB/s on 2026-10-07), followed
-  by the unchanged 12 GB/s GPU transfer. The same prefetch also delays GPU-prefix hits (25 → 288 ms from 256 to 16k
-  tokens) and, in this run, the "cold" prompts: the fs L2 directory is persistent and the run reused the seeds of the
-  page-cache run, so its `cold` cases were SSD hits from a cold L1 and GPU (37–306 ms, n = 8 per L, the same stages); the
-  harness now uses one directory per run (deleted at stop) and a clean rerun is queued. The `host` rows are unaffected
-  (the prompt was on disk, not in L1 or in the GPU, in both runs).
+- **SSD hit with O_DIRECT (`a-3b-ssd-odirect` and the clean rerun `a-3b-ssd-odirect2`, the real NVMe path):** 24.3 ms at
+  256 tokens, 37 at 1k, 56–69 at 2k, 65–110 at 4k, 136–170 at 8k, 281–318 ms at 16k over the two runs — i.e. 1.9–3.2× a
+  DRAM hit at 4k and 3.3–3.7× at 16k, still 11–12× faster than recompute at 16k. The extra time is the L2→L1 prefetch
+  inside the lookup phase: 16 ms at 1k, 31–58 at 4k, 85–114 at 8k, 196–220 ms at 16k = **2.7–3.1 GB/s from the NVMe** at
+  16k (604 MB; the device's O_DIRECT read rate measured 2.6–2.9 GiB/s on 2026-10-07), followed by the unchanged 12 GB/s
+  GPU transfer. The clean rerun (one L2 directory per run, deleted at stop; 2026-11-05 05:23–05:27) is the faster of the
+  two at 4k–16k (prefetch 31 / 85 / 196 ms = 4.9 / 3.5 / 3.1 GB/s against 58 / 114 / 220 ms = 2.6 / 2.6 / 2.7 GB/s): there
+  the files had been written seconds earlier by the run's own `cold` case; the cause of the difference is not isolated (a
+  drive-side write buffer is one candidate) and the first run's numbers are the conservative SSD cost. The same prefetch
+  also delays GPU-prefix hits (24 → 240 ms from 256 to 16k tokens in the rerun, 25 → 288 in the first run), because the
+  lookup runs before vLLM decides what it needs. In the first run the "cold" prompts were not cold: the fs L2 directory
+  was persistent and the run reused the seeds of the page-cache run, so its `cold` cases were SSD hits from a cold L1 and
+  GPU (37–306 ms, n = 8 per L, the same stages); the rerun's `cold` rows are true recomputes (45 ms at 256 tokens …
+  3,403 ms at 16k, equal to the DRAM run's). The `host` rows of the first run are valid (the prompt was on disk, not in
+  L1 or in the GPU, in both runs).
 - Repetitions agree within 1–2 ms on the 3B model (min–max in Table A-1) except sporadic tail events: in the 1.5B run 7
   of 112 hit requests took 160–400 ms, attributed by their time lines to a lookup that took 120–300 ms (5 cases), a
   finished load noticed by the scheduler 130 ms late (1) and a single-token step of 166 ms (1); the 3B runs show 0–2
@@ -855,7 +861,7 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 |---|---|---|
 | `B/flawed/b-default` (first) | s1/s2 mixed sequences generated once per scenario: cold prompts of one level were hits at the next | kept in `B/flawed/`, superseded by the per-level regeneration |
 | `A/a-3b-ssd` (first SSD run) | no O_DIRECT → served by the page cache | `host` rows kept and labelled; O_DIRECT reruns (`a-3b-ssd-odirect`, `-odirect2`) |
-| `A/a-3b-ssd-odirect` | found its prompts already on disk (persistent fs L2 of the previous run) for the cold cases | `host` rows valid; clean rerun `a-3b-ssd-odirect2` with a per-run L2 directory |
+| `A/a-3b-ssd-odirect` | found its prompts already on disk (persistent fs L2 of the previous run) for the cold cases | `host` rows valid; clean rerun `a-3b-ssd-odirect2` with a per-run L2 directory done 2026-11-05 05:23–05:27 (`cold` rows valid; `host` rows 1.0–1.7× faster at 2k–16k, both kept in Table A-1 / A-2) |
 | `B/flawed/b-noasync` (first) | truncated when `/home` hit its 40 GB quota (2026-11-04 20:55) | rerun after moving the results to `/mnt/local` |
 | `B/b-prio-hits`, `b-prio-cold` (first) | driver `KeyError: 'warm'` in the priority map | fixed (`.get(t, 1)`), reruns succeeded |
 | `B` s3-k16 | two flush requests answered "Server disconnected" | recorded in the client file, excluded from the statistics |
@@ -869,3 +875,4 @@ _[pending: `matrix.py` output over all runs once the queue finishes — one row 
 - 2026-11-05 — §7.2b tool-agent sweep at 0.08× and §7.2c hit-category / admission analysis (host-tier hits admitted last under GPU-KV saturation: whole-prefix block reservation, source-inspected; `hitcat_d.py`, `replay/tables-d-hitcat.md`); §7.2 explanation sharpened; §10 items 1, 8, 14; §2 table; figure D2 legend moved.
 - 2026-11-05 — §4: real-trace replays under eager prefetch and 4 transfer threads (Table B-3, figure BR, `replay/tables-br-hitcat.md`; no effect; replay repeatability 0.02 % on TTFT p50); §2 B row; §10 items 2–3; pending marker.
 - 2026-11-05 — §8 Experiment F (hit share × prompt length at 2 req/s, DRAM tier vs vLLM alone; Tables F-1 / F-2, figures F1–F2; the 40 GB tier evicts its pool during the long-prompt points → `f-default-l1-160` queued in `queue_f2.sh`); §2 F row; §10 item 15; figure F2(b) label corrected (served, not computed, prompt tokens).
+- 2026-11-05 — §3: clean SSD O_DIRECT rerun (`a-3b-ssd-odirect2`) added to the SSD-hit paragraph, Tables A-1 / A-2 and figures A1–A3 rebuilt; §15.C row updated.
