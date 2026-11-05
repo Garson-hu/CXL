@@ -33,6 +33,8 @@ POLICIES = {
     "vllm":         dict(order="fcfs_hold", scan_budget=True,  late_submit=True,  zero_load=False),
     "vllm_scanall": dict(order="fcfs_hold", scan_budget=False, late_submit=True,  zero_load=False),   # the scan continues past the budget: loads start for everyone waiting
     "vllm_early":   dict(order="fcfs_hold", scan_budget=False, late_submit=False, zero_load=False),   # ... and loads start when the request is considered
+    "vllm_sync":    dict(order="fcfs_hold", scan_budget=True,  late_submit=False, zero_load=False),   # synchronous scheduling (--no-async-scheduling): loads submitted in the step that considered them
+    "vllm_hits":    dict(order="hits",      scan_budget=True,  late_submit=True,  zero_load=False),   # --scheduling-policy priority with hits first (the budget scan stays)
     "zero":         dict(order="fcfs_hold", scan_budget=True,  late_submit=False, zero_load=True),    # ZERO-DELAY loads (REFERENCE)
     "hits":         dict(order="hits",      scan_budget=False, late_submit=False, zero_load=False),   # hits before cold (what priority scheduling approximates)
     "srpt":         dict(order="srpt",      scan_budget=False, late_submit=False, zero_load=False),   # CLAIRVOYANT shortest remaining prefill first
