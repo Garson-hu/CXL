@@ -534,7 +534,7 @@ CXL — relieves compute, not that; the lighter-load sweep (§7.3) measures the 
 
 ### 7.2b Measured sweep, tool-agent trace at 0.08× (figures D1–D4, `replay/tables-d-tool.md`)
 Same server, same replay speed; the window holds 544 requests and 4.61 M prompt tokens (prompt p50 6.2 k, p90 19 k
-tokens; 0.42 req/s, 3.56 k offered prompt tokens/s over ≈ 1,290 wall s). `d-tool-dram2` was re-run at the head of the lighter-load queue (2026-11-05 05:42–06:04) after its first run was contaminated (§15.C); the table shows the re-run.sh` (its first run was contaminated by the incident of §15.C) and is added when it lands.
+tokens; 0.42 req/s, 3.56 k offered prompt tokens/s over ≈ 1,290 wall s). `d-tool-dram2` was re-run at the head of the lighter-load queue (2026-11-05 05:42–06:04) after its first run was contaminated (§15.C); the table shows the re-run.
 
 | run | cached share (host / GPU) | TTFT p50 / p95 / p99 (s) | hit ≥ 50 % TTFT p50 (s) [n] | miss TTFT p50 (s) [n] | request time p50 (s) | computed tok/s | KV host→GPU / GPU→host (GB) | evicted chunks | L1 max (GB) | GPU busy | backlog max |
 |---|---|---|---|---|---|---|---|---|---|---|---|
