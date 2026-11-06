@@ -26,6 +26,9 @@ rsync -a --prune-empty-dirs \
 cat > "$DST/README.md" <<EOF
 # Raw data of docs/experiments/$STUDY.md
 
+Start with \`SUMMARY.md\` in this directory: the self-contained summary of the experiment (question, platform, every run,
+results per family, cross-cutting findings, answers to the brief's questions, limitations, data map, how to regenerate).
+
 Collected from \`$SRC\` on $(date +%F) with \`benchmarks/serving/collect_small.sh\`. One directory per experiment
 family (\`A\`, \`B\`, \`C\`, \`E\`, \`F\`, \`replay\` = Experiment D and the lighter-load sweep, \`smoke\`, \`inspect\`);
 \`*/flawed/\` holds the quarantined runs listed in the report's §15.C. Per run \`<tag>\`: \`<tag>-meta.txt\`

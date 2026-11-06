@@ -295,6 +295,11 @@ LULESH version. Each step needs explicit user approval before execution.
   numbers in the Current Status addendum above; ranked directions in §12 (1 admission policy for external loads under
   GPU-KV saturation, 2 reuse-aware scan / ordering / hand-over, 3 CXL-scale capacity for long-distance reuse, 4 SSD-tier
   lookup / prefetch); RQ1 / Phase 3 conclusions unchanged (§13).
+- 2026-11-05 evening: `experimental_results/2026-11-04-cxl-serving-scheduling-gap/SUMMARY.md` added — a self-contained
+  summary of the whole experiment (question, platform, the 66 runs, results per family with their raw files, cross-cutting
+  findings, the brief's five answers, limitations, data map, regeneration commands, provenance); README points to it; the
+  same file copied to the `/mnt/local` results directory. Convention from now on: every large experiment gets such a
+  SUMMARY.md in its `experimental_results/` directory.
 
 ### 2026-10-21/22 (session 34, fourth round: Phase 3 hardware validation of the filtered-write interference claim)
 
