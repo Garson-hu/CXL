@@ -15,7 +15,7 @@ Scenarios (each request id = <tag>-<scenario>-<index>-<type>-L<len>; scenario bo
   s3  bursts of k in BURSTS simultaneous mixed requests, 4 bursts per k, 4 s apart
   s4  (Experiment F) open loop at F_RATE req/s, 48 requests, hit share in SHARES x length class short (1k / 2k) or long (8k)
 Every request asks for OUT output tokens (ignore_eos). Pool: 64 prompts (16 per length 1k/2k/4k/8k).
-usage: run_b.py <out> <tag> [scenarios=s0,s1,s2,s3] [conc=1,2,4,8,16] [rates=0.5,1,2,4] [bursts=4,8,16] [reps=5] [out_tokens=32] [f_rate=2] [shares=0,0.25,0.5,0.75,1]
+usage: run_b.py <out> <tag> [scenarios=s0,s1,s2,s3] [conc=1,2,4,8,16] [rates=0.5,1,2,4] [bursts=4,8,16] [reps=5] [out_tokens=32] [f_rate=2] [shares=0,0.25,0.5,0.75,1] [fill=8]
                 [prio=none|hits_first|cold_first] [Cfg key=value ...]   (e.g. eager_prefetch=true gpu_workers=4 sched_policy=priority)"""
 import asyncio, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -27,10 +27,11 @@ SCEN = kv.pop("scenarios", "s0,s1,s2,s3").split(","); CONC = [int(x) for x in kv
 RATES = [float(x) for x in kv.pop("rates", "0.5,1,2,4").split(",")]; BURSTS = [int(x) for x in kv.pop("bursts", "4,8,16").split(",")]
 REPS = int(kv.pop("reps", "5")); OUT = int(kv.pop("out_tokens", "32")); PRIO = kv.pop("prio", "none")
 F_RATE = float(kv.pop("f_rate", "2")); SHARES = [float(x) for x in kv.pop("shares", "0,0.25,0.5,0.75,1").split(",")]
+NFILL = int(kv.pop("fill", "8"))            # number of 16,320-token fillers of a flush (8 x 16k exceeds a pool of up to 8,000 blocks; larger pools need more)
 cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=40.0, enforce_eager=False))
 if PRIO != "none": cfg.sched_policy = "priority"
 LENS = [1024, 2048, 4096, 8192]; POOL = [(500_000 + i, LENS[i % 4]) for i in range(64)]     # (seed, L)
-FILL = [prompt(20_000 + i, 16320) for i in range(8)]                                         # 8 x 16k = 130k tokens > the GPU KV
+FILL = [prompt(20_000 + i, 16320) for i in range(NFILL)]                                     # 8 x 16k = 130k tokens > the GPU KV of c28
 env = ServingEnv(cfg).start()
 cold_seed = [900_000]
 def cold_prompt(L): cold_seed[0] += 1; return prompt(cold_seed[0], L)

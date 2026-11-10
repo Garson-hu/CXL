@@ -81,8 +81,9 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         if i in preempt_steps: return "preempt"
         r = refused.get(i)
         if r is not None: return "hol:" + r["gate"]
-        if d["runtok"] >= B: return "budget"
-        if d["tok"] >= B: return "budget_adm"
+        bud = d.get("bud", B)                                # the step's own token budget (a KVADM_POLICY may shorten a step)
+        if d["runtok"] >= bud: return "budget"
+        if d["tok"] >= bud: return "budget_adm"
         if d["run"] >= SLOTS: return "slots"
         return "other"
     def span(t_a, t_b, rid, acc):
@@ -137,7 +138,7 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         d["wait_total"] = (t_run - tq) if (t_run is not None and tq is not None) else None
         if tq is not None:                                   # engine state at the first schedule() after the request was queued
             a = kv[min(N - 1, bisect.bisect_left(T0, tq))]
-            d.update(arr_run=a["run"], arr_infl=a["infl"], arr_sat=int(a["runtok"] >= B), arr_free=a["free0"] / a["tot"], arr_wait=a["wait"] + a["hold"])
+            d.update(arr_run=a["run"], arr_infl=a["infl"], arr_sat=int(a["runtok"] >= a.get("bud", B)), arr_free=a["free0"] / a["tot"], arr_wait=a["wait"] + a["hold"])
         R.append(d)
     if not R: print(f"{tag}: no requests"); return None
     keys = sorted({k for d in R for k in d}, key=lambda k: (k.startswith("w_"), k.startswith("ph_"), k))
@@ -197,7 +198,8 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         L.append(f"| time with free blocks < {thr:.0%} of the pool | {sum(dur[n] for n in range(N - 1) if kv[n]['free1'] < thr * tot) / W:.3f} |")
     L.append(f"| blocks held by loads in transfer, mean / max | {tw('wfrb'):.0f} / {max(d['wfrb'] for d in kv)} |")
     L.append(f"| in-flight prefill reservation after schedule(), mean / max | {tw('resv'):.0f} / {max(d['resv'] for d in kv)} |")
-    L.append(f"| steps whose running requests used the whole token budget (share of time) | {sum(dur[n] for n in range(N - 1) if kv[n]['runtok'] >= B) / W:.3f} |")
+    L.append(f"| steps whose running requests used the whole token budget (share of time) | {sum(dur[n] for n in range(N - 1) if kv[n]['runtok'] >= kv[n].get('bud', B)) / W:.3f} |")
+    if any(d.get("bud", B) != B for d in kv): L.append(f"| steps with a shortened token budget (share of time) | {sum(dur[n] for n in range(N - 1) if kv[n].get('bud', B) != B) / W:.3f} |")
     L.append(f"| running requests, mean / max | {tw('run'):.1f} / {max(d['run'] for d in kv)} |")
     L.append(f"| waiting + kv-holding requests, mean / max | {tw('wait') + tw('hold'):.1f} / {max(d['wait'] + d['hold'] for d in kv)} |")
     L.append("\n### Table 6 — engine state at arrival, and TTFT conditional on it (seconds, p50 [n])\n")

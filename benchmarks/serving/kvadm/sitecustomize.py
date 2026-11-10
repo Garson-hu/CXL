@@ -25,12 +25,13 @@ Events (t = time.monotonic() of the EngineCore, i = index of the schedule() call
   {"ev":"runfail","t","i","rid","new","free","now"}   a RUNNING request could not get the blocks of its next chunk
   {"ev":"preempt","t","i","rid","comp","ntok"}        Scheduler._preempt_request
   {"ev":"kv","i","t0","t1","free0","free1","tot","run","wait","hold","wfr","wfrb","infl","resv","runn","runtok",
-   "tok","dfree","head","hhead"}
+   "tok","bud","thr","dfree","head","hhead"}
         one line per schedule(): free blocks before / after, pool size, queue lengths (running, waiting, kv-holding),
         requests in WAITING_FOR_REMOTE_KVS and the blocks they hold, in-flight prefills and their remaining-block
         reservation after this schedule(), RUNNING requests served in the running loop and their tokens (the token
         budget left for the waiting loop is max_num_scheduled_tokens - runtok), tokens scheduled in the step, blocks
-        in the deferred-free list, and the request ids at the head of the waiting / kv-holding queues afterwards.
+        in the deferred-free list, and the request ids at the head of the waiting / kv-holding queues afterwards; bud / thr = the
+        step's token budget and long-prefill cap (they differ from the configured values only under a KVADM_POLICY).
 """
 import importlib.util, json, os, sys, time
 
@@ -165,6 +166,7 @@ if os.environ.get("VLLMEVT_OUT") and hasattr(_base, "_TARGETS"):
                                  "tot": bp.num_gpu_blocks if bp is not None else -1, "run": len(self.running), "wait": len(self.waiting), "hold": len(self.kv_holding_waiting),
                                  "wfr": wfr, "wfrb": wfrb, "infl": len(infl), "resv": self._inflight_prefill_reserved_blocks() if infl else 0,
                                  "runn": _ctx["runn"], "runtok": _ctx["runtok"], "tok": out.total_num_scheduled_tokens,
+                                 "bud": self.max_num_scheduled_tokens, "thr": self.scheduler_config.long_prefill_token_threshold,
                                  "dfree": sum(len(b) for _, b in self.deferred_frees) if self.deferred_frees else 0,
                                  "head": self.waiting.peek_request().request_id if self.waiting else None,
                                  "hhead": self.kv_holding_waiting.peek_request().request_id if self.kv_holding_waiting else None})

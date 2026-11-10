@@ -18,8 +18,12 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
   tokres=<n>      token reserve for short work: when loads have arrived and wait for promotion, when short requests
                   (compute need <= n tokens) wait, or when unvisited requests wait, running long prefills are capped so
                   that up to n tokens of the step's budget are left for them (at most n; 1 token when only the scan is needed).
-  fastchunk=<n>   with tokres: while the reserve is active, cap long prefill chunks at n tokens as well, so that the step
-                  ends sooner and the short work is picked up at the next step boundary earlier.
+  fastchunk=<n>   with tokres: while short work is under way next to a long prefill (a lookup pending, a load in transfer or
+                  arrived, a short tail running), the token budget of the whole step is n instead of the configured one, so
+                  that the next step boundary -- where lookup results, finished loads and promotions are picked up -- comes
+                  sooner; long prefills continue at what the short work leaves of n (at least mincap, default 128).
+  fastmax=<s>     (default 1.5) a request counts as short work for the reserve and for short steps for at most s seconds per phase
+                  (lookup, transfer, promotion): one that stays longer is waiting for memory, which neither helps.
   minchunk=<n>    do not start a compute request (miss, GPU-prefix hit) in a step that has fewer than min(its need, n)
                   budget tokens left (the stock scheduler starts it with whatever is left); default tokres + 256 when
                   tokres is set, so that the reserve cannot start a long prefill.
@@ -40,7 +44,7 @@ for _item in filter(None, (os.environ.get("KVADM_POLICY") or "").split(",")):
     P[_k] = float(_v) if _v else 1.0
 if "tokres" in P and "minchunk" not in P: P["minchunk"] = P["tokres"] + 256
 DECIDE = any(k in P for k in ("minchunk", "skip", "fallback"))            # mechanisms that change the connector's answer
-ST = {"req": {}, "pending_hit": {}, "capped": False, "mismatch": 0}
+ST = {"req": {}, "pending_hit": {}, "tm": {}, "capped": False, "mismatch": 0}
 
 def needs(kvm, request, new, loc, ncb, look, ext, enc):
     """(blocks the full sequence still needs, blocks this allocation takes): the two gates of KVCacheManager.allocate_slots"""
@@ -83,28 +87,45 @@ def before_schedule(ctx, sched):
     if len(ST["req"]) > 2048:
         for rid in [k for k in ST["req"] if k not in reqs]: ST["req"].pop(rid, None)
     if "tokres" not in P: return
-    B = ST["B"]; T = int(P["tokres"]); fin = sched.finished_recving_kv_req_ids; want = 0; in_transfer = False
-    for r in sched.kv_holding_waiting:                      # loads that have arrived (or promoted requests that were refused): their tail
-        if r.status != RS.WAITING_FOR_REMOTE_KVS or r.request_id in fin: want += max(1, r.num_tokens - r.num_computed_tokens)
-        else: in_transfer = True                            # a load in transfer: no budget needed yet, but its arrival is noticed at a step boundary
-    if want < T:
-        for r in sched.waiting:                             # short compute requests whose need is known; 1 token for everything else (the scan)
-            s = ST["req"].get(r.request_id)
-            want += s["need"] if (s is not None and s.get("kind") == "c" and s["need"] <= T) else 1
-            if want >= T: break
-    want = min(want, T); short = 0; n_long = 0; n_dec = 0
+    B = ST["B"]; T = int(P["tokres"]); fin = sched.finished_recving_kv_req_ids
+    now = time.monotonic(); TM = ST["tm"]; FMAX = P.get("fastmax", 1.5)
+    def fresh(rid, phase):
+        """a request counts as short work under way only for FMAX seconds per phase: one that stays longer is blocked by memory, not by
+        the step length, and neither a token reserve nor short steps help it"""
+        return now - TM.setdefault((rid, phase), now) < FMAX
+    tails = 0; small = 0; scan = 0; urgent = False
+    for r in sched.kv_holding_waiting:
+        rid = r.request_id
+        if r.status != RS.WAITING_FOR_REMOTE_KVS or rid in fin:      # a load that has arrived: its uncached tail
+            if fresh(rid, "p"): tails += max(1, r.num_tokens - r.num_computed_tokens); urgent = True
+            else: scan = 1
+        elif fresh(rid, "t"): urgent = True                           # a load in transfer: its arrival is noticed at a step boundary
+    for r in sched.waiting:
+        rid = r.request_id; st = ST["req"].get(rid)
+        if st is None:                                                # not looked up yet, or lookup pending
+            scan = 1
+            if fresh(rid, "u"): urgent = True
+        elif st.get("kind") == "c" and st["need"] <= T and fresh(rid, "s"): small += st["need"]; urgent = True   # a short compute request
+        else: scan = 1                                                # a long miss, or a request that waits for blocks: 1 token keeps the scan alive
+    want = min(T, tails + small) or scan
+    short = 0; n_long = 0; n_dec = 0
     for r in sched.running:
         rem = r.num_prompt_tokens - r.num_computed_tokens
         if rem <= 0: n_dec += 1
         elif rem <= T: short += rem
         else: n_long += 1
-    thr = ST["orig_thr"]
-    fast = "fastchunk" in P and (want > 1 or short or in_transfer)
+    thr = ST["orig_thr"]; bud = B
+    fast = "fastchunk" in P and (urgent or short > 0)
     if n_long and (want or short or fast):
-        thr = max(int(P.get("mincap", 256)), (B - want - short - n_dec) // n_long)
-        if fast: thr = min(thr, int(P["fastchunk"]))        # shorter steps while short work is pending or a load is in transfer
+        # fast mode: while short work is under way the whole step is kept short, so that the next step boundary -- where lookup results,
+        # finished loads and promotions are picked up -- comes sooner
+        if fast: bud = min(B, int(P["fastchunk"]))
+        thr = max(int(P.get("mincap", 128)), (bud - want - short - n_dec) // n_long)
     if sched.scheduler_config.long_prefill_token_threshold != thr: sched.scheduler_config.long_prefill_token_threshold = thr
-    ST["capped"] = thr != ST["orig_thr"]
+    if sched.max_num_scheduled_tokens != bud: sched.max_num_scheduled_tokens = bud
+    ST["capped"] = thr != ST["orig_thr"]; ST["bud"] = bud
+    if len(TM) > 8192:
+        for k in [k for k in TM if k[0] not in reqs]: TM.pop(k, None)
 
 def on_lookup(ctx, sched, conn, request, loc, r):
     """called after the connector's own answer r = (ext, async); returns (answer, action or None)"""
@@ -112,12 +133,14 @@ def on_lookup(ctx, sched, conn, request, loc, r):
     if not P or ext is None: return r, None
     rid = request.request_id; RS = ST["RS"]
     if ext > 0: _storefix(conn, rid)
-    if not DECIDE or request.status == RS.PREEMPTED: return r, None
     t = time.monotonic(); s = ST["req"].get(rid)
     if s is None: s = ST["req"][rid] = {"t0": t, "skip_kv": 0, "skip_tok": 0, "fb": False}
+    if request.status == RS.PREEMPTED:                       # the connector answers (0, False): a preempted request is recomputed (stock)
+        s["kind"] = "c"; s["need"] = request.num_tokens; return r, None
+    if not DECIDE: return r, None
     if s["fb"]: return (0, False), "fallback"                # decided earlier: stays a compute request
     kvm = sched.kv_cache_manager; free = kvm.block_pool.get_num_free_blocks()
-    left = ST["B"] - ctx["runtok"] - ctx["admtok"]
+    left = ST.get("bud", ST["B"]) - ctx["runtok"] - ctx["admtok"]
     blocks_obj, nloc, _ = kvm.get_computed_blocks(request); ncb = blocks_obj.blocks
     need_all = max(1, request.num_tokens - nloc)             # tokens to compute if nothing is loaded
     age = t - s["t0"]

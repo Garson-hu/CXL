@@ -24,6 +24,10 @@ plans (plan=...):
   smoke  two trials of part 1 and one of part 3
   c1     compute contention without memory pressure (Experiment C): a blocker miss of c1_blockers tokens starts prefilling,
          external hits of 4k arrive 0.5 / 2.5 / 4.5 s later and a 4k miss 1.5 s later; 6 small decoding holders
+  c2     a 16k miss that fits with 100 / 400 blocks to spare starts prefilling; external hits of 4k arrive 0.5 and 2.5 s later
+         (the in-flight reservation gate); a holder is released after 8 s
+  c3     head-of-line blocking: a 16k miss that does not fit (600 free blocks), then two external hits and a miss of 2k that
+         fit, and one more hit 1 s later; a holder is released after 4 s
 usage: run_adm.py <out> <tag> [plan=a3] [reps=3] [holder_out=2000] [probe_out=16] [tail=256] [parts=1,2,3,4,5] [Cfg key=value ...]"""
 import asyncio, json, os, re, sys, time, urllib.request
 import aiohttp
@@ -55,6 +59,19 @@ def build_plan():
         for rep in range(REPS):
             for Lb in C1_LB:
                 T.append(dict(trial(f"c1-B{Lb}", 6, 5500, [(0.0, "cold", Lb), (0.5, "host", 4096), (1.5, "cold", 4096), (2.5, "host", 4096), (4.5, "host", 4096)]), rep=rep))
+        return T
+    if PLAN == "c2":
+        # a long prefill under tight memory: the 16k blocker fits with `margin` blocks to spare; external hits of 4k arrive 0.5 and 2.5 s
+        # later. With the stock rule a load is admitted only under the blocker's remaining-block reservation.
+        for rep in range(REPS):
+            for margin in (100, 400):
+                T.append(dict(trial(f"c2-m{margin}", 6, blocks(16384 + TAIL) + margin, [(0.0, "cold", 16384), (0.5, "host", 4096), (2.5, "host", 4096)], release_at=8.0), rep=rep))
+        return T
+    if PLAN == "c3":
+        # head-of-line blocking under memory pressure: a 16k miss that does not fit (600 free blocks) is followed by two external hits and a
+        # miss of 2k that do; one holder is released 4 s later
+        for rep in range(REPS):
+            T.append(dict(trial("c3-hol", 6, 600, [(0.0, "cold", 16384), (0.05, "host", 2048), (0.10, "host", 2048), (0.15, "cold", 2048), (1.0, "host", 2048)], release_at=4.0), rep=rep))
         return T
     for rep in range(REPS):
         if 1 in PARTS:
