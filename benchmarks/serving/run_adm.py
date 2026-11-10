@@ -22,6 +22,8 @@ plans (plan=...):
                  hits first or misses first; one holder released after 3 s
          part 5  no memory pressure (free > 5,000 blocks): [cold 8k, host 4k] and [host 4k, cold 8k]
   smoke  two trials of part 1 and one of part 3
+  c1     compute contention without memory pressure (Experiment C): a blocker miss of c1_blockers tokens starts prefilling,
+         external hits of 4k arrive 0.5 / 2.5 / 4.5 s later and a 4k miss 1.5 s later; 6 small decoding holders
 usage: run_adm.py <out> <tag> [plan=a3] [reps=3] [holder_out=2000] [probe_out=16] [tail=256] [parts=1,2,3,4,5] [Cfg key=value ...]"""
 import asyncio, json, os, re, sys, time, urllib.request
 import aiohttp
@@ -33,8 +35,9 @@ out, tag = sys.argv[1:3]; kv = dict(a.split("=", 1) for a in sys.argv[3:])
 PLAN = kv.pop("plan", "a3"); REPS = int(kv.pop("reps", "3")); HOUT = int(kv.pop("holder_out", "2000")); POUT = int(kv.pop("probe_out", "16"))
 TAIL = int(kv.pop("tail", "256")); PARTS = [int(x) for x in kv.pop("parts", "1,2,3,4,5").split(",")]; TMAX = float(kv.pop("tmax", "25"))
 G_BLOCKS = int(kv.pop("growth_blocks", "6"))          # output blocks a holder has added when the probes arrive (calibrated on the first trials)
+_HB = kv.pop("hbase", None); C1_LB = [int(x) for x in kv.pop("c1_blockers", "8192,16384,28000").split(",")]
 cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=120.0, enforce_eager=False, adm=True))
-BS = 16; HBASE = 30000                                 # GPU KV block size (tokens); length of a holder's base prompt
+BS = 16; HBASE = int(_HB) if _HB else 30000          # GPU KV block size (tokens); length of a holder's base prompt
 def blocks(n): return -(-n // BS)
 
 # ---------------------------------------------------------------- the plan
@@ -46,6 +49,13 @@ def build_plan():
         T.append(trial("p1-L4096-f0.6-cold", 6, int(0.6 * blocks(4096 + TAIL)), [(0.0, "cold", 4096)], release_at=3.0))
         T.append(trial("p3-H4M8", 6, 700, [(0.0, "host", 4096), (0.005, "cold", 8192)], release_at=3.0))
         return [dict(t, rep=0) for t in T]
+    if PLAN == "c1":
+        # compute contention without memory pressure: one long miss (the blocker) starts prefilling; external hits of 4k (+TAIL)
+        # arrive 0.5 / 2.5 / 4.5 s later, a 4k miss 1.5 s later; 6 small decoding holders in the background
+        for rep in range(REPS):
+            for Lb in C1_LB:
+                T.append(dict(trial(f"c1-B{Lb}", 6, 5500, [(0.0, "cold", Lb), (0.5, "host", 4096), (1.5, "cold", 4096), (2.5, "host", 4096), (4.5, "host", 4096)]), rep=rep))
+        return T
     for rep in range(REPS):
         if 1 in PARTS:
             for L in (1024, 2048, 4096, 8192):

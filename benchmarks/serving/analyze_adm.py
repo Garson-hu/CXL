@@ -128,13 +128,16 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         if is_load: ph["load"] = (t_adm, t_arr); ph["promote"] = (t_arr, t_run)
         ph["compute"] = (t_run, tft)
         for k, (a, b) in ph.items(): d["ph_" + k] = (b - a) if (a is not None and b is not None) else None
-        for k in ("pre", "admit", "promote"):
+        for k in ("pre", "lookup", "admit", "promote"):
             if k in ph:
                 acc = {}; span(ph[k][0], ph[k][1], rid, acc)
                 for kk, v in acc.items(): d[f"w_{k}_{kk}"] = v
         acc = {}; span(tq, t_run, rid, acc)       # every waiting step from queueing to RUNNING, load included
         for kk, v in acc.items(): d["w_" + kk] = v
         d["wait_total"] = (t_run - tq) if (t_run is not None and tq is not None) else None
+        if tq is not None:                                   # engine state at the first schedule() after the request was queued
+            a = kv[min(N - 1, bisect.bisect_left(T0, tq))]
+            d.update(arr_run=a["run"], arr_infl=a["infl"], arr_sat=int(a["runtok"] >= B), arr_free=a["free0"] / a["tot"], arr_wait=a["wait"] + a["hold"])
         R.append(d)
     if not R: print(f"{tag}: no requests"); return None
     keys = sorted({k for d in R for k in d}, key=lambda k: (k.startswith("w_"), k.startswith("ph_"), k))
@@ -156,7 +159,7 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         if not v: continue
         L.append(f"| {cname} | {len(v)} | {q([d['prompt'] for d in v], .5):.0f} | {f1(q([d['need_now'] for d in v], .5), 0)} | {q([d['ttft'] for d in v], .5):.2f} / {q([d['ttft'] for d in v], .95):.2f} | "
                  + " | ".join(mm([d.get('ph_' + k) for d in v]) for k in ("pre", "lookup", "admit", "load", "promote", "compute")) + " |")
-    reasons = sorted({k[2:] for d in R for k in d if k.startswith("w_") and not k.startswith(("w_pre_", "w_admit_", "w_promote_"))})
+    reasons = sorted({k[2:] for d in R for k in d if k.startswith("w_") and not k.startswith(("w_pre_", "w_lookup_", "w_admit_", "w_promote_"))})
     L.append("\n### Table 2 — waiting time from queueing to RUNNING by reason (mean seconds per request; share of the category's waiting time in brackets)\n")
     L.append("| category | n | wait mean (s) | " + " | ".join(reasons) + " |"); L.append("|---|---|---|" + "---|" * len(reasons))
     for cname in CATS:
@@ -164,7 +167,7 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         if not v: continue
         tot = sum(sum(d.get("w_" + k, 0.0) for k in reasons) for d in v) or 1e-9
         L.append(f"| {cname} | {len(v)} | {sum(d['wait_total'] or 0 for d in v) / len(v):.2f} | " + " | ".join(f"{sum(d.get('w_' + k, 0.0) for d in v) / len(v):.2f} [{100 * sum(d.get('w_' + k, 0.0) for d in v) / tot:.0f}%]" for k in reasons) + " |")
-    for phn in ("pre", "admit", "promote"):
+    for phn in ("pre", "lookup", "admit", "promote"):
         rs = sorted({k[len(phn) + 3:] for d in R for k in d if k.startswith(f"w_{phn}_")})
         if not rs: continue
         L.append(f"\n### Table 3-{phn} — the `{phn}` phase by reason (mean seconds per request)\n")
@@ -197,6 +200,14 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
     L.append(f"| steps whose running requests used the whole token budget (share of time) | {sum(dur[n] for n in range(N - 1) if kv[n]['runtok'] >= B) / W:.3f} |")
     L.append(f"| running requests, mean / max | {tw('run'):.1f} / {max(d['run'] for d in kv)} |")
     L.append(f"| waiting + kv-holding requests, mean / max | {tw('wait') + tw('hold'):.1f} / {max(d['wait'] + d['hold'] for d in kv)} |")
+    L.append("\n### Table 6 — engine state at arrival, and TTFT conditional on it (seconds, p50 [n])\n")
+    L.append("| category | n | arrives with a prefill in flight | arrives in a budget-saturated step | free share of the pool at arrival p50 / p10 | TTFT, no prefill in flight | TTFT, prefill in flight | TTFT, free share ≥ 0.25 | TTFT, free share < 0.25 |"); L.append("|---|---|---|---|---|---|---|---|---|")
+    pq = lambda v: "–" if not v else f"{q(v, .5):.2f} [{len(v)}]"
+    for cname in CATS:
+        v = [d for d in R if d["cat"] == cname and d.get("arr_infl") is not None]
+        if not v: continue
+        L.append(f"| {cname} | {len(v)} | {sum(1 for d in v if d['arr_infl'] > 0) / len(v):.2f} | {sum(d['arr_sat'] for d in v) / len(v):.2f} | {q([d['arr_free'] for d in v], .5):.2f} / {q([d['arr_free'] for d in v], .1):.2f} | "
+                 f"{pq([d['ttft'] for d in v if d['arr_infl'] == 0])} | {pq([d['ttft'] for d in v if d['arr_infl'] > 0])} | {pq([d['ttft'] for d in v if d['arr_free'] >= 0.25])} | {pq([d['ttft'] for d in v if d['arr_free'] < 0.25])} |")
     T = "\n".join(L) + "\n"; open(f"{out}/tables-adm-{tag}.md", "w").write(T); print(T)
     return R
 
