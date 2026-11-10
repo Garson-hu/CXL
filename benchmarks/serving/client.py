@@ -4,11 +4,11 @@ vLLM OpenAI server, one JSON line per request in the record file:
   {"rid": X-Request-Id (= vLLM's request id, = LMCache's session id), "case", "L", "rep", "grp", "send_mono_ns",
    "send_wall", "first_mono_ns" (first token chunk at the client), "end_mono_ns", "ttft_ms", "total_ms", "prompt_tokens",
    "cached_tokens" (vLLM's prompt_tokens_details.cached_tokens: GPU prefix cache + external hits), "out_tokens",
-   "status" (HTTP), "error", "resp_id", "priority"}
+   "status" (HTTP), "error", "resp_id", "priority", "out_sha" / "out_head" (sha1 and first characters of the generated text; added 2026-11-10)}
 Prompts are pseudo-random token ids in [1000, 150000) drawn from a seeded generator (the convention of serve_replay.py and
 misscost_bench.py), so two prompts share a prefix iff they are drawn from the same seed. time.monotonic_ns() is the clock
 vLLM's EngineCore uses (time.monotonic()), so client and engine timestamps are directly comparable on this host."""
-import asyncio, json, random, time
+import asyncio, hashlib, json, random, time
 import aiohttp
 
 def prompt(seed, n):
@@ -35,7 +35,7 @@ class Client:
             if d > 0: await asyncio.sleep(d)
         rec = {"rid": rid, "case": case, "L": len(tokens), "rep": rep, "grp": grp, "priority": priority, "prompt_tokens": len(tokens)}
         if extra: rec.update(extra)
-        first = None; ntok = 0; cached = -1; resp_id = None; status = None; err = None
+        first = None; ntok = 0; cached = -1; resp_id = None; status = None; err = None; text = []
         async with self.sem:
             send = time.monotonic_ns(); rec["send_mono_ns"] = send; rec["send_wall"] = time.time()
             try:
@@ -47,7 +47,9 @@ class Client:
                             line = raw.decode().strip()
                             if not line.startswith("data: ") or line == "data: [DONE]": continue
                             d = json.loads(line[6:]); resp_id = resp_id or d.get("id")
-                            if first is None and d.get("choices") and d["choices"][0].get("text"): first = time.monotonic_ns()
+                            if d.get("choices") and d["choices"][0].get("text"):
+                                text.append(d["choices"][0]["text"])
+                                if first is None: first = time.monotonic_ns()
                             if d.get("usage"):
                                 det = d["usage"].get("prompt_tokens_details") or {}; cached = det.get("cached_tokens", -1) if det else -1
                                 ntok = d["usage"].get("completion_tokens", 0); rec["prompt_tokens"] = d["usage"].get("prompt_tokens", len(tokens))
@@ -55,6 +57,8 @@ class Client:
                 err = repr(e)[:300]
             end = time.monotonic_ns()
         rec.update(first_mono_ns=first, end_mono_ns=end, ttft_ms=((first or end) - send) / 1e6, total_ms=(end - send) / 1e6, cached_tokens=cached, out_tokens=ntok, status=status, error=err, resp_id=resp_id)
+        out_text = "".join(text)       # 2026-11-10: the generated text, for output-equality checks between policies (temperature 0)
+        rec.update(out_sha=hashlib.sha1(out_text.encode()).hexdigest()[:16], out_head=out_text[:32])
         self.f.write(json.dumps(rec, separators=(",", ":")) + "\n")
         return rec
 

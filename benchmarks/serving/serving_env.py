@@ -17,9 +17,14 @@ Library: env = ServingEnv(Cfg(...)); env.start(); ...; env.stop()"""
 import dataclasses, json, os, signal, subprocess, sys, threading, time, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.dirname(os.path.dirname(HERE))
-ENV_BIN = "/mnt/local/ghu4/envs/lmcache/bin"
-BASE_ENV = dict(HF_HOME="/mnt/local/ghu4/hf", XDG_CACHE_HOME="/mnt/local/ghu4/cache", TMPDIR="/mnt/local/ghu4/tmp",
-                VLLM_CACHE_ROOT="/mnt/local/ghu4/cache/vllm", PYTHONHASHSEED="0", LMCACHE_DISABLE_BANNER="1", HF_HUB_OFFLINE="1")
+# c28 defaults; another node (2026-11-10, Experiment E: the 16 GB RTX 4060 Ti nodes) sets KVADM_ENV_BIN (a copy of the environment on the
+# shared scratch file system; its console scripts are then run through its python, since their shebangs name the c28 path),
+# KVADM_SCRATCH (root of the HF / cache directories) and KVADM_TMP.
+ENV_BIN = os.environ.get("KVADM_ENV_BIN", "/mnt/local/ghu4/envs/lmcache/bin")
+_ROOT = os.environ.get("KVADM_SCRATCH", "/mnt/local/ghu4")
+_PYPREFIX = [f"{ENV_BIN}/python"] if "KVADM_ENV_BIN" in os.environ else []
+BASE_ENV = dict(HF_HOME=f"{_ROOT}/hf", XDG_CACHE_HOME=f"{_ROOT}/cache", TMPDIR=os.environ.get("KVADM_TMP", f"{_ROOT}/tmp"),
+                VLLM_CACHE_ROOT=f"{_ROOT}/cache/vllm", PYTHONHASHSEED="0", LMCACHE_DISABLE_BANNER="1", HF_HUB_OFFLINE="1")
 
 @dataclasses.dataclass
 class Cfg:
@@ -55,6 +60,8 @@ class Cfg:
     hooks_vllm: bool = True         # the vLLM post-import hook (effective only with hooks=true)
     hooks_lm: bool = True           # the LMCache event-bus mirror (effective only with hooks=true)
     samplers: bool = True
+    adm: bool = False               # 2026-11-10: load kvadm/sitecustomize.py (admission log + optional KVADM_* policies) instead of vllmevt/
+    adm_env: str = ""               # extra environment of the vLLM process, "K=V;K=V" (the KVADM_* policy flags)
     vport: int = 8100; mpport: int = 5555; hport: int = 8200
     extra_vllm: str = ""            # extra vllm serve args, space separated
     extra_lm: str = ""              # extra lmcache server args
@@ -87,7 +94,7 @@ class ServingEnv:
         c = self.c; env = dict(os.environ, **BASE_ENV)
         self.mark("config", json.dumps(dataclasses.asdict(c)))
         if c.tier != "none":
-            srv = [f"{ENV_BIN}/lmcache", "server", "--host", "127.0.0.1", "--port", str(c.mpport), "--http-host", "127.0.0.1", "--http-port", str(c.hport),
+            srv = _PYPREFIX + [f"{ENV_BIN}/lmcache", "server", "--host", "127.0.0.1", "--port", str(c.mpport), "--http-host", "127.0.0.1", "--http-port", str(c.hport),
                    "--chunk-size", str(c.chunk), "--eviction-policy", "LRU", "--eviction-trigger-watermark", f"{c.watermark:g}",
                    "--max-gpu-workers", str(c.gpu_workers), "--max-cpu-workers", str(c.cpu_workers), "--supported-transfer-mode", c.transfer_mode,
                    "--l2-prefetch-max-in-flight", str(c.l2_prefetch_max_in_flight), "--l1-size-gb", f"{c.l1_gb:g}"]
@@ -102,7 +109,7 @@ class ServingEnv:
             if c.hooks and c.hooks_lm: lm_env.update(PYTHONPATH=f"{REPO}/benchmarks/agent/kvevt", KVEVT_OUT=self.f("kvevents.jsonl"))
             self.p["lmcache"] = subprocess.Popen(["taskset", "-c", c.lm_cpus] + srv, stdout=open(self.f("lmcache.log"), "w"), stderr=subprocess.STDOUT, env=lm_env, start_new_session=True)
             self._wait(f"http://127.0.0.1:{c.hport}/healthcheck", self.p["lmcache"], "lmcache server", 600); self.mark("lmcache_ready")
-        vl = [f"{ENV_BIN}/vllm", "serve", c.model, "--port", str(c.vport), "--max-model-len", str(c.max_model_len), "--max-num-seqs", str(c.max_num_seqs),
+        vl = _PYPREFIX + [f"{ENV_BIN}/vllm", "serve", c.model, "--port", str(c.vport), "--max-model-len", str(c.max_model_len), "--max-num-seqs", str(c.max_num_seqs),
               "--gpu-memory-utilization", f"{c.gpu_util:g}", "--dtype", "float16", "--enable-prompt-tokens-details", "--disable-uvicorn-access-log",
               "--scheduling-policy", c.sched_policy]
         if c.enforce_eager: vl.append("--enforce-eager")
@@ -117,7 +124,9 @@ class ServingEnv:
             vl += ["--kv-transfer-config", json.dumps(kv)]
         if c.extra_vllm: vl += c.extra_vllm.split()
         v_env = dict(env)
-        if c.hooks and c.hooks_vllm: v_env.update(PYTHONPATH=f"{HERE}/vllmevt", VLLMEVT_OUT=self.f("vllmevt"))
+        if c.hooks and c.hooks_vllm: v_env.update(PYTHONPATH=f"{HERE}/kvadm" if c.adm else f"{HERE}/vllmevt", VLLMEVT_OUT=self.f("vllmevt"))
+        for kvp in filter(None, c.adm_env.split(";")):
+            k_, v_ = kvp.split("=", 1); v_env[k_] = v_
         self.p["vllm"] = subprocess.Popen(["taskset", "-c", c.vllm_cpus] + vl, stdout=open(self.f("server.log"), "w"), stderr=subprocess.STDOUT, env=v_env, start_new_session=True)
         self._wait(f"{self.url()}/health", self.p["vllm"], "vllm", 1500); self.mark("vllm_ready")
         if c.samplers:
