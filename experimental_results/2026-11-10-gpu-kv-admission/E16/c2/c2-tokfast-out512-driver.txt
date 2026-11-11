@@ -1,0 +1,4 @@
+pool 7456 blocks; 6 trials; host prefixes {4096: 12}; holders up to 6
+[19:16:19] populated; usage 0.0
+[19:16:43] trial 1/6 c2-m100-r0: usage at probe 0.8446680080482898, 0 probes timed out
+rc=0

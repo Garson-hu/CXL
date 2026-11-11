@@ -1,0 +1,6 @@
+| configuration | host-dominant hits (n = 111): TTFT p50 / mean (s) | GPU-prefix hits (n = 578): TTFT p50 / mean (s) | all requests: TTFT p50 / p95 / mean (s) | misses (n = 339): TTFT p50 / mean (s) | requests / s; output tokens / s | request time mean / p95 (s) | admission delay, mean (s): hits / misses | pool in use; time with < 25 % free; refused attempts | GPU busy: steps / NVML |
+|---|---|---|---|---|---|---|---|---|---|
+| stock (c66) | 6.57 / 10.51 | 0.32 / 2.86 | 2.01 / 22.3 / 5.37 | 5.45 / 8.06 | 0.233; 44.0 | 12.1 / 40.9 | 9.96 / 4.02 | 0.26; 0.10; 5029 | 0.50 / 0.50 |
+| shortest-prompt-first priority | 3.11 / 5.37 (-49 %) | 0.32 / 1.82 (-36 %) | 1.85 / 13.5 / 3.88 (-28 %) | 5.17 / 7.44 (-8 %) | 0.233; 44.0 | 11.3 (-7 %) / 40.5 | 4.66 / 3.38 | 0.27; 0.10; 4203 | 0.50 / 0.50 |
+| shortest-prompt-first + P1 | 1.68 / 2.12 (-80 %) | 0.34 / 0.98 (-66 %) | 1.38 / 11.8 / 3.19 (-41 %) | 5.11 / 7.75 (-4 %) | 0.233; 44.0 | 10.9 (-10 %) / 41.0 | 1.41 / 3.49 | 0.27; 0.10; 4284 | 0.51 / 0.51 |
+| bypass alone; 30 s | 3.26 / 6.54 (-38 %) | 0.32 / 2.46 (-14 %) | 1.99 / 16.3 / 4.53 (-16 %) | 5.29 / 7.73 (-4 %) | 0.233; 44.0 | 11.5 (-5 %) / 40.4 | 5.84 / 3.74 | 0.26; 0.10; 311 | 0.50 / 0.50 |

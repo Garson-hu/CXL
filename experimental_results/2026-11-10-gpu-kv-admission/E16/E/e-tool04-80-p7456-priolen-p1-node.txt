@@ -1,0 +1,6 @@
+# 2026-11-11T09:15:12-05:00 c61
+NVIDIA GeForce RTX 4060 Ti, 16380 MiB, 580.82.07
+Model name:          AMD EPYC 8124P 16-Core Processor
+Mem:            188           1         184           2           2         183
+total 0
+lrwxrwxrwx 1 ghu4 ncsu 35 Nov 10 18:21 lmcache -> /mnt/beegfs/ghu4/kvadm/envs/lmcache

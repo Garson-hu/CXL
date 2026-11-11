@@ -1,0 +1,4 @@
+# 2026-11-10T16:23:35-05:00 c23
+NVIDIA GeForce RTX 4060 Ti, 16380 MiB, 580.82.07
+Model name:          AMD EPYC 7302P 16-Core Processor
+Mem:            125           3          98           1          23         120

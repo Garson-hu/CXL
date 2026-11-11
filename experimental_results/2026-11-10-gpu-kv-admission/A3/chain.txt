@@ -1,0 +1,2 @@
+[2026-11-10T17:33:24-05:00] start a3 plan=a3 gpu_blocks=7456 (controlled admission pressure, baseline policy)
+[2026-11-10T17:47:07-05:00] end a3 rc=0

@@ -1,0 +1,15 @@
+pool 7456 blocks; 114 trials; host prefixes {1024: 9, 2048: 33, 4096: 29, 8192: 9}; holders up to 12
+[18:23:43] populated; usage 0.0
+[18:23:47] trial 1/114 p1-L1024-f3-host-r0: usage at probe 0.9652582159624413, 0 probes timed out
+[18:24:30] trial 11/114 p1-L2048-f0.6-host-r0: usage at probe 0.9859154929577465, 0 probes timed out
+[18:25:16] trial 21/114 p1-L8192-f1.5-host-r0: usage at probe 0.8910798122065727, 0 probes timed out
+[18:26:11] trial 31/114 p2-K12-f0.6-host-r0: usage at probe 0.9723675385647217, 0 probes timed out
+[18:27:10] trial 41/114 p5-M8H4-r0: usage at probe 0.26076458752515086, 0 probes timed out
+[18:27:51] trial 51/114 p1-L2048-f1.5-host-r1: usage at probe 0.9683433936955064, 0 probes timed out
+[18:28:39] trial 61/114 p1-L8192-f3-host-r1: usage at probe 0.784842387659289, 0 probes timed out
+[18:29:32] trial 71/114 p2-K12-f1.5-host-r1: usage at probe 0.9408450704225352, 0 probes timed out
+[18:30:31] trial 81/114 p4-n8-hostfirst-r1: usage at probe 0.9199195171026157, 0 probes timed out
+[18:31:16] trial 91/114 p1-L2048-f3-host-r2: usage at probe 0.9392354124748491, 0 probes timed out
+[18:32:00] trial 101/114 p1-L4096-f0.6-host-r2: usage at probe 0.9754527162977867, 0 probes timed out
+[18:32:56] trial 111/114 p3-C4M8-r2: usage at probe 0.9030181086519115, 0 probes timed out
+rc=0

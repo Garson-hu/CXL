@@ -1,0 +1,6 @@
+M config 1820382237824379 wall=1794344810.532794 {"out": ".", "tag": "smoke1", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 20.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1820389246900403 wall=1794344817.541870 
+M vllm_ready 1820417254762668 wall=1794344845.549733 
+M env_ready 1820417277095521 wall=1794344845.572065 
+M stop 1820453252040256 wall=1794344881.547010 
+M stopped 1820456006146123 wall=1794344884.301116 

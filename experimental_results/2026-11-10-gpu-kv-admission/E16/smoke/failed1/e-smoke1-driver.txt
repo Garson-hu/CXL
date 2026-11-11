@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/ghu4/CXL/benchmarks/serving/run_adm.py", line 83, in <module>
+    env = ServingEnv(cfg).start()
+          ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ghu4/CXL/benchmarks/serving/serving_env.py", line 131, in start
+    self._wait(f"{self.url()}/health", self.p["vllm"], "vllm", 1500); self.mark("vllm_ready")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ghu4/CXL/benchmarks/serving/serving_env.py", line 87, in _wait
+    if proc.poll() is not None: raise RuntimeError(f"{name} exited rc={proc.returncode} (see {self.c.out}/{self.c.tag}-*.log)")
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: vllm exited rc=1 (see ./e-smoke1-*.log)
+rc=1

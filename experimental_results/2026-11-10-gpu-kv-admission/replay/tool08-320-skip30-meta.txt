@@ -1,0 +1,8 @@
+M config 1862696554255075 wall=1794387124.849226 {"out": ".", "tag": "tool08-320-skip30", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 320.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=skip=30,hitres=600", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1862702564322290 wall=1794387130.859293 
+M vllm_ready 1862782584603969 wall=1794387210.879575 
+M env_ready 1862782608468505 wall=1794387210.903438 
+M replay_start 1862782608878354 wall=1794387210.903848 trace=mooncake_toolagent_trace.jsonl t0=0.0 t1=100.0 speed=0.08 n=544 max_out=1024 dequant=1.0
+M replay_end 1864054823934020 wall=1794388483.118904 
+M stop 1864056824985558 wall=1794388485.119956 
+M stopped 1864072603341447 wall=1794388500.898312 

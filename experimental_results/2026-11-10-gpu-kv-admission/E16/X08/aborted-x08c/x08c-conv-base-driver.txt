@@ -1,0 +1,1 @@
+291 requests, trace window 0.0-100.0 s at 0.08x = 1250 wall s, prompt tokens 3342990

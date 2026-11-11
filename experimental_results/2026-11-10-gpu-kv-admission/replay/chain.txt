@@ -1,0 +1,51 @@
+[2026-11-10T16:09:04-05:00] start tool04-320-base tier=dram l1_gb=320 adm=true (tool-agent 0-200 s at 0.04x; instrumented baseline)
+[2026-11-10T17:33:00-05:00] end tool04-320-base rc=0
+[2026-11-10T17:47:20-05:00] start tool08-320-base tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456
+[2026-11-10T18:10:26-05:00] end tool08-320-base rc=0
+[2026-11-10T18:10:31-05:00] start conv08-320-base conv 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456
+[2026-11-10T18:33:48-05:00] end conv08-320-base rc=0
+[2026-11-10T18:33:53-05:00] start tool08-320-sync tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 async_sched=off
+[2026-11-10T18:57:04-05:00] end tool08-320-sync rc=0
+[2026-11-10T18:57:09-05:00] start tool08-320-tokfast tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+[2026-11-10T19:20:59-05:00] end tool08-320-tokfast rc=0
+[2026-11-10T19:21:04-05:00] start tool08-320-lpt1024 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 long_prefill_threshold=1024
+[2026-11-10T19:44:36-05:00] end tool08-320-lpt1024 rc=0
+[2026-11-10T19:44:41-05:00] start tool08-320-tokfast11 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+[2026-11-10T20:08:01-05:00] end tool08-320-tokfast11 rc=0
+[2026-11-10T20:08:06-05:00] start tool04-320-tokfast11 tool 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+[2026-11-10T21:32:57-05:00] end tool04-320-tokfast11 rc=0
+[2026-11-10T21:33:02-05:00] start tool08-320-p1 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst
+[2026-11-10T21:56:15-05:00] end tool08-320-p1 rc=0
+[2026-11-10T21:56:20-05:00] start tool08-320-p2 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+[2026-11-10T22:19:34-05:00] end tool08-320-p2 rc=0
+[2026-11-10T22:19:39-05:00] start tool08-320-p3 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600,agecap=20
+[2026-11-10T22:42:47-05:00] end tool08-320-p3 rc=0
+[2026-11-10T22:42:52-05:00] start tool08-320-storefix tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=storefix
+[2026-11-10T23:05:46-05:00] end tool08-320-storefix rc=0
+[2026-11-10T23:05:51-05:00] start tool08-320-priohits tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool08-320-base-client.jsonl
+[2026-11-10T23:29:00-05:00] end tool08-320-priohits rc=0
+[2026-11-10T23:29:05-05:00] start conv08-320-p2 conv 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+[2026-11-10T23:52:25-05:00] end conv08-320-p2 rc=0
+[2026-11-10T23:52:30-05:00] start tool08-320-base2 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456
+[2026-11-11T00:15:35-05:00] end tool08-320-base2 rc=0
+[2026-11-11T00:15:40-05:00] start tool08-320-p2-r2 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+[2026-11-11T00:38:52-05:00] end tool08-320-p2-r2 rc=0
+[2026-11-11T00:38:57-05:00] start tool08-320-priohits-p1 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool08-320-base-client.jsonl adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst
+[2026-11-11T01:02:08-05:00] end tool08-320-priohits-p1 rc=0
+[2026-11-11T01:02:13-05:00] start tool04-320-p2 tool 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+[2026-11-11T02:27:03-05:00] end tool04-320-p2 rc=0
+[2026-11-11T02:27:08-05:00] start tool04-320-priohits tool 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool04-320-base-client.jsonl
+[2026-11-11T03:51:58-05:00] end tool04-320-priohits rc=0
+[2026-11-11T03:52:03-05:00] start tool08-320-skip30 tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=skip=30,hitres=600
+[2026-11-11T04:15:01-05:00] end tool08-320-skip30 rc=0
+[2026-11-11T04:15:06-05:00] start tool08-320-priolen tool 0-100 s at 0.08x tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio=len
+[2026-11-11T04:38:15-05:00] end tool08-320-priolen rc=0
+[2026-11-11T04:38:20-05:00] start conv04-320-base conv 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456
+[2026-11-11T06:03:09-05:00] end conv04-320-base rc=0
+[2026-11-11T06:03:14-05:00] start conv04-320-p4 conv 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=30,hitres=600
+[2026-11-11T07:28:03-05:00] end conv04-320-p4 rc=0
+[2026-11-11T07:28:08-05:00] start conv04-320-priolen conv 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio=len
+[2026-11-11T08:52:57-05:00] end conv04-320-priolen rc=0
+[2026-11-11T08:53:02-05:00] start tool04-320-p4 tool 0-200 s at 0.04x tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=30,hitres=600
+[2026-11-11T10:17:54-05:00] end tool04-320-p4 rc=0
+[2026-11-11T10:17:59-05:00] queue empty

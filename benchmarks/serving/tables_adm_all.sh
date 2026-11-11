@@ -32,7 +32,7 @@ fam $B/X08 x08-c61 x08b-base="stock (c61)" x08b-priolen="shortest-prompt-first p
     x08b-p1-a20="P1 + starvation bound 20 s" x08b-p2-sync="P2 + synchronous scheduling"
 fam $B/X08 x08c-conv x08c-conv-base="stock (c60)" x08c-conv-priolen="shortest-prompt-first priority" x08c-conv-skip30="bypass alone; 30 s" x08c-conv-p2=P2 x08c-conv-p2-skip30=P4
 # --- 16 GB nodes, Experiment E, the 80 GB capacity point and the intermediate load
-fam $B/E e-tool04-80-p7456 e-tool04-80-p7456-base="stock (c61)" e-tool04-80-p7456-priohits="oracle hits-first priority" e-tool04-80-p7456-priolen="shortest-prompt-first priority" e-tool04-80-p7456-p1=P1 e-tool04-80-p7456-p4=P4
+fam $B/E e-tool04-80-p7456 e-tool04-80-p7456-base="stock (c61)" e-tool04-80-p7456-priohits="oracle hits-first priority" e-tool04-80-p7456-priolen="shortest-prompt-first priority" e-tool04-80-p7456-priolen-p1="shortest-prompt-first + P1" e-tool04-80-p7456-p1=P1 e-tool04-80-p7456-p4=P4
 fam $B/E e66-tool04-80-p7456 e66-tool04-80-p7456-base="stock (c66)" e66-tool04-80-p7456-priolen="shortest-prompt-first priority" e66-tool04-80-p7456-priolen-p1="shortest-prompt-first + P1" e66-tool04-80-p7456-skip30="bypass alone; 30 s" e66-tool04-80-p7456-p4=P4
 fam $B/T06 t06 t06-base="stock (c73)" t06-priohits="oracle hits-first priority" t06-priolen="shortest-prompt-first priority" t06-skip30="bypass alone; 30 s" t06-p2=P2 t06-p4=P4
 fam $B/E e-tool04-80-big e-tool04-80-big-base=stock e-tool04-80-big-p1=P1 e-tool04-80-big-p1-sync="P1 + synchronous scheduling"
@@ -46,7 +46,7 @@ $PY $S/table_adm_cross.py "sustainable, 320 GB (c28)=$R:tool04-320-base" "sustai
   "shortest-prompt-first priority=1:tool04-320-priolen,2:e-tool04-80-p7456-priolen,3:e66-tool04-80-p7456-priolen,4:t06-priolen,5:tool08-320-priolen,7:x08b-priolen,8:e-tool08-120-big-priolen" \
   "oracle shortest-compute-first priority=7:x08b-priouncached" \
   "shortest-prompt-first with aging (1 ms per token on c61; 3 ms on c60)=6:x08-priolenage3,7:x08b-priolenage1" \
-  "shortest-prompt-first + token mechanisms (P1)=3:e66-tool04-80-p7456-priolen-p1" \
+  "shortest-prompt-first + token mechanisms (P1)=2:e-tool04-80-p7456-priolen-p1,3:e66-tool04-80-p7456-priolen-p1" \
   "token mechanisms (P1; with the 3 s bypass, P2, on c28 at the sustainable load and on c73)=1:tool04-320-p2,2:e-tool04-80-p7456-p1,4:t06-p2,5:tool08-320-p1,8:e-tool08-120-big-p1" \
   "token mechanisms + bypass, 3 s (P2)=5:tool08-320-p2,6:x08-p2" \
   "bypass alone, 3 s=6:x08-skip3,7:x08b-skip" \

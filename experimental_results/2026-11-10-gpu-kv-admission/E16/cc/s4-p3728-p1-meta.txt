@@ -1,0 +1,19 @@
+M config 1855430291700943 wall=1794365275.700665 {"out": ".", "tag": "s4-p3728-p1", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 60.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3728, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1855445321242126 wall=1794365290.730206 
+M vllm_ready 1855504348494128 wall=1794365349.757458 
+M env_ready 1855504371208703 wall=1794365349.780173 
+M warmup 1855504372802751 wall=1794365349.781766 
+M populate 1855505712639778 wall=1794365351.121603 
+M s4 1855573739086058 wall=1794365419.148050 share=0 class=short
+M s4 1855602610205880 wall=1794365448.019170 share=0.25 class=short
+M s4 1855629567339860 wall=1794365474.976304 share=0.5 class=short
+M s4 1855653373290485 wall=1794365498.782254 share=0.75 class=short
+M s4 1855679676680386 wall=1794365525.085644 share=1 class=short
+M s4 1855709512165931 wall=1794365554.921129 share=0 class=long
+M s4 1855788640066677 wall=1794365634.049030 share=0.25 class=long
+M s4 1855856527642605 wall=1794365701.936606 share=0.5 class=long
+M s4 1855904114065966 wall=1794365749.523030 share=0.75 class=long
+M s4 1855941493526610 wall=1794365786.902490 share=1 class=long
+M bench_end 1855971343702350 wall=1794365816.752666 
+M stop 1855973347963967 wall=1794365818.756929 
+M stopped 1855977205637268 wall=1794365822.614602 

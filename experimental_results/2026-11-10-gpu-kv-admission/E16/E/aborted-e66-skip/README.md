@@ -1,0 +1,1 @@
+Fragments of the second run of job 334993 (job_e66.sh, c66): the job was cancelled on 2026-11-11T04:02:36-05:00 right after its stock run (e66-tool04-80-p7456-base) had finished; the run that had just started (bypass alone with a 3 s bound) sent no measured request. Replaced by job_e66b.sh.

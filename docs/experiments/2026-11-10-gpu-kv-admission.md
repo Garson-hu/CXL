@@ -1,6 +1,6 @@
 # 2026-11-10 — GPU KV memory admission of external KV hits (RQ2 validation; exploratory)
 
-**STATUS: ACTIVE (started 2026-11-10; branch `explore/gpu-kv-admission`, from `explore/cxl-serving-scheduling-gap` cb7c4ba =
+**STATUS: COMPLETE 2026-11-11 (started 2026-11-10; branch `explore/gpu-kv-admission`, from `explore/cxl-serving-scheduling-gap` cb7c4ba =
 the verified serving-study commit b7b6823 plus its summary file; not merged anywhere).** This study does not change the
 research charter, the charter-RQ1 conclusions, the Phase 3 negative result or the 2026-11-04 serving study; where its
 measurements correct a statement of that study, the correction is recorded here (§A1.4) and the old file is left as it is.
@@ -25,17 +25,19 @@ host-memory results, not CXL results); numbers are changes against the stock run
    the store fix. Three do not: relaxing the reservation of loads, compute fallback, chunked loading.
 3. **Sustainable load (C2.1, C2.4).** Token mechanisms: mean TTFT −17 to −26 % on four server configurations, cached requests
    53–81 % sooner, misses' TTFT +6 to +11 % and request time +0 to +3 %; p99 and throughput unchanged. With the bypass
-   bounded at 30 s added (P4): −33 %, p95 −32 %, misses +4 %. The bypass alone: −16 % with no class slower.
+   bounded at 30 s added (P4): −33 to −34 %, p95 −30 to −32 %, misses +3 to +4 %. The bypass alone: −16 % with no class slower.
 4. **Overload (C2.2).** The token mechanisms alone are worse than stock (+9 %; +29 % on a large pool). The bypass alone with
    a 30 s bound: mean TTFT −28 %, mean request time −15 %, p95 −28 %, no class slower on average, longest wait +4 s
-   (confirmed on two nodes). The bound decides the outcome: 3 s gives −2 to −4 %, 100 s gives −45 % with a longest wait of
-   110 s.
+   (confirmed on two nodes). The bound decides the outcome: 3 s gives −10 %, 10 s −23 % at no measurable cost, 100 s −39 %
+   with a longest wait of 75 s. With the token mechanisms added the misses pay (+16 % at 30 s) for no further gain in the
+   mean.
 5. **The strong baseline (C2.6).** vLLM's own priority scheduling with the prompt length as priority — one request field, no
    knowledge of the cache — does as well as the prototype at the sustainable load and better on the means above it: mean
    TTFT −28 % at the sustainable load (p95 −40 %, misses 8 % faster, nobody waiting longer), −43 % at an intermediate load,
    −49 % under overload (mean request time −21 %), where it lets the largest prompts wait up to four minutes (stock: 53 s).
-   With oracle knowledge of the hits, priority gives −20 %, −32 % and −33 %. The token reserve adds to that ordering where the queue drains: both together reach −41 % at the sustainable
-   load (p95 −47 %, misses still 4 % faster than in stock); under overload it adds nothing.
+   With oracle knowledge of the hits, priority gives −20 %, −32 % and −33 %. The token reserve adds to that ordering where
+   the queue drains: both together reach −41 % at the sustainable load (p95 −47 %, misses still 4 % faster than in stock);
+   under overload it adds nothing.
 6. **What the prototype adds to that baseline:** the token reserve, at the sustainable load — 13 points of mean TTFT on top
    of the ordering and the lowest median for cached requests. Under overload it adds nothing: the bypass bounded at 30 s
    (−28 %, longest wait +4 s) is matched by shortest-prompt-first with an aging term in the priority (−30 %, longest wait as
@@ -50,7 +52,7 @@ host-memory results, not CXL results); numbers are changes against the stock run
 
 **Where things are.** Report sections A (cause), B (mechanisms), C (C1 mixed workloads, C2 trace replays, C3 larger pool and
 model, C4 CXL), D (cross-experiment analysis), E (negative results), F (implications and criteria), G (correctness and validity),
-H (limitations). Configuration matrix of all @@NRUNS@@ runs: `experimental_results/2026-11-10-gpu-kv-admission/experiment-matrix.md`.
+H (limitations). Configuration matrix of all 181 runs: `experimental_results/2026-11-10-gpu-kv-admission/experiment-matrix.md`.
 Prototype: `benchmarks/serving/kvadm/kvadm_policy.py` (flags in `KVADM_POLICY`; nothing is active without it). Figures:
 `experimental_results/2026-11-10-gpu-kv-admission/figs/`. Branch `explore/gpu-kv-admission`, not merged.
 <!-- /SUMMARY -->
@@ -1058,7 +1060,7 @@ stretched and nobody was waiting long). The two smaller pools add the second cau
 because blocks and steps that stood idle behind the blocked request are used.
 
 <!-- C2 -->
-### C2. Trace replays (the brief's Experiment D; MEASURED 2026-11-10 16:09 – 2026-11-11 @@END@@; c28 `replay/`, 16 GB nodes `E16/X08/`, `E16/E/`, `E16/T06/`)
+### C2. Trace replays (the brief's Experiment D; MEASURED 2026-11-10 16:09 – 2026-11-11 10:41; c28 `replay/`, 16 GB nodes `E16/X08/`, `E16/E/`, `E16/T06/`)
 **Why.** The controlled workloads say what each mechanism does to requests of known type. Whether the serving system as a whole
 gains depends on the mix a real trace produces — how often hits arrive behind prefills, how tight memory gets, how long outputs
 are — and on what the change costs everybody else.
@@ -1099,7 +1101,7 @@ share of time in engine steps that computed tokens / the NVML utilization), and 
 prompt length): `tables-d-<family>.md`; waiting time by reason per run: `tables-adm-<run>.md`. All of them are regenerated by
 `tables_adm_all.sh`.
 
-#### C2.1 Tool-agent trace at the sustainable load (0.04×; c28, `replay/tool04-320-*`, MEASURED 2026-11-10 16:09 – 2026-11-11 03:52)
+#### C2.1 Tool-agent trace at the sustainable load (0.04×; c28, `replay/tool04-320-*`, MEASURED 2026-11-10 16:09 – 2026-11-11 10:18)
 **How.** 1,159 requests arrive in 4,984 s. The stock server is busy 49 % of the time, has on average 1.8 requests running and
 0.8 waiting, and less than a quarter of the pool free for 9 % of the time: the queue fills in bursts and drains again.
 
@@ -1111,6 +1113,7 @@ prompt length): `tables-d-<family>.md`; waiting time by reason per run: `tables-
 | oracle hits-first priority | 2.61 / 4.32 (-47 %) | 0.27 / 1.60 (-37 %) | 1.48 / 16.4 / 3.94 (-20 %) | 5.05 / 8.07 (+2 %) | 0.233; 44.0 | 10.6 (-7 %) / 39.8 | 3.64 / 4.03 | 0.26; 0.10; 4604 | 0.49 / 0.49 |
 | prototype v1.1 | 1.52 / 3.58 (-56 %) | 0.28 / 1.11 (-57 %) | 1.21 / 17.6 / 3.64 (-26 %) | 5.22 / 8.35 (+6 %) | 0.233; 44.0 | 10.5 (-8 %) / 40.2 | 2.91 / 4.13 | 0.26; 0.09; 4803 | 0.49 / 0.49 |
 | P2 | 1.61 / 3.86 (-53 %) | 0.27 / 1.20 (-53 %) | 1.22 / 18.5 / 3.74 (-24 %) | 5.22 / 8.35 (+6 %) | 0.232; 44.0 | 10.6 (-7 %) / 39.9 | 3.17 / 4.11 | 0.26; 0.09; 4894 | 0.49 / 0.49 |
+| P4 | 1.45 / 2.27 (-72 %) | 0.28 / 1.01 (-60 %) | 1.20 / 14.8 / 3.25 (-34 %) | 5.21 / 8.11 (+3 %) | 0.233; 44.0 | 10.2 (-10 %) / 40.0 | 1.58 / 3.85 | 0.26; 0.09; 765 | 0.49 / 0.49 |
 
 **Result — tails, fairness, side effects** (`replay/tables-tails-tool04-320.md`).
 
@@ -1120,6 +1123,7 @@ prompt length): `tables-d-<family>.md`; waiting time by reason per run: `tables-
 | oracle hits-first priority | 33.5 / 43.1 | 18 / 0 | 12 % / 1 % | 0.56 / 11.2 | 5.21 / 27.0 | 2 | 1119 | 0.110 / 0.321 | 190.0 |
 | prototype v1.1 | 34.3 / 40.4 | 18 / 0 | 22 % / 13 % | 0.65 / 7.6 | 4.67 / 29.5 | 3 | 1088 | 0.119 / 0.327 | 202.5 |
 | P2 | 34.6 / 40.4 | 18 / 0 | 21 % / 13 % | 0.64 / 9.8 | 4.73 / 29.8 | 3 | 1088 | 0.122 / 0.324 | 202.7 |
+| P4 | 32.1 / 43.1 | 14 / 0 | 24 % / 12 % | 0.65 / 7.6 | 4.67 / 27.1 | 3 | 1088 | 0.118 / 0.328 | 202.4 |
 
 - **The prototype** (v1.1 and P2 are the same mechanisms at this load: the bypass of P2 holds a reservation for 0.6 % of the
   run): mean TTFT −24 to −26 % (4.93 → 3.64–3.74 s), median −22 %, p95 −12 to −16 %; p99 unchanged (34.0 → 34.3–34.6 s),
@@ -1127,11 +1131,17 @@ prompt length): `tables-d-<family>.md`; waiting time by reason per run: `tables-
   (−53 to −57 %). Misses: mean TTFT +6 % (7.89 → 8.35 s), p95 +11 to +12 %, request time +0 to +1 %. Mean request time of all
   requests −7 to −8 % (11.4 → 10.5–10.6 s). 21–22 % of the requests get their first token more than 10 % sooner than in stock,
   13 % more than 10 % later.
+- **With the bypass bounded at 30 s added (P4, run on 2026-11-11): mean TTFT −34 % (4.93 → 3.25 s), p95 −30 % (21.0 →
+  14.8 s), mean request time −10 %**; host-dominant hits −72 % (8.19 → 2.27 s), GPU-prefix hits −60 %, misses +3 %; p99
+  32.1 s against 34.0 s, 14 requests above 30 s instead of 28. Head-of-line blocking is a quarter of the hits' waiting time at
+  this load (A2.1); the 3 s bypass of P2 left it in place, the 30 s bypass removes most of it.
 - **Oracle hits-first priority** (stock scheduler, priorities from the stock run): mean TTFT −20 % (3.94 s), p95 −22 %
   (21.0 → 16.4 s), host-dominant hits −47 %, GPU-prefix hits −37 %, misses +2 %, mean request time −7 %; 12 % of the requests
   sooner, 1 % later.
-- **Against that baseline** the prototype is 4–6 points better in mean TTFT, 6–10 points worse at p95, and costs the misses
-  6 % instead of 2 %. The mean request time is the same (10.5–10.6 s).
+- **Against that baseline** the token mechanisms are 4–6 points better in mean TTFT, 6–10 points worse at p95, and cost the
+  misses 6 % instead of 2 %, at the same mean request time (10.5–10.6 s); P4 is 14 points better in mean TTFT and 8 at p95,
+  with the misses at +3 %. The realizable ordering baseline, shortest-prompt-first, was measured at this load with the 80 GB
+  tier (C2.4: −28 %).
 - **Throughput and utilization do not move** in any configuration: same makespan, 0.233 requests and 44.0 output tokens per
   second, GPU busy 0.49. The prototype runs compute 2.6 % fewer prompt tokens per second because more of the prompt is served
   from a cache (0.446 against 0.431): with the store fix 202.5–202.7 GB reach the host tier instead of 187.9 GB.
@@ -1434,7 +1444,7 @@ the bypass at the block gate and ordering by length — work on this trace as on
 spread of request sizes, not the cache: under overload the bypass alone is the only prototype configuration that improves both means of the
 conversation trace, and shortest-prompt-first again has the lowest mean and the longest tail.
 
-#### C2.4 Capacity sensitivity: the sustainable load with an 80 GB host tier (nodes c61 and c66, `E16/E/e-tool04-80-p7456-*`, `e66-tool04-80-p7456-*`; MEASURED 2026-11-10 19:45 – 2026-11-11 08:42)
+#### C2.4 Capacity sensitivity: the sustainable load with an 80 GB host tier (nodes c61 and c66, `E16/E/e-tool04-80-p7456-*`, `e66-tool04-80-p7456-*`; MEASURED 2026-11-10 19:45 – 2026-11-11 10:41)
 **Why.** The brief asks for one configuration with a smaller host tier, to see whether the importance of the problem and the
 effect of the remedies depend on host capacity. The 16 GB nodes cannot hold 320 GB, so this is also where the configurations
 that were added on 2026-11-11 were measured at the sustainable load.
@@ -1451,6 +1461,7 @@ Node c61 (`E16/E/tables-primary-e-tool04-80-p7456.md`, `tables-tails-e-tool04-80
 | stock (c61) | 6.60 / 10.50 | 0.32 / 2.89 | 2.03 / 22.5 / 5.41 | 5.49 / 8.12 | 0.233; 44.0 | 12.2 / 41.1 | 9.94 / 4.06 | 0.27; 0.10; 5047 | 0.50 / 0.50 |
 | oracle hits-first priority | 2.94 / 4.89 (-53 %) | 0.32 / 1.88 (-35 %) | 1.91 / 16.8 / 4.37 (-19 %) | 5.49 / 8.25 (+2 %) | 0.233; 44.0 | 11.4 (-7 %) / 40.6 | 4.22 / 4.19 | 0.27; 0.10; 4454 | 0.50 / 0.50 |
 | shortest-prompt-first priority | 3.18 / 5.38 (-49 %) | 0.32 / 1.84 (-36 %) | 1.89 / 13.8 / 3.91 (-28 %) | 5.21 / 7.49 (-8 %) | 0.233; 44.0 | 11.3 (-7 %) / 40.7 | 4.69 / 3.40 | 0.27; 0.10; 4204 | 0.50 / 0.50 |
+| shortest-prompt-first + P1 | 1.64 / 2.19 (-79 %) | 0.35 / 0.99 (-66 %) | 1.37 / 12.0 / 3.21 (-41 %) | 5.13 / 7.78 (-4 %) | 0.233; 44.0 | 11.0 (-10 %) / 41.1 | 1.51 / 3.51 | 0.27; 0.10; 4285 | 0.51 / 0.51 |
 | P1 | 1.62 / 4.25 (-60 %) | 0.35 / 1.33 (-54 %) | 1.40 / 20.6 / 4.19 (-23 %) | 5.72 / 8.78 (+8 %) | 0.233; 44.0 | 11.5 (-6 %) / 41.6 | 3.55 / 4.47 | 0.27; 0.10; 4813 | 0.51 / 0.50 |
 | P4 | 1.61 / 2.45 (-77 %) | 0.34 / 1.18 (-59 %) | 1.40 / 15.3 / 3.65 (-33 %) | 5.70 / 8.45 (+4 %) | 0.233; 44.0 | 11.1 (-9 %) / 41.2 | 1.73 / 4.17 | 0.27; 0.10; 1050 | 0.50 / 0.50 |
 
@@ -1459,6 +1470,7 @@ Node c61 (`E16/E/tables-primary-e-tool04-80-p7456.md`, `tables-tails-e-tool04-80
 | stock (c61) | 34.7 / 52.0 | 26 / 0 | – | 0.90 / 27.7 | 6.06 / 28.3 | 1 | 1214 | 0.071 / 0.311 | 204.3 |
 | oracle hits-first priority | 33.7 / 48.5 | 18 / 0 | 12 % / 1 % | 0.90 / 20.1 | 6.05 / 27.8 | 2 | 1214 | 0.063 / 0.319 | 205.5 |
 | shortest-prompt-first priority | 31.2 / 48.2 | 13 / 0 | 17 % / 3 % | 0.89 / 9.3 | 6.03 / 27.9 | 3 | 1218 | 0.061 / 0.319 | 206.0 |
+| shortest-prompt-first + P1 | 32.0 / 51.2 | 12 / 0 | 29 % / 12 % | 0.92 / 4.5 | 5.60 / 28.1 | 4 | 1212 | 0.055 / 0.328 | 225.5 |
 | P1 | 35.2 / 51.7 | 22 / 0 | 21 % / 15 % | 1.00 / 9.8 | 5.74 / 29.9 | 3 | 1212 | 0.060 / 0.323 | 225.5 |
 | P4 | 32.0 / 51.8 | 14 / 0 | 24 % / 14 % | 0.92 / 8.9 | 5.73 / 28.6 | 4 | 1209 | 0.056 / 0.329 | 224.9 |
 
@@ -1497,7 +1509,7 @@ Node c66 (`E16/E/tables-primary-e66-tool04-80-p7456.md`, `tables-tails-e66-tool0
 - **Shortest-prompt-first with the token mechanisms on top (c66): mean TTFT −41 % (5.37 → 3.19 s), median −31 %, p95 −47 %
   (22.3 → 11.8 s), mean request time −10 %**; host-dominant hits −80 % (10.51 → 2.12 s), GPU-prefix hits −66 %, and the
   misses still 4 % faster than in stock; p99 31.8 s against 34.5 s, longest TTFT 51.2 s against 51.7 s. The best configuration
-  measured at this load.
+  measured at this load; a second measurement on c61 gives the same (−41 %, p95 −47 %, host-dominant hits −79 %, misses −4 %).
 - **Reading.** At the sustainable load the full prototype (P4) and shortest-prompt-first are of the same order: P4 has the
   lower mean and median (−33 % and −31 % against −28 % and −8 %), shortest-prompt-first the lower p95, and it is the only
   single mechanism with which the misses gain. They are not alternatives: ordering decides who is first when the queue is
@@ -1560,14 +1572,14 @@ the stock run's misses, and the longest TTFT of the run in seconds (`replay/tabl
 | shortest-prompt-first priority | – | -28 % / -7 % / -8 % / 48 | -28 % / -7 % / -8 % / 48 | -43 % / -18 % / -15 % / 151 | -49 % / -21 % / -7 % / 249 | – | -49 % / -20 % / -8 % / 259 | -31 % / -10 % / -9 % / 62 |
 | oracle shortest-compute-first priority | – | – | – | – | – | – | -52 % / -24 % / -9 % / 228 | – |
 | shortest-prompt-first with aging (1 ms per token on c61; 3 ms on c60) | – | – | – | – | – | -50 % / -24 % / -8 % / 96 | -30 % / -14 % / -9 % / 52 | – |
-| shortest-prompt-first + token mechanisms (P1) | – | – | -41 % / -10 % / -4 % / 51 | – | – | – | – | – |
+| shortest-prompt-first + token mechanisms (P1) | – | -41 % / -10 % / -4 % / 51 | -41 % / -10 % / -4 % / 51 | – | – | – | – | – |
 | token mechanisms (P1; with the 3 s bypass, P2, on c28 at the sustainable load and on c73) | -24 % / -7 % / +6 % / 40 | -23 % / -6 % / +8 % / 52 | – | -23 % / -7 % / +11 % / 63 | +9 % / +9 % / +28 % / 63 | – | – | +29 % / +22 % / +50 % / 68 |
 | token mechanisms + bypass, 3 s (P2) | – | – | – | – | -4 % / +2 % / +29 % / 63 | -2 % / +3 % / +28 % / 63 | – | – |
 | bypass alone, 3 s | – | – | – | – | – | -10 % / -6 % / -2 % / 56 | -12 % / -6 % / -1 % / 56 | – |
 | bypass alone, 10 s | – | – | – | – | – | -23 % / -13 % / -5 % / 54 | – | – |
 | bypass alone, 30 s | – | – | -16 % / -5 % / -4 % / 49 | -25 % / -10 % / -6 % / 64 | -28 % / -15 % / -6 % / 58 | -28 % / -15 % / -5 % / 58 | – | – |
 | bypass alone, 100 s | – | – | – | – | – | -39 % / -20 % / -4 % / 75 | – | – |
-| token mechanisms + bypass, 30 s (P4) | – | -33 % / -9 % / +4 % / 52 | – | -32 % / -11 % / +8 % / 65 | – | -28 % / -10 % / +16 % / 61 | – | – |
+| token mechanisms + bypass, 30 s (P4) | -34 % / -10 % / +3 % / 43 | -33 % / -9 % / +4 % / 52 | – | -32 % / -11 % / +8 % / 65 | – | -28 % / -10 % / +16 % / 61 | – | – |
 | token mechanisms + bypass, 100 s | – | – | – | – | – | -45 % / -20 % / +9 % / 109 | – | – |
 
 The conversation trace (`replay/tables-cross-load-conv.md`):
@@ -1591,8 +1603,8 @@ same in every panel. The conversation trace under overload is the family measure
    the bypass where a queue stands behind requests that do not fit (−16 %, −25 %, −28 %).
 2. **"Maintaining or improving overall performance" holds for the bypass alone at every load** — the mean request time falls by
    5 %, 10 % and 15 %, the misses are 4–6 % faster, the longest wait grows by at most 5 s on the tool-agent trace (6 s on the
-   conversation trace) — **and for the two mechanisms together (P4) up to the intermediate load** (−33 % and −32 % in mean
-   TTFT, −9 % and −11 % in mean request time, misses +4 % and +8 %). Under overload P4 gains nothing over the bypass alone
+   conversation trace) — **and for the two mechanisms together (P4) up to the intermediate load** (−33 to −34 % and −32 %
+   in mean TTFT, −9 to −10 % and −11 % in mean request time, misses +3 to +4 % and +8 %). Under overload P4 gains nothing over the bypass alone
    and charges the misses 16 %. The token mechanisms without the bypass must not be used under overload at all.
 3. **The comparison with a strong baseline.** Shortest-prompt-first, an option of the stock scheduler, reaches −28 %, −43 %
    and −49 % in mean TTFT at the three loads and −31 % on the large pool, with the misses *faster* every time. P4 is ahead of
@@ -1779,9 +1791,8 @@ partial load (one number: tokens to load, all or nothing). Besides, the transfer
 mechanisms bring hits of 1k, 2k, 4k and 8k from 2.8–4.9 s to 1.1–1.5 s alike (C1). What does depend on length is the *other*
 request: a hit sent 0.5 s after an 8k, 16k or 28k prefill has started gets its first token after 2.0, 4.1 and 7.8 s in stock
 and after 0.9–1.6 s with the token mechanisms (B2) — the wait is set by the work in front of the hit, not by the hit's own
-prefix. In the replays the requests
-with the largest prompts (8,192 tokens or more; mostly misses) are the ones that pay: unchanged at the sustainable load, later
-at the tail under overload with every mechanism that reorders (C2.2).
+prefix. In the replays the requests with the largest prompts (8,192 tokens or more; mostly misses) are the ones that pay:
+unchanged at the sustainable load, later at the tail under overload with every mechanism that reorders (C2.2).
 
 **D5. Are the benefits different under bursts and under sustained overload?** Yes, and differently for each mechanism — this is
 the main thing the replays add to the controlled scenarios (C2.6).
@@ -1795,29 +1806,28 @@ the main thing the replays add to the controlled scenarios (C2.6).
   −28 % under overload (mean request time −5 %, −10 %, −15 %), each time with no class slower on average (C2.2, C2.4, C2.5).
 - *Ordering the queue by prompt length* helps at every load that was measured, and more the longer the queue: −28 % mean TTFT
   at the sustainable load, −43 % at the intermediate one, −49 % under overload — where, without an aging term, it also starves
-  the largest prompts, which it does not at the sustainable load (longest TTFT 48 s against 52 s in stock; 151 s against 61 s at the intermediate load; 249–259 s against 52–53 s under
-  overload).
+  the largest prompts, which it does not at the sustainable load (longest TTFT 48 s against 52 s in stock; 151 s against 61 s
+  at the intermediate load; 249–259 s against 52–53 s under overload).
 
 **D6. Does the prototype improve total system performance?** In latency, at the load each mechanism is made for; in capacity,
-never; and less than the best existing option does.
+never; and beyond what the best existing option does only at the sustainable load.
 - No configuration of this study — stock options, prototype, priorities — changes the work the engine gets through: in every
   open-loop replay the makespan is within 2 % of stock, the GPU-busy share within 0.03, and the prototype's token mechanisms
   cost 2–3 % of the prompt tokens computed per second. The closed-loop and saturated open-loop workloads show the same (−1 to
   −5 % completed requests per second with the token mechanisms, ±1 % with the bypass alone). The one measured gain in work
   done is the store fix: 35 GB more KV in the host tier under overload, 1–1.5 points more of the prompt served from a cache.
-- What improves is the order of service, and with it the mean TTFT (−23 to −33 % at the sustainable load, −28 % under
+- What improves is the order of service, and with it the mean TTFT (−23 to −34 % at the sustainable load, −28 % under
   overload, for the mechanism that fits the load), the mean request time (−6 to −8 % and −15 %) and the p95 (−8 to −16 % and
   −28 %). The p99 improves in one prototype configuration (P4 at the intermediate load, −10 %) and is unchanged or worse in
   the others.
 - Against the strong baseline (C2.6): at the sustainable load the token mechanisms reach −23 to −26 % in mean TTFT and, with
-  the 30 s bypass added, −33 %, where shortest-prompt-first reaches −28 % with a p95 40 % below stock (P4: 32 %) and the
+  the 30 s bypass added, −33 to −34 %, where shortest-prompt-first reaches −28 % with a p95 40 % below stock (P4: 32 %) and the
   misses 8 % *faster* (P4: 4 % slower) — the prototype is level with the baseline there. From the intermediate load on it is
   behind on the means: −32 % against −43 % at 0.06×, −28 % against −49 % under overload. What it has that the baseline
-  lacks: the lowest median for cached requests at the sustainable load (host-
-  dominant hits 1.6 s against 3.1 s with the 80 GB tier). The bounded longest wait of the bypass under overload (58 s against
-  249–259 s for plain shortest-prompt-first) is matched once the priority has an aging term: −30 % in mean TTFT at a longest
-  wait of 52 s (C2.2).
-  And at the sustainable load the two are complementary: shortest-prompt-first with the token mechanisms on top reaches −41 %,
+  lacks: the lowest median for cached requests at the sustainable load (host-dominant hits 1.6 s against 3.1 s with the 80 GB
+  tier). The bounded longest wait of the bypass under overload (58 s against 249–259 s for plain shortest-prompt-first) is
+  matched once the priority has an aging term: −30 % in mean TTFT at a longest wait of 52 s (C2.2). And at the sustainable
+  load the two are complementary: shortest-prompt-first with the token mechanisms on top reaches −41 %,
   13 points more than the ordering alone, with the misses still faster than in stock (C2.4); under overload the token
   mechanisms add nothing to a priority order (C2.2).
 
@@ -1926,8 +1936,8 @@ free-block counts (A3). The hypothesis the study started from is refuted (E, ite
 - *Sustainable load* (tool-agent trace, GPU busy 49 %). The token mechanisms lower the mean TTFT by 17–26 % on four server
   configurations (two host-tier sizes, two pool sizes, two models), the median by 22–32 %, the mean request time by 4–8 %;
   cached requests answer in less than half the time (host-dominant hits −53 to −81 %); the misses' TTFT is 6–11 % higher and
-  their request time 0–3 %; p99 and throughput do not move. With the bypass bounded at 30 s added (P4, measured with the
-  80 GB tier) the mean TTFT is 33 % and the p95 32 % below stock, with the misses 4 % slower. That is an end-to-end gain
+  their request time 0–3 %; p99 and throughput do not move. With the bypass bounded at 30 s added (P4, both host-tier sizes)
+  the mean TTFT is 33–34 % and the p95 30–32 % below stock, with the misses 3–4 % slower. That is an end-to-end gain
   against stock, and of the same order as the best ordering baseline: shortest-prompt-first with the stock scheduler lowers
   the mean TTFT by 28 %, the p95 by 40 % and makes the misses 8 % *faster*; the oracle hits-first priority reaches −19 to
   −20 % with the misses at +2 %. The two combine: shortest-prompt-first with the token mechanisms on top reaches −41 % in mean TTFT and −47 % at p95
@@ -1956,8 +1966,8 @@ admission control left. Ordering does carry over: shortest-prompt-first lowers t
 **6. How does larger host cache capacity affect the importance of admission?** Capacity and scheduling are separate levers, and in these measurements they multiply. With the stock scheduler,
 320 GB instead of 80 GB of host tier (c28 against c61, which reproduces c28's own 80 GB run, C3) turns 38 misses into hits (host-dominant hits 112 → 148 of 1,159; share of prompt tokens
 served from the host tier 0.071 → 0.120) and lowers the mean TTFT by 9 % (5.41 → 4.93 s) and the median by 23 % (2.03 →
-1.56 s). The token mechanisms take 23 % off at 80 GB and 24–26 % at 320 GB: the same relative gain at both capacities, 31–33 %
-for both steps together (5.41 → 3.64–3.74 s). A larger tier therefore raises the *number* of requests whose TTFT is almost
+1.56 s). The token mechanisms take 23 % off at 80 GB and 24–26 % at 320 GB (with the 30 s bypass 33 % and 34 %): the same
+relative gain at both capacities, 31–33 % for both steps together (5.41 → 3.64–3.74 s; 40 % with P4, 5.41 → 3.25 s). A larger tier therefore raises the *number* of requests whose TTFT is almost
 entirely waiting — a host-dominant hit that finds the engine free answers in 0.3 s, the class median is 3.3–6.6 s — and does
 not change how long each of them waits; nor is the wait specific to that class (the GPU-prefix hits, four to five times as
 many, wait in the same queue). Two findings bear on capacity directly. Under overload the stock store path loses 31–33 % of the KV it has
@@ -2018,12 +2028,22 @@ the one unpinned run, `tool04-320-base`, came up at the same 7,456 blocks) and t
 the column differ. No table puts an overloaded baseline next to a lightly loaded prototype: load is offered open-loop from the
 trace at the same instants in both.
 
-**Completion.** Every measured request of every run in the configuration matrix completed with HTTP 200: no failure, no timeout,
-no cancellation by the server (`experiment-matrix.md`, column `errors` = 0 in all rows). The only errors are client-side connection
-resets on *filler* requests — the 16k-token prompts that flush the GPU prefix cache between scenarios of the mixed workloads: 1–4
-of the 176 fillers of a run, in stock and prototype runs alike (column `filler_errors`). Runs that did not start are kept and
-named: a pool of 2,048 blocks (`E16/cc/failed-pool2048`), one start before the previous server had released the GPU
-(`E16/cc/failed-gpu-busy`; the launcher now waits), jobs on a node without the environment (`E16/*/failed-c0`).
+**Completion.** The configuration matrix (`experiment-matrix.md`) has 181 rows: 172 runs that completed and 9 starts
+that did not (below). In the completed runs every measured request finished with HTTP 200 except three, all lost on the client
+side within a millisecond of being sent, before they reached the server (no server-side record): request 113 of `tool04-320-p2`
+and request 449 of `e-tool08-120-big-p1` (`ServerDisconnectedError` after 0.4 and 0.8 ms) and one 8k miss of scenario s2-r1 in
+`cc-p7456-sync` (`ClientOSError 104`, connection reset, after 0.9 ms; that scenario is not used in a table of this report). The
+cause is a race on kept-alive connections: the server closes an idle connection at the moment the client reuses it. The same
+reset hit *filler* requests — the 16k-token prompts that flush the GPU prefix cache between scenarios of the mixed workloads:
+1–5 of the 176 fillers of a run, in stock and prototype runs alike (column `filler_errors`, 23 runs). Since 2026-11-11
+02:30 the client retries a request once when the server disconnects before any status line (commit fb95dcb): in the eight
+mixed-workload runs made after that (`E16/ccb/`) 20 requests were retried — 19 fillers and one measured request, which then
+completed normally — and two fillers failed on the retry as well; no replay made after the fix needed a retry. No request
+failed on the server, timed out or was cancelled by it. Starts that did not become runs are kept and named: a pool of 2,048
+blocks (`E16/cc/failed-pool2048`), one start before the previous server had released the GPU (`E16/cc/failed-gpu-busy`; the
+launcher now waits), jobs on a node without the environment (`E16/*/failed-c0`), smoke runs, and two jobs that were cancelled
+in their first minute to reorder a queue (`E16/X08/aborted-x08c`, `E16/E/aborted-e66-skip`). One job (334506) was killed by
+the batch system in the second it started and wrote nothing.
 
 **Output correctness, path by path (`run_correct.py`, `E16/correct/`, node c66, 2026-11-11 00:02–00:31).** 48 prompts of 1k–8k
 tokens (+100 fresh tokens) are answered five ways on one server and the generated text (32 tokens, temperature 0) is compared
@@ -2119,9 +2139,10 @@ mock tests (`kvadm/test_policy.py`, 9 cases).
    one intermediate speed for the tool-agent trace); prompts are synthetic token sequences that reproduce the trace's prefix
    sharing, so the generated text has no meaning and only its identity between runs is checked; output lengths follow the
    trace, capped at 1,024 tokens. Controlled workloads use 1k–8k prompts and 16–32 output tokens.
-6. **The priority baselines.** The oracle hits-first priorities come from a previous run of the same replay; a server that
-   classifies requests at arrival was not built. Shortest-prompt-first is realizable by a client and was run under overload
-   only.
+6. **The priority baselines.** The oracle priorities (hits-first, shortest-compute-first) come from a previous run of the same
+   replay; a server that classifies requests at arrival was not built. Shortest-prompt-first and its aging variant are
+   computed by the client from the prompt length and the send time; the aging variant was run under overload only, with two
+   values of its one parameter, and priority scheduling was not combined with the bypass.
 7. **The prototype is a policy module, not an implementation.** It acts through three existing interfaces of the scheduler
    (the connector's answer, the reservation argument, two configuration values) and costs 0.3 ms per engine step in Python.
    What cannot be expressed there — a partial load, releasing part of a reservation — was analysed from the source, not built.
@@ -2129,9 +2150,22 @@ mock tests (`kvadm/test_policy.py`, 9 cases).
    from the controlled scenarios and varied on one replay. They are tied to this model and GPU (a full step of 2,048 tokens
    takes about 0.45 s here) and were not tuned further.
 9. **Repetitions.** The overloaded tool-agent replay was run twice for the stock server and for two prototype
-   configurations and agrees within 1 % on the all-request means (G); stock and prototype were also replicated on other
-   nodes. Most other configurations were run once. Classes with few requests (host-dominant hits on the large pool: 17–30;
+   configurations and agrees within 1 % on the all-request means (G). The main results of 2026-11-11 were each measured on
+   two nodes with the same relative changes (bypass alone at 30 s: c28 and c60; shortest-prompt-first: c28 and c61 under
+   overload, c61 and c66 at the sustainable load; shortest-prompt-first with the token mechanisms: c61 and c66; P4 at the
+   sustainable load: c28 and c61). Most other configurations were run once. Classes with few requests (host-dominant hits on the large pool: 17–30;
    in the conversation trace: 11) give noisy class means.
-10. **Lost requests.** Two measured requests (one each in two prototype runs) never reached the server because of a
-   client-side connection reset; the client was fixed afterwards (G).
+10. **Lost requests.** Three measured requests (one each in three runs) never reached the server because of a client-side
+   connection reset; the client was made to retry afterwards (G).
 <!-- /H -->
+
+## Change history
+- 2026-11-10 — study started. A1 source inspection, A2 instrumentation and instrumented baselines, A3 controlled reproduction
+  (with and without the full-sequence gate), A5 store loss; prototype module v1 → v1.4 and the controlled scenarios of B; C1
+  mixed workloads at four pool sizes; first replays (stock options, P1–P3, oracle hits-first priority, store fix); C3 on the
+  16 GB nodes; correctness checks (G); C4 (CXL blocked).
+- 2026-11-11 — the bound of the bypass varied with and without the token mechanisms (P4, bypass alone, no reservation);
+  shortest-prompt-first (plain, with aging, on top of P1) and oracle shortest-compute-first as ordering baselines; the
+  conversation trace at both loads; the 80 GB capacity point on two nodes; an intermediate load; the mixed workloads under
+  memory pressure with the 30 s bound; sections C1 (Result 4), C2, D, E, F, H and the summary written; figures 5, 7, 8 added.
+  Last run finished at 10:41; study closed.

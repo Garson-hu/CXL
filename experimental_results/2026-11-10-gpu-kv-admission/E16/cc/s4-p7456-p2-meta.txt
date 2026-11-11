@@ -1,0 +1,19 @@
+M config 1854247308240327 wall=1794364092.717205 {"out": ".", "tag": "s4-p7456-p2", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 60.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1854261335175979 wall=1794364106.744140 
+M vllm_ready 1854321363395191 wall=1794364166.772359 
+M env_ready 1854321386034384 wall=1794364166.794998 
+M warmup 1854321387792925 wall=1794364166.796756 
+M populate 1854322722767874 wall=1794364168.131732 
+M s4 1854390730963227 wall=1794364236.139927 share=0 class=short
+M s4 1854419512031568 wall=1794364264.920995 share=0.25 class=short
+M s4 1854446477580814 wall=1794364291.886545 share=0.5 class=short
+M s4 1854470284391722 wall=1794364315.693356 share=0.75 class=short
+M s4 1854496593500890 wall=1794364342.002465 share=1 class=short
+M s4 1854526444835125 wall=1794364371.853799 share=0 class=long
+M s4 1854605805755892 wall=1794364451.214720 share=0.25 class=long
+M s4 1854673976238931 wall=1794364519.385203 share=0.5 class=long
+M s4 1854721496918106 wall=1794364566.905882 share=0.75 class=long
+M s4 1854762051221255 wall=1794364607.460185 share=1 class=long
+M bench_end 1854791854518958 wall=1794364637.263483 
+M stop 1854793859074679 wall=1794364639.268039 
+M stopped 1854797415655537 wall=1794364642.824620 

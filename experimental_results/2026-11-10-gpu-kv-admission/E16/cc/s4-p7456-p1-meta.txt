@@ -1,0 +1,19 @@
+M config 1853690246668245 wall=1794363535.655632 {"out": ".", "tag": "s4-p7456-p1", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 60.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1853706276354511 wall=1794363551.685318 
+M vllm_ready 1853764302943504 wall=1794363609.711907 
+M env_ready 1853764325711116 wall=1794363609.734675 
+M warmup 1853764328239084 wall=1794363609.737202 
+M populate 1853765668147942 wall=1794363611.077111 
+M s4 1853833727962752 wall=1794363679.136926 share=0 class=short
+M s4 1853862504011841 wall=1794363707.912975 share=0.25 class=short
+M s4 1853889470513246 wall=1794363734.879477 share=0.5 class=short
+M s4 1853913287113384 wall=1794363758.696077 share=0.75 class=short
+M s4 1853939601391967 wall=1794363785.010356 share=1 class=short
+M s4 1853969473707112 wall=1794363814.882671 share=0 class=long
+M s4 1854049039061011 wall=1794363894.448025 share=0.25 class=long
+M s4 1854117233122356 wall=1794363962.642087 share=0.5 class=long
+M s4 1854164923742113 wall=1794364010.332706 share=0.75 class=long
+M s4 1854205532910386 wall=1794364050.941875 share=1 class=long
+M bench_end 1854235336966644 wall=1794364080.745930 
+M stop 1854237341473135 wall=1794364082.750438 
+M stopped 1854241799752777 wall=1794364087.208718 

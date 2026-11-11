@@ -1,0 +1,4 @@
+pool 7456 blocks; 3 trials; host prefixes {2048: 9}; holders up to 6
+[20:06:38] populated; usage 0.0
+[20:06:49] trial 1/3 c3-hol-r0: usage at probe 0.9173708920187793, 0 probes timed out
+rc=0

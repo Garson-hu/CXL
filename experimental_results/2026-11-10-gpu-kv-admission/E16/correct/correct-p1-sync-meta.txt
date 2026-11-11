@@ -1,0 +1,12 @@
+M config 1863948058845779 wall=1794373793.467810 {"out": ".", "tag": "correct-p1-sync", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "off", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1863963090102374 wall=1794373808.499066 
+M vllm_ready 1864022116631071 wall=1794373867.525595 
+M env_ready 1864022134860941 wall=1794373867.543825 
+M warmup 1864022136634508 wall=1794373867.545598 
+M compute 1864022746641376 wall=1794373868.155605 
+M host 1864099884267313 wall=1794373945.293231 
+M host+load 1864136406827234 wall=1794373981.815791 
+M cold+load 1864228452267759 wall=1794374073.861231 
+M bench_end 1864351383593938 wall=1794374196.792557 
+M stop 1864353384994945 wall=1794374198.793960 
+M stopped 1864356791765537 wall=1794374202.200730 

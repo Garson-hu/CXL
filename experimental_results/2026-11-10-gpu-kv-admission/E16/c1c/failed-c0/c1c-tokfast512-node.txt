@@ -1,0 +1,5 @@
+# 2026-11-10T18:37:39-05:00 c0
+NVIDIA GeForce RTX 4060 Ti, 16380 MiB, 615.71.10
+Model name:          AMD EPYC 9115 16-Core Processor
+Mem:            125           1         122           0           0         122
+ls: cannot access '/mnt/local/ghu4/envs/': No such file or directory

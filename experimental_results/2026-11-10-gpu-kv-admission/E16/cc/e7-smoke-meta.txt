@@ -1,0 +1,14 @@
+M config 1844692266284974 wall=1794354537.668248 {"out": ".", "tag": "e7-smoke", "model": "Qwen/Qwen2.5-7B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 0, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1844707358056030 wall=1794354552.760019 
+M vllm_ready 1844788414001604 wall=1794354633.815964 
+M env_ready 1844788434536214 wall=1794354633.836499 
+M warmup 1844788440079728 wall=1794354633.842042 
+M populate 1844789658649259 wall=1794354635.060612 
+M trial 1844934120763853 wall=1794354779.522726 {"name": "p1-L4096-f1.5-host-r0", "K": 6, "free_target": 408, "P_h": 19696, "usage": 0.9445933869526363, "free_est": 434, "t0_mono_ns": 1844934170739075, "probes": [[0.0, "host", 4096]], "release_at": null}
+M trial 1844938471950355 wall=1794354783.873913 {"name": "p1-L4096-f0.6-cold-r0", "K": 6, "free_target": 163, "P_h": 20352, "usage": 0.9758713136729222, "free_est": 189, "t0_mono_ns": 1844938521924154, "probes": [[0.0, "cold", 4096]], "release_at": 3.0}
+M release 1844941522708335 wall=1794354786.924671 {"name": "p1-L4096-f0.6-cold-r0", "n": 1, "blocks_each": 1272}
+M trial 1844947016450686 wall=1794354792.418413 {"name": "p3-H4M8-r0", "K": 6, "free_target": 700, "P_h": 18912, "usage": 0.9069322098812715, "free_est": 729, "t0_mono_ns": 1844947066426419, "probes": [[0.0, "host", 4096], [0.005, "cold", 8192]], "release_at": 3.0}
+M release 1844950067772722 wall=1794354795.469735 {"name": "p3-H4M8-r0", "n": 1, "blocks_each": 1182}
+M bench_end 1844953854994987 wall=1794354799.256958 
+M stop 1844955857243923 wall=1794354801.259208 
+M stopped 1844958311734160 wall=1794354803.713697 

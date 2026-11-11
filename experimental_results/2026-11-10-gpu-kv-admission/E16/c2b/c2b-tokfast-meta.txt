@@ -1,0 +1,21 @@
+M config 1849630409352562 wall=1794359475.818316 {"out": ".", "tag": "c2b-tokfast", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1849643434874383 wall=1794359488.843838 
+M vllm_ready 1849740474929657 wall=1794359585.883893 
+M env_ready 1849740495199678 wall=1794359585.904165 
+M warmup 1849740501536938 wall=1794359585.910500 
+M populate 1849741102952349 wall=1794359586.511916 
+M trial 1849825087492146 wall=1794359670.496456 {"name": "c2-m100-r0", "K": 6, "free_target": 1140, "P_h": 16736, "usage": 0.8446680080482898, "free_est": 1158, "t0_mono_ns": 1849825137463021, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849833137883726 wall=1794359678.546847 {"name": "c2-m100-r0", "n": 1, "blocks_each": 1046}
+M trial 1849835609177354 wall=1794359681.018141 {"name": "c2-m400-r0", "K": 6, "free_target": 1440, "P_h": 15936, "usage": 0.8040241448692153, "free_est": 1461, "t0_mono_ns": 1849835659149230, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849843660902185 wall=1794359689.069866 {"name": "c2-m400-r0", "n": 1, "blocks_each": 996}
+M trial 1849846341831844 wall=1794359691.750795 {"name": "c2-m100-r1", "K": 6, "free_target": 1140, "P_h": 16736, "usage": 0.8442655935613682, "free_est": 1161, "t0_mono_ns": 1849846391806735, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849854392220828 wall=1794359699.801184 {"name": "c2-m100-r1", "n": 1, "blocks_each": 1046}
+M trial 1849856866063481 wall=1794359702.275027 {"name": "c2-m400-r1", "K": 6, "free_target": 1440, "P_h": 15936, "usage": 0.8040241448692153, "free_est": 1461, "t0_mono_ns": 1849856916036660, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849864916461590 wall=1794359710.325425 {"name": "c2-m400-r1", "n": 1, "blocks_each": 996}
+M trial 1849867590718592 wall=1794359712.999682 {"name": "c2-m100-r2", "K": 6, "free_target": 1140, "P_h": 16736, "usage": 0.8443997317236753, "free_est": 1160, "t0_mono_ns": 1849867640690979, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849875642609271 wall=1794359721.051573 {"name": "c2-m100-r2", "n": 1, "blocks_each": 1046}
+M trial 1849878105521719 wall=1794359723.514485 {"name": "c2-m400-r2", "K": 6, "free_target": 1440, "P_h": 15936, "usage": 0.8040241448692153, "free_est": 1461, "t0_mono_ns": 1849878155494828, "probes": [[0.0, "cold", 16384], [0.5, "host", 4096], [2.5, "host", 4096]], "release_at": 8.0}
+M release 1849886155669721 wall=1794359731.564633 {"name": "c2-m400-r2", "n": 1, "blocks_each": 996}
+M bench_end 1849887361189924 wall=1794359732.770154 
+M stop 1849889363931148 wall=1794359734.772896 
+M stopped 1849893421529442 wall=1794359738.830494 

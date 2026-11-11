@@ -1,0 +1,19 @@
+M config 1855982673144542 wall=1794365828.082108 {"out": ".", "tag": "s4-p3728-p2", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 60.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3728, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1855996762595707 wall=1794365842.171559 
+M vllm_ready 1856130813105892 wall=1794365976.222069 
+M env_ready 1856130831810338 wall=1794365976.240774 
+M warmup 1856130833726302 wall=1794365976.242690 
+M populate 1856132165151877 wall=1794365977.574115 
+M s4 1856200081047962 wall=1794366045.490012 share=0 class=short
+M s4 1856228963867332 wall=1794366074.372831 share=0.25 class=short
+M s4 1856255923067622 wall=1794366101.332031 share=0.5 class=short
+M s4 1856279730986715 wall=1794366125.139950 share=0.75 class=short
+M s4 1856306040709873 wall=1794366151.449673 share=1 class=short
+M s4 1856335881388110 wall=1794366181.290352 share=0 class=long
+M s4 1856414998058482 wall=1794366260.407022 share=0.25 class=long
+M s4 1856482873677776 wall=1794366328.282642 share=0.5 class=long
+M s4 1856528387097628 wall=1794366373.796062 share=0.75 class=long
+M s4 1856565386589326 wall=1794366410.795553 share=1 class=long
+M bench_end 1856595219635992 wall=1794366440.628600 
+M stop 1856597223783346 wall=1794366442.632748 
+M stopped 1856600730179691 wall=1794366446.139144 

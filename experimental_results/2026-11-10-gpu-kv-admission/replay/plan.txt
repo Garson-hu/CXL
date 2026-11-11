@@ -1,0 +1,54 @@
+# replay plan of the 2026-11-10 admission study (queue_adm.sh); every run: adm=true (admission stream) and the GPU KV pool pinned to 7,456 blocks
+tool08-320-base tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456
+conv08-320-base conv 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456
+tool08-320-sync tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 async_sched=off
+tool08-320-tokfast tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+tool08-320-lpt1024 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 long_prefill_threshold=1024
+# prototype module v1.1 (commit 1b5fa31); tool08-320-tokfast above ran v1 (537d2ff) and is kept as a negative result
+tool08-320-tokfast11 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+tool04-320-tokfast11 tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512
+# --- essential runs first (2026-11-10 20:58): the overloaded variants that decide the prototype configuration; policy module v1.4 (commit after 68acb27)
+# P1 = token reserve + short steps, safe form: resvall (requests admitted during a prefill honour its reservation) and blkfirst (a request that waits for blocks is not passed by the token rules)
+tool08-320-p1 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst
+# P2 = P1 + bounded head-of-line bypass with a bounded reservation for passed hits
+tool08-320-p2 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+# P3 = P2 + starvation bound: stock scheduling while a long request has waited more than 20 s
+tool08-320-p3 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600,agecap=20
+# the store-counter fix alone (stock scheduling): how much of the lost KV reaches the host tier, and what that does to reuse
+tool08-320-storefix tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=storefix
+# existing option: vLLM priority scheduling with ORACLE hits-first priorities (a request that was a hit in tool08-320-base is sent with priority 0)
+tool08-320-priohits tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool08-320-base-client.jsonl
+# --- prototype configuration for the rest of the D matrix, chosen 2026-11-10 22:22 after tool08-320-p1 / -p2: P2 (token reserve + short steps, resvall, blkfirst, bounded bypass)
+conv08-320-p2 conv 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+# repeats of the overloaded pair (run-to-run variability; output hashes of two stock runs and of two prototype runs)
+tool08-320-base2 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456
+tool08-320-p2-r2 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+# oracle hits-first priority combined with the token mechanisms (P1): does the reserve add to priority ordering? (2026-11-10 23:31: the oracle priority baseline beat P2 under overload)
+tool08-320-priohits-p1 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool08-320-base-client.jsonl adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst
+# sustainable load: tool-agent with P2 (the v1.1 run tool04-320-tokfast11 exists), conversation stock and P2
+tool04-320-p2 tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+# oracle hits-first priority at the sustainable load
+tool04-320-priohits tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio_from=/mnt/local/ghu4/results/2026-11-10-gpu-kv-admission/replay/tool04-320-base-client.jsonl
+# repeat of tool04-320-p2 (2026-11-11 02:31): in the first run request 113 was lost to a client-side connection reset 0.4 ms after it was sent; the client now retries such a reset once
+# (not run on c28, 2026-11-11 02:38) tool04-320-p2-r2 tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600
+# (not run on c28, 2026-11-11 02:38) conv08-320-p3 conv 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600,agecap=20
+# --- existing option at the sustainable load; P3 at the sustainable load; other bounds, reserve and step sizes
+# (not run on c28, 2026-11-11 02:38) tool04-320-sync tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 async_sched=off
+# (not run on c28, 2026-11-11 02:38) tool04-320-p3 tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600,agecap=20
+# (2026-11-10 23:10) the one-flag-apart variants of the overloaded replay moved to the 16 GB nodes c60 / c61 with their own stock baselines: /mnt/beegfs/ghu4/kvadm/job_x08a.sh, job_x08b.sh -> E16/X08/
+# (2026-11-11 02:38) the four lines marked 'not run on c28' were taken out so that c28's queue ends with the conversation pair at the sustainable load:
+#   conv08 with P3 runs on the 16 GB node c60 with its own baseline (job_x08c.sh -> E16/X08/x08c-conv-*); P3 and the bypass alone at the sustainable load run on c66 with
+#   an 80 GB host tier and their own baseline (job_e66.sh -> E16/E/e66-tool04-80-p7456-*); the repeat of tool04-320-p2 and synchronous scheduling at the sustainable load were dropped
+# --- (2026-11-11 03:47) order of the remaining c28 runs, after three results from the 16 GB nodes (E16/X08): the bypass alone with a 30 s bound (stock token rules)
+#   lowered the mean TTFT of the overloaded tool-agent replay by 28 % with no class slower on average (x08-skip30); P4 = P2 with that bound: 28 % with the misses
+#   16 % slower (x08-p2-skip30); vLLM priority scheduling with priority = number of prompt tokens (shortest prompt first, something a client can do): 49 %, with a
+#   longest TTFT of 259 s (x08b-priolen). Confirmation of the first and the third on c28; then the conversation trace at the sustainable load (stock, P4,
+#   shortest-prompt-first); P4 on the tool-agent replays last.
+tool08-320-skip30 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=skip=30,hitres=600
+tool08-320-priolen tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio=len
+conv04-320-base conv 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456
+conv04-320-p4 conv 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=30,hitres=600
+conv04-320-priolen conv 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 prio=len
+# (not run on c28, 2026-11-11 06:35: P4 under overload was measured twice on c60, E16/X08/x08-p2-skip30[-r2]; P2 on the conversation trace at the sustainable load gives way to P4) tool08-320-p4 tool 100 0.08 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=30,hitres=600
+tool04-320-p4 tool 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=30,hitres=600
+# (not run on c28, 2026-11-11 06:35: P4 under overload was measured twice on c60, E16/X08/x08-p2-skip30[-r2]; P2 on the conversation trace at the sustainable load gives way to P4) conv04-320-p2 conv 200 0.04 tier=dram l1_gb=320 adm=true gpu_blocks=7456 adm_env=KVADM_POLICY=tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600

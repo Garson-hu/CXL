@@ -1,0 +1,22 @@
+291 requests, trace window 0.0-100.0 s at 0.08x = 1250 wall s, prompt tokens 3342990
+[23:31:32] 4816 bytes of records; elapsed 59 s
+[23:32:32] 12654 bytes of records; elapsed 119 s
+[23:33:32] 22522 bytes of records; elapsed 179 s
+[23:34:32] 25120 bytes of records; elapsed 239 s
+[23:35:32] 35031 bytes of records; elapsed 299 s
+[23:36:32] 38100 bytes of records; elapsed 359 s
+[23:37:32] 43587 bytes of records; elapsed 419 s
+[23:38:32] 47605 bytes of records; elapsed 479 s
+[23:39:32] 57046 bytes of records; elapsed 539 s
+[23:40:32] 65714 bytes of records; elapsed 599 s
+[23:41:32] 70440 bytes of records; elapsed 659 s
+[23:42:32] 79023 bytes of records; elapsed 719 s
+[23:43:32] 82928 bytes of records; elapsed 779 s
+[23:44:32] 85407 bytes of records; elapsed 839 s
+[23:45:32] 92060 bytes of records; elapsed 899 s
+[23:46:32] 101523 bytes of records; elapsed 959 s
+[23:47:32] 108153 bytes of records; elapsed 1019 s
+[23:48:32] 115070 bytes of records; elapsed 1079 s
+[23:49:32] 122271 bytes of records; elapsed 1139 s
+[23:50:32] 131274 bytes of records; elapsed 1199 s
+[23:51:32] 138050 bytes of records; elapsed 1259 s

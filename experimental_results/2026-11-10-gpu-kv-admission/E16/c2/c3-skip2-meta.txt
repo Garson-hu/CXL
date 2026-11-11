@@ -1,0 +1,15 @@
+M config 1844516495671829 wall=1794354361.904636 {"out": ".", "tag": "c3-skip2", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dram", "l1_gb": 40.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 7456, "gpu_util": 0.85, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "0-9", "lm_cpus": "10-13", "gpu_sampler_cpu": "14", "cpu_sampler_cpu": "15", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=skip=2", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": ""}
+M lmcache_ready 1844531524267019 wall=1794354376.933231 
+M vllm_ready 1844589563917021 wall=1794354434.972881 
+M env_ready 1844589585894921 wall=1794354434.994859 
+M warmup 1844589589728853 wall=1794354434.998692 
+M populate 1844590189482533 wall=1794354435.598446 
+M trial 1844669172243490 wall=1794354514.581207 {"name": "c3-hol-r0", "K": 6, "free_target": 600, "P_h": 18176, "usage": 0.9173708920187793, "free_est": 616, "t0_mono_ns": 1844669222213153, "probes": [[0.0, "cold", 16384], [0.05, "host", 2048], [0.1, "host", 2048], [0.15, "cold", 2048], [1.0, "host", 2048]], "release_at": 4.0}
+M release 1844673223154051 wall=1794354518.632118 {"name": "c3-hol-r0", "n": 1, "blocks_each": 1136}
+M trial 1844680060104146 wall=1794354525.469068 {"name": "c3-hol-r1", "K": 6, "free_target": 600, "P_h": 18176, "usage": 0.9168343393695506, "free_est": 620, "t0_mono_ns": 1844680110074600, "probes": [[0.0, "cold", 16384], [0.05, "host", 2048], [0.1, "host", 2048], [0.15, "cold", 2048], [1.0, "host", 2048]], "release_at": 4.0}
+M release 1844684110809181 wall=1794354529.519773 {"name": "c3-hol-r1", "n": 1, "blocks_each": 1136}
+M trial 1844690973227708 wall=1794354536.382191 {"name": "c3-hol-r2", "K": 6, "free_target": 600, "P_h": 18176, "usage": 0.9168343393695506, "free_est": 620, "t0_mono_ns": 1844691023200025, "probes": [[0.0, "cold", 16384], [0.05, "host", 2048], [0.1, "host", 2048], [0.15, "cold", 2048], [1.0, "host", 2048]], "release_at": 4.0}
+M release 1844695023673153 wall=1794354540.432637 {"name": "c3-hol-r2", "n": 1, "blocks_each": 1136}
+M bench_end 1844700549561778 wall=1794354545.958525 
+M stop 1844702551911413 wall=1794354547.960876 
+M stopped 1844706208754805 wall=1794354551.617720 
