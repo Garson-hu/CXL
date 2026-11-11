@@ -613,6 +613,52 @@ take (435 of the 600 free) are not blocks the large request could have used: it 
 keep taking the blocks that are freed; the `skip` bound limits that to `s` seconds, and `hitres` keeps blocks aside for a passed
 hit. Scenario c5 measures both (B3.1).
 
+### B3.1 How long may a request be passed, and how much should be kept for it? (the brief's B2; MEASURED 2026-11-10 22:07–22:38, node c66; `E16/c5/`, table `E16/c5/tables-c5.md`)
+**Why.** B3 shows the bypass where the passed request loses nothing. The brief asks what a reservation for a waiting external hit
+buys and costs: how much, when, whether it prevents starvation, whether it takes memory from active requests, what it does to
+misses, whether it causes preemptions.
+
+**How.** Scenario c5 (`run_adm.py plan=c5`) puts the passed request at risk. Ten holders leave about 330 free blocks. A 16k external
+hit arrives (1,040 blocks for its sequence; it does not fit), followed by a stream of thirty 2k misses, one every 0.15 s for
+4.5 s (145 blocks each: they fit, and they are more than the GPU can compute, so they take every block that becomes free). One
+holder is cancelled 1.0, 2.5 and 4.0 s after the hit (about 710 blocks each): the hit fits after the second release if nobody
+else has taken the blocks. 3 repetitions, medians; 16 output tokens per probe.
+
+| configuration | hit: load admitted at (s) | hit: TTFT (s) | misses admitted before the hit (of 30) | first miss admitted at (s) | misses: TTFT p50 / p95 / max (s) | mean request time of the 31 probes (s) | blocks kept free for the hit while it waits (mean) | preemptions |
+|---|---|---|---|---|---|---|---|---|
+| stock | 2.57 | 4.50 | 0 | 2.59 | 8.39 / 12.84 / 12.91 | 10.94 | – | 0 |
+| `skip=3`, no reservation | 3.95 | 5.93 | 7 | 0.11 | 6.21 / 10.60 / 10.67 | 8.19 | – | 0 |
+| `skip=8`, no reservation | 4.59 | 5.53 | 9 | 0.11 | 6.14 / 10.90 / 11.27 | 9.16 | – | 0 |
+| `skip=3,hitres=300` | 2.97 | 3.33 | 4 | 1.07 | 7.20 / 11.23 / 11.46 | 9.34 | 289 | 0 |
+| `skip=3,hitres=600` | 2.91 | 4.86 | 4 | 1.07 | 7.48 / 11.72 / 12.08 | 9.77 | 577 | 0 |
+| `skip=3,hitres=1200` | 2.57 | 4.55 | 0 | 2.57 | 8.29 / 12.57 / 12.68 | 10.66 | 980 | 0 |
+| P2 (token reserve and short steps + `skip=3,hitres=600`) | 2.91 | 4.86 | 4 | 1.07 | 7.64 / 11.74 / 12.11 | 9.87 | 577 | 0 |
+
+**Result.**
+- **Stock:** the hit that does not fit holds back all thirty misses for 2.6 s (it is refused 89 times, once per engine step), and
+  when the second release lets it in, the thirty misses start with it: its own first token then takes another 1.9 s.
+- **Bypass without a reservation:** the misses flow from the first step (first one admitted after 0.11 s; TTFT p50 6.2 instead of
+  8.4 s; mean request time −25 %) — and they take the first two releases. The hit is admitted 1.4 s later than in stock, when its
+  3 s are over and the scan stops at it again; its TTFT is 5.9 s instead of 4.5 s. With `skip=8` it is passed for longer and
+  admitted 2.0 s later than in stock. The bound is what prevents starvation here; without it nothing would.
+- **Bypass with a bounded reservation:** with 300 or 600 blocks kept free, no miss is admitted until the first release; from then
+  on four misses pass, and the second release completes the hit's blocks: it is admitted 0.3–0.4 s later than in stock. Misses:
+  TTFT p50 7.2–7.5 s (stock 8.4, no reservation 6.2), mean request time −11 to −15 %. (The hit's time from admission to first
+  token differs between the rows — 0.35 s with 300 blocks, 1.5–1.9 s elsewhere — with the number of misses that are prefilling
+  when its load is issued; that part is the step-boundary effect of A, not the reservation.)
+- **A reservation as large as the hit's need** (1,200 ≥ 1,024 blocks) reproduces stock exactly: nothing can pass.
+- No preemption in any configuration: a passed request holds no blocks, and the requests that pass are admitted under the stock
+  gates.
+
+**Answers to the brief's questions.** *How much?* Enough that one further release completes the hit's need: here 300 blocks of a
+1,040-block need were sufficient, and anything up to the need only removes passing. *When?* Only while a hit is actually being
+passed — the reservation exists for 16 % of the overloaded replay's wall time and averages 75 blocks of 7,456 (C2). *Can it prevent a
+long hit from waiting indefinitely?* The reservation alone cannot (requests that leave it untouched still pass); the time bound
+does. *Does it reduce the memory of active requests?* It withholds free blocks from new compute requests, never from running
+ones. *Does it increase the misses' waiting time?* Relative to the bypass without reservation, yes (p50 6.2 → 7.2–7.5 s);
+relative to stock, no (8.4 s). *Preemptions or throughput?* No preemptions; the mean request time of the probes is 10–25 % lower
+than in stock wherever requests pass, and 3 % lower with the full reservation.
+
 ### B4. The in-flight reservation charged to a load (`alpha`; MEASURED 2026-11-10 20:07–20:34, node c66; `E16/c2b/c2b-*`, table `E16/c2b/tables-c2b.md`)
 **What changed.** `alpha=0` removes the stock reservation from the admission of an external load: the load is admitted if its
 blocks are free, as a miss's first chunk would be. This is the literal form of "do not make a hit reserve more than a miss".
