@@ -81,6 +81,8 @@ table("Table D-1 — run level", [
     ("makespan: first send → last completion (s)", lambda d: f(d["span"], 0)),
     ("completed requests / s", lambda d: f(len(d["R"]) / d["span"], 3)),
     ("prompt tokens served from a cache: total / host (LMCache) / GPU prefix", lambda d: (lambda P, c, h: f"{c / P:.3f} / {h / P:.3f} / {(c - h) / P:.3f}")(sum(r["prompt"] for r in allr(d)), sum(r["cached"] for r in allr(d)), sum(r["host"] for r in allr(d)))),
+    ("requests by cached share of the prompt: 0 / < 10 % / 10–50 % / 50–90 % / ≥ 90 %", lambda d: " / ".join(str(sum(1 for r in allr(d) if lo <= r["cached"] / r["prompt"] < hi)) for lo, hi in ((-1, 1e-9), (1e-9, 0.1), (0.1, 0.5), (0.5, 0.9), (0.9, 9)))),
+    ("requests with a load from the host tier; tokens loaded per such request, p50", lambda d: f"{sum(1 for r in allr(d) if r['host'] > 0)}; {f(q([r['host'] for r in allr(d) if r['host'] > 0], .5), 0)}"),
     ("prompt tokens computed / s", lambda d: f(sum(r["prompt"] - r["cached"] for r in allr(d)) / d["span"], 0)),
     ("output tokens / s", lambda d: f(sum(r["out"] for r in allr(d)) / d["span"], 1)),
     ("TTFT p50 / p95 / p99 (s)", lambda d: " / ".join(f(q([r["ttft"] for r in allr(d)], p)) for p in (.5, .95, .99))),

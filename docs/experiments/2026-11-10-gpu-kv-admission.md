@@ -40,8 +40,15 @@ every result is a host-memory admission result, not a CXL measurement (§0).
   that does and does not show about CXL.
 - **Larger GPUs (checked 2026-11-10 16:30).** c33 (A100 80 GB) and c29 (H100 94 GB) are allocated to another user until
   2026-11-13 14:04 and 22:01; c30 / c31 (A6000) are in use until at least 2026-11-11. The `rtx4060ti16g` partition has idle
-  nodes with the same GPU model and twice the memory (probe job 334260 on c23: RTX 4060 Ti 16 GiB, EPYC 7302P 16 cores,
-  125 GiB RAM) — used for Experiment E.
+  nodes with the same GPU model and twice the memory — used for Experiment E and, with the pool pinned to c28's 7,456 blocks,
+  as additional machines for the controlled scenarios.
+- **The 16 GB nodes (results under `E16/`).** c60, c61, c66: RTX 4060 Ti 16 GiB, EPYC 8124P (16 cores), 188 GiB RAM; NVIDIA
+  driver 580.82.07 on c60 and c61, 595.58.03 on c66. The software is a copy of c28's environment and model cache on the shared
+  scratch file system (`/mnt/beegfs/ghu4/kvadm/`), visible under its c28 path through one symlink; vLLM runs on cores 0–9,
+  LMCache on 10–13, the samplers on 14–15 (`remote16.sh`). With the pool pinned the node reproduces c28's controlled trials to
+  the hundredth of a second (A3.1). Every comparison of configurations in this report is between runs on the same node
+  (the tables name it); where a figure puts pools measured on two nodes side by side, its caption says so. The nodes cannot hold a 320 GB host tier, so the replays with that tier ran on
+  c28 only.
 
 ## A1. Source inspection: how a waiting request gets GPU KV blocks (SOURCE; vLLM 0.31.0 and LMCache 0.5.5 as installed)
 Paths are relative to `/mnt/local/ghu4/envs/lmcache/lib/python3.12/site-packages/`. `S` = `vllm/v1/core/sched/scheduler.py`,
@@ -457,8 +464,25 @@ process, and with `KVADM_POLICY` unset every wrapper returns its input (the inst
 | `hitres=<b>` | **Bounded block reservation for skipped hits** (the brief's B2): while external hits are set aside for lack of blocks, other compute requests are admitted only if they leave min(b, blocks those hits need) free. Nothing is reserved when no hit is waiting. | (3), for hits |
 | `alpha=<a>` | Scale the stock in-flight reservation charged to a load (1 = stock, 0 = a load is admitted under the same block rule as a miss). | the reservation gate (B2, literal form) |
 | `resvall` | A compute request that is started while a prefill is in flight must fit under the in-flight reservation, as the stock scheduler demands of a load; otherwise it is set aside for this step. Needed only because the token reserve lets requests in during a prefill, which the stock scheduler never does. | preemptions caused by (1) |
+| `blkfirst` | A compute request that would fail the block gates is never set aside by the token rules (`minchunk`, `resvall`): it gets the stock treatment — its allocation is refused and the scan stops there — unless `skip` is set and it is inside its skip time. Keeps the token reserve from passing a request that waits for *blocks*. | starvation caused by (1) under memory pressure |
+| `agecap=<s>` | **Starvation bound.** While a waiting request that is not short work (a compute request that needs more than `tokres` tokens, or an external hit that waits for blocks) has been queued for more than s seconds, every mechanism is suspended and the scheduler runs with its stock rules until that request is admitted. The store-counter fix stays on. | bounds what (1)–(3) can cost long requests |
 | `fallback=<s>` | **Compute fallback** (B5): a hit that still fails the gates s seconds after its lookup result is computed instead of loaded if the compute path passes the gates. | (3) |
 | `storefix` | Undo the repeated addition to the connector's `num_stored_tokens` when a waiting hit is polled again (A1.4); applied automatically with every mechanism that makes the scheduler poll a request again. | side effect of A |
+
+**Versions of the module, and why there are four.** Each version was replaced because a measurement showed a flaw; the runs made
+with the earlier versions are kept and labelled.
+
+| version | commit | flags added / changed | what the measurements with the previous version showed |
+|---|---|---|---|
+| v1 | 537d2ff | `tokres`, `minchunk`, `fastchunk`, `skip`, `hitres`, `alpha`, `fallback`, `storefix` | – |
+| v1.1 | 1b5fa31 | store-counter fix at every poll with a result; the reserve counts a request for a bounded number of steps and a short compute request only if its blocks are free; a long prefill keeps 256 tokens of a short step | `replay/tool08-320-tokfast` (v1): stores fell from 73.8 to 31.3 GB — the fix covered only loads, and `minchunk` makes the scheduler poll GPU-prefix hits again (A5); 24 % of the run in short steps with the prefill at its 128-token floor while the short work was waiting for memory, not tokens; TTFT p95 58.8 s against 40.8 s |
+| v1.2 | 9f3b1c8 | `resvall` | `replay/tool08-320-tokfast11` (v1.1): 32 preemptions against 5 — short compute requests admitted during a prefill took blocks the prefill still needed |
+| v1.3 | 68acb27 | `agecap` | the same run: requests that are not short work waited behind a continuous stream of short work (longest TTFT 77.7 s against 53.2 s) |
+| v1.4 | 49c3585 | `blkfirst` | the same run, traced request by request: in every step in which little budget was left the token rule set a memory-blocked request aside and admitted short work behind it, i.e. an unbounded head-of-line bypass that nobody had asked for; one request that needed 50 blocks waited 48 s after its first refusal while 22 others were admitted |
+
+The configurations evaluated end to end are cumulative: **P1** = `tokres=768,fastchunk=512,resvall,blkfirst` (token reserve and
+short steps in their safe form), **P2** = P1 + `skip=3,hitres=600` (bounded head-of-line bypass), **P3** = P2 + `agecap=20`
+(starvation bound). `kvadm/test_policy.py` drives the module with stand-ins for the scheduler and checks each rule (9 cases).
 
 ### B1. Baseline and the scheduler options vLLM already has (MEASURED 2026-11-10 19:27–19:58, 16 GB node c66, pool pinned at 7,456 blocks; `E16/c1c/`, table `E16/c1c/tables-c1c.md`)
 **Why.** A prototype has to beat what the engine can already be configured to do. The options that touch the causes found in A:
