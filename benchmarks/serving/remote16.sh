@@ -12,6 +12,11 @@ mkdir -p /mnt/local/ghu4/envs && [ -e /mnt/local/ghu4/envs/lmcache ] || ln -s $S
 export KVADM_SCRATCH=$SCR KVADM_TMP=/tmp/ghu4-kvadm PATH=/mnt/local/ghu4/envs/lmcache/bin:$PATH
 mkdir -p "$KVADM_TMP" "$SCR/cache/vllm" "$1"; cd "$1" || exit 1
 OUT=$1; DRV=$2; TAG=$3; shift 3
+# wait until the previous run's server has given the GPU memory back (2026-11-10 21:06: a run that started 5 s after a 14,912-block
+# server had stopped found 8.6 GiB still in use and vLLM refused to start); at most 3 minutes
+for _i in $(seq 90); do
+  _u=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | head -1); [ "${_u:-0}" -lt 1000 ] && break; sleep 2
+done
 { echo "# $(date -Is) $(hostname)"; nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader; lscpu | grep -E 'Model name'; free -g | sed -n 2p; ls -l /mnt/local/ghu4/envs/; } > "$TAG-node.txt" 2>&1
 taskset -c 14-15 /mnt/local/ghu4/envs/lmcache/bin/python /home/ghu4/CXL/benchmarks/serving/$DRV . "$TAG" "$@" vllm_cpus=0-9 lm_cpus=10-13 gpu_sampler_cpu=14 cpu_sampler_cpu=15 > "$TAG-driver.txt" 2>&1
 echo "rc=$?" >> "$TAG-driver.txt"
