@@ -4,7 +4,8 @@ manager and the connector, one KVADM_POLICY at a time (a fresh interpreter per c
 Checks: with no flags every hook returns its input; the token reserve caps a running long prefill and shortens the step while short
 work is under way; minchunk sets a long compute request aside when the step has too little budget left; resvall sets a compute request
 aside that does not fit under the in-flight reservation; skip sets a request aside that fails the block gates, for a bounded time;
-the store-counter fix resets the connector's counter; agecap suspends everything while a long request has waited too long.
+the store-counter fix resets the connector's counter; blkfirst gives a request that waits for blocks the stock treatment instead of a
+token set-aside; agecap suspends everything while a long request has waited too long.
 usage: test_policy.py [path of the directory that holds kvadm_policy.py]      (exit status 0 = all cases passed)"""
 import os, subprocess, sys
 HERE = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
@@ -93,6 +94,20 @@ sch.kv_cache_manager.block_pool.free = 500
 r, act = pol.on_lookup(ctx, sch, conn, h, 0, (4096, True)); assert act is None, act                                          # the hit fits now
 pol.ST["req"]["h"]["t0"] -= 10; sch.kv_cache_manager.block_pool.free = 200
 r, act = pol.on_lookup(ctx, sch, conn, h, 0, (4096, True)); assert (r, act) == ((4096, True), None), (r, act)                 # waited longer than skip: stock answer (its refusal stops the scan)
+''',
+ "tokres=768,fastchunk=512,resvall,blkfirst": r'''
+sch, ctx, w, conn = setup(free=100); long = sch.add(Req("L", 20000, comp=2048, status=RS.RUNNING), "running"); q = sch.add(Req("q", 6000), "waiting")
+step(ctx, sch); ctx["runtok"] = 511
+r, act = pol.on_lookup(ctx, sch, conn, q, 0, (0, False)); assert (r, act) == ((0, False), None), (r, act)                     # 375 blocks needed, 100 free: stock answer, not set aside for tokens
+sch.kv_cache_manager.block_pool.free = 5000
+r, act = pol.on_lookup(ctx, sch, conn, q, 0, (0, False)); assert act == "skip_tok", act                                      # it fits: now it only waits for tokens
+''',
+ "tokres=768,fastchunk=512,resvall,blkfirst,skip=3,hitres=600": r'''
+sch, ctx, w, conn = setup(free=100); long = sch.add(Req("L", 20000, comp=2048, status=RS.RUNNING), "running"); q = sch.add(Req("q", 6000), "waiting")
+step(ctx, sch); ctx["runtok"] = 511
+r, act = pol.on_lookup(ctx, sch, conn, q, 0, (0, False)); assert act in ("skip_tok", "skip_kv"), act                         # inside its skip time: set aside, others may pass
+pol.ST["req"]["q"]["t0"] -= 10
+r, act = pol.on_lookup(ctx, sch, conn, q, 0, (0, False)); assert (r, act) == ((0, False), None), (r, act)                     # skip time over: stock answer in a reserve step too
 ''',
  "tokres=768,fastchunk=512,resvall,agecap=5": r'''
 sch, ctx, w, conn = setup(); long = sch.add(Req("L", 20000, comp=2048, status=RS.RUNNING), "running"); q = sch.add(Req("q", 6000), "waiting")

@@ -40,6 +40,10 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
                   leave min(b, blocks the pending hits need) free (needs skip).
   fallback=<s>    an external hit that still fails the block gates <s> seconds after its lookup result is computed
                   instead of loaded if the compute path passes the gates (needs storefix; implied).
+  blkfirst        (v1.4) a compute request that would fail the block gates is never set aside by the token rules (minchunk, resvall): it gets
+                  the stock treatment -- its allocation is refused and the scan stops there -- unless `skip` is set and it is still inside
+                  its skip time. Without this flag the token reserve lets short work pass a request that waits for BLOCKS in every step
+                  in which the budget left is small (v1.1 / v1.2 behaviour: an unintended, unbounded form of `skip`).
   agecap=<s>      (v1.3) starvation bound: while a waiting request that is not short work (a compute request that needs more than
                   tokres tokens, or an external hit that waits for blocks) has been in the waiting queue for more than <s> seconds, every
                   mechanism above is suspended and the scheduler runs with its stock rules (full step budget, no set-asides, stock
@@ -48,7 +52,8 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
 Version v1.1 (2026-11-10 19:30; v1 = commit 537d2ff): the store-counter fix is applied at every poll with a result (v1 missed
 GPU-prefix hits that LMCache also holds, so requests set aside by minchunk stopped storing); the reserve counts a request for a
 bounded number of steps instead of 1.5 s and a short compute request only if its blocks are free; mincap 256 instead of 128.
-Version v1.2 (commit 9f3b1c8): flag resvall. Version v1.3 (2026-11-10 21:00): flag agecap; without the flag the behaviour is that of v1.2.
+Version v1.2 (commit 9f3b1c8): flag resvall. Version v1.3 (commit 68acb27): flag agecap. Version v1.4 (2026-11-10 21:10): flag blkfirst.
+Without the new flags the behaviour is that of v1.2.
 Decisions are summarised per request in the admission stream: {"ev":"pol","rid","t0","t","skip_kv","skip_tok","fb"}; the starvation
 bound writes {"ev":"prot","t","i","on"} whenever it switches the mechanisms off or on again.
 """
@@ -201,6 +206,8 @@ def on_lookup(ctx, sched, conn, request, loc, r):
         return r, None                                       # stock: the allocation is refused and the scan stops at this request
     s["kind"] = "c"; s["need"] = need_all
     chunk = min(need_all, max(left, 1)); full, now = needs(kvm, request, chunk, nloc, ncb, 0, 0, 0); s["full"] = full
+    if "blkfirst" in P and full > free and not ("skip" in P and age < P["skip"]):
+        return r, None                                       # it waits for blocks, not for tokens: stock treatment (refused; the scan stops at it)
     if "minchunk" in P and left < min(need_all, P["minchunk"]):
         s["skip_tok"] += 1; return (None, True), "skip_tok"
     if "resvall" in P and sched._inflight_prefills:
