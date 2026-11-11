@@ -765,7 +765,8 @@ stock run of the same replay.
 
 **Did it work?** Yes: every request stores its new chunks, 35 GB more KV reaches the host tier in 21 minutes (+48 %), the share
 of prompt tokens served from the host tier rises from 11.4 % to 12.6 % within the same window, and no class of requests is slower
-(all within 3 % of stock, which is also what two runs of the same configuration differ by, G). The latency effect is small here
+(all within 3 % of stock; two runs of the same configuration differ by less than 1 %, G, so the 2 % lower mean TTFT is small but
+real). The latency effect is small here
 because the replay window is short: the KV that stock fails to store would be reused by later turns of the same sessions.
 
 **Side effects.** The host tier fills faster — with a tier that is already full (80 GB, C2.4) the additional stores displace
@@ -773,3 +774,96 @@ other entries. None otherwise: the fix does not change what is admitted or when.
 
 **Why it matters for this project.** It is the one finding of the study that is about the host tier itself: a larger tier cannot
 help with KV that was never written to it, and stock loses the most exactly when the engine is congested.
+
+## G. Correctness and experimental validity (the brief's section 9)
+
+**What is held constant in every comparison.** Within a table, all configurations ran the same request sequence — the same trace
+window, speed, request order, token content and output lengths for the replays (the client derives every prompt from the trace's
+hash blocks with a fixed generator), the same seeded prompts, types and arrival instants for the controlled workloads — on the same
+node, with the same model, host-tier size, GPU KV pool (pinned with `--num-gpu-blocks-override` wherever a prototype is compared;
+the one unpinned run, `tool04-320-base`, came up at the same 7,456 blocks) and the same instrumentation. Only the flags named in
+the column differ. No table puts an overloaded baseline next to a lightly loaded prototype: load is offered open-loop from the
+trace at the same instants in both.
+
+**Completion.** Every measured request of every run in the configuration matrix completed with HTTP 200: no failure, no timeout,
+no cancellation by the server (`experiment-matrix.md`, column `errors` = 0 in all rows). The only errors are client-side connection
+resets on *filler* requests — the 16k-token prompts that flush the GPU prefix cache between scenarios of the mixed workloads: 1–4
+of the 176 fillers of a run, in stock and prototype runs alike (column `filler_errors`). Runs that did not start are kept and
+named: a pool of 2,048 blocks (`E16/cc/failed-pool2048`), one start before the previous server had released the GPU
+(`E16/cc/failed-gpu-busy`; the launcher now waits), jobs on a node without the environment (`E16/*/failed-c0`).
+
+**Output correctness, path by path (`run_correct.py`, `E16/correct/`, node c66, 2026-11-11 00:02–00:31).** 48 prompts of 1k–8k
+tokens (+100 fresh tokens) are answered five ways on one server and the generated text (32 tokens, temperature 0) is compared
+with the first way: computed alone; loaded from LMCache alone; served from the GPU prefix cache alone; loaded from LMCache 0.3 s
+after a 28k-token prefill has started (the situation in which the prototype acts); computed in that same situation with a cache
+salt, so that neither cache is used.
+
+| configuration | host load, alone | GPU prefix, alone | host load next to a prefill | computed next to a prefill | TTFT p50 of the host loads next to a prefill (s) |
+|---|---|---|---|---|---|
+| stock | 47 / 48 | 45 / 48 | 45 / 48 | 47 / 48 | 6.79 |
+| stock, second run | 47 / 48 | 45 / 48 | 46 / 48 | 47 / 48 | 6.79 |
+| P1 | 47 / 48 | 45 / 48 | 47 / 48 | 45 / 48 | 1.13 |
+| P1, synchronous scheduling | 47 / 48 | 45 / 48 | 47 / 48 | 45 / 48 | 0.59 |
+| P2 | 47 / 48 | 45 / 48 | 47 / 48 | 45 / 48 | 1.13 |
+
+- **The three paths that run alone give the same text in every configuration, request by request** (48 / 48 identical between
+  stock and each prototype run, for the computed, the host-loaded and the GPU-prefix answers): the prototype changes nothing in
+  what a path produces.
+- **Reusing KV instead of computing changes the text of 1 prompt in 48 (host load) and 3 in 48 (GPU prefix) on the stock server
+  already.** The cached prefix is bit-identical to what was computed; the uncached tail is then computed in a different chunk
+  than in the reference run, and on these random-token prompts a near-tie in the logits flips. A wrong or incomplete prefix would
+  change nearly every answer, not one.
+- **Next to a prefill the text depends on which requests share an engine step** (stock against its own second run: 47 / 48
+  identical; stock against the prototypes: 46 / 48), for loaded and for computed answers alike.
+
+**Output hashes in the replays (`check_runs.py`).** Two stock runs of the overloaded replay produce the same text for 543 of 544
+requests. Any change of scheduling changes 2–4 % of the texts, the stock options as much as the prototype: synchronous scheduling
+97.2 % identical to stock, prefill cap 97.6 %, store fix alone 98.9 %, P1 97.1 %, P2 97.2 %, P3 96.7 %; at the sustainable load
+(c61, pinned pool) P1 97.8 %. Requests that were loaded from LMCache in one run and computed in the other agree as often as the
+rest (95–98 %).
+
+**Blocks, leaks, preemptions, repeated loads** (the same script; the overloaded tool-agent replay, `replay/tables-correctness-tool08.md`).
+
+| check | stock | stock, second run | store fix | P1 | P2 | P2, second run | P3 |
+|---|---|---|---|---|---|---|---|
+| requests completed | 544 | 544 | 544 | 544 | 544 | 544 | 544 |
+| output tokens generated | 112,233 | 112,233 | 112,233 | 112,233 | 112,233 | 112,233 | 112,233 |
+| requests with more than one LMCache load | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| preemptions / running requests refused their next chunk | 5 / 10 | 6 / 12 | 7 / 14 | 9 / 18 | 8 / 16 | 7 / 16 | 11 / 22 |
+| engine steps with no request holding blocks at which the whole pool is free | 61 / 61 | 61 / 61 | 65 / 65 | 58 / 58 | 60 / 60 | 62 / 62 | 57 / 57 |
+| requests that store KV / GB stored | 396 / 73.8 | 393 / 73.7 | 477 / 108.9 | 477 / 108.7 | 477 / 108.8 | 477 / 108.8 | 477 / 108.9 |
+
+No run leaks blocks: whenever nothing is running, loading or holding KV in the queue (and the last holder ended at least 50 ms
+earlier, the time vLLM keeps a finished request's blocks until its store is confirmed), the free count equals the pool minus the
+null block. No request is loaded twice. The prototype does not allocate, free or map blocks itself — it changes the connector's
+answer, the reservation number and the per-step caps — so block validity rests on the stock allocator in every configuration.
+Preempted requests recompute their prompt (stock rule); the prototype configurations have 7–11 preemptions against 5–6, the
+first version had 32 (B0).
+
+**Repeats and variability.** *Replays:* a second run of the stock overloaded replay differs from the first by 0.07 s in TTFT
+p50 (12.45 / 12.38), 0.05 s in p95, 0.03 s in the mean; every class mean within 0.4 %. A second run of P2: p50 8.64 / 8.61,
+mean 14.09 / 14.15, class means within 1–8 %. The replay is open-loop with fixed prompts and arrival times, so it is close to
+deterministic; differences of a few percent between configurations are differences of the configurations. *Controlled scenarios:*
+three repetitions each; the three values of a cell differ by at most 0.02 s in scenarios c1 and c3 (0.13 s with synchronous
+scheduling) and by at most 0.4 s in c5. *Across machines:* the pinned-pool stock replay on a 16 GB node reproduces c28's replay of
+2026-11-05 (C3, Result 1), and the gain of the prototype at the sustainable load was measured on both (C2, C3). Sample sizes are
+given with every table (n per class).
+
+**Instrumentation overhead (`adm_overhead.py`).** The step stream of the 2026-11-04 hooks records the duration of the scheduler's
+`schedule()` in both studies; the admission wrappers of this study run inside that interval.
+
+| run | admission stream | steps | `schedule()` mean / p50 / p99 (µs) | total over the run (s) | share of the wall time |
+|---|---|---|---|---|---|
+| `dl-tool-dram320` (2026-11-05) | no | 87,171 | 129 / 86 / 660 | 11.3 | 0.23 % |
+| `tool04-320-base` | yes | 87,151 | 135 / 88 / 699 | 11.8 | 0.24 % |
+| `tool08-320-base` | yes | 21,789 | 224 / 144 / 987 | 4.9 | 0.38 % |
+| `tool08-320-tokfast11` (policy v1.1) | yes | 21,149 | 322 / 170 / 2,085 | 6.8 | 0.53 % |
+
+The wrappers add 6 µs to a 129 µs call (+5 %), 0.5 s over a replay of 4,982 s; the prototype's decisions add about 100 µs per
+step. The instrumented stock replay reproduces the un-instrumented one of 2026-11-05 in every aggregate (A2.1, Result 1), and the
+stock store loss of A5 is identical in both (48 requests, 187.9 of 200.5 GB).
+
+**Raw logs.** Every run keeps its client records, per-request timelines, admission stream (every poll, admission attempt,
+preemption and one line per engine step), LMCache event mirror, sampler output and server logs; nothing was edited after a run.
+Small files are in the results directory of the repo, the streams on c28 (`README.md` there). The prototype's rules are covered by
+mock tests (`kvadm/test_policy.py`, 9 cases).
