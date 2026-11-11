@@ -3,6 +3,8 @@
 questions 1-3 of Experiment A): refusals / attempts per band of the used share of the pool, separately for external loads and for
 compute requests (misses and GPU-prefix hits), with the blocks needed and the blocks free at refused and admitted attempts; and the
 requests whose GPU-cached prefix shrank between their first visit and their admission (evicted while they waited).
+A second table (if <out>/<tag>-adm-requests.csv of analyze_adm.py exists) gives, for the requests admitted as external loads, the wait
+from queueing to the admission of the load by length of the loaded prefix, split by whether a prefill was in flight at arrival.
 Reads the admission stream <out>/<tag>-vllmevt.adm.*.jsonl. Writes <out>/tables-first-<tag>.md and prints it.
 usage: adm_first_attempts.py <out> <tag> [<tag> ...]"""
 import glob, json, sys
@@ -46,4 +48,17 @@ for tag in sys.argv[2:]:
         if a["loc"] < d["loc"]: n += 1; lost += d["loc"] - a["loc"]; as_load += bool(a["as"])
     det.append(f"- GPU-cached prefix at the first visit: {seen} tokens over {len(fpoll)} requests; {n} requests had lost part of it by the time they were admitted "
                f"({lost} tokens, {100 * lost / max(1, seen):.1f} %); {as_load} of them were then admitted as external loads")
-    T = "\n".join(L) + "\n\n" + "\n".join(det) + "\n"; open(f"{out}/tables-first-{tag}.md", "w").write(T); print(T)
+    L2 = []; ap = f"{out}/{tag}-adm-requests.csv"
+    import csv, os
+    if os.path.exists(ap):
+        fl = lambda x: float(x) if x not in ("", None) else None
+        R = [r for r in csv.DictReader(open(ap)) if (fl(r["ext"]) or 0) > 0 and fl(r["t_adm"]) is not None and fl(r["t_q"]) is not None]
+        L2 = ["", f"### External loads of `{tag}` by length of the loaded prefix: wait from queueing to the admission of the load (s)", "",
+              "| loaded prefix (tokens) | n | blocks of the full sequence p50 | refused at least once | wait p50 / mean | no prefill in flight at arrival: n, wait p50 | prefill in flight at arrival: n, wait p50 | TTFT p50 |", "|---|---|---|---|---|---|---|---|"]
+        for lo, hi, lab in ((0, 2048, "< 2k"), (2048, 4096, "2k–4k"), (4096, 8192, "4k–8k"), (8192, 10 ** 9, "≥ 8k")):
+            v = [r for r in R if lo <= fl(r["ext"]) < hi]
+            if not v: continue
+            w = [fl(r["t_adm"]) - fl(r["t_q"]) for r in v]; a = [fl(r["t_adm"]) - fl(r["t_q"]) for r in v if (fl(r["arr_infl"]) or 0) == 0]; b = [fl(r["t_adm"]) - fl(r["t_q"]) for r in v if (fl(r["arr_infl"]) or 0) > 0]
+            pq = lambda x: "–" if not x else f"{len(x)}, {q(x, .5):.2f}"
+            L2.append(f"| {lab} | {len(v)} | {q([fl(r['need_full']) for r in v], .5):.0f} | {sum(1 for r in v if (fl(r['n_refused']) or 0) > 0)} | {q(w, .5):.2f} / {sum(w) / len(w):.2f} | {pq(a)} | {pq(b)} | {q([fl(r['ttft']) for r in v], .5):.2f} |")
+    T = "\n".join(L) + "\n\n" + "\n".join(det) + "\n" + "\n".join(L2) + ("\n" if L2 else ""); open(f"{out}/tables-first-{tag}.md", "w").write(T); print(T)

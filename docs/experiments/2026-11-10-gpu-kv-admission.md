@@ -675,6 +675,23 @@ refused 1,286 of 1,303 load attempts at the sustainable load and 1,991 of 2,000 
 KV is on the GPU also cannot run: attention needs the KV of every preceding position, so a partially loaded hit would hold
 blocks without making progress — the situation `scheduler_reserve_full_isl` exists to prevent. Loading incrementally would
 therefore move the wait from "before the load" to "between the pieces" and hold blocks longer. What can be tested without
-changing model semantics is the effect of the gate itself (`--no-scheduler-reserve-full-isl`, a stock flag) and of the
-reservation (`alpha`); both are in C.
+changing model semantics is the effect of the gate itself (`--no-scheduler-reserve-full-isl`, a stock flag; A3.1) and of the
+reservation (`alpha`; B4).
+
+**Answers to the brief's questions on chunked loading.**
+- *Does it enable earlier execution?* No. A request cannot run on the first part of its prefix; execution starts when the last
+  piece is on the GPU, which needs the same total of free blocks as the single load.
+- *Does it only move the waiting time?* Yes: from before the load to between the pieces — with blocks held in the meantime.
+- *Does it increase GPU KV memory pressure?* Yes. A partially loaded request holds blocks without making progress and cannot be
+  preempted while a transfer is in flight (S:1196). A3.1 shows the analogous case for misses: with the full-sequence gate off,
+  requests are admitted on a first chunk they cannot follow up, and the run has 23 preemptions against 2.
+- *Does it require changes to block mapping or connector semantics?* Yes, in three places: the scheduler's connector query (only
+  for requests without computed tokens), the connector's per-request state machine (one retrieve), and the slicing of block ids
+  at allocation time.
+- *Repeated copies or other overhead?* Not measured, because the mechanism was not built: it cannot be expressed through the
+  existing interfaces, and (iii) above says the admission would not come earlier if it were.
+
+**Verdict.** Not implemented; incompatible with the connector protocol of vLLM 0.31 / LMCache 0.5.5, and the measured cause of
+the refusals (the full-sequence gate) would be unchanged by it.
+
 
