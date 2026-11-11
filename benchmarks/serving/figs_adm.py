@@ -2,8 +2,10 @@
 """Figures of the 2026-11-10 GPU-KV admission study, part A (matplotlib defaults, white background).
   figA1-wait-by-reason       where the waiting time between queueing and RUNNING goes, per request category, for the given replays
   figA2-ttft-by-arrival      TTFT p50 per category split by the engine state at arrival (prefill in flight or not)
-  fig1-occupancy-vs-wait     (required figure 1) free GPU KV blocks at the first admission attempt, relative to the request's need,
-                             against the time from lookup result to admission: controlled probes (A3), external hit vs miss
+  fig1-occupancy-vs-wait     (required figure 1) left: free GPU KV blocks at the first admission attempt, relative to the request's need,
+                             against the time from lookup result to admission: controlled probes (A3), external hit vs miss; right:
+                             the replays' host-dominant hits, used share of the pool at arrival against the wait from queueing to
+                             admission, split by whether a prefill was in flight at arrival
   fig2-length-vs-wait        (required figure 2) prefix length against TTFT and admission wait: A3 part 1, hit vs miss, by free-block level
 usage: figs_adm.py <fig_dir> replay=<dir>:<tag>[,<tag>...] a3=<dir>:<tag>"""
 import csv, os, re, sys
@@ -65,13 +67,26 @@ if "a3" in KW:
         P.append(dict(part=m.group(1), tr=m.group(2), ty=m.group(5), L=int(m.group(6)), ttft=fl(r["ttft"]), free=fl(r["first_free"]), full=fl(r["first_full"]),
                       wait=(fl(r["t_adm"]) - fl(r["t_res"])) if (fl(r["t_adm"]) is not None and fl(r["t_res"]) is not None) else None))
     P1 = [p for p in P if p["part"] in ("p1", "p2") and p["free"] and p["full"]]
-    fig, ax = plt.subplots(figsize=(5.4, 3.6))
+    two = "replay" in KW
+    fig, axs = plt.subplots(1, 2 if two else 1, figsize=(10.6 if two else 5.4, 3.7), squeeze=False); ax = axs[0][0]
     for ty, lab, mk in (("host", "external hit", "o"), ("cold", "miss of the same length", "x")):
         v = [p for p in P1 if p["ty"] == ty]
         ax.scatter([p["free"] / p["full"] for p in v], [p["wait"] for p in v], s=22, marker=mk, label=f"{lab} (n = {len(v)})", alpha=0.85, linewidths=1.0)
     ax.axvline(1.0, color="0.4", linewidth=0.8, linestyle="--"); ax.text(1.02, ax.get_ylim()[1] * 0.55, "free blocks = blocks\nof the full sequence", fontsize=7, color="0.3")
-    ax.set_xscale("log"); ax.set_xlabel("free GPU KV blocks at the first admission attempt / blocks the request needs"); ax.set_ylabel("lookup result → admitted (s)")
+    ax.set_xscale("log"); ax.set_xticks([0.6, 1, 1.5, 2, 3]); ax.set_xticklabels(["0.6", "1", "1.5", "2", "3"]); ax.minorticks_off()
+    ax.set_xlabel("free GPU KV blocks at the first admission attempt / blocks the request needs"); ax.set_ylabel("lookup result → admitted (s)")
     ax.set_title("Controlled probes (holders released 3 s after the probe when it does not fit)", fontsize=8); ax.legend(fontsize=7, frameon=False, loc="center right")
+    if two:
+        ax = axs[0][1]; rdir, tags = KW["replay"].split(":"); H = []
+        for tag in tags.split(","):
+            for d in csv.DictReader(open(f"{rdir}/{tag}-adm-requests.csv")):
+                if d["cat"] == "host≥50%" and fl(d.get("arr_free")) is not None and fl(d.get("t_adm")) is not None and fl(d.get("t_q")) is not None:
+                    H.append((1 - fl(d["arr_free"]), max(fl(d["t_adm"]) - fl(d["t_q"]), 1e-3), (fl(d.get("arr_infl")) or 0) > 0))
+        for infl, lab, mk, col in ((False, "no prefill in flight at arrival", "o", "C0"), (True, "a prefill in flight at arrival", "^", "C3")):
+            v = [h for h in H if h[2] == infl]
+            ax.scatter([h[0] for h in v], [h[1] for h in v], s=14, marker=mk, color=col, alpha=0.6, linewidths=0, label=f"{lab} (n = {len(v)})")
+        ax.set_yscale("log"); ax.set_xlabel("GPU KV blocks in use at arrival (share of the pool)"); ax.set_ylabel("queued → load admitted (s)")
+        ax.set_title("Host-dominant hits of the stock replays (" + ", ".join(tags.split(",")) + ")", fontsize=8); ax.legend(fontsize=7, frameon=False, loc="upper left")
     save(fig, "fig1-occupancy-vs-wait")
     fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.4))
     Ls = sorted({p["L"] for p in P if p["part"] == "p1"})

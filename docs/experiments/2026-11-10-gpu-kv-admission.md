@@ -235,6 +235,32 @@ Conditional on the state, an external hit is 1.9× slower than a GPU-prefix hit 
 3. *The full-sequence gate under memory pressure,* with head-of-line blocking; it treats hits and misses alike.
 The whole-prefix reservation of the earlier explanation is real (A1.2, step 4) but is not what makes the hits wait here.
 
+### A2.2 Instrumented baseline under overload: tool-agent replay at 0.08×, 320 GB (MEASURED 2026-11-10 17:47–18:10, `replay/tool08-320-base`)
+Trace seconds 0–100 at 0.08× (544 requests, 1,250 wall s), pool pinned at 7,456 blocks. All requests completed; cached share
+0.355 (host 0.114, GPU 0.241); TTFT p50 / p95 / p99 12.4 / 40.8 / 47.4 s; GPU busy 0.87; backlog up to 42 (the 2026-11-05 run with
+80 GB, `d-tool-dram80`: 12.7 / 40.9 / 48.1 s). Waiting time by reason (`replay/tables-adm-tool08-320-base.md`):
+
+| category | n | wait, mean (s) | token budget | budget used by earlier admissions | `hol:full` | `own:full` | reservation gate | lookup pending |
+|---|---|---|---|---|---|---|---|---|
+| host-dominant hit | 106 | 18.95 | 10.28 (54 %) | 0.84 (4 %) | 6.04 (32 %) | 0.62 (3 %) | 0.01 | 0.96 (5 %) |
+| GPU-prefix hit | 207 | 10.60 | 6.01 (57 %) | 0.48 (5 %) | 3.33 (31 %) | 0.09 (1 %) | 0.00 | 0.62 (6 %) |
+| partial hit | 64 | 11.37 | 6.68 (59 %) | 0.56 (5 %) | 3.28 (29 %) | 0.15 (1 %) | 0.00 | 0.59 (5 %) |
+| miss | 167 | 12.31 | 6.81 (55 %) | 0.59 (5 %) | 3.35 (27 %) | 0.89 (7 %) | 0.00 | 0.62 (5 %) |
+
+The same order of causes as at the sustainable load: token budget first (54–59 %), the full-sequence gate with head-of-line
+blocking second (28–35 %), the reservation gate absent (9 of 6,527 refused attempts; 1,991 of the 2,000 refused load attempts
+failed the full-sequence gate, needing 425 blocks where 212 were free at the median). The confound is stronger here: a
+host-dominant hit arrives with 16 % of the pool free at the median (GPU-prefix hit 52 %, miss 49 %) and 59 % of them during a
+prefill; 65 % arrive with less than a quarter of the pool free (39 % of the GPU-prefix hits).
+
+**Conversation trace at 0.08× (MEASURED 2026-11-10 18:10–18:33, `replay/conv08-320-base`).** Trace seconds 0–100 (291 requests,
+1,292 wall s), same server. Cached share 0.075 (host 0.031, GPU 0.044): 11 host-dominant hits, 28 GPU-prefix hits, 186 misses.
+TTFT p50 / p95 / p99 14.4 / 41.8 / 49.4 s. Waiting time by reason (`replay/tables-adm-conv08-320-base.md`): token budget 53–65 %
+for every class (host-dominant hits 9.95 of 18.77 s, misses 7.98 of 13.75 s), `hol:full` 24–26 %, own refusal 0–10 %, lookup
+pending 5–6 %. 6,363 refused attempts, every one at the full-sequence gate (a refused load needed 871 blocks where 542 were free,
+p50), none at the reservation; 5 preemptions; free blocks below 25 % of the pool for 0.51 of the wall time. The decomposition
+does not depend on the trace.
+
 ## A3. Controlled reproduction (MEASURED 2026-11-10 17:33–17:47, c28, `A3/a3-*`, tables `A3/tables-a3-a3.md`)
 **Why.** The replay shows what happens to classes of requests that arrive under different conditions. To separate the
 mechanisms the pressure has to be set, not inferred, and a hit has to be compared with a miss of the same length in the
@@ -290,25 +316,121 @@ hit loses relative to a miss is not at the gate but around it (parts 3–5): its
 promotion are each picked up only at a step with token budget left, and a miss that starts in between takes the budget
 first.
 
-### A2.2 Instrumented baseline under overload: tool-agent replay at 0.08×, 320 GB (MEASURED 2026-11-10 17:47–18:10, `replay/tool08-320-base`)
-Trace seconds 0–100 at 0.08× (544 requests, 1,250 wall s), pool pinned at 7,456 blocks. All requests completed; cached share
-0.355 (host 0.114, GPU 0.241); TTFT p50 / p95 / p99 12.4 / 40.8 / 47.4 s; GPU busy 0.87; backlog up to 42 (the 2026-11-05 run with
-80 GB, `d-tool-dram80`: 12.7 / 40.9 / 48.1 s). Waiting time by reason (`replay/tables-adm-tool08-320-base.md`):
+### A3.1 The same trials with the full-sequence gate switched off (MEASURED 2026-11-10 18:18–18:49, 16 GB node c60, pool pinned at 7,456 blocks; `E16/a3gate/a3g-base`, `a3g-noisl`)
+**Why.** A1 says the admission asymmetry of the earlier explanation is removed by `scheduler_reserve_full_isl`, which is on by
+default. If that is right, switching it off (`--no-scheduler-reserve-full-isl`, a stock flag) must bring the asymmetry back.
 
-| category | n | wait, mean (s) | token budget | budget used by earlier admissions | `hol:full` | `own:full` | reservation gate | lookup pending |
+**How.** The 114 trials of A3, twice on one node: stock flags, and with the gate off. Nothing else differs.
+
+**Result.**
+| probe, free = 0.6 × need | gate on: first attempt | gate on: TTFT (s) | gate off: first attempt | gate off: TTFT (s) |
+|---|---|---|---|---|
+| host 4k (needs 256 blocks at once; 180 free) | refused (`full`) | 3.35 | refused (`free`) | 3.34 |
+| cold 4k (first chunk 128 blocks; 178 free) | refused (`full`) | 4.00 | **admitted** | 3.62 |
+| host 8k (512 at once; 335 free) | refused (`full`) | 3.37 | refused (`free`) | 3.36 |
+| cold 8k (first chunk 128; 334 free) | refused (`full`) | 4.89 | **admitted** | 4.10 |
+| host 1k (64 at once; 68 free) | refused (`full`) | 3.32 | admitted (the load fits; the tail does not yet) | 0.31 |
+| cold 1k (80 in one chunk; 68 free) | refused (`full`) | 3.36 | refused (`free`) | 3.34 |
+
+With the gate on, the node reproduces c28's A3 to the hundredth of a second (hit and miss refused together, admitted 0.06–0.08 s
+after the release). With the gate off, **a miss is admitted with its first chunk where a hit of the same length is refused
+for its whole prefix** — the mechanism of the 2026-11-04 explanation, observed directly — and the run has 23 preemptions and
+46 failed chunk allocations of running requests against 2 and 4 with the gate on. In the two-probe trials the gate-off server
+admits the 8k miss next to the 4k hit that came first (700 free blocks), and the hit's TTFT rises from 0.35 to 1.52 s.
+
+**Explanation.** The earlier explanation describes vLLM without the full-sequence reservation. vLLM 0.31's default closes that
+gap from the other side: it makes a miss wait for its whole sequence as well. Switching the gate off does not help hits (they
+are refused at the same free-block counts as before) and costs preemptions.
+
+## A4. Answers to the analysis questions of Experiment A
+First admission attempts against the occupancy at that instant (`replay/tables-first-<tag>.md`, `adm_first_attempts.py`; MEASURED,
+stock runs; refused attempts / attempts):
+
+| run | kind of request | attempts | pool in use < 50 % | 50–75 % | 75–90 % | 90–95 % | 95–98 % | ≥ 98 % |
 |---|---|---|---|---|---|---|---|---|
-| host-dominant hit | 106 | 18.95 | 10.28 (54 %) | 0.84 (4 %) | 6.04 (32 %) | 0.62 (3 %) | 0.01 | 0.96 (5 %) |
-| GPU-prefix hit | 207 | 10.60 | 6.01 (57 %) | 0.48 (5 %) | 3.33 (31 %) | 0.09 (1 %) | 0.00 | 0.62 (6 %) |
-| partial hit | 64 | 11.37 | 6.68 (59 %) | 0.56 (5 %) | 3.28 (29 %) | 0.15 (1 %) | 0.00 | 0.59 (5 %) |
-| miss | 167 | 12.31 | 6.81 (55 %) | 0.59 (5 %) | 3.35 (27 %) | 0.89 (7 %) | 0.00 | 0.62 (5 %) |
+| `tool04-320-base` | external load | 191 | 0 / 118 | 0 / 16 | 3 / 25 | 7 / 16 | 11 / 13 | 3 / 3 |
+| `tool04-320-base` | compute (miss, GPU-prefix hit) | 968 | 0 / 738 | 0 / 117 | 8 / 61 | 13 / 31 | 6 / 15 | 6 / 6 |
+| `tool08-320-base` | external load | 126 | 0 / 10 | 0 / 15 | 2 / 34 | 4 / 20 | 21 / 30 | 17 / 17 |
+| `tool08-320-base` | compute | 418 | 0 / 166 | 0 / 53 | 11 / 63 | 16 / 46 | 23 / 49 | 26 / 41 |
+| `conv08-320-base` | external load | 14 | 0 / 3 | 0 / 3 | 0 / 1 | 2 / 2 | 2 / 3 | 2 / 2 |
+| `conv08-320-base` | compute | 277 | 0 / 92 | 0 / 38 | 15 / 61 | 18 / 32 | 23 / 36 | 17 / 18 |
 
-The same order of causes as at the sustainable load: token budget first (54–59 %), the full-sequence gate with head-of-line
-blocking second (28–35 %), the reservation gate absent (9 of 6,527 refused attempts; 1,991 of the 2,000 refused load attempts
-failed the full-sequence gate, needing 425 blocks where 212 were free at the median). The confound is stronger here: a
-host-dominant hit arrives with 16 % of the pool free at the median (GPU-prefix hit 52 %, miss 49 %) and 59 % of them during a
-prefill; 65 % arrive with less than a quarter of the pool free (39 % of the GPU-prefix hits).
+1. **At what GPU KV occupancy does external-hit admission begin to fail?** When the free blocks fall below the blocks of the
+   request's whole sequence. In the controlled trials that is exact (A3: a 4k hit needs 272 blocks, is admitted with 425 free and
+   refused with 180). In the replays none of the 1,369 first attempts made while less than 75 % of the pool was in use was
+   refused; of the loads' first attempts in the two tool-agent replays (sustainable load, overload) 12 % and 6 % were refused
+   at 75–90 %, 44 % and 20 % at 90–95 %, 85 % and 70 % at 95–98 %, and all above 98 %. Compute requests follow the same curve.
+2. **How many blocks does the hit need?** The refused loads needed 450 blocks for their full sequence at the sustainable load
+   (p50; 312–1,505 p10–p90; about 7.2k tokens) and 409 under overload; the loads admitted at once needed 387 (p50).
+3. **How many are available?** 353 free blocks at the refused first attempts at the sustainable load (p50; 139–906), 217 under
+   overload (34–382): the request needs 1.6× and 2.0× what is free (median). Admitted first attempts saw 5,542 and 1,222 free.
+4. **Why can a miss make progress while a hit waits?** At the block gate it cannot: with vLLM 0.31's default
+   (`scheduler_reserve_full_isl`) a hit and a miss of the same length are refused at the same free-block count and admitted in
+   the same step after a release (A3). What makes progress while a hit waits are (a) requests that are already RUNNING, which
+   take the blocks of every further chunk without a gate, (b) a miss that was visited by the same scan pass: it starts
+   computing at once and from then on is served by the running loop, while the hit leaves for the load and needs two more
+   visits by the waiting loop. With the gate switched off the miss-first asymmetry of the 2026-11-04 explanation appears
+   (A3.1), at the price of preemptions.
+5. **Does the waiting-queue scan or the token budget also contribute?** It is the main contributor: the waiting loop runs only
+   on budget the running requests leave, and one prefill in progress leaves none.
+6. **What fraction of the waiting time comes from each mechanism?** For host-dominant hits: token budget (queue not scanned)
+   56 % at the sustainable load and 54 % under overload, plus 4 % of budget used by earlier admissions of the same scan;
+   full-sequence gate 28 % and 35 % (of which head-of-line blocking 24 % and 32 %, own refusal 4 % and 3 %); in-flight
+   reservation gate 0.3 % and 0.1 %; pending lookup 10 % and 5 %. The other classes have the same order (A2.1, A2.2).
+7. **Does the proposed cause explain the long delays in the real tool-agent trace?** No. Whole-prefix reservation under the
+   in-flight reservation refused 17 of 4,924 attempts at the sustainable load, 9 of 6,527 under overload and none in the
+   conversation replay. The long delays are explained by the token budget of the step (hits wait for running prefills like
+   everybody else, and need more step boundaries than a miss), by the full-sequence gate with head-of-line blocking when the
+   pool is more than about 75 % in use, and — for the size of the class gap — by the fact that prefixes are served from the
+   host tier mostly when the engine is busy and the pool has been churned (A2.1, Result 4).
 
-## B. Prototype mechanisms (`benchmarks/serving/kvadm/kvadm_policy.py`; flags in the vLLM process environment, `KVADM_POLICY=…`)
+**A side observation: a waiting request does not pin its GPU-cached prefix.** Between a request's first visit and its
+admission its GPU prefix hit can be evicted by the requests that run meanwhile: 20 requests lost 101k tokens of prefix that
+way at the sustainable load (3.3 % of the GPU-prefix tokens seen at the first visits), 36 requests lost 117k tokens (11.7 %)
+under overload; every one of them was then served by a load from the host tier. Part of what the replays count as host-tier
+hits are GPU-prefix hits that waited too long — the host tier catches what the queueing delay costs the GPU cache.
+
+## A5. A side effect of admission retries: KV that never reaches the host tier (SOURCE + MEASURED; `store_loss.py`, `replay/tables-store-loss.md`)
+**Why.** A1.4 noted that every poll of a waiting request adds the LMCache hit length to the connector's stored-token counter. A2.1
+(Result 5) confirmed it for refused loads. The same code path serves every request that has *any* LMCache hit — also a GPU-prefix
+hit whose prefix LMCache holds as well, and a near-miss that shares one 256-token chunk with an earlier prompt — so the size of the
+effect was measured over all requests.
+
+**How (SOURCE).** `get_num_new_matched_tokens` runs `tracker.increase_num_stored_tokens(ret)` whenever the lookup result `ret` is
+non-zero (C:1065) — on every call, and the stock scheduler calls it again at every step in which it visits a request it could not
+admit (A1.3). The store path writes the chunks from `start_token_idx = tracker.num_stored_tokens` (M:252). After k polls the
+counter stands at k × ret: the tokens between ret and k × ret are never stored, and nothing at all once k × ret exceeds the prompt
+(a refused request is polled 32 times at the median, A2.1). LMCache finds a prefix chunk by chunk, so chunks stored behind such a
+hole cannot be found by a later request either.
+
+**Result (MEASURED; the first three rows are the 2026-11-05 runs, which had no admission instrumentation).** A request "with a new
+chunk" has at least one full 256-token chunk beyond what a cache served; expected bytes = new full chunks × 256 tokens × 36 KiB.
+
+| run | requests with ≥ 1 new chunk | of those stored nothing | GB stored | GB expected | missing | polled with a result once: n / stored nothing | polled ≥ 2 times: n / stored nothing / GB stored of expected |
+|---|---|---|---|---|---|---|---|
+| `dl-tool-dram320` (2026-11-05, tool-agent 0.04×) | 981 | 48 | 187.9 | 200.5 | 6 % | – | – |
+| `d-tool-dram80` (2026-11-05, tool-agent 0.08×) | 478 | 77 | 74.6 | 107.5 | 31 % | – | – |
+| `dl-conv-dram320` (2026-11-05, conversation 0.04×) | 584 | 26 | 198.4 | 209.3 | 5 % | – | – |
+| `tool04-320-base` | 981 | 48 | 187.9 | 200.5 | 6 % | 927 / 1 | 54 / 47 / 2.2 of 21.8 |
+| `tool08-320-base` | 477 | 82 | 73.8 | 107.2 | 31 % | 368 / 0 | 109 / 82 / 9.4 of 45.0 |
+| `conv08-320-base` | 290 | 54 | 76.7 | 112.6 | 32 % | 209 / 0 | 81 / 54 / 10.3 of 48.3 |
+| `tool08-320-sync` (stock flag) | 477 | 87 | 71.8 | 107.2 | 33 % | 363 / 0 | 114 / 87 / 9.7 of 47.2 |
+| `tool08-320-tokfast11` (prototype v1.1, counter repaired at every poll) | 475 | 1 | 108.7 | 105.1 | 0 % | 146 / 0 | 329 / 1 / 88.9 of 86.4 |
+
+- **The stock system loses 5–6 % of the KV it should store at a sustainable load and 31–33 % under overload,** on both traces, with
+  and without the instrumentation of this study (the 2026-11-05 rows). Requests polled once store everything (1 exception in 1,504);
+  requests polled twice or more store 10–21 % of their bytes, and what they store lies behind a hole.
+- The loss grows with congestion because only requests that had to wait are polled again — the busier the engine, the less of
+  what it computes reaches the host tier, which is when the host tier would be most useful.
+- With the counter repaired (`storefix`, B7) the same replay stores 108.7 GB instead of 73.8 GB.
+
+**Explanation.** A counter that is meant to say "this much of the prompt is already in the store" is incremented by a polling loop
+instead of being set once. It is harmless while every request is admitted at its first visit, which is why it does not show in
+light-load tests. The 2026-11-04 study's host-tier occupancy and hit shares under overload were measured with this loss in place.
+
+## B. Mechanism evaluation
+
+### B0. The prototype mechanisms (`benchmarks/serving/kvadm/kvadm_policy.py`; flags in the vLLM process environment, `KVADM_POLICY=…`)
 **Why these, from A.** The delay has three parts with different remedies. (1) The waiting queue gets only what the running
 requests leave of the token budget → keep a bounded share of the budget for short work and keep the scan alive. (2) The load
 detour: lookup result, finished load and promotion are each picked up at a step boundary, and a prefill step is long → make
@@ -328,16 +450,146 @@ process, and with `KVADM_POLICY` unset every wrapper returns its input (the inst
 
 | flag | mechanism | addresses |
 |---|---|---|
-| `tokres=<n>` | **Token reserve.** Before each step: tokens needed by loads that have arrived (their uncached tail), by waiting compute requests whose need is known and ≤ n (GPU-prefix hits, short prompts), plus 1 token if anything else waits (so that the scan runs). Running long prefills (more than n tokens left) are capped so that this amount, at most n, is left of the budget. | (1) |
+| `tokres=<n>` | **Token reserve.** Before each step: tokens needed by loads that have arrived (their uncached tail), by waiting compute requests whose need is known and ≤ n (GPU-prefix hits, short prompts) and whose blocks are free, plus 1 token if anything else waits (so that the scan runs). Running long prefills (more than n tokens left) are capped so that this amount, at most n, is left of the budget. | (1) |
 | `minchunk=<m>` | A compute request is not started in a step with fewer than min(its need, m) budget tokens left (it is set aside for this step). Default n + 256 with `tokres`, so that the reserve can never start a long prefill: long work stays first-come-first-served. | keeps (1) from turning into round-robin among prefills |
-| `fastchunk=<f>` | **Short steps while short work is under way** next to a long prefill (a lookup pending, a load in transfer or arrived, a short tail running): the whole step's budget is f instead of 2,048; the long prefill continues at what is left of f (at least 128 tokens). | (2) |
+| `fastchunk=<f>` | **Short steps while short work is under way** next to a long prefill (a request not yet visited or its lookup pending, a load in transfer or arrived, a short tail running): the whole step's budget is f instead of 2,048 — more if the short work itself needs more — and each long prefill keeps at least `mincap` = 256 tokens of it. A request counts as short work under way for a bounded number of engine steps per phase (lookup 3, load in transfer 10, promotion 4, short compute request 4; `faststeps` scales them): one that stays longer is waiting for memory or for its turn, which short steps do not help. | (2) |
 | `skip=<s>` | **No head-of-line blocking by a request that does not fit.** The two block gates are evaluated before the scheduler tries the allocation; a request that would be refused is set aside for this step instead (requests behind it are visited) until it has waited s seconds since its lookup result; after that the stock behaviour returns: its refusal stops the scan, so freed blocks go to it first. | (3), starvation bound |
 | `hitres=<b>` | **Bounded block reservation for skipped hits** (the brief's B2): while external hits are set aside for lack of blocks, other compute requests are admitted only if they leave min(b, blocks those hits need) free. Nothing is reserved when no hit is waiting. | (3), for hits |
 | `alpha=<a>` | Scale the stock in-flight reservation charged to a load (1 = stock, 0 = a load is admitted under the same block rule as a miss). | the reservation gate (B2, literal form) |
+| `resvall` | A compute request that is started while a prefill is in flight must fit under the in-flight reservation, as the stock scheduler demands of a load; otherwise it is set aside for this step. Needed only because the token reserve lets requests in during a prefill, which the stock scheduler never does. | preemptions caused by (1) |
 | `fallback=<s>` | **Compute fallback** (B5): a hit that still fails the gates s seconds after its lookup result is computed instead of loaded if the compute path passes the gates. | (3) |
 | `storefix` | Undo the repeated addition to the connector's `num_stored_tokens` when a waiting hit is polled again (A1.4); applied automatically with every mechanism that makes the scheduler poll a request again. | side effect of A |
 
-**B3, chunked external loading — what the protocol allows (SOURCE).** (i) The scheduler asks the connector only for requests
+### B1. Baseline and the scheduler options vLLM already has (MEASURED 2026-11-10 19:27–19:58, 16 GB node c66, pool pinned at 7,456 blocks; `E16/c1c/`, table `E16/c1c/tables-c1c.md`)
+**Why.** A prototype has to beat what the engine can already be configured to do. The options that touch the causes found in A:
+synchronous scheduling (`--no-async-scheduling`: one batch in flight instead of two, so an event reaches the scheduler one step
+sooner), a per-step cap on a prefill chunk (`--long-prefill-token-threshold 1024`: half of every step's budget is left to other
+requests), a smaller step for everybody (`--max-num-batched-tokens 512`), priority scheduling with hits first (needs the client to
+label its requests; controlled workloads only, C1) and the full-sequence gate off (A3.1).
+
+**How.** Scenario c1, "compute contention without memory pressure" (`run_adm.py plan=c1`): six small holders decode, 5,500 of the
+7,456 blocks are free; a miss of 8k, 16k or 28k tokens (the *blocker*) starts prefilling; external hits of 4k tokens (+256 fresh
+tokens) are sent 0.5, 2.5 and 4.5 s after it and a 4k miss 1.5 s after it; 16 output tokens per probe; 3 repetitions; medians. Every
+configuration runs the same 9 trials on the same node. The cells are TTFT / request time in seconds.
+
+| blocker | probe | stock | synchronous | prefill cap 1,024 | step budget 512 |
+|---|---|---|---|---|---|
+| 28k | blocker miss | 7.33 / 8.71 | 7.35 / 8.78 | 8.64 / 9.00 | 8.52 / 9.91 |
+| 28k | hit +0.5 s | 7.83 / 8.33 | 7.83 / 8.37 | 2.27 / 7.86 | 9.30 / 9.71 |
+| 28k | 4k miss +1.5 s | 6.68 / 7.28 | 6.72 / 7.36 | 2.97 / 7.21 | 8.23 / 8.69 |
+| 28k | hit +2.5 s | 5.97 / 6.36 | 5.94 / 6.39 | 4.31 / 6.40 | 7.48 / 7.78 |
+| 28k | hit +4.5 s | 4.08 / 4.37 | 4.05 / 4.40 | 3.09 / 4.44 | 5.56 / 5.79 |
+| 16k | hit +0.5 s | 4.05 / 4.47 | 4.04 / 4.51 | 2.26 / 4.42 | 4.83 / 5.21 |
+| 8k | hit +0.5 s | 2.00 / 2.29 | 1.98 / 2.32 | 1.45 / 2.35 | 2.41 / 2.70 |
+
+**Result.**
+- **Stock:** every request sent during the blocker's prefill gets its first token after the blocker's (7.33 s for 28k): the hits at
+  7.83 / 5.97 / 4.08 s, the 4k miss at 6.68 s. An external hit on this engine takes 0.2–0.3 s when no prefill is running (the
+  hits sent after the 8k blocker has finished: 0.21–0.23 s).
+- **Synchronous scheduling** changes nothing here (within 0.03 s): the queue is still not scanned during the prefill.
+- **Prefill cap 1,024** lets the first hit in (2.27 s) because half of every step's budget is left over — and the 4k miss as well
+  (2.97 instead of 6.68 s), after which two prefills share the steps: the blocker's first token comes 18 % later (8.64 s), and the
+  later hits wait while the two prefills use the whole budget (4.31 / 3.09 s). On the overloaded replay the same option is worse
+  than stock on every metric (TTFT p50 17.7 against 12.4 s, 74 preemptions against 5; C2): with the cap long prefills advance
+  round-robin, more requests hold their blocks at the same time, and the pool fills.
+- **A 512-token step for everybody** is worse everywhere (hits 9.30 / 7.48 / 5.56 s, blocker +16 %): the prefill still takes every
+  step whole, and small steps cost throughput.
+
+**Explanation.** None of the existing options separates the two things the waiting queue needs — a visit, which costs no GPU work,
+and tokens — from the question of who gets the GPU. The cap comes closest and pays for it by starting long work early.
+
+### B2. Token reserve and short steps (`tokres`, `minchunk`, `fastchunk`; MEASURED 2026-11-10 19:27–19:58, same node and scenario; `E16/c1c/`)
+**What changed.** Before every step the hook caps the running long prefills (through vLLM's own per-request cap) so that the
+tokens short work needs are left in the budget: the uncached tails of loads that have arrived, compute requests that need at most
+`tokres` = 768 tokens and whose blocks are free, or a single token if anything else waits, which is enough for the scan to run,
+lookups to be submitted and loads to be issued. `minchunk` (1,024) keeps the reserve from starting a long prefill: a compute request
+is not started in a step with fewer budget tokens left than min(its need, 1,024), so long work stays first-come-first-served. With
+`fastchunk` = 512 the whole step is limited to 512 tokens while short work is in the pipeline (B0), so that the step boundaries a
+hit needs come 0.08 s apart instead of 0.3 s.
+
+**What problem it addresses.** Causes 1 and 2 of A: the waiting loop is not entered during a prefill, and a hit needs four step
+boundaries (lookup result, load issued, load noticed, tail computed), each a full prefill step away and two batches deep under
+asynchronous scheduling.
+
+| blocker | probe: TTFT / request time (s) | stock | reserve only (`tokres=768`) | reserve + 512-token steps | reserve + 256-token steps | reserve + 512-token steps, synchronous |
+|---|---|---|---|---|---|---|
+| 28k | blocker miss | 7.33 / 8.71 | 7.40 / 8.71 | 8.36 / 9.28 | 8.27 / 9.43 | 8.09 / 9.27 |
+| 28k | hit +0.5 s | 7.83 / 8.33 | 4.17 / 8.10 | 1.62 / 5.71 | 1.25 / 4.93 | **0.94** / 4.94 |
+| 28k | 4k miss +1.5 s | 6.68 / 7.28 | 6.80 / 7.25 | 7.44 / 7.81 | 7.62 / 7.97 | 7.45 / 7.81 |
+| 28k | hit +2.5 s | 5.97 / 6.36 | 5.64 / 6.24 | 1.89 / 6.47 | 1.73 / 6.51 | **1.04** / 6.48 |
+| 28k | hit +4.5 s | 4.08 / 4.37 | 3.93 / 4.28 | 2.67 / 4.74 | 1.90 / 4.86 | **1.10** / 4.68 |
+| 28k | sum of the five request times | 35.05 | 34.57 | 34.01 | 33.70 | 33.17 |
+| 16k | blocker miss | 3.62 / 4.79 | 3.88 / 4.85 | 4.14 / 5.14 | 4.28 / 5.27 | 4.06 / 5.23 |
+| 16k | hit +0.5 s | 4.05 / 4.47 | 3.74 / 4.37 | 1.61 / 4.42 | 1.25 / 4.46 | 0.93 / 4.43 |
+| 16k | hit +2.5 s | 2.17 / 2.50 | 2.15 / 2.49 | 2.01 / 2.69 | 1.99 / 2.82 | 1.03 / 2.71 |
+| 16k | sum of the five request times | 15.77 | 15.67 | 16.76 | 17.32 | 16.99 |
+| 8k | hit +0.5 s | 2.00 / 2.29 | 1.98 / 2.28 | 1.55 / 2.31 | 1.31 / 2.34 | 0.93 / 2.31 |
+| 8k | sum of the five request times | 7.04 | 7.05 | 7.28 | 7.53 | 7.45 |
+
+**Did it work?** For the first token, yes. The reserve alone admits the hit during the prefill (4.17 instead of 7.83 s) but each of
+its step boundaries is still a 2,048-token step (its load phase lasts 2.3 s for a transfer of 0.05 s). With short steps the three
+hits answer in 1.6–2.7 s, with 256-token steps in 1.3–1.9 s, and with synchronous scheduling on top — one batch in flight — in
+**0.94–1.10 s, 4–8× sooner than stock** and 0.7–0.9 s above a hit on an engine without a prefill. Figure 4 shows the request
+timelines of one repetition.
+
+![Figure 4](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig4-request-timelines.png)
+
+*Figure 4 — what each request of scenario c1 does over time behind a 28k-token prefill, stock (top) and with the token reserve,
+512-token steps and synchronous scheduling (bottom); one repetition. Black tick = first token.*
+
+**Side effects (the same table).**
+- **The request time of the hits does not improve unless the prefill is long.** After its first token a request decodes one token
+  per engine step, and while the blocker is prefilling a step is a 2,048-token chunk (0.3 s): the 16 output tokens of the first hit
+  take as long as the rest of the blocker's prefill. Behind the 8k and 16k blockers the hits finish when they finished before
+  (2.29 → 2.31 s, 4.47 → 4.43 s); behind the 28k blocker the first hit finishes 41 % sooner (8.33 → 4.94 s) and the two later ones
+  2–11 % later. The mechanism moves the first token, not the last.
+- **The blocker pays:** first token +10–18 % (7.33 → 8.09–8.36 s at 28k, 3.62 → 4.06–4.28 s at 16k), request time +6–10 %. The 4k
+  miss pays +11–18 % (it now shares its steps with decoding hits).
+- **Total work is not reduced:** the sum of the five request times is 3–5 % lower at 28k and 3–10 % higher at 8k and 16k.
+- Nothing is refused or preempted in this scenario (no memory pressure): 0 preemptions in every configuration.
+
+**Why it works, and why not further.** The hit's four step boundaries now come every 0.08–0.15 s instead of 0.3 s, and its load and
+tail ride in steps that also carry a slice of the prefill. What remains is the pipeline itself: five or six short steps from arrival
+to first token, plus up to one full prefill step that was already issued when the hit arrived (two under asynchronous scheduling).
+
+### B3. Letting requests that fit pass a request that does not (`skip`, `hitres`; MEASURED 2026-11-10 19:58–20:07, node c66; `E16/c2b/c3b-*`, table `E16/c2b/tables-c3b.md`)
+**What changed.** The hook evaluates the two block gates of `allocate_slots` before the scheduler tries the allocation. A request
+that would be refused is set aside for this step — the connector's "lookup pending" answer, which the stock scheduler handles by
+scanning on — instead of ending the scan. `skip=<s>` bounds this: `s` seconds after its lookup result the request gets the stock
+treatment again (its refusal stops the scan, so every block that is freed goes to it first). `hitres=<b>` adds a bounded block
+reservation for external hits that are being passed: compute requests are admitted only if they leave min(b, the blocks those hits
+need) free; nothing is reserved when no hit is waiting.
+
+**What problem it addresses.** Cause 3 of A (24–35 % of the hits' waiting time in the replays): the request at the head of the
+queue does not fit, and the scan stops in front of requests that would.
+
+**How.** Scenario c3 (`run_adm.py plan=c3`): six holders leave 600 free blocks; a 16k miss (needs 1,041) arrives, followed 50, 100
+and 150 ms later by two external hits and a miss of 2k (145 blocks each) and 1 s later by another 2k hit; one holder is released
+after 4 s (about 1,140 blocks). 3 repetitions; medians of TTFT (s) with the gate of the first attempt.
+
+| probe | stock | `skip=2` | `skip=3,hitres=600` + token reserve and short steps |
+|---|---|---|---|
+| #1 miss 16k (does not fit) | 7.98 (refused: full-sequence gate) | 7.97 | 7.97 |
+| #2 hit 2k | 8.70 | **0.75** | 0.75 |
+| #3 hit 2k | 8.65 | **0.82** | 0.82 |
+| #4 miss 2k | 8.35 | **0.65** | 0.65 |
+| #5 hit 2k, 1 s later | 7.88 | **0.35** | 0.35 |
+| refused admission attempts of the probes | 492 | 243 | 120 |
+| preemptions | 0 | 0 | 0 |
+
+**Did it work?** Yes, and at no cost in this scenario: the four requests that fit are served in 0.35–0.82 s instead of 7.9–8.7 s,
+and the request that does not fit is admitted at the same instant as before (the release) and answers in the same 7.97 s. In the
+stock run the four small requests wait twice: first behind the refused request, then — once it is admitted — for its whole prefill.
+
+**Why.** The stock scan confuses "this request cannot be admitted" with "nothing can be admitted". The blocks the small requests
+take (435 of the 600 free) are not blocks the large request could have used: it needs 1,041.
+
+**Side effects, and what the reservation is for.** A request that is passed can be starved by the requests that pass it if they
+keep taking the blocks that are freed; the `skip` bound limits that to `s` seconds, and `hitres` keeps blocks aside for a passed
+hit. Scenario c5 measures both (B3.1).
+
+### B6. Chunked external loading (the brief's B3): not possible in this protocol, and it would not help (SOURCE)
+(i) The scheduler asks the connector only for requests
 without computed tokens (S:931); after a load the request re-enters through the branch for requests that have them (S:1041),
 which adopts no further external tokens, so a second load for the same request has no entry point. (ii) The connector's
 tracker issues one retrieve per request (`PREFETCHING → WAITING_FOR_LOAD → READY`, C:1388–1402; M:100–110) for the whole range
@@ -350,3 +602,4 @@ blocks without making progress — the situation `scheduler_reserve_full_isl` ex
 therefore move the wait from "before the load" to "between the pieces" and hold blocks longer. What can be tested without
 changing model semantics is the effect of the gate itself (`--no-scheduler-reserve-full-isl`, a stock flag) and of the
 reservation (`alpha`); both are in C.
+

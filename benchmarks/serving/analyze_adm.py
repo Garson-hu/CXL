@@ -18,6 +18,10 @@ request's time before its first token into phases and, inside the waiting phases
            slots        max_num_seqs running requests
            preempt      a preemption in that step (the waiting queue is not scanned)
            pending      visited, LMCache lookup still pending (reason of the lookup phase)
+           pol:<rule>   (prototype runs) visited with a lookup result, set aside for this step by the KVADM_POLICY module:
+                        tok (minchunk: fewer budget tokens left in the step than the request may start with), blocks (skip:
+                        it would fail the block gates, the scan goes on), resv (resvall: it does not fit under the in-flight
+                        prefill reservation)
            other        none of the above (e.g. a step that scanned and admitted without reaching the request)
 Request categories as in hitcat_d.py (host >= 50 % of the prompt retrieved from LMCache, GPU >= 50 % from the prefix
 cache, 10-50 %, miss < 10 %).
@@ -63,8 +67,11 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
     kvi = {d["i"]: n for n, d in enumerate(kv)}
     # per-step facts: visited request ids, the refused attempt (at most one: the scan breaks), preemptions
     visited = {}; refused = {}; preempt_steps = set()
+    acts = {}                                                # (step, request) -> policy action of that visit (prototype runs)
     for rid, L in polls.items():
-        for d in L: visited.setdefault(d["i"], set()).add(rid)
+        for d in L:
+            visited.setdefault(d["i"], set()).add(rid)
+            if d.get("act"): acts[(d["i"], rid)] = d["act"]
     for rid, L in adms.items():
         for d in L:
             visited.setdefault(d["i"], set()).add(rid)
@@ -77,6 +84,8 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         if rid in vis:
             r = refused.get(i)
             if r is not None and r["rid"] == rid: return "own:" + r["gate"]
+            a = acts.get((i, rid))
+            if a: return "pol:" + {"skip_tok": "tok", "skip_kv": "blocks", "skip_resv": "resv"}.get(a, a)
             return "pending"
         if i in preempt_steps: return "preempt"
         r = refused.get(i)
@@ -103,7 +112,7 @@ def main(out, tag, B=2048, SLOTS=16, case="trace"):
         pl = sorted(polls.get(rid, []), key=lambda d: d["t"]); al = sorted(adms.get(rid, []), key=lambda d: d["t"])
         ev_t = [d["t"] for d in pl] + [d["t"] for d in al]
         t_visit = min(ev_t) if ev_t else None
-        res = [d for d in pl if d["ext"] is not None]
+        res = [d for d in pl if d.get("raw", d["ext"]) is not None]       # the connector's own answer, also when the policy set the request aside
         t_res = res[0]["t"] if res else (al[0]["t"] if al else None)
         ok = [d for d in al if d["ok"]]
         first_ok = ok[0] if ok else None

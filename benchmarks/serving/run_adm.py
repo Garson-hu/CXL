@@ -28,6 +28,9 @@ plans (plan=...):
          (the in-flight reservation gate); a holder is released after 8 s
   c3     head-of-line blocking: a 16k miss that does not fit (600 free blocks), then two external hits and a miss of 2k that
          fit, and one more hit 1 s later; a holder is released after 4 s
+  c5     bounded reservation (the brief's B2): a 16k external hit that does not fit (300 free blocks) arrives first, then a stream of 2k
+         misses that do fit (one every 0.15 s for 4.5 s: more than the GPU can compute, so they take every block that is freed); one of the
+         10 holders is released 1.0, 2.5 and 4.0 s after the hit (about 710 blocks each): the hit fits after the second release
 usage: run_adm.py <out> <tag> [plan=a3] [reps=3] [holder_out=2000] [probe_out=16] [tail=256] [parts=1,2,3,4,5] [Cfg key=value ...]"""
 import asyncio, json, os, re, sys, time, urllib.request
 import aiohttp
@@ -72,6 +75,10 @@ def build_plan():
         # miss of 2k that do; one holder is released 4 s later
         for rep in range(REPS):
             T.append(dict(trial("c3-hol", 6, 600, [(0.0, "cold", 16384), (0.05, "host", 2048), (0.10, "host", 2048), (0.15, "cold", 2048), (1.0, "host", 2048)], release_at=4.0), rep=rep))
+        return T
+    if PLAN == "c5":
+        for rep in range(REPS):
+            T.append(dict(trial("c5-res", 10, 300, [(0.0, "host", 16384)] + [(0.05 + 0.15 * i, "cold", 2048) for i in range(30)], release_at=[1.0, 2.5, 4.0]), rep=rep))
         return T
     for rep in range(REPS):
         if 1 in PARTS:
@@ -169,7 +176,11 @@ async def main():
             t0 = time.monotonic() + 0.05
             env.mark("trial", json.dumps(dict(name=name, K=K, free_target=F, P_h=P_h, usage=u0, free_est=None if u0 is None else round((1 - u0) * POOL), t0_mono_ns=int(t0 * 1e9), probes=t["probes"], release_at=t["release_at"])))
             tasks = [asyncio.create_task(cl.one(**r, t_send=t0 + off)) for off, r in reqs]
-            if t["release_at"] is not None:
+            if isinstance(t["release_at"], list):           # staged releases: one holder at each instant
+                for j, ra in enumerate(t["release_at"]):
+                    await asyncio.sleep(max(0.0, t0 + ra - time.monotonic())); hs[K - 1 - j].cancel()
+                    env.mark("release", json.dumps(dict(name=name, n=1, at=ra, blocks_each=blocks(P_h))))
+            elif t["release_at"] is not None:
                 await asyncio.sleep(max(0.0, t0 + t["release_at"] - time.monotonic()))
                 for j in range(t["n_release"]): hs[K - 1 - j].cancel()
                 env.mark("release", json.dumps(dict(name=name, n=t["n_release"], blocks_each=blocks(P_h))))
