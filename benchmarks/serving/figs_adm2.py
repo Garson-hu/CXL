@@ -10,9 +10,9 @@
   fig6-throughput-vs-pressure  (required figure 6) mixed workload at saturation: throughput and TTFT against the MEASURED GPU KV occupancy
                                of the scenario (time-weighted used share of the pool between the scenario's first send and last completion)
   fig7-variants-tradeoff       one replay, every server configuration as a point: mean TTFT of the requests that are hits in the stock run
-                               against mean TTFT of its misses (left), and median against 99th percentile of all requests (right)
+                               against mean TTFT of its misses (left), and mean TTFT of all requests against the longest TTFT (right)
 usage: figs_adm2.py <fig_dir> [cc=<dir>:<pool>=<stock tag>,<prototype tag>[,<second prototype tag: table only>]+<pool>=...]
-                    [c1=<dir>:<stock tag>,<prototype tag>[,<blocker tokens>]] [d=<label>=<dir>:<stock tag>,<prototype tag>+<label>=...]
+                    [c1=<dir>:<stock tag>,<prototype tag>[,<blocker tokens>]] [d=<panel title>=<dir>:<stock tag>,<tag>@<configuration label>,...||<panel title>=...]
                     [plab=<prototype label>] [plab2=<label of the second prototype configuration>]
                     [t=<dir>:<stock tag>,<tag>,<tag>... tlab=<label>|<label>|... ttitle=<title>]"""
 import bisect, csv, os, re, sys
@@ -151,43 +151,50 @@ if "c1" in KW:
     fig.savefig(f"{FIG}/fig4-request-timelines.png", dpi=150); fig.savefig(f"{FIG}/fig4-request-timelines.pdf"); plt.close(fig); print("wrote fig4-request-timelines")
 
 if "d" in KW:
-    panels = []
-    for item in KW["d"].split("+"):
-        lab, rest = item.split("=", 1); ddir, tg = rest.split(":"); a, b = tg.split(",")
-        if os.path.exists(f"{ddir}/{a}-adm-requests.csv") and os.path.exists(f"{ddir}/{b}-adm-requests.csv"): panels.append((lab, ddir, a, b))
+    # d=<panel title>=<dir>:<stock tag>,<tag>@<configuration label>,<tag>@<label>...||<panel title>=...   (a configuration keeps its colour in every panel)
+    panels = []; order = ["stock"]
+    for item in KW["d"].split("||"):
+        lab, rest = item.split("=", 1); ddir, tg = rest.split(":"); tl = tg.split(","); a = tl[0]
+        cfgs = [(t.split("@")[0], t.split("@")[1]) for t in tl[1:] if os.path.exists(f"{ddir}/{t.split('@')[0]}-adm-requests.csv")]
+        for _, c in cfgs:
+            if c not in order: order.append(c)
+        if os.path.exists(f"{ddir}/{a}-adm-requests.csv") and cfgs: panels.append((lab, ddir, a, cfgs))
+    COL = {c: f"C{i}" for i, c in enumerate(order)}
     CATS = [("host≥50%", "host-dominant\nhit"), ("GPU≥50%", "GPU-prefix\nhit"), ("10–50%", "partial\nhit"), ("miss<10%", "miss"), (None, "all")]
     nc = len(panels) if len(panels) <= 2 else 2; nr = -(-len(panels) // nc)
-    fig, axes = plt.subplots(nr, nc, figsize=(5.4 * nc, 3.8 * nr), squeeze=False)
+    fig, axes = plt.subplots(nr, nc, figsize=(6.6 * nc, 3.7 * nr), squeeze=False)
     for ax in axes.flat[len(panels):]: ax.set_visible(False)
-    for ax, (lab, ddir, a, b) in zip(axes.flat, panels):
-        A = {r["rid"][len(a) + 1:]: r for r in reqs(ddir, a)}; B = {r["rid"][len(b) + 1:]: r for r in reqs(ddir, b)}; w = 0.38
-        for j, (cfg, D) in enumerate((("stock", A), (PLAB, B))):
-            p50 = []; p95 = []; ns = []
+    for ax, (lab, ddir, a, cfgs) in zip(axes.flat, panels):
+        A = {r["rid"][len(a) + 1:]: r for r in reqs(ddir, a)}; runs = [("stock", A)] + [(c, {r["rid"][len(t) + 1:]: r for r in reqs(ddir, t)}) for t, c in cfgs]; w = 0.84 / len(runs)
+        for j, (cfg, D) in enumerate(runs):
+            mn = []; p95 = []; ns = []
             for ck, _ in CATS:
-                ks = [k for k, r in A.items() if (ck is None or r["cat"] == ck) and k in B]
-                v = [fl(D[k]["ttft"]) for k in ks]; p50.append(q(v, .5) or 0); p95.append(q(v, .95) or 0); ns.append(len(ks))
-            xs = [i + (j - 0.5) * w for i in range(len(CATS))]
-            bars = ax.bar(xs, p50, w, label=f"{cfg}, p50 (bar) and p95 (marker)", edgecolor="white", linewidth=0.8)
-            ax.plot(xs, p95, linestyle="none", marker="_", markersize=11, markeredgewidth=1.8, color=bars[0].get_facecolor())
-            for x, v in zip(xs, p50): ax.text(x, v, f"{v:.1f}" if v >= 10 else f"{v:.2f}", ha="center", va="bottom", fontsize=6.3)
-        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([f"{cl}\n(n = {n})" for (_, cl), n in zip(CATS, ns)], fontsize=7.5); ax.set_ylabel("TTFT (s)"); ax.set_title(lab, fontsize=8.5); ax.grid(axis="x", visible=False)
-        ax.set_ylim(0, ax.get_ylim()[1] * 1.22)
-    axes[0][0].legend(fontsize=6.8, frameon=False, loc="upper left")
-    save(fig, "fig5-hit-vs-miss-ttft")
+                ks = [k for k, r in A.items() if (ck is None or r["cat"] == ck) and k in D]
+                v = [fl(D[k]["ttft"]) for k in ks]; mn.append(mean(v) or 0); p95.append(q(v, .95) or 0); ns.append(len(ks))
+            xs = [i + (j - (len(runs) - 1) / 2) * w for i in range(len(CATS))]
+            ax.bar(xs, mn, w, label=cfg, color=COL[cfg], edgecolor="white", linewidth=0.6)
+            ax.plot(xs, p95, linestyle="none", marker="_", markersize=max(5, 34 * w), markeredgewidth=1.6, color=COL[cfg])
+        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([f"{cl}\n(n = {n})" for (_, cl), n in zip(CATS, ns)], fontsize=7.5); ax.set_title(lab, fontsize=8.5); ax.grid(axis="x", visible=False)
+    for r_ in range(nr): axes[r_][0].set_ylabel("TTFT (s): bar = mean, tick = p95")
+    h = [plt.Rectangle((0, 0), 1, 1, color=COL[c]) for c in order]
+    fig.legend(h, order, fontsize=7.5, frameon=False, loc="lower center", ncol=len(order), bbox_to_anchor=(0.5, -0.03))
+    fig.tight_layout(); fig.savefig(f"{FIG}/fig5-hit-vs-miss-ttft.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{FIG}/fig5-hit-vs-miss-ttft.pdf", bbox_inches="tight"); plt.close(fig); print("wrote fig5-hit-vs-miss-ttft")
 
 if "t" in KW:
     tdir, tg = KW["t"].split(":"); tags = [t for t in tg.split(",") if os.path.exists(f"{tdir}/{t}-adm-requests.csv")]; labs = dict(zip(tg.split(","), KW.get("tlab", "|".join(tg.split(","))).split("|")))
     D = {t: {r["rid"][len(t) + 1:]: r for r in reqs(tdir, t)} for t in tags}; S = D[tags[0]]
     hits = [k for k, r in S.items() if r["cat"] in ("host≥50%", "GPU≥50%")]; miss = [k for k, r in S.items() if r["cat"] == "miss<10%"]
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.0))
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.0)); X0 = []; Y0 = []; X1 = []; Y1 = []
     for n, t in enumerate(tags):
-        R = D[t]; col = "k" if n == 0 else f"C{(n - 1) % 10}"; mk = "*" if n == 0 else "os^Dv<>pPX"[(n - 1) % 10]
+        R = D[t]; col = "k" if n == 0 else f"C{(n - 1) % 10}"; mk = "*" if n == 0 else "os^Dv<>pPXhd8H"[(n - 1) % 14]
         hx = mean([fl(R[k]["ttft"]) for k in miss if k in R]); hy = mean([fl(R[k]["ttft"]) for k in hits if k in R]); allv = [fl(r["ttft"]) for r in R.values()]
-        axes[0].scatter([hx], [hy], color=col, marker=mk, s=70 if n == 0 else 38, label=labs[t], zorder=3)
-        axes[1].scatter([q(allv, .99)], [q(allv, .5)], color=col, marker=mk, s=70 if n == 0 else 38, label=labs[t], zorder=3)
+        axes[0].scatter([hx], [hy], color=col, marker=mk, s=70 if n == 0 else 38, label=labs[t], zorder=3); X0.append(hx); Y0.append(hy)
+        axes[1].scatter([max(allv)], [mean(allv)], color=col, marker=mk, s=70 if n == 0 else 38, label=labs[t], zorder=3); X1.append(max(allv)); Y1.append(mean(allv))
     axes[0].set_xlabel(f"misses of the stock run (n = {len(miss)}): mean TTFT (s)"); axes[0].set_ylabel(f"hits of the stock run (n = {len(hits)}): mean TTFT (s)")
-    axes[1].set_xlabel("all requests: TTFT p99 (s)"); axes[1].set_ylabel("all requests: TTFT p50 (s)")
-    for ax in axes: ax.set_ylim(bottom=0); ax.set_xlim(left=0)
+    axes[1].set_xlabel("all requests: longest TTFT (s), log scale"); axes[1].set_ylabel("all requests: mean TTFT (s)")
+    axes[0].set_xlim(0, max(X0) * 1.08); axes[0].set_ylim(0, max(Y0) * 1.08)
+    axes[1].set_xscale("log"); axes[1].set_xlim(min(X1) * 0.85, max(X1) * 1.25); axes[1].set_ylim(0, max(Y1) * 1.08)
+    ticks = [t_ for t_ in (40, 50, 60, 80, 100, 150, 200, 300) if min(X1) * 0.85 <= t_ <= max(X1) * 1.25]; axes[1].set_xticks(ticks); axes[1].set_xticklabels([str(t_) for t_ in ticks]); axes[1].minorticks_off()
     axes[1].legend(fontsize=6.8, frameon=False, loc="center left", bbox_to_anchor=(1.01, 0.5))
     if "ttitle" in KW: fig.suptitle(KW["ttitle"], fontsize=9)
     save(fig, "fig7-variants-tradeoff")

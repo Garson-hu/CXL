@@ -119,39 +119,40 @@ def f04():
 
 # ---------------------------------------------------------------- f05: trace replays
 def f05():
+    # (revised 2026-11-11) panel (a): stock, prototype (token reserve), hits first with perfect knowledge; panel (b): stock, prototype (small requests may
+    # pass a blocked one for up to 30 s), the existing option "shortest prompt first", hits first with perfect knowledge; panel (c): KV saved
     proto04 = "tool04-320-p2" if os.path.exists(os.path.join(REPLAY, "tool04-320-p2-adm-requests.csv")) else "tool04-320-tokfast11"
-    TOT = {}
+    TOT = {}; MAX = {}
     def classes(stock, others):
         S = {r["rid"][len(stock) + 1:]: r for r in rows(stock)}; out = {}
         for tag in [stock] + others:
             D = {r["rid"][len(tag) + 1:]: r for r in rows(tag)}
             out[tag] = [mean([fl(D[k]["ttft"]) for k, r in S.items() if (c is None or r["cat"] == c) and k in D]) for c in ("host≥50%", "GPU≥50%", "miss<10%", None)]
-            TOT[tag] = mean([fl(r["total"]) for r in D.values()])
+            TOT[tag] = mean([fl(r["total"]) for r in D.values()]); MAX[tag] = max(fl(r["ttft"]) for r in D.values())
         return out, [sum(1 for r in S.values() if c is None or r["cat"] == c) for c in ("host≥50%", "GPU≥50%", "miss<10%", None)]
-    A, nA = classes("tool04-320-base", [proto04]); has_prio = os.path.exists(os.path.join(REPLAY, "tool08-320-priohits-adm-requests.csv"))
-    B, nB = classes("tool08-320-base", ["tool08-320-p2"] + (["tool08-320-priohits"] if has_prio else []))
+    ex = lambda t: os.path.exists(os.path.join(REPLAY, t + "-adm-requests.csv"))
+    sa = [("tool04-320-base", "stock", "C0"), (proto04, "prototype: keep part of each step\nfor short work", "C1")] + ([("tool04-320-priohits", "hits first, with perfect knowledge", "C2")] if ex("tool04-320-priohits") else [])
+    sb = [("tool08-320-base", "stock", "C0")] + [(t, l, c) for t, l, c in (("tool08-320-skip30", "prototype: requests that fit may pass\na blocked one, for up to 30 s", "C1"),
+          ("tool08-320-priohits", "hits first, with perfect knowledge", "C2"), ("tool08-320-priolen", "shortest prompt first\n(an option vLLM already has)", "C3")) if ex(t)]
+    A, nA = classes(sa[0][0], [t for t, _, _ in sa[1:]]); B, nB = classes(sb[0][0], [t for t, _, _ in sb[1:]] + (["tool08-320-p2"] if ex("tool08-320-p2") else []))
     st = {t: sum(fl(r["store_bytes"]) or 0 for r in rows(t)) / 1e9 for t in ("tool08-320-base", "tool08-320-storefix")}
-    fig, ax = plt.subplots(1, 3, figsize=(12.3, 3.6), gridspec_kw=dict(width_ratios=[1.25, 1.55, 0.72])); table = []
+    fig, ax = plt.subplots(1, 3, figsize=(12.3, 3.7), gridspec_kw=dict(width_ratios=[1.3, 1.7, 0.62])); table = []
     names = lambda n: [f"host hits\n(n = {n[0]})", f"GPU hits\n(n = {n[1]})", f"misses\n(n = {n[2]})", f"all requests\n(n = {n[3]})"]
-    a = ax[0]; x = np.arange(4); w = 0.38
-    b1 = a.bar(x - w / 2, A["tool04-320-base"], w, color="C0", label="stock"); b2 = a.bar(x + w / 2, A[proto04], w, color="C1", label="prototype")
-    for b in (b1, b2): label(a, b, lambda v: f"{v:.1f}", 0.1, 10)
-    a.set_xticks(x); a.set_xticklabels(names(nA), fontsize=10); a.set_ylabel("time to first token, mean (s)"); a.set_ylim(0, 12.5); a.legend(frameon=False, loc="upper left", fontsize=10.5)
-    a.set_title("(a) Normal load: the server keeps up", fontsize=12.5)
-    a = ax[1]; series = [("tool08-320-base", "stock", "C0"), ("tool08-320-p2", "prototype", "C1")] + ([("tool08-320-priohits", "hits first, with perfect knowledge\nof which requests are hits", "C2")] if has_prio else [])
-    w = 0.8 / len(series)
-    for j, (t, lab, col) in enumerate(series):
-        b = a.bar(x + (j - (len(series) - 1) / 2) * w, B[t], w, color=col, label=lab); label(a, b, lambda v: f"{v:.1f}", 0.2, 9.5)
-    a.set_xticks(x); a.set_xticklabels(names(nB), fontsize=10); a.set_ylabel("time to first token, mean (s)"); a.set_ylim(0, 37); a.legend(frameon=False, loc="upper left", fontsize=9.5, ncol=1)
-    a.set_title("(b) Overload: requests arrive twice as fast", fontsize=12.5)
+    x = np.arange(4)
+    for a, series, D, n, ttl, ymax, fs in ((ax[0], sa, A, nA, "(a) Normal load: the server keeps up", 13.5, 9.5), (ax[1], sb, B, nB, "(b) Overload: requests arrive twice as fast", 39, 8.5)):
+        w = 0.84 / len(series)
+        for j, (t, lab, col) in enumerate(series):
+            b = a.bar(x + (j - (len(series) - 1) / 2) * w, D[t], w, color=col, label=lab); label(a, b, lambda v: f"{v:.1f}", 0.15, fs)
+        a.set_xticks(x); a.set_xticklabels(names(n), fontsize=10); a.set_ylabel("time to first token, mean (s)"); a.set_ylim(0, ymax); a.legend(frameon=False, loc="upper left", fontsize=8.6, ncol=1, labelspacing=0.35)
+        a.set_title(ttl, fontsize=12.5)
     a = ax[2]; b = a.bar(["stock", "with the\nstore fix"], [st["tool08-320-base"], st["tool08-320-storefix"]], 0.55, color=["C0", "C1"]); label(a, b, lambda v: f"{v:.0f} GB", 1.5, 10.5)
     a.set_ylabel("KV saved to host memory (GB)"); a.set_ylim(0, 135); a.set_title("(c) KV saved, overload", fontsize=12.5)
-    fig.tight_layout(w_pad=1.6)
+    fig.tight_layout(w_pad=1.4)
     for load, D, n in (("normal load", A, nA), ("overload", B, nB)):
-        for t, v in D.items(): table.append([load, t] + [round(z, 3) for z in v] + n + [round(TOT[t], 3)])
+        for t, v in D.items(): table.append([load, t] + [round(z, 3) for z in v] + n + [round(TOT[t], 3), round(MAX[t], 1)])
     table += [["overload, KV stored (GB)", t, round(v, 1)] for t, v in st.items()]
-    save(fig, "f05_results", table, ["load", "run", "host hits: mean TTFT (s)", "GPU hits", "misses", "all requests", "n host", "n GPU", "n miss", "n all", "mean request time, all requests (s)"],
-         f"replay/tool04-320-base, {proto04}, tool08-320-base, tool08-320-p2, tool08-320-priohits, tool08-320-storefix (-adm-requests.csv); request classes fixed by the stock run")
+    save(fig, "f05_results", table, ["load", "run", "host hits: mean TTFT (s)", "GPU hits", "misses", "all requests", "n host", "n GPU", "n miss", "n all", "mean request time, all requests (s)", "longest TTFT (s)"],
+         "replay/" + ", ".join(t for t, _, _ in sa + sb) + ", tool08-320-p2, tool08-320-storefix (-adm-requests.csv); request classes fixed by the stock run")
     return proto04
 
 # ---------------------------------------------------------------- f06: CosmoFlow reuse distance

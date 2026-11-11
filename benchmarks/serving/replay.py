@@ -11,7 +11,12 @@ priority scheduling (--scheduling-policy priority): request i is sent with prior
 cache in that earlier run, with priority 1 otherwise (a client cannot know this in advance; the earlier run stands in for that knowledge).
 prio=len (2026-11-11): shortest-prompt-first, a baseline a client can realize with vLLM's priority scheduling: the priority of a request is
 its number of prompt tokens (lower is served first; ties by arrival).
-usage: replay.py <out> <tag> <trace.jsonl> <t0_s> <t1_s> <speed> [max_out=1024] [dequant_s=0] [prio_from=<client.jsonl> | prio=len] [Cfg key=value ...]"""
+prio=lenage:<a> (2026-11-11): shortest-prompt-first with aging, still something a client or gateway can compute: priority = send time in
+milliseconds + a x number of prompt tokens (a in ms per token). A request of L tokens can be overtaken only by shorter requests that are sent
+within a x (L - l) ms after it, so the order is shortest-first inside a sliding window and first-come-first-served beyond it.
+prio_from=<client.jsonl> prio=uncached (2026-11-11): oracle shortest-compute-first: the priority of request i is the number of prompt tokens that
+were NOT served from a cache in that earlier run (what the engine had to compute for it); the cache-aware counterpart of prio=len.
+usage: replay.py <out> <tag> <trace.jsonl> <t0_s> <t1_s> <speed> [max_out=1024] [dequant_s=0] [prio_from=<client.jsonl> [prio=uncached] | prio=len | prio=lenage:<a>] [Cfg key=value ...]"""
 import asyncio, json, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from serving_env import Cfg, ServingEnv, parse_kv
@@ -21,13 +26,16 @@ out, tag, trace = sys.argv[1:4]; t0, t1, speed = float(sys.argv[4]), float(sys.a
 kv = dict(a.split("=", 1) for a in sys.argv[7:]); MAX_OUT = int(kv.pop("max_out", "1024")); DEQ = float(kv.pop("dequant_s", "0")); PRIO_FROM = kv.pop("prio_from", ""); PRIO_MODE = kv.pop("prio", "")
 cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=40.0, enforce_eager=False))
 PRIO = None
-assert PRIO_MODE in ("", "len"), PRIO_MODE
-if PRIO_MODE == "len": cfg.sched_policy = "priority"
+AGE = float(PRIO_MODE.split(":", 1)[1]) if PRIO_MODE.startswith("lenage:") else None
+assert PRIO_MODE in ("", "len", "uncached") or AGE is not None, PRIO_MODE; assert PRIO_MODE != "uncached" or PRIO_FROM
+if PRIO_MODE == "len" or AGE is not None: cfg.sched_policy = "priority"
 if PRIO_FROM:
     PRIO = {}; cfg.sched_policy = "priority"
     for line in open(PRIO_FROM):
         r = json.loads(line)
-        if r.get("case") == "trace": PRIO[int(r["rid"].rsplit("-", 1)[1])] = 0 if max(0, r.get("cached_tokens") or 0) >= 0.5 * (r.get("prompt_tokens") or 1) else 1
+        if r.get("case") == "trace":
+            c = max(0, r.get("cached_tokens") or 0); n = r.get("prompt_tokens") or 1
+            PRIO[int(r["rid"].rsplit("-", 1)[1])] = max(0, n - c) if PRIO_MODE == "uncached" else (0 if c >= 0.5 * n else 1)
 cache = {}
 def block_tokens(h):
     if h not in cache:
@@ -54,7 +62,7 @@ async def main():
     async with Client(env.url(), cfg.model, env.f("client.jsonl"), concurrency_limit=4096) as cl:
         env.mark("replay_start", f"trace={os.path.basename(trace)} t0={t0} t1={t1} speed={speed} n={len(reqs)} max_out={MAX_OUT} dequant={DEQ}")
         start = time.monotonic() + 1.0
-        items = [dict(rid=f"{tag}-{i}", tokens=toks, case="trace", L=len(toks), max_tokens=o, extra={"trace_s": ts, "blocks": nb}, priority=(len(toks) if PRIO_MODE == "len" else None if PRIO is None else PRIO.get(i, 1))) for i, (ts, toks, o, nb) in enumerate(reqs)]
+        items = [dict(rid=f"{tag}-{i}", tokens=toks, case="trace", L=len(toks), max_tokens=o, extra={"trace_s": ts, "blocks": nb}, priority=(len(toks) if PRIO_MODE == "len" else int(1000 * (ts - t0) / speed + AGE * len(toks)) if AGE is not None else None if PRIO is None else PRIO.get(i, len(toks) if PRIO_MODE == "uncached" else 1))) for i, (ts, toks, o, nb) in enumerate(reqs)]
         times = [(ts - t0) / speed for ts, *_ in reqs]
         done = 0
         async def progress():

@@ -3,9 +3,11 @@
 One column per pool size; per scenario four rows (TTFT p50 of the external hits, TTFT p50 of the misses, completed requests per second, mean
 request time), each cell "stock → P1 / P2"; then the measured share of the pool in use in the stock run and the refused admission attempts and
 preemptions of each whole run. Reads <dir>/<tag>-adm-requests.csv, <tag>-adm-kv.csv (analyze_adm.py case=host,cold) and the admission streams.
-usage: table_cc_matrix.py <dir> <scenario,scenario,...> <pool>=<stock tag>,<P1 tag>,<P2 tag> [<pool>=... ...]"""
+Any number of configurations per pool (the first is the stock run); labels=<a>|<b>|... names the others (default P1|P2).
+usage: table_cc_matrix.py <dir> <scenario,scenario,...> <pool>=<stock tag>,<tag>[,<tag>...] [<pool>=... ...] [labels=<a>|<b>|...]"""
 import bisect, csv, glob, sys
-d, scen = sys.argv[1], sys.argv[2].split(","); pools = [(a.split("=")[0], a.split("=")[1].split(",")) for a in sys.argv[3:]]
+d, scen = sys.argv[1], sys.argv[2].split(","); pools = [(a.split("=")[0], a.split("=")[1].split(",")) for a in sys.argv[3:] if not a.startswith("labels=")]
+LABS = next((a.split("=", 1)[1].split("|") for a in sys.argv[3:] if a.startswith("labels=")), ["P1", "P2"]); ARROW = "stock → " + " / ".join(LABS); SL = "stock / " + " / ".join(LABS)
 NAME = {"s1-c": "closed loop, {} in the system", "s2-r": "open loop, {} requests/s", "s3-k": "bursts of {}"}
 def fl(v):
     try: return float(v)
@@ -31,11 +33,11 @@ def scen_stats(D, g):
     h = [fl(r["ttft"]) for r in R if r["case"] == "host"]; c = [fl(r["ttft"]) for r in R if r["case"] == "cold"]
     return dict(hit=q(h, .5), miss=q(c, .5), rps=len(R) / (t1 - t0), rt=sum(fl(r["total"]) for r in R) / len(R), used=s / max(w, 1e-9))
 D = {p: [load(t) for t in tags] for p, tags in pools}
-print("| scenario | quantity (stock → P1 / P2) | " + " | ".join(f"pool {int(p):,} blocks" for p, _ in pools) + " |"); print("|---|---|" + "---|" * len(pools))
+print(f"| scenario | quantity ({ARROW}) | " + " | ".join(f"pool {int(p):,} blocks" for p, _ in pools) + " |"); print("|---|---|" + "---|" * len(pools))
 for g in scen:
     S = {p: [scen_stats(x, g) for x in D[p]] for p, _ in pools}; nm = NAME[g[:4]].format(g[4:])
     for lab, k, n in (("external hits: TTFT p50 (s)", "hit", 2), ("misses: TTFT p50 (s)", "miss", 2), ("completed requests / s", "rps", 2), ("request time, mean (s)", "rt", 2)):
-        print(f"| {nm} | {lab} | " + " | ".join(f"{S[p][0][k]:.{n}f} → {S[p][1][k]:.{n}f} / {S[p][2][k]:.{n}f}" for p, _ in pools) + " |")
-    print(f"| {nm} | pool in use, measured: stock / P1 / P2 | " + " | ".join(" / ".join(f"{x['used']:.2f}" for x in S[p]) for p, _ in pools) + " |")
-print("| whole run | refused admission attempts: stock / P1 / P2 | " + " | ".join(" / ".join(str(x["ref"]) for x in D[p]) for p, _ in pools) + " |")
-print("| whole run | preemptions: stock / P1 / P2 | " + " | ".join(" / ".join(str(x["pre"]) for x in D[p]) for p, _ in pools) + " |")
+        print(f"| {nm} | {lab} | " + " | ".join(f"{S[p][0][k]:.{n}f} → " + " / ".join(f"{x[k]:.{n}f}" for x in S[p][1:]) for p, _ in pools) + " |")
+    print(f"| {nm} | pool in use, measured: {SL} | " + " | ".join(" / ".join(f"{x['used']:.2f}" for x in S[p]) for p, _ in pools) + " |")
+print(f"| whole run | refused admission attempts: {SL} | " + " | ".join(" / ".join(str(x["ref"]) for x in D[p]) for p, _ in pools) + " |")
+print(f"| whole run | preemptions: {SL} | " + " | ".join(" / ".join(str(x["pre"]) for x in D[p]) for p, _ in pools) + " |")

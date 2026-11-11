@@ -38,9 +38,10 @@ t1 = table("f01_problem"); ALONE_MISS, ALONE_HIT = float(t1[0][2]), float(t1[1][
 t3 = table("f03_cause"); CAUSE = [(float(r[1]), float(r[2])) for r in t3[:4]]; QUIET, BUSYP = float(t3[4][1]), float(t3[5][1])
 t4 = table("f04_timeline"); TL = {(r[0], r[1]): (float(r[3]), float(r[4])) for r in t4}
 ST, PR = "Stock server", "With the prototype"; HITS = ["host hit, sent at 0.5 s", "host hit, sent at 2.5 s", "host hit, sent at 4.5 s"]; LONG = "long request (28,000 tokens)"
-t5 = table("f05_results"); R5 = {r[1]: [float(x) for x in r[2:6]] + [float(r[10])] for r in t5 if len(r) > 10}; KV = {r[1]: float(r[2]) for r in t5 if r[0].startswith("overload, KV")}
-P04 = next(k for k in R5 if k.startswith("tool04-320-") and k != "tool04-320-base")           # the prototype run of the normal-load panel
+t5 = table("f05_results"); R5 = {r[1]: [float(x) for x in r[2:6]] + [float(r[10])] + ([float(r[11])] if len(r) > 11 else []) for r in t5 if len(r) > 10}; KV = {r[1]: float(r[2]) for r in t5 if r[0].startswith("overload, KV")}
+P04 = next(k for k in R5 if k.startswith("tool04-320-") and k not in ("tool04-320-base", "tool04-320-priohits"))           # the prototype run of the normal-load panel
 N04, P4, N08, P8, PRIO = R5["tool04-320-base"], R5[P04], R5["tool08-320-base"], R5["tool08-320-p2"], R5.get("tool08-320-priohits")
+PR04, SK, PL = R5.get("tool04-320-priohits"), R5["tool08-320-skip30"], R5["tool08-320-priolen"]    # hits first at normal load; bypass alone (30 s) and shortest prompt first under overload
 RU = json.load(open(os.path.join(FIG, "f06_reuse-stats.json")))
 pct = lambda a, b: f"{100 * (b - a) / a:+.0f} %".replace("-", "−")
 PROTO04 = ("the first prototype version (token reserve and short steps)" if "tokfast11" in P04 else "the same prototype version as in (b)")
@@ -79,7 +80,7 @@ dict(kind="table", kicker="2 · Experiment design",
             "Where the waiting time goes, in seconds per cause.", "Cost: 6 microseconds per engine step, 0.01 % of the run time."],
            ["3. Controlled tests", "Built small scenarios: one long request with cached requests behind it; GPU memory filled to a chosen level; a hit and a miss of the same length.",
             "Cause and effect, one mechanism at a time.", "3 repetitions; same machine; same GPU memory pool."],
-           ["4. Real traces", "Replayed the Mooncake tool-agent and conversation traces at normal load and at overload (arrivals twice as fast). Stock server against prototype.",
+           ["4. Real traces", "Replayed two Mooncake traces (tool-agent, conversation) at normal load and at overload: stock, prototype, and vLLM's own ordering options.",
             "The end-to-end effect on hits, misses and all requests.", "RTX 4060 Ti 8 GB, Qwen2.5-3B, 320 GB host cache (DRAM: the CXL devices are not accessible now)."],
            ["5. Other sizes", "Repeated the tests with 2.7 times the GPU KV memory and with a larger model (7B).",
             "Is the problem only our small GPU?", "RTX 4060 Ti 16 GB machines."]],
@@ -91,7 +92,7 @@ dict(kind="table", kicker="2 · Experiment design",
            "memory to a chosen level and then sends probes; the memory pressure is read from the scheduler's own counters. Step 4: the replay sends each request at its trace time, "
            "whatever happened to earlier requests. Normal load is 0.04 times the trace speed (the server keeps up, GPU busy 49 %), overload is 0.08 times (the backlog grows). The GPU "
            "KV pool is fixed to 7,456 blocks in all compared runs. Step 5: machines with the same GPU model and 16 GB; a faster GPU (A100, H100) is in use by other users until "
-           "2026-11-13. Some runs of steps 4 and 5 were still in the queue when this deck was built."),
+           "2026-11-13. Deck revised on 2026-11-11 after all runs had finished: slide 5 now includes the ordering baselines (vLLM priority scheduling) and the bypass with a 30-second limit."),
 
 dict(kind="fig", kicker="3 · Result: the cause",
      title="The cause is the scheduler's step budget and a full GPU, not the memory reservation that we suspected",
@@ -145,32 +146,35 @@ dict(kind="side", kicker="4 · Result: a fix, in a controlled test",
            "possible in the connector protocol, and it would not be admitted earlier)."),
 
 dict(kind="fig", kicker="5 · Result: real traces",
-     title="On real traces: a clear gain at normal load; under overload it is a trade, and the order of requests matters most",
-     why="Why both loads: a fix must help when the server keeps up and must not hurt when it does not. Stock and prototype serve the same requests with the same arrival times.",
+     title="On real traces the order of requests decides: serving small requests first cuts the mean wait by a quarter to a half",
+     why="Why both loads: a fix must help when the server keeps up and must not hurt when it does not. Every bar group is the same set of requests with the same arrival times.",
      tags=["Real-system measurement"], fig="f05_results",
-     points=[("Normal load (a)", f"Mean time to first token of all requests: {N04[3]:.1f} → {P4[3]:.1f} s ({pct(N04[3], P4[3])}). Host hits {N04[0]:.1f} → {P4[0]:.1f} s, GPU hits "
-                                 f"{N04[1]:.1f} → {P4[1]:.1f} s. Misses pay a little: {N04[2]:.1f} → {P4[2]:.1f} s ({pct(N04[2], P4[2])}). Requests finish {abs(100 * (P4[4] - N04[4]) / N04[4]):.0f} % "
-                                 "sooner on average. A second machine gives the same picture (−23 %)."),
-             ("Overload (b)", f"The prototype moves waiting time from hits to misses: host hits {N08[0]:.1f} → {P8[0]:.1f} s, misses {N08[2]:.1f} → {P8[2]:.1f} s, all requests "
-                              f"{pct(N08[3], P8[3])}. " + (f"vLLM's own priority scheduler does better ({pct(N08[3], PRIO[3])}) if we tell it in advance which requests are hits. "
-                              "A real client does not know this." if PRIO else "")),
-             ("How to read the figure, and (c)", "(a), (b) Y axis: mean time to first token in seconds. One group of bars per kind of request. Blue: stock. Orange: prototype. Green: "
-                                                 f"priority with perfect knowledge. (c) KV saved to host memory in the overload run: {KV['tool08-320-base']:.0f} GB. The stock server "
-                                                 f"loses about a third after retries. A small fix saves all of it ({KV['tool08-320-storefix']:.0f} GB).")],
-     source=f"(a) replay/tool04-320-base, {P04} ({'first prototype version' if 'tokfast11' in P04 else 'same version as in (b)'})  ·  (b), (c) tool08-320-base, -p2 (prototype with safety rules), -priohits, -storefix",
+     points=[("Normal load (a)", f"Prototype (keep part of each step for short work): mean time to first token {N04[3]:.1f} → {P4[3]:.1f} s ({pct(N04[3], P4[3])}); host hits "
+                                 f"{N04[0]:.1f} → {P4[0]:.1f} s; misses pay {pct(N04[2], P4[2])}. Sending hits first with perfect knowledge gives {pct(N04[3], PR04[3])}. On a second machine, "
+                                 "shortest prompt first, an option vLLM already has, gives −28 %; with the prototype on top −41 %."),
+             ("Overload (b)", f"The first prototype hurt here (+9 %). What works is order. Prototype: requests that fit in GPU memory may pass a blocked one for up to 30 s: "
+                              f"{pct(N08[3], SK[3])}, no kind of request slower, longest wait {N08[5]:.0f} → {SK[5]:.0f} s. Shortest prompt first: {pct(N08[3], PL[3])}, "
+                              f"but the largest prompts wait up to {PL[5]:.0f} s; with an age limit −30 % and no longer waits."),
+             ("How to read the figure, and (c)", "(a), (b) Y axis: mean time to first token (s); one bar group per kind of request. Blue: stock. Orange: prototype. Green: hits first. "
+                                                 "Red: shortest prompt first. (c) KV saved to host memory under overload: stock loses a third after retries "
+                                                 f"({KV['tool08-320-base']:.0f} GB); a one-line fix saves it all ({KV['tool08-320-storefix']:.0f} GB).")],
+     source=f"(a) replay/tool04-320-base, {P04}, -priohits  ·  (b) tool08-320-base, -skip30 (bypass alone, 30 s), -priohits, -priolen  ·  (c) tool08-320-base, -storefix",
      notes="The replays: Mooncake tool-agent trace, the same requests and arrival times in every run, GPU KV pool 7,456 blocks, 320 GB host cache; request kinds are fixed by the "
-           f"stock run and the same requests are followed in the other runs. Panel (a), normal load (0.04 times the trace speed, 1,159 requests): prototype = {PROTO04}. All requests: "
-           f"mean time to first token {N04[3]:.2f} → {P4[3]:.2f} s, median 1.56 → 1.21 s, 95th percentile 21.0 → 17.6 s, 99th percentile unchanged (34 s); mean request time "
-           f"{N04[4]:.1f} → {P4[4]:.1f} s; the misses' request time +1 %; throughput unchanged. Replication on a second machine (same GPU model, 80 GB host cache, the safe prototype "
-           "version): mean time to first token 5.41 → 4.19 s (−23 %), host hits median 6.6 → 1.6 s, misses +8 %. Panel (b), overload (0.08 times, 544 requests): prototype = token "
-           "reserve and short steps with two safety rules and a 3-second bypass of a request that waits for memory. It is a trade: host hits −43 %, misses +29 %, all requests −4 %, "
-           "95th percentile +8 %. The first prototype version passed blocked requests without a limit: hits 4 to 7 times sooner, but single requests waited up to 78 s (stock 53 s). "
-           "The green bars are vLLM's existing priority scheduling with ORACLE priorities: a request that was a hit in the stock run is sent with priority 0. It lowers the mean time to "
-           "first token of all requests by 33 % and the mean request time by 16 %, with misses +15 %. A client cannot know in advance which requests are hits; a server could find out "
-           "with a cache lookup at arrival. So under overload the order of requests matters more than the mechanisms of the prototype; the combination is in the queue. Panel (c): the "
-           "LMCache connector adds the hit length to a counter at every retry of a waiting request, and the save of new KV starts at that counter, so retried requests skip their "
-           "saves: 5–6 % of the KV at normal load, 31–33 % under overload, also in the runs of the earlier study. The fix alone (stock scheduling) saves 109 GB and no kind of request "
-           "is slower (all within 3 % of stock)."),
+           f"stock run and the same requests are followed in the other runs. Panel (a), normal load (0.04 times the trace speed, 1,159 requests): the prototype is the token reserve "
+           f"with short steps. All requests: mean time to first token {N04[3]:.2f} → {P4[3]:.2f} s, median 1.56 → 1.22 s, 95th percentile 21.0 → 18.5 s, 99th percentile unchanged "
+           f"(34 s); mean request time {N04[4]:.1f} → {P4[4]:.1f} s; throughput unchanged. Hits first with perfect knowledge (vLLM priority scheduling, priorities taken from the stock "
+           f"run): mean {PR04[3]:.2f} s, 95th percentile 16.4 s, misses +2 %. Measured on a second machine of the same GPU model with an 80 GB host cache: token reserve −23 %; token "
+           "reserve plus the 30-second bypass −33 % (misses +4 %); the bypass alone −16 % with no kind of request slower; shortest prompt first −28 % with the 95th percentile −40 % and "
+           "the misses 8 % faster; shortest prompt first with the token reserve on top −41 %, the best result at this load. Panel (b), overload (0.08 times, 544 requests): the token reserve alone makes the mean 9 % worse, because the hits then wait behind a request that does "
+           "not fit in GPU memory. The orange bars are the bypass alone: a request that does not fit may be passed by requests that fit for up to 30 seconds. Mean time to first token "
+           f"{N08[3]:.2f} → {SK[3]:.2f} s, mean request time {N08[4]:.1f} → {SK[4]:.1f} s, 95th percentile 40.8 → 29.4 s, and every kind of request is faster on average. With a "
+           "3-second limit the gain is only 2 to 4 %; with 100 seconds it is 39 to 45 % and single requests wait up to 110 s. The red bars are vLLM's existing priority scheduling with "
+           f"the prompt length as priority, which a client can set without knowing the cache: mean {PL[3]:.2f} s, the best of all, but seven of the 544 requests, the 32,000-token "
+           f"prompts, wait 64 to {PL[5]:.0f} s (stock: at most {N08[5]:.0f} s). With an age term in the priority (send time plus 1 ms per prompt token; measured on a second machine) "
+           "the gain is 30 % and the longest wait is that of stock: the same result as the bypass, with no change to the engine. The green bars need to know in advance which requests are hits. No configuration computes more tokens "
+           "per second: the gains come from the order of service. Panel (c): the LMCache connector adds the hit length to a counter at every retry of a waiting request, and the save "
+           "of new KV starts at that counter, so retried requests skip their saves: 5–6 % of the KV at normal load, 31–33 % under overload. The fix alone saves 109 GB and no kind of "
+           "request is slower."),
 
 dict(kind="fig", kicker="6 · Side question: reuse distance of training data (CosmoFlow)",
      title="Reuse distance in CosmoFlow training: a file comes back after about one full pass over the data, never inside the same epoch",

@@ -20,6 +20,8 @@ DST=/home/ghu4/CXL/experimental_results/$STUDY
 if pgrep -f "benchmarks/serving/queue_adm.sh" >/dev/null; then echo "the replay queue is still running; refusing" >&2; exit 1; fi
 if squeue -h -u "$USER" -o "%j" 2>/dev/null | grep -q "^kvadm-"; then echo "kvadm jobs are still queued or running; refusing" >&2; exit 1; fi
 [ -d "$E16" ] && rsync -a "$E16/" "$SRC/E16/"
+# the job scripts of the 16 GB nodes (how every run there was started) next to their results
+mkdir -p "$SRC/E16/jobs" && cp -p /mnt/beegfs/ghu4/kvadm/job_*.sh /mnt/beegfs/ghu4/kvadm/submit_after.sh "$SRC/E16/jobs/" 2>/dev/null || true
 if [ -L "$DST" ]; then rm "${DST:?}"; fi
 mkdir -p "$DST"
 rsync -a --prune-empty-dirs \
@@ -43,9 +45,13 @@ the runs made on the 16 GB RTX 4060 Ti nodes (\`E16/\`, copied from \`$E16\`).
 | \`E16/a3gate/\` | the A3 trials with the full-sequence gate on and off (node c60) |
 | \`E16/c1c/\`, \`E16/c2b/\`, \`E16/c5/\` | controlled scenarios of Experiment B: compute contention (c1), reservation gate (c2) and head-of-line blocking (c3), bounded reservation (c5) |
 | \`E16/cc/\` | mixed workloads of Experiment C (pools 2,560 / 3,728 / 7,456 / 14,912 blocks; \`s4-*\` = hit-share sweep) |
-| \`E16/E/\` | Experiment E: replays on the larger pool and with the 7B model, and the 80 GB pair with the pool pinned |
+| \`E16/E/\` | Experiment E (replays on the larger pool and with the 7B model) and the 80 GB capacity point of Experiment D on c61 (\`e-tool04-80-p7456-*\`) and c66 (\`e66-*\`) |
+| \`E16/X08/\` | variants of the overloaded replays on c60 (\`x08-*\`: bypass bounds; \`x08c-conv-*\`: conversation trace) and c61 (\`x08b-*\`: one-flag variants, ordering baselines), each node with its own stock run |
+| \`E16/T06/\` | the intermediate load (tool-agent trace at 0.06x) on c73 |
+| \`E16/ccb/\` | mixed workloads under memory pressure with the 30 s bypass bound and the bypass alone, on c74 |
 | \`E16/correct/\` | output-correctness check of the KV paths (\`*-correct.md\`) |
 | \`E16/c1test\`, \`E16/c2\`, \`E16/poltest\`, \`E16/*/v1\`, \`E16/*/aborted\`, \`E16/*/failed-*\` | runs with prototype v1, aborted or failed runs: kept for the record, not used in the report unless it says so |
+| \`E16/jobs/\` | the Slurm job scripts of the 16 GB nodes and the helper that chains them |
 | \`figs/\` | the report's figures (PNG and PDF) and \`table-fig3-fig6.md\` |
 | \`experiment-matrix.{csv,md}\` | one row per run: node, start, configuration, workload, requests, errors, completion (\`matrix_adm.py\`) |
 
