@@ -40,10 +40,17 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
                   leave min(b, blocks the pending hits need) free (needs skip).
   fallback=<s>    an external hit that still fails the block gates <s> seconds after its lookup result is computed
                   instead of loaded if the compute path passes the gates (needs storefix; implied).
+  agecap=<s>      (v1.3) starvation bound: while a waiting request that is not short work (a compute request that needs more than
+                  tokres tokens, or an external hit that waits for blocks) has been in the waiting queue for more than <s> seconds, every
+                  mechanism above is suspended and the scheduler runs with its stock rules (full step budget, no set-asides, stock
+                  reservation), so that the queue drains first-come-first-served until that request is admitted. The store-counter
+                  fix stays on.
 Version v1.1 (2026-11-10 19:30; v1 = commit 537d2ff): the store-counter fix is applied at every poll with a result (v1 missed
 GPU-prefix hits that LMCache also holds, so requests set aside by minchunk stopped storing); the reserve counts a request for a
 bounded number of steps instead of 1.5 s and a short compute request only if its blocks are free; mincap 256 instead of 128.
-Decisions are summarised per request in the admission stream: {"ev":"pol","rid","t0","t","skip_kv","skip_tok","fb"}.
+Version v1.2 (commit 9f3b1c8): flag resvall. Version v1.3 (2026-11-10 21:00): flag agecap; without the flag the behaviour is that of v1.2.
+Decisions are summarised per request in the admission stream: {"ev":"pol","rid","t0","t","skip_kv","skip_tok","fb"}; the starvation
+bound writes {"ev":"prot","t","i","on"} whenever it switches the mechanisms off or on again.
 """
 import os, sys, time
 
@@ -53,7 +60,7 @@ for _item in filter(None, (os.environ.get("KVADM_POLICY") or "").split(",")):
     P[_k] = float(_v) if _v else 1.0
 if "tokres" in P and "minchunk" not in P: P["minchunk"] = P["tokres"] + 256
 DECIDE = any(k in P for k in ("minchunk", "skip", "fallback"))            # mechanisms that change the connector's answer
-ST = {"req": {}, "pending_hit": {}, "tm": {}, "capped": False, "mismatch": 0}
+ST = {"req": {}, "pending_hit": {}, "tm": {}, "capped": False, "mismatch": 0, "seen": {}, "protect": False}
 
 def needs(kvm, request, new, loc, ncb, look, ext, enc):
     """(blocks the full sequence still needs, blocks this allocation takes): the two gates of KVCacheManager.allocate_slots"""
@@ -95,6 +102,20 @@ def before_schedule(ctx, sched):
         for rid in [k for k in ST["pending_hit"] if k not in reqs or reqs[k].status != RS.WAITING]: ST["pending_hit"].pop(rid, None)
     if len(ST["req"]) > 2048:
         for rid in [k for k in ST["req"] if k not in reqs]: ST["req"].pop(rid, None)
+    if "agecap" in P:
+        # starvation bound: stock scheduling while a request that is not short work has waited longer than agecap seconds
+        now = time.monotonic(); SEEN = ST["seen"]; Tn = int(P.get("tokres", 0)); cap = P["agecap"]; prot = False
+        for r in sched.waiting:
+            rid = r.request_id; t0 = SEEN.setdefault(rid, now); st = ST["req"].get(rid)
+            if now - t0 >= cap and st is not None and (st.get("kind") == "h" or st.get("need", 0) > Tn): prot = True; break
+        if prot != ST["protect"]: ST["w"]("adm").write({"ev": "prot", "t": now, "i": ctx["i"], "on": prot})
+        ST["protect"] = prot
+        if len(SEEN) > 4096:
+            for rid in [k for k in SEEN if k not in reqs]: SEEN.pop(rid, None)
+        if prot:
+            if sched.scheduler_config.long_prefill_token_threshold != ST["orig_thr"]: sched.scheduler_config.long_prefill_token_threshold = ST["orig_thr"]
+            if sched.max_num_scheduled_tokens != ST["B"]: sched.max_num_scheduled_tokens = ST["B"]
+            ST["capped"] = False; ST["bud"] = ST["B"]; return
     if "tokres" not in P: return
     B = ST["B"]; T = int(P["tokres"]); fin = sched.finished_recving_kv_req_ids
     step = ctx["i"]; TM = ST["tm"]; K = P.get("faststeps", 1.0)
@@ -150,8 +171,13 @@ def on_lookup(ctx, sched, conn, request, loc, r):
     if s is None: s = ST["req"][rid] = {"t0": t, "skip_kv": 0, "skip_tok": 0, "fb": False}
     if request.status == RS.PREEMPTED:                       # the connector answers (0, False): a preempted request is recomputed (stock)
         s["kind"] = "c"; s["need"] = request.num_tokens; return r, None
-    if not DECIDE: return r, None
-    if s["fb"]: return (0, False), "fallback"                # decided earlier: stays a compute request
+    if s["fb"]: return (0, False), "fallback"                # decided earlier: stays a compute request (also in protect mode: its load was given up)
+    if ST["protect"] or not DECIDE:
+        if "agecap" in P and "kind" not in s:                # the age rule needs to know what the request is, also when nothing is decided for it
+            nloc0 = sched.kv_cache_manager.get_computed_blocks(request)[1]
+            if is_async and ext > 0: s["kind"] = "h"; s["need"] = max(1, request.num_tokens - nloc0 - ext)
+            else: s["kind"] = "c"; s["need"] = max(1, request.num_tokens - nloc0)
+        return r, None
     kvm = sched.kv_cache_manager; free = kvm.block_pool.get_num_free_blocks()
     left = ST.get("bud", ST["B"]) - ctx["runtok"] - ctx["admtok"]
     blocks_obj, nloc, _ = kvm.get_computed_blocks(request); ncb = blocks_obj.blocks
@@ -191,7 +217,7 @@ def on_lookup(ctx, sched, conn, request, loc, r):
     return r, None
 
 def adjust_reserved(ctx, kvm, request, reserved_blocks, is_async, full, now, free0):
-    if not P: return reserved_blocks
+    if not P or ST["protect"]: return reserved_blocks
     if is_async:
         return int(P["alpha"] * reserved_blocks) if "alpha" in P else reserved_blocks
     if "hitres" in P and request.num_computed_tokens == 0 and not ST["req"].get(request.request_id, {}).get("nores"):
