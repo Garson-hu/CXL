@@ -66,31 +66,35 @@ if "cc" in KW:
         for j, (pool, a, b) in enumerate(pools):
             for i, (ty, tl) in enumerate((("h", "external hits"), ("c", "misses"))):
                 ax = axes[i][j]
-                for cfg, col in (("stock", "C0"), (PLAB, "C1")):
+                for cfg, col in (("stock", "C0"), (PLAB, "C1")) + (((PLAB2, "C2"),) if third else ()):
                     for pc, ls, mk, lw in (("50", "-", "o", 1.5), ("95", ":", "^", 1.1)):
                         ys = [G.get((pool, cfg, f"{pre}{x:g}"), {}).get(ty + pc) for x in xs]
-                        ax.plot(range(len(xs)), ys, linestyle=ls, marker=mk, markersize=4, linewidth=lw, color=col, label=f"{cfg}, p{pc}")
+                        if any(y is not None for y in ys): ax.plot(range(len(xs)), ys, linestyle=ls, marker=mk, markersize=4 if cfg != PLAB2 else 3, linewidth=lw, color=col, label=f"{cfg}, p{pc}")
                 ax.set_xticks(range(len(xs))); ax.set_xticklabels([f"{x:g}" for x in xs]); ax.set_yscale("log")
                 if j == 0: ax.set_ylabel(f"{tl}: TTFT (s)")
                 if i == 1: ax.set_xlabel(xl)
-                if i == 0: ax.set_title(f"GPU KV pool {pool:,} blocks ({pool * 16 // 1000}k tokens)", fontsize=8.5)
+                if i == 0: ax.set_title(f"GPU KV pool {pool:,} blocks ({round(pool * 16 / 1000)}k tokens)", fontsize=8.5)
         lo = min(a_.get_ylim()[0] for a_ in axes.flat); hi = max(a_.get_ylim()[1] for a_ in axes.flat)
         for a_ in axes.flat: a_.set_ylim(lo, hi)
         axes[0][0].legend(fontsize=6.8, frameon=False, loc="lower right")
         save(fig, name)
-    # figure 6: saturation scenarios against the measured occupancy
-    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.5))
-    for g, mk in (("s1-c16", "o"), ("s2-r4", "s"), ("s3-k16", "^")):
-        for cfg, col in (("stock", "C0"), (PLAB, "C1")):
-            pts = sorted((G[(p, cfg, g)]["used"], G[(p, cfg, g)]) for p, _, _ in pools if (p, cfg, g) in G and G[(p, cfg, g)]["used"] is not None)
+    # figure 6: saturation scenarios against the measured occupancy; columns = scenarios, rows = quantities, one line per configuration,
+    # points joined in the order of the pool sizes (the largest pool has the lowest occupancy)
+    SC = (("s1-c16", "closed loop, 16 in the system"), ("s2-r4", "open loop, 4 requests / s"), ("s3-k16", "bursts of 16"))
+    QY = (("tps", "prompt tokens served / s"), ("h50", "external hits: TTFT p50 (s)"), ("c50", "misses: TTFT p50 (s)"))
+    fig, axes = plt.subplots(3, 3, figsize=(10.5, 7.4), sharex=True, sharey="row")
+    for j, (g, gl) in enumerate(SC):
+        for cfg, col, mk in (("stock", "C0", "o"), (PLAB, "C1", "s")) + (((PLAB2, "C2", "^"),) if third else ()):
+            pts = [(G[(p, cfg, g)]["used"], G[(p, cfg, g)]) for p, _, _ in sorted(pools, reverse=True) if (p, cfg, g) in G and G[(p, cfg, g)]["used"] is not None]
             if not pts: continue
-            lab = f"{ {'s1-c16': 'closed loop, 16', 's2-r4': 'open loop, 4 req/s', 's3-k16': 'bursts of 16'}[g] }, {cfg}"
-            axes[0].plot([x for x, _ in pts], [s["tps"] for _, s in pts], marker=mk, color=col, linewidth=1.1, markersize=5, linestyle="-" if cfg == "stock" else "--", label=lab)
-            axes[1].plot([x for x, _ in pts], [s["h50"] for _, s in pts], marker=mk, color=col, linewidth=1.1, markersize=5, linestyle="-" if cfg == "stock" else "--", label=lab)
-            axes[2].plot([x for x, _ in pts], [s["c50"] for _, s in pts], marker=mk, color=col, linewidth=1.1, markersize=5, linestyle="-" if cfg == "stock" else "--", label=lab)
-    for ax, yl in zip(axes, ("prompt tokens served / s", "external hits: TTFT p50 (s)", "misses: TTFT p50 (s)")):
-        ax.set_xlabel("GPU KV blocks in use, time-weighted share of the pool\n(measured during the scenario; one point per pool size)"); ax.set_ylabel(yl); ax.set_ylim(bottom=0)
-    axes[0].legend(fontsize=6.5, frameon=False, loc="lower left")
+            for i, (k, _) in enumerate(QY):
+                axes[i][j].plot([x for x, _ in pts], [st[k] for _, st in pts], marker=mk, color=col, linewidth=1.2, markersize=5, label=cfg)
+        axes[0][j].set_title(gl, fontsize=9); axes[2][j].set_xlabel("GPU KV pool in use during the scenario\n(measured, time-weighted share)", fontsize=8)
+    for i, (_, yl) in enumerate(QY):
+        axes[i][0].set_ylabel(yl)
+        for j in range(3): axes[i][j].set_ylim(bottom=0)
+    axes[0][0].legend(fontsize=7.5, frameon=False, loc="lower left")
+    fig.suptitle("one point per GPU KV pool size (14,912 / 7,456 / 3,728 / 2,560 blocks, left to right)" if len(pools) == 4 else "one point per GPU KV pool size", fontsize=8.5)
     save(fig, "fig6-throughput-vs-pressure")
     # table behind figures 3 and 6
     L = ["| pool (blocks) | scenario | config | used share of the pool | requests / s | prompt tok / s | hit TTFT p50 / p95 (s) | miss TTFT p50 / p95 (s) | request time p50 / mean (s) |", "|---|---|---|---|---|---|---|---|---|"]

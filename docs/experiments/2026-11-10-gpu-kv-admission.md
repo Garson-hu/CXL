@@ -775,6 +775,312 @@ other entries. None otherwise: the fix does not change what is admitted or when.
 **Why it matters for this project.** It is the one finding of the study that is about the host tier itself: a larger tier cannot
 help with KV that was never written to it, and stock loses the most exactly when the engine is congested.
 
+## C. End-to-end results
+
+### C1. Controlled mixed workloads (the brief's Experiment C; MEASURED 2026-11-10 18:53 – 2026-11-11 01:19, 16 GB nodes c60 and c66, `E16/cc/`)
+**Why.** The scenarios of B isolate one mechanism each. Before the trace replays, the prototype has to be measured where hits and
+misses compete under controlled concurrency, arrival pattern, hit share and — the variable of this study — GPU KV memory pressure,
+including cases without any pressure.
+
+**How.** `run_b.py` (the 2026-11-04 driver): 64 prompts of 1k / 2k / 4k / 8k tokens are stored in LMCache and flushed from the GPU
+prefix cache before every scenario; requests alternate external hits of those prompts and never-seen prompts of the same lengths
+(50 % / 50 %), 32 output tokens. Scenarios: **s1** closed loop with 1, 2, 4, 8, 16 requests in the system (64 requests each);
+**s2** open loop, Poisson arrivals at 0.5, 1, 2, 4 requests/s (96 requests each; 4 requests/s is above the engine's capacity of
+about 2.8); **s3** synchronized bursts of 4, 8, 16 requests; **s4** open loop at 2 requests/s with an external-hit share of 0, 25,
+50, 75, 100 %, for short (1k–2k) and long (8k) prompts. The same seeded request sequences run on every configuration. **GPU KV
+memory pressure is set by the pool size** — `--num-gpu-blocks-override` 14,912 / 7,456 / 3,728 / 2,560 blocks (239k / 119k / 60k /
+41k tokens; 2,048 blocks equals `max_model_len` and vLLM does not start) — and **measured, not assumed**: the tables give the
+time-weighted share of the pool in use during each scenario, from the per-step occupancy stream, and the refused admission
+attempts. Server configurations per pool: stock, P1, P2 (B0); at 7,456 blocks also the existing options (synchronous scheduling,
+prefill cap 1,024, hits-first priority). All configurations of one pool ran on the same node (14,912 and 2,560 on c66; 7,456 and
+3,728 on c60; s4 on c66).
+
+**Result 1 — the workload matrix** (`E16/cc/tables-cc-matrix.md`; p95 values and every scenario in `E16/cc/tables-cc-pools.md` and
+`figs/table-fig3-fig6.md`). Each cell: stock → P1 / P2.
+
+| scenario | quantity | pool 14,912 blocks | pool 7,456 blocks | pool 3,728 blocks | pool 2,560 blocks |
+|---|---|---|---|---|---|
+| closed loop, 16 in the system | external hits: TTFT p50 (s) | 3.37 → 1.17 / 1.17 | 3.43 → 1.18 / 1.17 | 3.27 → 1.19 / 1.14 | 4.37 → 1.23 / 1.15 |
+| | misses: TTFT p50 (s) | 3.03 → 3.34 / 3.34 | 3.08 → 3.39 / 3.40 | 2.34 → 3.06 / 3.50 | 4.30 → 7.19 / 7.23 |
+| | completed requests / s | 2.42 → 2.31 / 2.31 | 2.38 → 2.27 / 2.27 | 2.36 → 2.31 / 2.31 | 2.38 → 2.34 / 2.34 |
+| | request time, mean (s) | 6.57 → 6.85 / 6.85 | 6.67 → 6.94 / 6.94 | 6.70 → 6.75 / 6.76 | 6.52 → 6.37 / 6.39 |
+| | pool in use, measured (stock) | 0.21 | 0.42 | 0.80 | 0.82 |
+| open loop, 2 requests/s | external hits: TTFT p50 (s) | 0.90 → 0.89 / 0.89 | 0.94 → 0.93 / 0.94 | 0.99 → 0.94 / 0.93 | 0.92 → 0.92 / 0.72 |
+| | misses: TTFT p50 (s) | 0.92 → 1.03 / 1.02 | 1.00 → 1.07 / 1.08 | 1.01 → 1.06 / 1.06 | 1.00 → 1.00 / 0.97 |
+| | request time, mean (s) | 2.37 → 2.54 / 2.55 | 2.47 → 2.81 / 2.81 | 2.55 → 2.72 / 2.68 | 2.20 → 2.28 / 2.23 |
+| | pool in use, measured (stock) | 0.08 | 0.17 | 0.35 | 0.41 |
+| open loop, 4 requests/s | external hits: TTFT p50 (s) | 5.91 → 1.73 / 1.84 | 6.40 → 1.81 / 2.16 | 5.73 → 5.44 / 2.15 | 5.66 → 5.44 / 1.40 |
+| | misses: TTFT p50 (s) | 5.39 → 6.96 / 6.94 | 5.42 → 7.03 / 7.15 | 5.55 → 6.30 / 6.47 | 5.63 → 5.95 / 6.31 |
+| | completed requests / s | 2.79 → 2.67 / 2.67 | 2.75 → 2.66 / 2.64 | 2.76 → 2.68 / 2.67 | 2.76 → 2.72 / 2.72 |
+| | request time, mean (s) | 8.85 → 8.07 / 8.13 | 9.20 → 8.06 / 8.36 | 8.09 → 8.26 / 7.77 | 6.99 → 7.21 / 6.02 |
+| | pool in use, measured (stock) | 0.24 | 0.48 | 0.75 | 0.77 |
+| bursts of 16 | external hits: TTFT p50 (s) | 3.03 → 1.21 / 1.30 | 3.57 → 1.45 / 1.20 | 3.45 → 1.18 / 1.16 | 3.40 → 1.26 / 1.34 |
+| | misses: TTFT p50 (s) | 2.78 → 3.00 / 3.01 | 2.77 → 2.96 / 2.94 | 2.85 → 2.95 / 2.95 | 3.28 → 3.24 / 2.99 |
+| | request time, mean (s) | 6.15 → 6.31 / 6.32 | 6.12 → 6.27 / 6.28 | 6.05 → 5.47 / 5.50 | 5.29 → 4.61 / 4.62 |
+| | pool in use, measured (stock) | 0.14 | 0.31 | 0.52 | 0.50 |
+| whole run | refused admission attempts: stock / P1 / P2 | 0 / 0 / 0 | 0 / 0 / 0 | 256 / 300 / 175 | 747 / 777 / 401 |
+| whole run | preemptions: stock / P1 / P2 | 0 / 0 / 0 | 0 / 0 / 0 | 7 / 3 / 3 | 0 / 0 / 0 |
+
+![Figure 3](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig3-concurrency-vs-ttft.png)
+
+*Figure 3 — concurrency against TTFT, closed loop (s1). x: number of requests kept in the system; y: TTFT in seconds (log
+scale). One column per pool size; top row external hits, bottom row misses; solid lines p50, dotted p95; stock, P1 and P2 (P1
+and P2 coincide here).*
+
+![Figure 3b](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig3b-rate-vs-ttft.png)
+
+*Figure 3b — the same for the open loop (s2). x: arrival rate in requests per second; 4 requests/s is above the engine's
+capacity. With the two smaller pools P1 follows stock at 4 requests/s and P2 does not.*
+
+![Figure 6](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig6-throughput-vs-pressure.png)
+
+*Figure 6 — throughput and TTFT against measured GPU KV memory pressure. x: time-weighted share of the pool in use during the
+scenario, one point per pool size (the largest pool is the leftmost point). Columns: the three saturated scenarios. Rows: prompt
+tokens served per second, TTFT p50 of the external hits, TTFT p50 of the misses. Stock, P1 and P2.*
+
+What the matrix shows:
+- **Without any memory pressure the hits wait as long as with it, and the token mechanisms remove most of that wait.** With the
+  two larger pools no admission attempt is refused in any configuration and at most 49 % of the pool is in use; a hit still gets
+  its first token after 3.4 s in the closed loop with 16 requests, 5.9–6.4 s in the open loop above capacity and 3.0–3.6 s in
+  bursts of 16 — as long as a miss. With P1 these are 1.2 s, 1.7–1.8 s and 1.2–1.5 s (2.5–3.5× sooner); the p95 falls from 8.2 to
+  1.8 s in the closed loop. P2 equals P1 here: its bypass has nothing to act on.
+- **The misses pay, and the engine loses a few per cent.** TTFT p50 of the misses +7 to +10 % in the closed loop and in bursts,
+  +29 to +30 % in the open loop above capacity; completed requests per second −1 to −5 %.
+- **Below saturation the tails move in both directions and the request time gets longer.** With up to 4 requests in the closed
+  loop and up to 1 request/s, throughput and the mean request time stay within 3 % and the misses' median within 0.02 s; the
+  hits gain already (p50 0.74 → 0.55 s with 4 in the system; p95 1.46 → 0.69 s with 2 in the system and 3.8–4.0 → 1.7–2.4 s at
+  1 request/s) and the misses' p95 rises (1.58 → 2.35 s with 4 in the system). At 2 requests/s the medians move by at most
+  0.11 s, the hits' p95 falls (2.95 → 1.88 s on the largest pool), the misses' p95 rises (2.15 → 2.58 s) and the mean request
+  time is 4–14 % *higher* with P1 (`figs/table-fig3-fig6.md`).
+- **Under memory pressure the token mechanisms alone stop working in the open loop, and the bypass restores them.** With the two
+  smaller pools 75–82 % of the pool is in use in the closed loop and in the open loop above capacity, and 256 and 747 admission
+  attempts are refused in the stock runs. P1 leaves
+  the hits of the open loop at 4 requests/s where they were (5.7 → 5.4 s): they now stand behind a request that waits for blocks,
+  which P1 does not pass (`blkfirst`). P2 serves them in 2.15 s and 1.40 s at the median (the p95 stays at 10.9 and 8.3 s
+  against 11.3 and 11.0 s), with a third to a half fewer refused attempts than stock and a mean request time 4 % and 14 % below
+  stock.
+- **The smallest pool shows the price most clearly:** in the closed loop the misses' TTFT p50 rises from 4.30 to 7.2 s (+67 %)
+  while the hits' falls from 4.37 to 1.2 s.
+
+**Result 2 — the scheduler options vLLM already has, same workloads, pool 7,456 blocks** (`E16/cc/tables-cc-options-7456.md`).
+
+| scenario | configuration | hits: TTFT p50 / p95 (s) | misses: TTFT p50 / p95 (s) | requests / s | request time, mean (s) |
+|---|---|---|---|---|---|
+| closed loop, 16 in the system | stock | 3.43 / 8.29 | 3.08 / 6.98 | 2.38 | 6.67 |
+| | synchronous scheduling | 2.47 / 7.12 | 2.26 / 6.77 | 2.34 | 6.79 |
+| | prefill cap 1,024 | 3.25 / 7.44 | 3.28 / 6.80 | 2.37 | 6.70 |
+| | hits-first priority (client-labelled) | 3.30 / 4.81 | 3.34 / 6.95 | 2.38 | 6.68 |
+| | P1 | 1.18 / 1.84 | 3.39 / 7.39 | 2.27 | 6.94 |
+| open loop, 4 requests/s | stock | 6.40 / 11.47 | 5.42 / 10.31 | 2.75 | 9.20 |
+| | synchronous scheduling | 6.21 / 11.54 | 5.73 / 10.80 | 2.71 | 9.51 |
+| | prefill cap 1,024 | 6.12 / 11.26 | 5.42 / 9.92 | 2.76 | 9.04 |
+| | hits-first priority (client-labelled) | 2.93 / 4.24 | 5.68 / 10.40 | 2.77 | 7.66 |
+| | P1 | 1.81 / 4.74 | 7.03 / 11.89 | 2.66 | 8.06 |
+| bursts of 16 | stock | 3.57 / 7.56 | 2.77 / 7.30 | 1.52 | 6.12 |
+| | synchronous scheduling | 3.10 / 7.67 | 2.89 / 7.56 | 1.51 | 6.24 |
+| | prefill cap 1,024 | 2.92 / 7.54 | 3.57 / 7.49 | 1.53 | 6.12 |
+| | hits-first priority (client-labelled) | 1.84 / 3.99 | 3.48 / 7.59 | 1.51 | 6.22 |
+| | P1 | 1.45 / 3.35 | 2.96 / 7.79 | 1.50 | 6.27 |
+
+Synchronous scheduling lowers the TTFT p50 of hits and misses alike by about a quarter in the closed loop (2.47 and 2.26 s) with
+2 % less throughput and changes little in the open loop and in bursts; the prefill cap changes little anywhere. **Hits-first
+priority is the strong existing option wherever a queue forms:** in the open loop above capacity it halves the hits' TTFT
+(2.93 s), costs the misses 5 %, loses no throughput and gives the lowest mean request time of all configurations (7.66 s against
+9.20 stock, 8.06 P1); in bursts 1.84 s for hits at +26 % for the misses. It needs the client to say which requests are hits
+(here the driver knows), and in the closed loop it lowers only the hits' p95 (4.8 s against 8.3 s), not the median (3.30 s):
+there no request waits in the queue for its turn, it waits for token budget. P1 gives the lowest hit TTFT in all three and the highest miss TTFT
+in the open loop.
+
+**Result 3 — hit share and prompt length (s4, open loop at 2 requests/s; `E16/cc/tables-s4.md`).** With 8k prompts this rate is far
+above capacity when most requests are misses; with 1k–2k prompts the engine is not saturated.
+
+| prompts | hit share | pool 7,456: hits TTFT p50 (s), stock → P1 / P2 | misses TTFT p50 (s) | request time, mean (s) | pool 3,728: hits TTFT p50 (s), stock → P1 / P2 | misses TTFT p50 (s) | request time, mean (s) |
+|---|---|---|---|---|---|---|---|
+| 8k | 0 % | – | 27.2 → 27.6 / 27.6 | 36.6 → 35.7 / 35.7 | – | 26.9 → 27.7 / 27.7 | 33.7 → 33.6 / 33.6 |
+| 8k | 25 % | 29.45 → 1.30 / 1.31 | 21.0 → 22.3 / 22.4 | 31.9 → 26.5 / 26.5 | 27.30 → 1.40 / 1.46 | 20.6 → 22.3 / 22.3 | 27.3 → 24.6 / 24.6 |
+| 8k | 50 % | 9.66 → 1.67 / 1.81 | 11.7 → 15.1 / 14.9 | 19.7 → 15.1 / 15.0 | 9.31 → 6.48 / 2.21 | 11.4 → 12.6 / 12.8 | 15.5 → 15.0 / 11.4 |
+| 8k | 75 % | 6.92 → 1.79 / 1.78 | 6.6 → 9.7 / 9.3 | 13.3 → 10.9 / 10.9 | 5.47 → 3.95 / 1.60 | 6.3 → 7.0 / 7.0 | 8.7 → 8.2 / 6.5 |
+| 8k | 100 % | 0.10 → 0.09 / 0.09 | – | 0.54 → 0.48 / 0.48 | 0.10 → 0.10 / 0.10 | – | 0.55 → 0.48 / 0.48 |
+| 1k–2k | 0–100 % | 0.03–0.09, unchanged | 0.31–0.35, unchanged | 0.33–1.04, unchanged | unchanged | unchanged | unchanged |
+
+- With a mix of long hits and long misses the hits' TTFT falls from 7–29 s to 1.3–1.8 s, the misses' rises by 7 % (25 % hits),
+  29 % (50 %) and 46 % (75 %), and the mean request time falls by 17–23 %. The prompt tokens served per second are unchanged up to
+  50 % hits and 5 % lower at 75 % (11,463 → 10,844).
+- With half the pool, P1 keeps only part of the gain (9.3 → 6.5 s at 50 % hits) and P2 the whole (2.2 s), with a mean request time
+  26 % below stock and 5.5 % *more* prompt tokens served per second (9,045 → 9,543): here the bypass removes idle waiting instead
+  of moving it.
+- All misses, all hits, or short prompts: no difference between the configurations. The mechanisms act only where short and long
+  work compete for the same engine steps.
+- **The gain does not depend on the prefix length.** Over all scenarios of s1–s3, hits of 1k, 2k, 4k and 8k tokens have a TTFT
+  p50 of 2.8–4.9 s in stock and 1.1–1.5 s with P1, at every pool size (`figs/table-cc-by-length.md`).
+
+**Explanation.** The first two pools separate the two causes of A. No request is ever refused memory there, so the 3–6 s a hit
+waits are engine steps: the running prefills take the whole 2,048-token budget of a step, the waiting queue is scanned only with
+what they leave, and a hit — which needs a transfer of 0.05 s and a few hundred tokens of compute — gets in when a prefill ends
+(A1.1, A4). The token reserve gives the queue 768 tokens of every step while short work is waiting, and the short steps bound how
+long that work waits for the step in flight. The budget is shared, so every token given to a hit is taken from a miss in the same
+step, and steps of 512 tokens spread the fixed cost of a step over fewer tokens: that is the misses' +7 to +30 % and the −1 to
+−5 % of throughput. The mean request time falls where a queue exists (open loop above capacity: short requests are served
+first) and rises where it does not (closed loop: it is the inverse of throughput; 2 requests/s: the misses' prefills are
+stretched and nobody was waiting long). The two smaller pools add the second cause: a request that does not fit stops the scan
+(A1.2), the hits behind it wait for memory they do not need, and only the bypass (P2) helps — there it also raises throughput,
+because blocks and steps that stood idle behind the blocked request are used.
+
+<!-- C2 -->
+
+### C3. Beyond the 8 GB GPU (the brief's Experiment E; MEASURED 2026-11-10 18:21 – 2026-11-11 01:24, 16 GB nodes c60, c61, c66, `E16/E/`)
+**Why.** c28's GPU holds 119k tokens of KV for the 3B model. If the delays of A came from that small pool, a larger GPU would
+remove them and the study would be about one configuration. The question has two parts: does the *memory* part of the problem
+(the full-sequence gate, head-of-line blocking, preemptions) survive a larger pool, and does the *token-budget* part?
+
+**What was available.** c33 (A100 80 GB) and c29 (H100 94 GB) are allocated to another user's jobs until 2026-11-13; the
+partition of RTX 4060 Ti 16 GB nodes was free. These nodes have the same GPU model as c28 with twice the memory: the same compute
+speed, a GPU KV pool of 19,916 blocks for the 3B model (318,656 tokens, 2.67× c28's) or room for a 7B model with slightly more
+than c28's token capacity (Qwen2.5-7B-Instruct-AWQ: 8,753 blocks, 140,048 tokens). **Limitation:** no GPU with more compute was
+available; a faster GPU shortens every prefill step and with it the absolute waits, which these runs cannot show.
+
+**How.** Three server sizes on one node type, the same trace window as on c28 (tool-agent, seconds 0–200 at 0.04×; 1,159
+requests), 80 GB host tier (the nodes have 188 GiB of RAM):
+1. *small pool, small model*: pool pinned at c28's 7,456 blocks (`e-tool04-80-p7456-*`, node c61);
+2. *larger pool, same model*: 19,916 blocks (`e-tool04-80-big-*`, c61), also under overload (seconds 0–100 at 0.08×, 120 GB host
+   tier, `e-tool08-120-big-*`, c66);
+3. *larger model, similar token capacity*: 7B-AWQ, seconds 0–100 at 0.02× — half the arrival rate for a model that computes
+   about half as fast, so that the engine is as busy as with the 3B model at 0.04× (`e7-tool02-80-*`, c60; GPU busy 47 % against
+   49–50 %).
+Each family has its own stock run on its node. Pressure is compared through measured quantities — blocks in the pool, refused
+attempts, the time-weighted share of the pool in use, the share of time with a saturated token budget — not through concurrency.
+
+**Result 1 — the node is a valid stand-in for c28.** With the pool pinned, the stock replay on c61 reproduces c28's replay of
+2026-11-05 with the same host tier (`dl-tool-dram80`, pool 7,612 blocks): cached share 0.382 against 0.383 (host tier 0.071
+against 0.072), TTFT p50 / p95 / p99 2.03 / 22.5 / 34.5 s against 2.04 / 22.5 / 35.2 s (interpolated percentiles of the
+`*-replay.json` summaries), 1,214 against 1,212 prompt tokens computed per second, 68.7 GB of host tier in use in both.
+
+**Result 2 — a 2.67× larger pool removes the memory gate and leaves the token budget where it was (stock, same node).**
+
+| quantity | pool 7,456 blocks | pool 19,916 blocks |
+|---|---|---|
+| refused admission attempts (full-sequence gate / reservation) | 5,041 / 6 | 0 / 0 |
+| preemptions | 1 | 0 |
+| pool in use, time-weighted mean; time with less than 25 % free | 0.265; 9.6 % | 0.108; 0 % |
+| time in steps whose running requests use the whole token budget | 20.3 % | 20.5 % |
+| requests served mostly from the host tier / with any load from it | 112 / 127 | 30 / 42 |
+| share of prompt tokens from a cache: host tier / GPU prefix | 0.071 / 0.311 | 0.036 / 0.348 |
+| TTFT p50 / p95 / p99, all requests (s) | 2.03 / 22.5 / 34.7 | 2.03 / 18.1 / 25.7 |
+| TTFT p50 / p95 of the host-dominant hits of the small-pool run (same 112 requests) (s) | 6.60 / 31.3 | 5.59 / 25.0 |
+
+The tail shortens (p95 −20 %, p99 −26 %) and the median does not move. On the large pool a host-dominant hit that arrives while
+no prefill is in flight answers in 0.29 s (median, 17 requests); one that arrives during a prefill answers in 15.8 s (13
+requests) — with 80 % of the pool free.
+
+**Result 3 — the token mechanisms give the same gain on all three server sizes at the sustainable load** (P1; paired by the
+stock run's classes; `E16/E/tables-primary-*.md`, full tables `E16/E/tables-d-*.md`).
+
+| quantity | pool 7,456, 3B (c61) | pool 19,916, 3B (c61) | pool 8,753, 7B (c60) |
+|---|---|---|---|
+| all requests: TTFT mean (s), stock → P1 | 5.41 → 4.19 (−23 %) | 4.80 → 3.81 (−21 %) | 8.44 → 6.97 (−17 %) |
+| all requests: TTFT p50 (s) | 2.03 → 1.40 (−31 %) | 2.03 → 1.38 (−32 %) | 3.69 → 2.64 (−28 %) |
+| all requests: TTFT p95 (s) | 22.5 → 20.6 (−8 %) | 18.1 → 17.6 (−3 %) | 32.6 → 29.8 (−9 %) |
+| host-dominant hits (n): TTFT mean (s) | (112) 10.50 → 4.25 (−60 %) | (30) 7.39 → 1.38 (−81 %) | (25) 16.49 → 5.76 (−65 %) |
+| GPU-prefix hits (n): TTFT mean (s) | (577) 2.89 → 1.33 (−54 %) | (661) 3.48 → 1.68 (−52 %) | (278) 4.74 → 2.34 (−51 %) |
+| misses (n): TTFT mean (s) | (339) 8.12 → 8.78 (+8 %) | (340) 7.27 → 8.04 (+11 %) | (175) 14.00 → 14.80 (+6 %) |
+| misses: request time mean (s) | 23.85 → 24.53 (+3 %) | 24.82 → 25.50 (+3 %) | 44.80 → 45.41 (+1 %) |
+| all requests: request time mean (s) | 12.22 → 11.49 (−6 %) | 12.48 → 11.88 (−5 %) | 22.70 → 21.82 (−4 %) |
+| requests with TTFT lower / higher by more than 10 % | 21 % / 15 % | 19 % / 16 % | 17 % / 11 % |
+| time in budget-saturated steps | 20.3 % → 7.2 % | 20.5 % → 6.9 % | 19.6 % → 8.2 % |
+| requests with TTFT above 30 s | 26 → 22 | 4 → 6 | 31 → 27 |
+| completed requests / s; GPU busy | 0.233 → 0.233; 0.50 → 0.51 | 0.233 → 0.233; 0.50 → 0.50 | 0.108 → 0.108; 0.47 → 0.47 |
+
+With synchronous scheduling added on the large pool (`e-tool04-80-big-p1-sync`) the median TTFT falls further (1.09 s, −46 %
+against stock) and the mean request time is back at the stock value (12.5 s): mean TTFT −20 %, misses +13 %.
+
+**Result 4 — under overload on the large pool the token mechanisms make everything worse** (seconds 0–100 at 0.08×, 544
+requests; `e-tool08-120-big-*`; one request of the P1 run was lost to the client-side connection reset described in G).
+
+| quantity | stock | P1 |
+|---|---|---|
+| all requests: TTFT p50 / p95 / p99 / mean (s) | 10.42 / 36.4 / 43.0 / 12.72 | 12.43 / 47.0 / 61.2 / 16.44 (+29 %) |
+| request time, mean (s) | 32.4 | 39.4 (+22 %) |
+| host-dominant hits (17): TTFT mean (s); request time mean (s) | 16.11; 41.6 | 9.84 (−39 %); 42.9 (+3 %) |
+| GPU-prefix hits (299): TTFT mean (s) | 11.84 | 13.81 (+17 %) |
+| misses (163): TTFT mean (s); request time mean (s) | 14.48; 56.5 | 21.74 (+50 %); 70.3 (+24 %) |
+| requests with TTFT lower / higher by more than 10 % | – | 20 % / 54 % |
+| requests with TTFT above 30 s / above 60 s | 57 / 0 | 127 / 8 |
+| refused admission attempts; preemptions | 0; 0 | 0; 0 |
+| waiting time of a request by reason (share, range over the classes) | token budget 57–65 %, running slots 23–33 % | running slots 53–89 %, token rule of the prototype 0–40 % |
+| time in budget-saturated steps | 43.5 % | 4.2 % |
+| running / waiting requests, time-weighted mean | 9.1 / 4.6 | 10.4 / 6.0 |
+| time per output token after the first, p50 (ms) | 74 | 123 |
+| prompt tokens computed / s; GPU busy | 2,287; 0.87 | 2,235; 0.90 |
+
+**Explanation.** The two halves of the problem separate cleanly. The memory half (refusals at the full-sequence gate,
+head-of-line blocking, preemptions) is a property of the ratio of pool to workload: with 2.67× the pool it is gone at the
+sustainable load, and with it a fifth of the tail. The token half does not depend on memory at all: on the large pool the same
+fifth of the run has its token budget exhausted, a hit that arrives during a prefill waits 15.8 s with four fifths of the pool
+free, and the token reserve recovers the same 17–23 % of mean TTFT on the small pool, the large pool and the larger model, at
+the same price (misses +6 to +11 % TTFT, +1 to +3 % request time). Result 4 shows what the saturated token budget is worth
+under overload: it is an unintended admission control. With the reserve, requests no longer wait for budget; they are admitted
+until the 16 running slots are the limit, more of them decode at once and each more slowly (the same prefill work now runs
+beside them instead of before them), every request holds its slot longer, and with no additional compute (the GPU was 87 % busy
+before) the mean TTFT and the mean request time rise by 29 % and 22 %. On c28's pool the memory gate plays the role of the
+slot limit and the damage is smaller (C2.2).
+
+### C4. Real CXL validation: blocked, documented, nothing changed (checked 2026-11-10 15:55 and 2026-11-11 00:43)
+**Why.** The project's host tier is meant to be CXL memory; the brief asks to repeat representative runs on a CXL-backed LMCache if the
+devices are accessible, and otherwise to document the blocker and label the results.
+
+**What was checked.** `/dev/dax0.0`, `/dev/dax1.0` and `/dev/dax2.0` are `crw------- root root` (modification time 2026-10-20
+15:32). Opening `dax0.0` and `dax1.0` read-only as `ghu4` fails with `EACCES`, at the start of the study and again at its end.
+`/dev/dax2.0` is in addition mounted as a root-owned famfs (FUSE) at `/mnt/famfs/dax2.0` and is reserved for another project by the
+user's rule of 2026-09-17; it was not opened. No permission, mount or system setting was changed.
+
+**Consequence.** Every host-tier result in this report is measured with pinned DRAM: these are **host-memory admission results**,
+not CXL measurements, and no number here is a CXL speedup. What transfers to a CXL tier and what does not, from what was measured:
+- The mechanisms of A and B act in the engine's scheduler, before a load is issued and after it has arrived. They do not touch
+  the medium the KV is read from.
+- The transfer itself is a small part of the delay it sits in: 0.05 s for a 16k prefix against waits of seconds (A2.1). The
+  2026-11-04 study measured the host → GPU transfer at the PCIe link's rate (11.3–12.0 GB/s) with DRAM as the source; whether a
+  CXL source keeps that rate under this load is not measured here.
+- Lookup and retrieval CPU cost on CXL, the effect of concurrent stores on loads (the duplex question, out of scope by the
+  brief), and any change of admission behaviour with a slower tier are **not measured**.
+
+## E. Negative results
+Every item was measured (or, for item 4, established from the source); the runs are kept, paths in brackets.
+
+1. **The hypothesis the study started from.** "Whole-prefix GPU KV reservation makes external hits wait while misses enter with a
+   chunk" does not describe vLLM 0.31 with its defaults. The reservation gate refused 17 of 4,924 attempts at the sustainable load,
+   9 of 6,527 under overload and none in the conversation replay (A2, A4); at the block gate a hit and a miss of the same length are
+   refused and admitted together (A3). The asymmetry exists only with `--no-scheduler-reserve-full-isl` (A3.1).
+2. **Relaxing the reservation of loads** (`alpha=0`, the literal form of B2). It admits the hit 2.4 s sooner in the scenario built
+   for it and costs one preemption and two failed chunk allocations in every trial; the next hit is later (B4; `E16/c2b`).
+3. **Compute fallback** (B5). Never applicable: where a load is refused, computing is refused by the same full-sequence gate (0
+   fallback decisions; `E16/c2b/c2b-tokfast-fb`).
+4. **Chunked external loading** (B3). Not expressible in the connector protocol, and a partial load would not be admitted earlier
+   and cannot run (B6).
+5. **Existing scheduler options as a remedy.** Synchronous scheduling alone: no effect behind a prefill (B1), 7 % higher mean TTFT
+   in the overloaded replay. Prefill cap 1,024: helps the first hit in the controlled scenario, worse on every metric in the
+   overloaded replay (mean TTFT +27 %, 74 preemptions against 5). A 512-token step: worse everywhere. Full-sequence gate off: hits
+   are refused at the same free-block counts as before, 23 preemptions against 2 (A3.1).
+6. **Prototype v1** (`replay/tool08-320-tokfast`). Its store-counter fix covered only loads while its own `minchunk` rule made the
+   scheduler poll GPU-prefix hits again: the host tier received 31.3 GB instead of 73.8 GB. It also kept the engine in short steps
+   for 24 % of the run for requests that were waiting for memory, not tokens. TTFT p95 58.8 s against 40.8 s.
+7. **Prototype v1.1 under overload** (`replay/tool08-320-tokfast11`). Hits 4–7× sooner at the median, at the price of misses +32 %
+   (p50) and +39 % (mean), p95 +18 %, p99 +38 %, a longest wait of 77.7 s against 53.2 s and 32 preemptions against 5. Its token
+   rule let short work pass memory-blocked requests without any bound: a request that needed 50 blocks waited 48 s after its first
+   refusal while 22 others were admitted (B0).
+8. **The token mechanisms alone under overload** (P1, `replay/tool08-320-p1`). With the unbounded passing removed, mean TTFT and
+   mean request time are 9 % *worse* than stock: the token budget no longer starves the queue, and head-of-line blocking takes its
+   place (57–68 % of the waiting time of hits against 32 % in stock) (C2.2).
+9. **The prototype against oracle priority under overload.** vLLM's existing priority scheduling, given in advance which requests
+   are hits, lowers the mean TTFT by 33 % and the mean request time by 16 % with misses +15 %; the best safe prototype
+   configuration (P2) reaches −4 % and +2 % with misses +29 % (C2.2). Under overload the prototype does not survive the comparison
+   with this baseline.
+10. **The conversation trace under overload** (`replay/conv08-320-p2`). 39 of 291 requests are hits; P2 makes those 4–9× faster at
+   the median and everything else slower: mean TTFT +6 %, p95 +24 %, mean request time +6 % (C2.3).
+11. **The first token is not the last.** Behind 8k and 16k prefills the request time of a hit is unchanged by the prototype although
+   its first token comes 2–4× sooner (B2); in the mixed workloads the hits' TTFT p50 falls 2–3× while the mean request time moves
+   between −14 % and +5 % and throughput falls 0–5 % (C1).
+12. **A pool of 2,048 blocks** (= `max_model_len`) cannot be tested: vLLM does not start (`E16/cc/failed-pool2048`).
+
 ## G. Correctness and experimental validity (the brief's section 9)
 
 **What is held constant in every comparison.** Within a table, all configurations ran the same request sequence — the same trace
@@ -820,7 +1126,7 @@ salt, so that neither cache is used.
 requests. Any change of scheduling changes 2–4 % of the texts, the stock options as much as the prototype: synchronous scheduling
 97.2 % identical to stock, prefill cap 97.6 %, store fix alone 98.9 %, P1 97.1 %, P2 97.2 %, P3 96.7 %; at the sustainable load
 (c61, pinned pool) P1 97.8 %. Requests that were loaded from LMCache in one run and computed in the other agree as often as the
-rest (95–98 %).
+rest (96–98 % in the prototype runs).
 
 **Blocks, leaks, preemptions, repeated loads** (the same script; the overloaded tool-agent replay, `replay/tables-correctness-tool08.md`).
 
