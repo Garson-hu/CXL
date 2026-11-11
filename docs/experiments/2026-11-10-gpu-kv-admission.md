@@ -741,4 +741,35 @@ reservation (`alpha`; B4).
 **Verdict.** Not implemented; incompatible with the connector protocol of vLLM 0.31 / LMCache 0.5.5, and the measured cause of
 the refusals (the full-sequence gate) would be unchanged by it.
 
+### B7. The store-counter fix (`storefix`; MEASURED 2026-11-10 22:44–23:05, c28, `replay/tool08-320-storefix`)
+**What changed.** At every poll of a waiting request that returns a lookup result, the hook sets the connector's stored-token
+counter back to the LMCache hit length if no token of the request has been scheduled yet — i.e. it undoes the repeated addition
+described in A5. Nothing else: stock scheduling, stock gates.
 
+**What problem it addresses.** A5: requests that are polled again after a refusal skip the store of their new KV.
+
+**How.** The overloaded tool-agent replay (0.08×, 544 requests, 320 GB tier, pool 7,456 blocks) with this flag alone, against the
+stock run of the same replay.
+
+| quantity | stock | store-counter fix alone |
+|---|---|---|
+| requests with a new chunk that stored nothing | 82 of 477 | 0 of 475 |
+| KV stored in the host tier (GB; expected from the new chunks: 105–107) | 73.8 | 108.9 |
+| requests polled ≥ 2 times: GB stored of expected | 9.4 of 45.0 | 46.2 of 45.0 |
+| share of prompt tokens served from a cache: total / host tier | 0.355 / 0.114 | 0.368 / 0.126 |
+| TTFT p50 / p95 / p99 / mean, all requests (s) | 12.45 / 40.8 / 47.4 / 14.67 | 12.16 / 40.9 / 47.3 / 14.43 |
+| TTFT mean of the stock run's host-dominant hits / GPU-prefix hits / misses (s) | 19.65 / 11.22 / 16.64 | 19.14 / 11.09 / 16.42 |
+| mean request time (s); completed requests / s | 27.6; 0.425 | 27.2; 0.428 |
+| requests with TTFT lower / higher by more than 10 % | – | 3 % / 2 % |
+| preemptions | 5 | 7 |
+
+**Did it work?** Yes: every request stores its new chunks, 35 GB more KV reaches the host tier in 21 minutes (+48 %), the share
+of prompt tokens served from the host tier rises from 11.4 % to 12.6 % within the same window, and no class of requests is slower
+(all within 3 % of stock, which is also what two runs of the same configuration differ by, G). The latency effect is small here
+because the replay window is short: the KV that stock fails to store would be reused by later turns of the same sessions.
+
+**Side effects.** The host tier fills faster — with a tier that is already full (80 GB, C2.4) the additional stores displace
+other entries. None otherwise: the fix does not change what is admitted or when.
+
+**Why it matters for this project.** It is the one finding of the study that is about the host tier itself: a larger tier cannot
+help with KV that was never written to it, and stock loses the most exactly when the engine is congested.
