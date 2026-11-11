@@ -22,8 +22,10 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
                   arrived, a short tail running), the token budget of the whole step is n instead of the configured one, so
                   that the next step boundary -- where lookup results, finished loads and promotions are picked up -- comes
                   sooner; long prefills continue at what the short work leaves of n (at least mincap, default 128).
-  fastmax=<s>     (default 1.5) a request counts as short work for the reserve and for short steps for at most s seconds per phase
-                  (lookup, transfer, promotion): one that stays longer is waiting for memory, which neither helps.
+  faststeps=<k>   (default 1) a request counts as short work for the reserve and for short steps for a limited number of engine
+                  steps per phase (lookup pending 3, load in transfer 10, promotion 4, short compute request 4, times k); a short
+                  compute request also only if its blocks fit in the free blocks. One that stays longer waits for memory or for
+                  its place in the queue, which neither helps.
   minchunk=<n>    do not start a compute request (miss, GPU-prefix hit) in a step that has fewer than min(its need, n)
                   budget tokens left (the stock scheduler starts it with whatever is left); default tokres + 256 when
                   tokres is set, so that the reserve cannot start a long prefill.
@@ -34,6 +36,9 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
                   leave min(b, blocks the pending hits need) free (needs skip).
   fallback=<s>    an external hit that still fails the block gates <s> seconds after its lookup result is computed
                   instead of loaded if the compute path passes the gates (needs storefix; implied).
+Version v1.1 (2026-11-10 19:30; v1 = commit 537d2ff): the store-counter fix is applied at every poll with a result (v1 missed
+GPU-prefix hits that LMCache also holds, so requests set aside by minchunk stopped storing); the reserve counts a request for a
+bounded number of steps instead of 1.5 s and a short compute request only if its blocks are free; mincap 256 instead of 128.
 Decisions are summarised per request in the admission stream: {"ev":"pol","rid","t0","t","skip_kv","skip_tok","fb"}.
 """
 import os, sys, time
@@ -88,24 +93,27 @@ def before_schedule(ctx, sched):
         for rid in [k for k in ST["req"] if k not in reqs]: ST["req"].pop(rid, None)
     if "tokres" not in P: return
     B = ST["B"]; T = int(P["tokres"]); fin = sched.finished_recving_kv_req_ids
-    now = time.monotonic(); TM = ST["tm"]; FMAX = P.get("fastmax", 1.5)
-    def fresh(rid, phase):
-        """a request counts as short work under way only for FMAX seconds per phase: one that stays longer is blocked by memory, not by
-        the step length, and neither a token reserve nor short steps help it"""
-        return now - TM.setdefault((rid, phase), now) < FMAX
+    step = ctx["i"]; TM = ST["tm"]; K = P.get("faststeps", 1.0)
+    def fresh(rid, phase, limit):
+        """a request counts as short work under way for a limited number of engine steps per phase (lookup pending 3, load in transfer 10,
+        promotion 4, short compute request 4, times faststeps): one that stays longer is waiting for memory or for its place in the queue,
+        which neither a token reserve nor short steps help"""
+        return step - TM.setdefault((rid, phase), step) < limit * K
+    free_avail = sched.kv_cache_manager.block_pool.get_num_free_blocks()
     tails = 0; small = 0; scan = 0; urgent = False
     for r in sched.kv_holding_waiting:
         rid = r.request_id
         if r.status != RS.WAITING_FOR_REMOTE_KVS or rid in fin:      # a load that has arrived: its uncached tail
-            if fresh(rid, "p"): tails += max(1, r.num_tokens - r.num_computed_tokens); urgent = True
+            if fresh(rid, "p", 4): tails += max(1, r.num_tokens - r.num_computed_tokens); urgent = True
             else: scan = 1
-        elif fresh(rid, "t"): urgent = True                           # a load in transfer: its arrival is noticed at a step boundary
+        elif fresh(rid, "t", 10): urgent = True                       # a load in transfer: its arrival is noticed at a step boundary
     for r in sched.waiting:
         rid = r.request_id; st = ST["req"].get(rid)
         if st is None:                                                # not looked up yet, or lookup pending
             scan = 1
-            if fresh(rid, "u"): urgent = True
-        elif st.get("kind") == "c" and st["need"] <= T and fresh(rid, "s"): small += st["need"]; urgent = True   # a short compute request
+            if fresh(rid, "u", 3): urgent = True
+        elif st.get("kind") == "c" and st["need"] <= T and st.get("full", 0) <= free_avail and fresh(rid, "s", 4):
+            small += st["need"]; free_avail -= st.get("full", 0); urgent = True     # a short compute request that fits in the free blocks
         else: scan = 1                                                # a long miss, or a request that waits for blocks: 1 token keeps the scan alive
     want = min(T, tails + small) or scan
     short = 0; n_long = 0; n_dec = 0
@@ -118,9 +126,10 @@ def before_schedule(ctx, sched):
     fast = "fastchunk" in P and (urgent or short > 0)
     if n_long and (want or short or fast):
         # fast mode: while short work is under way the whole step is kept short, so that the next step boundary -- where lookup results,
-        # finished loads and promotions are picked up -- comes sooner
-        if fast: bud = min(B, int(P["fastchunk"]))
-        thr = max(int(P.get("mincap", 128)), (bud - want - short - n_dec) // n_long)
+        # finished loads and promotions are picked up -- comes sooner; a long prefill keeps at least mincap tokens of every step
+        mincap = int(P.get("mincap", 256))
+        if fast: bud = min(B, max(int(P["fastchunk"]), want + short + n_dec + mincap * n_long))   # room for the short work plus a slice per long prefill
+        thr = max(mincap, (bud - want - short - n_dec) // n_long)
     if sched.scheduler_config.long_prefill_token_threshold != thr: sched.scheduler_config.long_prefill_token_threshold = thr
     if sched.max_num_scheduled_tokens != bud: sched.max_num_scheduled_tokens = bud
     ST["capped"] = thr != ST["orig_thr"]; ST["bud"] = bud
@@ -132,7 +141,7 @@ def on_lookup(ctx, sched, conn, request, loc, r):
     ext, is_async = r
     if not P or ext is None: return r, None
     rid = request.request_id; RS = ST["RS"]
-    if ext > 0: _storefix(conn, rid)
+    _storefix(conn, rid)                                    # every poll with a result (a GPU-prefix hit that LMCache also holds has ext == 0)
     t = time.monotonic(); s = ST["req"].get(rid)
     if s is None: s = ST["req"][rid] = {"t0": t, "skip_kv": 0, "skip_tok": 0, "fb": False}
     if request.status == RS.PREEMPTED:                       # the connector answers (0, False): a preempted request is recomputed (stock)
@@ -161,10 +170,10 @@ def on_lookup(ctx, sched, conn, request, loc, r):
         ST["pending_hit"].pop(rid, None)
         return r, None                                       # stock: the allocation is refused and the scan stops at this request
     s["kind"] = "c"; s["need"] = need_all
+    chunk = min(need_all, max(left, 1)); full, now = needs(kvm, request, chunk, nloc, ncb, 0, 0, 0); s["full"] = full
     if "minchunk" in P and left < min(need_all, P["minchunk"]):
         s["skip_tok"] += 1; return (None, True), "skip_tok"
     if "skip" in P:
-        chunk = min(need_all, max(left, 1)); full, now = needs(kvm, request, chunk, nloc, ncb, 0, 0, 0)
         R = _pending_reserve(exclude=rid)
         if not (full <= free - R and now <= free - R):
             if age < P["skip"]: s["skip_kv"] += 1; return (None, True), "skip_kv"
