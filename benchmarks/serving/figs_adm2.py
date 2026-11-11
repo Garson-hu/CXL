@@ -101,6 +101,16 @@ if "cc" in KW:
                 s = G.get((pool, cfg, g))
                 if s: L.append(f"| {pool} | {g} | {cfg} | {s['used']:.3f} | {s['rps']:.2f} | {s['tps']:.0f} | {s['h50']:.2f} / {s['h95']:.2f} | {s['c50']:.2f} / {s['c95']:.2f} | {s['tot50']:.2f} / {s['totm']:.2f} |")
     open(f"{FIG}/table-fig3-fig6.md", "w").write("\n".join(L) + "\n"); print("wrote table-fig3-fig6.md")
+    # by prompt length, saturated scenarios pooled (do the gains depend on the length of the cached prefix?)
+    SAT = ("s1-c8", "s1-c16", "s2-r4", "s3-k8", "s3-k16")
+    L = ["| pool (blocks) | request type | prompt (tokens) | n | stock: TTFT p50 / p95 (s) | " + PLAB + ": TTFT p50 / p95 (s) |", "|---|---|---|---|---|---|"]
+    for pool, a, b in pools:
+        A = reqs(cdir, a); B = reqs(cdir, b)
+        for ty, tl in (("host", "external hit"), ("cold", "miss")):
+            for Lp in (1024, 2048, 4096, 8192):
+                va = [fl(r["ttft"]) for r in A if r["case"] == ty and r["grp"] in SAT and r["rid"].endswith(f"-L{Lp}")]; vb = [fl(r["ttft"]) for r in B if r["case"] == ty and r["grp"] in SAT and r["rid"].endswith(f"-L{Lp}")]
+                if va and vb: L.append(f"| {pool} | {tl} | {Lp // 1024}k | {len(va)} | {q(va, .5):.2f} / {q(va, .95):.2f} | {q(vb, .5):.2f} / {q(vb, .95):.2f} |")
+    open(f"{FIG}/table-cc-by-length.md", "w").write("\n".join(L) + "\n"); print("wrote table-cc-by-length.md")
 
 if "c1" in KW:
     cdir, spec = KW["c1"].split(":", 1); parts = spec.split(","); a, b = parts[0], parts[1]; LB = parts[2] if len(parts) > 2 else "28000"
