@@ -203,6 +203,12 @@ between queueing and RUNNING, charged step by step to the scheduler's reason:
 - GPU KV memory is under pressure for a small part of the time (free blocks below 25 % of the pool: 9.2 % of the wall
   time; below 10 %: 3.7 %; mean used share 0.26).
 
+![Figure A1](../../experimental_results/2026-11-10-gpu-kv-admission/figs/figA1-wait-by-reason.png)
+
+*Figure A1 — where the waiting time goes, stock server, three replays (this one, A2.2 and the conversation trace under overload).
+x: request category (number of requests); y: mean seconds per request between queueing and RUNNING, split by the scheduler's
+reason at each engine step. Blue: the running requests used the whole token budget and the queue was not scanned.*
+
 **Result 3 — phases (Table 1 there; median / mean seconds).** Host-dominant hits: `pre` 0.00 / 2.20, `lookup` 0.78 / 4.29,
 `admit` 0.00 / 0.32, `load` 0.21 / 0.58, `promote` 0.00 / 0.20, `compute` 0.21 / 0.42. GPU-prefix hits: 0.00 / 1.09,
 0.03 / 1.05, 0.00 / 0.01, (small loads) 0.09 / 0.38, 0.00 / 0.14, 0.17 / 0.29. Misses: 0.00 / 1.55, 0.03 / 1.98, 0.00 / 0.34,
@@ -225,6 +231,11 @@ split half and half between the two states, against a class that is in the fast 
 meet a prefill in flight twice as often as GPU-prefix hits because the category itself depends on the load: a prefix is
 served from the host tier exactly when the GPU prefix cache has lost it, i.e. after other requests have churned the pool.
 Conditional on the state, an external hit is 1.9× slower than a GPU-prefix hit and faster than a miss in both states.
+
+![Figure A2](../../experimental_results/2026-11-10-gpu-kv-admission/figs/figA2-ttft-by-arrival.png)
+
+*Figure A2 — TTFT p50 per category, split by the state of the engine when the request arrived (blue: no prefill in flight;
+orange: a prefill in flight); the number of requests in brackets. Same three replays.*
 
 **Result 5 — a side effect of retries (SOURCE A1.4, confirmed).** Of the external loads whose lookup result was polled once,
 137 of 137 with new chunks stored them all; of those polled twice or more (refused and retried; median 32 polls, max 320),
@@ -315,6 +326,23 @@ hook error.
   the first visit). Alone the same hit takes 0.34 s.
 - **In bursts hits are not ahead of misses** (Table A3-4): TTFT p50 1.83–2.01 s (hits) vs 1.69–1.83 s (misses) for four
   probes, 2.41–2.86 vs 2.21–2.27 s for eight; half of each burst is refused at first by the full-sequence gate.
+
+![Figure 1](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig1-occupancy-vs-wait.png)
+
+*Figure 1 — GPU KV occupancy against the admission wait of external hits. Left, controlled probes: x = free blocks at the
+probe's first admission attempt divided by the blocks its whole sequence needs (log scale); y = seconds from the lookup result to
+admission. Hits (dots) and misses of the same length (crosses) fall on the same two levels: admitted at once when the sequence
+fits, admitted when the holder is released (3 s) when it does not. Right, the host-dominant hits of the three stock replays:
+x = share of the pool in use when the request arrived; y = seconds from queueing to the admission of its load (log scale);
+triangles arrived while a prefill was in flight. At low occupancy the wait is 3–30 ms without a prefill in flight and 1–30 s
+with one; occupancy alone does not predict the wait until the pool is nearly full.*
+
+![Figure 2](../../experimental_results/2026-11-10-gpu-kv-admission/figs/fig2-length-vs-wait.png)
+
+*Figure 2 — prefix length against the admission wait (left) and TTFT (right), controlled probes of part 1. x: length of the
+cached prefix (the probe has 256 fresh tokens more); lines: external hit and miss at three levels of free blocks relative to the
+probe's need. The wait is 0 s or the 3 s until the release for every length and for hits and misses alike; the TTFT of a hit
+does not grow with its prefix, that of a miss does.*
 
 **Explanation.** These trials answer the brief's questions for the block gate: admission of an external hit starts to fail
 when the free blocks fall below the blocks of its whole sequence — the same point at which a miss of that length fails;
@@ -1077,8 +1105,8 @@ Every item was measured (or, for item 4, established from the source); the runs 
 10. **The conversation trace under overload** (`replay/conv08-320-p2`). 39 of 291 requests are hits; P2 makes those 4–9× faster at
    the median and everything else slower: mean TTFT +6 %, p95 +24 %, mean request time +6 % (C2.3).
 11. **The first token is not the last.** Behind 8k and 16k prefills the request time of a hit is unchanged by the prototype although
-   its first token comes 2–4× sooner (B2); in the mixed workloads the hits' TTFT p50 falls 2–3× while the mean request time moves
-   between −14 % and +5 % and throughput falls 0–5 % (C1).
+   its first token comes 2–4× sooner (B2); in the saturated mixed workloads the hits' TTFT p50 falls 2.5–3.5× while the mean
+   request time moves between −26 % and +14 % and the completed requests per second between −5 % and +5.5 % (C1).
 12. **A pool of 2,048 blocks** (= `max_model_len`) cannot be tested: vLLM does not start (`E16/cc/failed-pool2048`).
 
 ## G. Correctness and experimental validity (the brief's section 9)

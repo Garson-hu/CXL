@@ -20,7 +20,12 @@ def fl(v):
 def q(v, p):
     v = sorted(x for x in v if x is not None); return v[min(len(v) - 1, int(p * len(v)))] if v else None
 def save(fig, name):
-    fig.tight_layout(); fig.savefig(f"{FIG}/{name}.png", dpi=150); fig.savefig(f"{FIG}/{name}.pdf"); plt.close(fig); print("wrote", name)
+    fig.tight_layout(); fig.savefig(f"{FIG}/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{FIG}/{name}.pdf", bbox_inches="tight"); plt.close(fig); print("wrote", name)
+def nice(tag):
+    """run tag -> panel title: <trace><speed>-<host tier GB>-base"""
+    m = re.match(r"(tool|conv)(\d\d)-(\d+)-", tag)
+    if not m: return tag
+    return f"{'tool-agent' if m.group(1) == 'tool' else 'conversation'} trace at 0.{m.group(2)}× ({'sustainable load' if m.group(2) == '04' else 'overload'}), stock"
 CATS = [("host≥50%", "host-dominant hit"), ("GPU≥50%", "GPU-prefix hit"), ("10–50%", "partial hit"), ("miss<10%", "miss")]
 REASONS = [("budget", "token budget used by running requests\n(queue not scanned)"), ("budget_adm", "budget used by earlier admissions in the scan"),
            ("hol", "another request refused: scan stopped"), ("own", "own refusal (block gates)"), ("pending", "lookup pending"), ("other", "other")]
@@ -35,7 +40,7 @@ def reason_sums(d):
 
 if "replay" in KW:
     rdir, tags = KW["replay"].split(":"); tags = tags.split(",")
-    fig, axes = plt.subplots(1, len(tags), figsize=(5.2 * len(tags), 3.6), sharey=False, squeeze=False)
+    fig, axes = plt.subplots(1, len(tags), figsize=(4.3 * len(tags) + 2.2, 3.6), sharey=False, squeeze=False)
     for ax, tag in zip(axes[0], tags):
         R = list(csv.DictReader(open(f"{rdir}/{tag}-adm-requests.csv"))); bottom = [0.0] * len(CATS)
         for rk, rl in REASONS:
@@ -43,11 +48,12 @@ if "replay" in KW:
             for ck, _ in CATS:
                 v = [reason_sums(d)[rk] for d in R if d["cat"] == ck]; vals.append(sum(v) / len(v) if v else 0.0)
             ax.bar(range(len(CATS)), vals, 0.62, bottom=bottom, label=rl, edgecolor="white", linewidth=0.8); bottom = [b + x for b, x in zip(bottom, vals)]
-        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([f"{cl}\n(n = {sum(1 for d in R if d['cat'] == ck)})" for ck, cl in CATS])
-        ax.set_ylabel("waiting time before RUNNING, mean per request (s)"); ax.set_title(tag, fontsize=9); ax.grid(axis="x", visible=False)
-    axes[0][-1].legend(fontsize=7, frameon=False, loc="upper right")
+        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([f"{cl.replace(' hit', chr(10) + 'hit')}\n(n = {sum(1 for d in R if d['cat'] == ck)})" for ck, cl in CATS], fontsize=8)
+        ax.set_title(nice(tag), fontsize=9); ax.grid(axis="x", visible=False)
+    axes[0][0].set_ylabel("waiting time before RUNNING,\nmean per request (s)")
+    axes[0][-1].legend(fontsize=7, frameon=False, loc="center left", bbox_to_anchor=(1.01, 0.5))
     save(fig, "figA1-wait-by-reason")
-    fig, axes = plt.subplots(1, len(tags), figsize=(5.2 * len(tags), 3.4), squeeze=False)
+    fig, axes = plt.subplots(1, len(tags), figsize=(4.3 * len(tags) + 1.8, 3.4), squeeze=False)
     for ax, tag in zip(axes[0], tags):
         R = list(csv.DictReader(open(f"{rdir}/{tag}-adm-requests.csv"))); w = 0.36
         for j, (lab, sel) in enumerate((("no prefill in flight at arrival", lambda d: fl(d.get("arr_infl")) == 0), ("a prefill in flight at arrival", lambda d: (fl(d.get("arr_infl")) or 0) > 0))):
@@ -55,8 +61,9 @@ if "replay" in KW:
             ns = [sum(1 for d in R if d["cat"] == ck and sel(d)) for ck, _ in CATS]
             bars = ax.bar([i + (j - 0.5) * w for i in range(len(CATS))], vals, w, label=lab, edgecolor="white", linewidth=0.8)
             for b, v, n in zip(bars, vals, ns): ax.text(b.get_x() + b.get_width() / 2, v, f"{v:.2f}\n[{n}]", ha="center", va="bottom", fontsize=6.5)
-        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([cl for _, cl in CATS]); ax.set_ylabel("TTFT p50 (s)"); ax.set_title(tag, fontsize=9); ax.grid(axis="x", visible=False)
-        ax.set_ylim(0, max(ax.get_ylim()[1], 1) * 1.15); ax.legend(fontsize=7, frameon=False, loc="upper left")
+        ax.set_xticks(range(len(CATS))); ax.set_xticklabels([cl.replace(" hit", "\nhit") for _, cl in CATS], fontsize=8); ax.set_title(nice(tag), fontsize=9); ax.grid(axis="x", visible=False)
+        ax.set_ylim(0, max(ax.get_ylim()[1], 1) * 1.15)
+    axes[0][0].set_ylabel("TTFT p50 (s); [number of requests]"); axes[0][-1].legend(fontsize=7, frameon=False, loc="center left", bbox_to_anchor=(1.01, 0.5))
     save(fig, "figA2-ttft-by-arrival")
 
 if "a3" in KW:
@@ -86,7 +93,7 @@ if "a3" in KW:
             v = [h for h in H if h[2] == infl]
             ax.scatter([h[0] for h in v], [h[1] for h in v], s=14, marker=mk, color=col, alpha=0.6, linewidths=0, label=f"{lab} (n = {len(v)})")
         ax.set_yscale("log"); ax.set_xlabel("GPU KV blocks in use at arrival (share of the pool)"); ax.set_ylabel("queued → load admitted (s)")
-        ax.set_title("Host-dominant hits of the stock replays (" + ", ".join(tags.split(",")) + ")", fontsize=8); ax.legend(fontsize=7, frameon=False, loc="upper left")
+        ax.set_title(f"Host-dominant hits of the stock replays ({len(tags.split(chr(44)))} runs)", fontsize=8); ax.legend(fontsize=7, frameon=False, loc="upper left")
     save(fig, "fig1-occupancy-vs-wait")
     fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.4))
     Ls = sorted({p["L"] for p in P if p["part"] == "p1"})
@@ -96,5 +103,5 @@ if "a3" in KW:
                 ys = [q([p[key] for p in P if p["part"] == "p1" and p["ty"] == ty and p["L"] == L and p["tr"].split("-")[1] == lvl], .5) for L in Ls]
                 ax.plot(Ls, ys, marker=mk, linestyle=ls, linewidth=1.2, markersize=5, color="C0" if ty == "host" else "C1", label=f"{lab}, {ll}")
         ax.set_xscale("log", base=2); ax.set_xticks(Ls); ax.set_xticklabels([f"{L // 1024}k" for L in Ls]); ax.set_xlabel("prefix length (tokens; + 256 fresh tokens)"); ax.set_ylabel(yl)
-    axes[1].legend(fontsize=6.5, frameon=False, loc="upper left", ncol=1)
+    axes[1].legend(fontsize=7, frameon=False, loc="center left", bbox_to_anchor=(1.01, 0.5))
     save(fig, "fig2-length-vs-wait")

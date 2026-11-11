@@ -9,16 +9,20 @@ the quantum. One server configuration per invocation; the trace window is replay
 prio_from=<client.jsonl of an earlier replay of the same window> (2026-11-10): oracle hits-first priority, a baseline that uses vLLM's own
 priority scheduling (--scheduling-policy priority): request i is sent with priority 0 if at least half of its prompt was served from a
 cache in that earlier run, with priority 1 otherwise (a client cannot know this in advance; the earlier run stands in for that knowledge).
-usage: replay.py <out> <tag> <trace.jsonl> <t0_s> <t1_s> <speed> [max_out=1024] [dequant_s=0] [prio_from=<client.jsonl>] [Cfg key=value ...]"""
+prio=len (2026-11-11): shortest-prompt-first, a baseline a client can realize with vLLM's priority scheduling: the priority of a request is
+its number of prompt tokens (lower is served first; ties by arrival).
+usage: replay.py <out> <tag> <trace.jsonl> <t0_s> <t1_s> <speed> [max_out=1024] [dequant_s=0] [prio_from=<client.jsonl> | prio=len] [Cfg key=value ...]"""
 import asyncio, json, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from serving_env import Cfg, ServingEnv, parse_kv
 from client import Client
 
 out, tag, trace = sys.argv[1:4]; t0, t1, speed = float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6])
-kv = dict(a.split("=", 1) for a in sys.argv[7:]); MAX_OUT = int(kv.pop("max_out", "1024")); DEQ = float(kv.pop("dequant_s", "0")); PRIO_FROM = kv.pop("prio_from", "")
+kv = dict(a.split("=", 1) for a in sys.argv[7:]); MAX_OUT = int(kv.pop("max_out", "1024")); DEQ = float(kv.pop("dequant_s", "0")); PRIO_FROM = kv.pop("prio_from", ""); PRIO_MODE = kv.pop("prio", "")
 cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=40.0, enforce_eager=False))
 PRIO = None
+assert PRIO_MODE in ("", "len"), PRIO_MODE
+if PRIO_MODE == "len": cfg.sched_policy = "priority"
 if PRIO_FROM:
     PRIO = {}; cfg.sched_policy = "priority"
     for line in open(PRIO_FROM):
@@ -50,7 +54,7 @@ async def main():
     async with Client(env.url(), cfg.model, env.f("client.jsonl"), concurrency_limit=4096) as cl:
         env.mark("replay_start", f"trace={os.path.basename(trace)} t0={t0} t1={t1} speed={speed} n={len(reqs)} max_out={MAX_OUT} dequant={DEQ}")
         start = time.monotonic() + 1.0
-        items = [dict(rid=f"{tag}-{i}", tokens=toks, case="trace", L=len(toks), max_tokens=o, extra={"trace_s": ts, "blocks": nb}, priority=(None if PRIO is None else PRIO.get(i, 1))) for i, (ts, toks, o, nb) in enumerate(reqs)]
+        items = [dict(rid=f"{tag}-{i}", tokens=toks, case="trace", L=len(toks), max_tokens=o, extra={"trace_s": ts, "blocks": nb}, priority=(len(toks) if PRIO_MODE == "len" else None if PRIO is None else PRIO.get(i, 1))) for i, (ts, toks, o, nb) in enumerate(reqs)]
         times = [(ts - t0) / speed for ts, *_ in reqs]
         done = 0
         async def progress():
