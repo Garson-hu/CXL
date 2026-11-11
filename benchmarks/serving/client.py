@@ -41,20 +41,28 @@ class Client:
         async with self.sem:
             send = time.monotonic_ns(); rec["send_mono_ns"] = send; rec["send_wall"] = time.time()
             try:
-                async with self.sess.post(self.url + "/v1/completions", json=body, headers={"X-Request-Id": rid}) as resp:
-                    status = resp.status
-                    if status != 200: err = (await resp.text())[:300]
-                    else:
-                        async for raw in resp.content:
-                            line = raw.decode().strip()
-                            if not line.startswith("data: ") or line == "data: [DONE]": continue
-                            d = json.loads(line[6:]); resp_id = resp_id or d.get("id")
-                            if d.get("choices") and d["choices"][0].get("text"):
-                                text.append(d["choices"][0]["text"])
-                                if first is None: first = time.monotonic_ns()
-                            if d.get("usage"):
-                                det = d["usage"].get("prompt_tokens_details") or {}; cached = det.get("cached_tokens", -1) if det else -1
-                                ntok = d["usage"].get("completion_tokens", 0); rec["prompt_tokens"] = d["usage"].get("prompt_tokens", len(tokens))
+                for attempt in (0, 1):
+                    try:
+                        async with self.sess.post(self.url + "/v1/completions", json=body, headers={"X-Request-Id": rid}) as resp:
+                            status = resp.status
+                            if status != 200: err = (await resp.text())[:300]
+                            else:
+                                async for raw in resp.content:
+                                    line = raw.decode().strip()
+                                    if not line.startswith("data: ") or line == "data: [DONE]": continue
+                                    d = json.loads(line[6:]); resp_id = resp_id or d.get("id")
+                                    if d.get("choices") and d["choices"][0].get("text"):
+                                        text.append(d["choices"][0]["text"])
+                                        if first is None: first = time.monotonic_ns()
+                                    if d.get("usage"):
+                                        det = d["usage"].get("prompt_tokens_details") or {}; cached = det.get("cached_tokens", -1) if det else -1
+                                        ntok = d["usage"].get("completion_tokens", 0); rec["prompt_tokens"] = d["usage"].get("prompt_tokens", len(tokens))
+                        break
+                    except aiohttp.ServerDisconnectedError:
+                        # 2026-11-11: the server closed an idle keep-alive connection just as it was reused; nothing of this request was
+                        # read (no status yet). Send it once more on a fresh connection (recorded as "retried": 1); anything else is an error.
+                        if attempt == 0 and status is None: rec["retried"] = 1; continue
+                        raise
             except Exception as e:
                 err = repr(e)[:300]
             end = time.monotonic_ns()
