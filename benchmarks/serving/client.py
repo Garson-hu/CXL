@@ -26,10 +26,12 @@ class Client:
     async def __aexit__(self, *a):
         await self.sess.close(); self.f.close()
 
-    async def one(self, rid, tokens, case="", L=0, rep=0, grp="", max_tokens=8, priority=None, extra=None, t_send=None):
-        """send one request (optionally delayed until monotonic t_send) and record it; returns the record"""
+    async def one(self, rid, tokens, case="", L=0, rep=0, grp="", max_tokens=8, priority=None, extra=None, t_send=None, body_extra=None):
+        """send one request (optionally delayed until monotonic t_send) and record it; returns the record; body_extra = further fields of
+        the request body (e.g. {"cache_salt": ...}: vLLM and LMCache then share no cached prefix with requests of another salt)"""
         body = {"model": self.model, "prompt": tokens, "max_tokens": max_tokens, "temperature": 0, "ignore_eos": True, "stream": True, "stream_options": {"include_usage": True}}
         if priority is not None: body["priority"] = priority
+        if body_extra: body.update(body_extra)
         if t_send is not None:
             d = t_send - time.monotonic()
             if d > 0: await asyncio.sleep(d)

@@ -588,6 +588,57 @@ take (435 of the 600 free) are not blocks the large request could have used: it 
 keep taking the blocks that are freed; the `skip` bound limits that to `s` seconds, and `hitres` keeps blocks aside for a passed
 hit. Scenario c5 measures both (B3.1).
 
+### B4. The in-flight reservation charged to a load (`alpha`; MEASURED 2026-11-10 20:07–20:34, node c66; `E16/c2b/c2b-*`, table `E16/c2b/tables-c2b.md`)
+**What changed.** `alpha=0` removes the stock reservation from the admission of an external load: the load is admitted if its
+blocks are free, as a miss's first chunk would be. This is the literal form of "do not make a hit reserve more than a miss".
+
+**What problem it addresses.** The reservation gate. In the stock replays it refuses almost nothing (A4, question 7), because a
+load is only ever evaluated in a step in which no prefill needed more tokens. With the token reserve of B2 that changes: the
+scan now runs *during* prefills, when the reservation is large. Scenario c2 (`run_adm.py plan=c2`) sets this up: a 16k miss
+starts prefilling in a pool where it fits with 100 or with 400 blocks to spare; external hits of 4k (272 blocks) are sent 0.5 and
+2.5 s later; 3 repetitions, medians of TTFT (s) with the gate of the first admission attempt.
+
+| trial | probe | stock | token reserve + short steps | + `alpha=0` | + `alpha=0`, 512 output tokens | reserve + short steps, 512 output tokens | reserve + `skip=1,fallback=1` |
+|---|---|---|---|---|---|---|---|
+| 100 blocks to spare | 16k miss | 4.04 | 4.34 | 4.73 | 4.74 | 4.34 | 4.34 |
+| 100 blocks to spare | hit +0.5 s | 4.22 (full) | 4.52 (**resv**) | **2.16** (ok) | 2.17 (ok) | 7.83 (resv) | 4.52 (full) |
+| 100 blocks to spare | hit +2.5 s | 2.35 | 2.68 | 3.50 (full) | 6.55 (full) | 5.98 | 2.68 |
+| 400 blocks to spare | 16k miss | 4.01 | 4.64 | 4.92 | 4.91 | 4.49 | 4.65 |
+| 400 blocks to spare | hit +0.5 s | 3.80 | **2.11** (ok) | 2.13 | 2.11 | 1.98 | 2.12 |
+| 400 blocks to spare | hit +2.5 s | 2.30 (full) | 2.69 (resv) | 1.99 (ok) | 1.97 | 2.16 | 2.70 (full) |
+| preemptions / running requests refused their next chunk (6 trials) | | 0 / 0 | 0 / 0 | **6 / 12** | 6 / 12 | 0 / 0 | 0 / 0 |
+
+**Did it work?** It admits the hit — 2.16 instead of 4.52 s when only 100 blocks are spare — and breaks something else every
+time: one preemption and two refused chunks of running requests in each of the six trials, the 16k miss's first token 6–9 %
+later than with the reserve alone (4.34 → 4.73 s, 4.64 → 4.92 s), and the next hit later (3.50 against 2.68 s; with 512 output
+tokens 6.55 against 5.98 s). Where the hit
+fits beside what the prefill still needs (400 spare blocks), the token reserve alone admits it under the stock reservation
+(3.80 → 2.11 s) and `alpha` adds nothing.
+
+**Why.** The reservation is not an arbitrary penalty on loads. A load takes all its blocks at once and holds them without
+computing; if those are blocks a running prefill needs for its remaining chunks, the prefill's next chunk fails and the scheduler
+preempts a running request, whose computed tokens are lost. The stock rule is the correct one for a request that enters during a
+prefill, and the prototype extends it instead of relaxing it: with `resvall`, a *compute* request that the token reserve lets in
+during a prefill must also fit under the in-flight reservation (C2 shows the preemption counts with and without it).
+
+**Verdict.** Negative for `alpha` < 1 (kept as a flag, off in every other run). The reservation gate is a consequence of scanning
+during a prefill, not a cause of the delays A measured.
+
+### B5. Compute fallback (`fallback`; same runs, last column)
+**What changed.** A hit that still fails the block gates `fallback` seconds after its lookup result is computed instead of
+loaded — the connector's answer is turned into `(0, False)` — if the compute path passes the gates at that moment.
+
+**Did it work?** It never fired: 0 fallback decisions in 18 probes (6 of them refused at their first attempt), and the results
+are those of the run without it.
+
+**Why.** Wherever the load is refused, computing is refused too. The gate that refuses loads is the full-sequence gate
+(1,286 of 1,303 refused load attempts at the sustainable load, A2.1), and it asks for the blocks of the whole sequence whichever
+way the prefix is obtained. The remaining case — a load refused only by the in-flight reservation — is the case of B4: starting
+the request by computing would take the same blocks from the running prefill, a chunk at a time, and would add 4k tokens of
+prefill (about 0.7 s of GPU) to save a transfer of 0.05 s. Recomputing is never the cheaper way to wait for memory on this path.
+
+**Verdict.** Negative; no configuration was found in which the fallback is both possible and better than waiting.
+
 ### B6. Chunked external loading (the brief's B3): not possible in this protocol, and it would not help (SOURCE)
 (i) The scheduler asks the connector only for requests
 without computed tokens (S:931); after a load the request re-enters through the branch for requests that have them (S:1041),

@@ -9,8 +9,9 @@
                                the stock run's category
   fig6-throughput-vs-pressure  (required figure 6) mixed workload at saturation: throughput and TTFT against the MEASURED GPU KV occupancy
                                of the scenario (time-weighted used share of the pool between the scenario's first send and last completion)
-usage: figs_adm2.py <fig_dir> [cc=<dir>:<pool>=<stock tag>,<prototype tag>+<pool>=...] [c1=<dir>:<stock tag>,<prototype tag>[,<blocker tokens>]]
-                    [d=<label>=<dir>:<stock tag>,<prototype tag>+<label>=...] [plab=<prototype label>]"""
+usage: figs_adm2.py <fig_dir> [cc=<dir>:<pool>=<stock tag>,<prototype tag>[,<second prototype tag: table only>]+<pool>=...]
+                    [c1=<dir>:<stock tag>,<prototype tag>[,<blocker tokens>]] [d=<label>=<dir>:<stock tag>,<prototype tag>+<label>=...]
+                    [plab=<prototype label>] [plab2=<label of the second prototype configuration>]"""
 import bisect, csv, os, re, sys
 import matplotlib
 matplotlib.use("Agg")
@@ -41,13 +42,14 @@ def used_share(T, F, N, a, b):
     return s / w if w else None
 
 if "cc" in KW:
-    cdir, spec = KW["cc"].split(":", 1); pools = []
+    cdir, spec = KW["cc"].split(":", 1); pools = []; third = {}; PLAB2 = KW.get("plab2", "prototype 2")
     for item in spec.split("+"):
-        pool, tg = item.split("="); a, b = tg.split(","); pools.append((int(pool), a, b))
+        pool, tg = item.split("="); tl = tg.split(","); pools.append((int(pool), tl[0], tl[1]))
+        if len(tl) > 2 and os.path.exists(f"{cdir}/{tl[2]}-adm-requests.csv"): third[int(pool)] = tl[2]      # a second prototype configuration: table only
     pools = [(p, a, b) for p, a, b in pools if os.path.exists(f"{cdir}/{a}-adm-requests.csv") and os.path.exists(f"{cdir}/{b}-adm-requests.csv")]
     G = {}                                  # (pool, config, group) -> dict of stats
     for pool, a, b in pools:
-        for cfg, tag in (("stock", a), (PLAB, b)):
+        for cfg, tag in (("stock", a), (PLAB, b)) + (((PLAB2, third[pool]),) if pool in third else ()):
             R = reqs(cdir, tag); T, F, N = kvs(cdir, tag)
             for g in sorted({r["grp"] for r in R if r["grp"]}):
                 v = [r for r in R if r["grp"] == g]; t0 = min(fl(r["send"]) for r in v); t1 = max(fl(r["send"]) + fl(r["total"]) for r in v)
@@ -92,7 +94,7 @@ if "cc" in KW:
     order = lambda g: (g[:2], float(re.sub(r"[^0-9.]", "", g[3:]) or 0))
     for pool, a, b in pools:
         for g in sorted({k[2] for k in G if k[0] == pool}, key=order):
-            for cfg in ("stock", PLAB):
+            for cfg in ("stock", PLAB, PLAB2):
                 s = G.get((pool, cfg, g))
                 if s: L.append(f"| {pool} | {g} | {cfg} | {s['used']:.3f} | {s['rps']:.2f} | {s['tps']:.0f} | {s['h50']:.2f} / {s['h95']:.2f} | {s['c50']:.2f} / {s['c95']:.2f} | {s['tot50']:.2f} / {s['totm']:.2f} |")
     open(f"{FIG}/table-fig3-fig6.md", "w").write("\n".join(L) + "\n"); print("wrote table-fig3-fig6.md")
