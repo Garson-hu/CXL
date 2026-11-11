@@ -55,7 +55,8 @@ bounded number of steps instead of 1.5 s and a short compute request only if its
 Version v1.2 (commit 9f3b1c8): flag resvall. Version v1.3 (commit 68acb27): flag agecap. Version v1.4 (2026-11-10 21:10): flag blkfirst.
 Without the new flags the behaviour is that of v1.2.
 Decisions are summarised per request in the admission stream: {"ev":"pol","rid","t0","t","skip_kv","skip_tok","fb"}; the starvation
-bound writes {"ev":"prot","t","i","on"} whenever it switches the mechanisms off or on again.
+bound writes {"ev":"prot","t","i","on"} whenever it switches the mechanisms off or on again; with hitres, {"ev":"hres","t","i","r","n"} records
+the blocks kept free for n passed hits whenever that amount changes (logging only, added 2026-11-10 21:15).
 """
 import os, sys, time
 
@@ -105,6 +106,9 @@ def before_schedule(ctx, sched):
     RS = ST["RS"]; reqs = sched.requests
     if ST["pending_hit"]:
         for rid in [k for k in ST["pending_hit"] if k not in reqs or reqs[k].status != RS.WAITING]: ST["pending_hit"].pop(rid, None)
+    if "hitres" in P:                                        # log only: the blocks kept free for passed hits, whenever the amount changes
+        R = _pending_reserve()
+        if R != ST.get("last_R", 0): ST["last_R"] = R; ST["w"]("adm").write({"ev": "hres", "t": time.monotonic(), "i": ctx["i"], "r": R, "n": len(ST["pending_hit"])})
     if len(ST["req"]) > 2048:
         for rid in [k for k in ST["req"] if k not in reqs]: ST["req"].pop(rid, None)
     if "agecap" in P:

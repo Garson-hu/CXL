@@ -94,6 +94,9 @@ sch.kv_cache_manager.block_pool.free = 500
 r, act = pol.on_lookup(ctx, sch, conn, h, 0, (4096, True)); assert act is None, act                                          # the hit fits now
 pol.ST["req"]["h"]["t0"] -= 10; sch.kv_cache_manager.block_pool.free = 200
 r, act = pol.on_lookup(ctx, sch, conn, h, 0, (4096, True)); assert (r, act) == ((4096, True), None), (r, act)                 # waited longer than skip: stock answer (its refusal stops the scan)
+h2 = sch.add(Req("h2", 4352, loc=0), "waiting"); r, act = pol.on_lookup(ctx, sch, conn, h2, 0, (4096, True)); assert act == "skip_kv"
+step(ctx, sch); assert [e["r"] for e in w.ev if e.get("ev") == "hres"][-1] == 256, w.ev                                      # the reservation for the passed hit is logged
+sch.waiting.remove(h2); del sch.requests["h2"]; step(ctx, sch); assert [e["r"] for e in w.ev if e.get("ev") == "hres"][-1] == 0
 ''',
  "tokres=768,fastchunk=512,resvall,blkfirst": r'''
 sch, ctx, w, conn = setup(free=100); long = sch.add(Req("L", 20000, comp=2048, status=RS.RUNNING), "running"); q = sch.add(Req("q", 6000), "waiting")
