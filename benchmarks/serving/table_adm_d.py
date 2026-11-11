@@ -42,17 +42,18 @@ def load(tag):
                                           tpot=((tot - ttft) / (ot - 1)) if (ot > 1 and tot is not None and ttft is not None) else None,
                                           send=fl(r["send"]), pre=int(fl(r["preempted"]) or 0), stores=fl(r["n_stores"]) or 0, sbytes=fl(r["store_bytes"]) or 0)
     n_err = sum(1 for c in cl.values() if c.get("case") == "trace" and (c["status"] != 200 or c.get("error")))
-    ref = {"full": 0, "free": 0, "resv": 0}; pre = runfail = 0; steps = []; B = None; prot = []
+    ref = {"full": 0, "free": 0, "resv": 0}; pre = runfail = 0; steps = []; B = None; prot = []; hres = []
     for fn in glob.glob(f"{out}/{tag}-vllmevt.adm.*.jsonl"):
         for l in open(fn):
             if '"ev":"kv"' in l:
-                d = json.loads(l); steps.append((d["t0"], d["free1"], d["tot"], d["runtok"], d.get("bud"), d["run"], d["wait"] + d["hold"]))
+                d = json.loads(l); steps.append((d["t0"], d["free1"], d["tot"], d["runtok"], d.get("bud"), d["run"], d["wait"] + d["hold"], d.get("resv", 0), d.get("wfrb", 0)))
             elif '"ev":"adm"' in l:
                 if '"ok":false' in l: d = json.loads(l); ref[d["gate"]] = ref.get(d["gate"], 0) + 1
             elif '"ev":"preempt"' in l: pre += 1
             elif '"ev":"runfail"' in l: runfail += 1
             elif '"ev":"policy"' in l: B = json.loads(l).get("budget")
             elif '"ev":"prot"' in l: d = json.loads(l); prot.append((d["t"], d["on"]))
+            elif '"ev":"hres"' in l: d = json.loads(l); hres.append((d["t"], d["r"]))
     steps.sort(); B = B or max((s[4] or 2048) for s in steps)
     dur = [steps[n + 1][0] - steps[n][0] for n in range(len(steps) - 1)]; W = sum(dur) or 1e-9
     tw = lambda fn: sum(fn(steps[n]) * dur[n] for n in range(len(dur))) / W
@@ -65,6 +66,12 @@ def load(tag):
         elif not on and on_at is not None: tp += t - on_at; on_at = None
     if on_at is not None: tp += steps[-1][0] - on_at
     occ["prot"] = tp / W
+    occ["resv"] = tw(lambda s: s[7]); occ["wfrb"] = tw(lambda s: s[8])
+    hres.sort(); hsum = 0.0; hpos = 0.0                    # blocks kept free for passed hits (hitres): time integral and time with a reservation
+    for n, (t, r) in enumerate(hres):
+        t2 = hres[n + 1][0] if n + 1 < len(hres) else steps[-1][0]
+        if t2 > t: hsum += r * (t2 - t); hpos += (t2 - t) if r > 0 else 0.0
+    occ["hres"] = hsum / W; occ["hres_t"] = hpos / W
     rj = {}
     try: rj = json.load(open(f"{out}/{tag}-replay.json"))
     except Exception: pass
@@ -94,6 +101,8 @@ table("Table D-1 — run level", [
     ("refused admission attempts: full-sequence gate / free blocks / in-flight reservation", lambda d: f"{d['ref'].get('full', 0)} / {d['ref'].get('free', 0)} / {d['ref'].get('resv', 0)}"),
     ("GPU KV pool (blocks); used share, time-weighted mean", lambda d: f"{d['occ']['pool']}; {d['occ']['used']:.3f}"),
     ("time with free blocks < 25 % / < 10 % of the pool", lambda d: f"{d['occ']['lt25']:.3f} / {d['occ']['lt10']:.3f}"),
+    ("blocks reserved for in-flight prefills (stock reservation) / held by loads in transfer, time-weighted mean", lambda d: f"{d['occ']['resv']:.0f} / {d['occ']['wfrb']:.0f}"),
+    ("blocks kept free for passed hits (`hitres`), time-weighted mean; share of time with such a reservation", lambda d: f"{d['occ']['hres']:.1f}; {d['occ']['hres_t']:.3f}"),
     ("time in steps whose running requests use the whole token budget", lambda d: f(d["occ"]["sat"], 3)),
     ("time in steps with a shortened token budget (prototype)", lambda d: f(d["occ"]["short"], 3)),
     ("time with the mechanisms suspended by the starvation bound (`agecap`)", lambda d: f(d["occ"]["prot"], 3)),

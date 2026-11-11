@@ -228,7 +228,8 @@ Conditional on the state, an external hit is 1.9× slower than a GPU-prefix hit 
 
 **Result 5 — a side effect of retries (SOURCE A1.4, confirmed).** Of the external loads whose lookup result was polled once,
 137 of 137 with new chunks stored them all; of those polled twice or more (refused and retried; median 32 polls, max 320),
-17 of 17 stored nothing: after a refusal the request's new tokens do not reach the host tier.
+17 of 17 stored nothing: after a refusal the request's new tokens do not reach the host tier. A5 measures the same effect over
+all requests of the run — it also hits compute requests whose prefix LMCache holds — and finds 48 requests and 6 % of the bytes.
 
 **Explanation.** Three mechanisms, all in `Scheduler.schedule()`, in the order of their weight in this run:
 1. *The waiting queue is served from what the running requests leave of the token budget* (A1.1). A prefill of 13.7k tokens
