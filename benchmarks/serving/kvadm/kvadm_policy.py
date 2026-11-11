@@ -26,6 +26,10 @@ KVADM_POLICY = comma-separated mechanisms (vLLM process environment; serving_env
                   steps per phase (lookup pending 3, load in transfer 10, promotion 4, short compute request 4, times k); a short
                   compute request also only if its blocks fit in the free blocks. One that stays longer waits for memory or for
                   its place in the queue, which neither helps.
+  resvall         (v1.2) a compute request that is started while a prefill is in flight must fit under the in-flight prefill
+                  reservation, as the stock scheduler demands of an async load (otherwise it is set aside for this step). The token
+                  reserve lets requests in during a prefill, which the stock scheduler never does; without this rule they can take
+                  the blocks the prefill still needs and a running request is preempted later.
   minchunk=<n>    do not start a compute request (miss, GPU-prefix hit) in a step that has fewer than min(its need, n)
                   budget tokens left (the stock scheduler starts it with whatever is left); default tokres + 256 when
                   tokres is set, so that the reserve cannot start a long prefill.
@@ -173,6 +177,12 @@ def on_lookup(ctx, sched, conn, request, loc, r):
     chunk = min(need_all, max(left, 1)); full, now = needs(kvm, request, chunk, nloc, ncb, 0, 0, 0); s["full"] = full
     if "minchunk" in P and left < min(need_all, P["minchunk"]):
         s["skip_tok"] += 1; return (None, True), "skip_tok"
+    if "resvall" in P and sched._inflight_prefills:
+        # a compute request admitted while a prefill is in flight must leave the blocks that prefill still needs, as the stock scheduler
+        # demands of an async load; without the token reserve the question does not arise (the queue is not scanned during a prefill)
+        resv = sched._inflight_prefill_reserved_blocks()
+        if resv and full > free - resv:
+            s["skip_kv"] += 1; return (None, True), "skip_resv"
     if "skip" in P:
         R = _pending_reserve(exclude=rid)
         if not (full <= free - R and now <= free - R):
