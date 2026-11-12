@@ -3,7 +3,7 @@
 # GPU), and re-reads the plan after each run, so lines can be appended while it is running. Finished tags are recorded in
 # <results>/done.txt and never repeated; a line can be removed or edited until its run starts.
 # plan line:  <tag> <subdir> <driver> [key=value ...]          (# starts a comment)
-#   driver:  a | c | e                    run_a.py / run_c.py / run_e.py  (single-request retrieval / equal-hit / concurrent retrieval)
+#   driver:  a | c | e                    run_a.py / run_eqhit.py / run_e.py  (single-request retrieval / equal-hit / concurrent retrieval)
 #            conv:<t1>:<speed> | tool:<t1>:<speed>   replay.py of the Mooncake conversation / tool-agent trace, seconds 0..t1 at <speed>x
 # After a run its analysis is started in the background (analyze_tier.py for a / c / e, analyze_tier_replay.py for replays).
 # usage: queue_tier.sh <results_dir> <plan_file> [wait_for_file wait_for_pattern]
@@ -25,7 +25,7 @@ while :; do
   echo "[$(date -Is)] start $tag ($sub, $drv) $*" >> "$R/chain.txt"
   case "$drv" in
     a) timeout 3600 taskset -c 80-87 $PY run_a.py "$O" "$tag" "$@" > "$O/$tag-driver.txt" 2>&1; rc=$?; post="analyze_tier.py";;
-    c) timeout 3600 taskset -c 80-87 $PY run_c.py "$O" "$tag" "$@" > "$O/$tag-driver.txt" 2>&1; rc=$?; post="analyze_tier.py";;
+    c) timeout 3600 taskset -c 80-87 $PY run_eqhit.py "$O" "$tag" "$@" > "$O/$tag-driver.txt" 2>&1; rc=$?; post="analyze_tier.py";;
     e) timeout 3600 taskset -c 80-87 $PY run_e.py "$O" "$tag" "$@" > "$O/$tag-driver.txt" 2>&1; rc=$?; post="analyze_tier.py";;
     conv:*|tool:*)
       IFS=: read -r tr t1 speed <<< "$drv"

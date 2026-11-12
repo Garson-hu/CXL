@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CXL-vs-NVMe study (2026-11-12): tables and figures of Experiment C (equal-hit comparison, run_c.py) and Experiment D (concurrent
+"""CXL-vs-NVMe study (2026-11-12): tables and figures of Experiment C (equal-hit comparison, run_eqhit.py) and Experiment D (concurrent
 retrieval, run_e.py scenario e1). Reads <dir>/<tag>-tier-timeline.csv (analyze_tier.py) and <dir>/<tag>-client.jsonl.
 
 mode c:  per tier and arrival rate (both passes pooled): requests, the equality checks (sum of cached tokens, sum of retrieved bytes,
