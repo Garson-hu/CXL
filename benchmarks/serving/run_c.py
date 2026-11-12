@@ -1,72 +1,66 @@
 #!/usr/bin/env python3
-"""Experiment C (2026-11-04): scheduling gap analysis. For every scenario group of the given B runs, replays the MEASURED
-request sequence (arrival instants, lengths, tiers served) through the calibrated model (sched_sim.py) under the policies
-vllm (model of the inspected scheduler; its agreement with the measured TTFTs is the model's validation), zero (ZERO-DELAY
-loads), srpt (CLAIRVOYANT shortest-remaining-prefill-first) and hits (hits before cold), and decomposes the MEASURED TTFT
-of each request into queue wait before the load starts, KV load, ready-but-waiting, compute (scheduled -> first token)
-and the client / frontend legs. Writes <out>/c-summary.csv (one row per run x group x policy) and
-<out>/c-decomposition.csv (one row per run x group x tier with the median / mean of each leg).
-usage: run_c.py <B dir> <params.json> <out dir> [tags=b-default,b-eager,b-workers4,b-prio-hits,b-prio-cold] [out_tokens=32]"""
-import csv, json, os, sys
+"""Experiment C of the CXL-vs-NVMe study (2026-11-12): equal-hit comparison. Every tier serves the SAME request sequence against the
+SAME pre-populated prefixes, so the hit lengths and the retrieved bytes are identical by construction and only the medium (and its
+software path) differs; nothing depends on what an online cache happened to keep.
+
+  populate   the GPU-flush fillers first (fill x 16,320 tokens; they also fill the DRAM part of a small hybrid L1, so that the pool
+             then lands on Device-DAX), then the pool: `pool` prompts, lengths cycling over Ls, each stored by one cold request;
+             wait until LMCache's store controller is idle (all L2 stores done, skip_l1 removals applied)
+  pass       for each arrival rate in `rates` and each repetition: flush the GPU prefix cache with the fillers, then send one request
+             per pool prompt (seeded shuffle) = the pool prompt + a fresh `suffix`-token tail, `out_tokens` output tokens, Poisson
+             arrivals at the rate (seeded: the same instants for every tier). Each pool prompt is used once per pass and the GPU was
+             flushed before it, so a hit can only come from the host tier under test; the tail (< one chunk) stores nothing new.
+Checks made afterwards (analyze_c.py): cached_tokens and retrieved bytes per request equal across tiers; no GPU-prefix hit; the
+chunks' medium (DRAM / Device-DAX letters, L2 load tasks) is the intended one for every request.
+usage: run_c.py <out> <tag> [pool=48] [Ls=2048,4096,8192,16384] [rates=0.5,2,4,8] [reps=2] [out_tokens=64] [suffix=64] [fill=8] [Cfg key=value ...]"""
+import asyncio, os, random, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sched_sim import Sim, DEFAULT
-from analyze_a import q
+from serving_env import Cfg, ServingEnv, parse_kv
+from client import Client, prompt
 
-B, PJ, OUT = sys.argv[1:4]; kv = dict(a.split("=", 1) for a in sys.argv[4:])
-TAGS = kv.get("tags", "b-default,b-eager,b-workers4,b-prio-hits,b-prio-cold").split(","); OUT_TOK = int(kv.get("out_tokens", "32"))
-os.makedirs(OUT, exist_ok=True); P = json.load(open(PJ)); sim = Sim(P)
-def fl(v):
-    try: return float(v)
-    except (TypeError, ValueError): return None
+out, tag = sys.argv[1:3]; kv = dict(a.split("=", 1) for a in sys.argv[3:])
+NPOOL = int(kv.pop("pool", "48")); LS = [int(x) for x in kv.pop("Ls", "2048,4096,8192,16384").split(",")]
+RATES = [float(x) for x in kv.pop("rates", "0.5,2,4,8").split(",")]; REPS = int(kv.pop("reps", "2"))
+OUT = int(kv.pop("out_tokens", "64")); SUF = int(kv.pop("suffix", "64")); NFILL = int(kv.pop("fill", "8"))
+cfg = parse_kv([f"{k}={v}" for k, v in kv.items()], Cfg(out=out, tag=tag, l1_gb=80.0, enforce_eager=False))
+POOL = [(600_000 + i, LS[i % len(LS)]) for i in range(NPOOL)]; FILL = [prompt(20_000 + i, 16320) for i in range(NFILL)]
+env = ServingEnv(cfg).start()
 
-summary = []; decomp = []
-for tag in TAGS:
-    p = f"{B}/{tag}-requests.csv"
-    if not os.path.exists(p): continue
-    rows = [r for r in csv.DictReader(open(p)) if r["status"] == "200" and r["case"] in ("host", "gpu", "cold")]
-    groups = {}
-    for r in rows: groups.setdefault(r["grp"], []).append(r)
-    for grp, rs in sorted(groups.items()):
-        if not (grp.startswith("s1") or grp.startswith("s2") or grp.startswith("s3") or grp.startswith("s0") or grp.startswith("s4")): continue
-        reqs = []
-        for r in sorted(rs, key=lambda r: float(r["send_mono"])):
-            L = int(float(r["prompt_tokens"])); tier = r["tier"]
-            reqs.append(dict(rid=r["rid"], t_arr=float(r["send_mono"]), L=L, tier=tier, out=OUT_TOK, bytes=(fl(r["retrieve_bytes"]) or (L * DEFAULT["kv_bytes"] if tier == "host" else 0)), ttft_meas=float(r["ttft_client_ms"]) / 1000))
-        t0 = reqs[0]["t_arr"]
-        for r in reqs: r["t_arr"] -= t0
-        meas = [r["ttft_meas"] for r in reqs]
-        base = dict(tag=tag, grp=grp, n=len(reqs), policy="measured", mean_ms=sum(meas) / len(meas) * 1000, p50_ms=q(meas, .5) * 1000, p95_ms=q(meas, .95) * 1000, p99_ms=q(meas, .99) * 1000)
-        summary.append(base)
-        p_ch = dict(P, n_ch=4) if tag == "b-workers4" else P
-        for pol in ("vllm", "vllm_sync", "vllm_hits", "vllm_scanall", "vllm_early", "zero", "hits", "srpt"):
-            res = Sim(p_ch).run(reqs, pol); v = [x["ttft_s"] for x in res if x["ttft_s"] is not None]
-            if not v: continue
-            row = dict(tag=tag, grp=grp, n=len(v), policy=pol, mean_ms=sum(v) / len(v) * 1000, p50_ms=q(v, .5) * 1000, p95_ms=q(v, .95) * 1000, p99_ms=q(v, .99) * 1000)
-            if pol in ("vllm", "vllm_sync", "vllm_hits"):          # the model variant that corresponds to a measured configuration: its error is the validation
-                err = [(x["ttft_s"] - r["ttft_meas"]) * 1000 for x, r in zip(res, reqs) if x["ttft_s"] is not None]
-                row["err_median_ms"] = q(err, .5); row["err_p90_abs_ms"] = q([abs(e) for e in err], .9)
-            summary.append(row)
-        # measured decomposition per tier
-        for tier in ("all", "host", "gpu", "cold"):
-            sel = [r for r in rs if tier == "all" or r["tier"] == tier]
-            if not sel: continue
-            legs = {"client_to_queued": [fl(r["queued_ms"]) for r in sel], "queued_to_load_start": [fl(r["kv_wait_ms"]) - fl(r["queued_ms"]) if fl(r["kv_wait_ms"]) is not None and fl(r["queued_ms"]) is not None else None for r in sel],
-                    "alloc_to_transfer": [fl(r["retrieve_start_ms"]) - fl(r["kv_wait_ms"]) if fl(r["retrieve_start_ms"]) is not None and fl(r["kv_wait_ms"]) is not None else None for r in sel],
-                    "transfer": [fl(r["retrieve_ms"]) for r in sel],
-                    "done_to_noticed": [fl(r["kv_arrived_ms"]) - fl(r["retrieve_end_ms"]) if fl(r["kv_arrived_ms"]) is not None and fl(r["retrieve_end_ms"]) is not None else None for r in sel],
-                    "kv_load": [fl(r["kv_load_wait_ms"]) for r in sel], "ready_to_sched": [fl(r["ready_to_sched_ms"]) for r in sel],
-                    "queued_to_sched_no_load": [fl(r["scheduled_ms"]) - fl(r["queued_ms"]) if fl(r["kv_wait_ms"]) is None and fl(r["scheduled_ms"]) is not None and fl(r["queued_ms"]) is not None else None for r in sel],
-                    "compute": [fl(r["prefill_ms"]) for r in sel], "engine_to_client": [fl(r["engine_to_client_ms"]) for r in sel], "ttft": [fl(r["ttft_client_ms"]) for r in sel]}
-            d = dict(tag=tag, grp=grp, tier=tier, n=len(sel))
-            for k, v in legs.items():
-                v = [x for x in v if x is not None]
-                d[k + "_p50"] = q(v, .5) if v else None; d[k + "_mean"] = sum(v) / len(v) if v else None; d[k + "_n"] = len(v)
-            decomp.append(d)
-keys = sorted({k for s in summary for k in s}, key=lambda k: (k not in ("tag", "grp", "n", "policy"), k))
-with open(f"{OUT}/c-summary.csv", "w", newline="") as f:
-    w = csv.DictWriter(f, fieldnames=keys); w.writeheader(); [w.writerow({k: ("" if s.get(k) is None else (f"{s[k]:.3f}" if isinstance(s.get(k), float) else s.get(k))) for k in keys}) for s in summary]
-keys = sorted({k for s in decomp for k in s}, key=lambda k: (k not in ("tag", "grp", "tier", "n"), k))
-with open(f"{OUT}/c-decomposition.csv", "w", newline="") as f:
-    w = csv.DictWriter(f, fieldnames=keys); w.writeheader(); [w.writerow({k: ("" if s.get(k) is None else (f"{s[k]:.3f}" if isinstance(s.get(k), float) else s.get(k))) for k in keys}) for s in decomp]
-for s in summary:
-    if s["policy"] in ("measured", "vllm", "zero", "srpt"): print(f"{s['tag']:12s} {s['grp']:12s} {s['policy']:9s} n={s['n']:3d} mean {s['mean_ms']:7.0f} p50 {s['p50_ms']:7.0f} p95 {s['p95_ms']:7.0f} p99 {s['p99_ms']:7.0f}" + (f"  model err median {s['err_median_ms']:.0f} ms, p90|err| {s['err_p90_abs_ms']:.0f} ms" if s["policy"] == "vllm" else ""))
+async def settle(timeout=300.0):
+    if cfg.tier == "none": return
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < timeout:
+        sc = ((env.status() or {}).get("storage_manager") or {}).get("store_controller") or {}
+        if sc and not sc.get("pending_keys_count") and not sc.get("in_flight_task_count"): return
+        await asyncio.sleep(0.05)
+    env.mark("settle_timeout")
+
+async def flush(cl, name):
+    for i, f in enumerate(FILL): await cl.one(f"{tag}-{name}-flush{i}", f, case="flush", L=16320, max_tokens=1, grp="fill")
+    await settle(); await asyncio.sleep(0.5)
+
+async def main():
+    async with Client(env.url(), cfg.model, env.f("client.jsonl"), concurrency_limit=1024) as cl:
+        env.mark("warmup"); await cl.sequential([dict(rid=f"{tag}-warm{i}", tokens=prompt(10_000 + i, 1024), case="warm", max_tokens=4) for i in range(3)])
+        env.mark("fill_store")
+        for i, f in enumerate(FILL): await cl.one(f"{tag}-fill{i}-store", f, case="fill_store", L=16320, max_tokens=1, grp="fill")
+        await settle(); env.mark("populate")
+        for i, (seed, L) in enumerate(POOL): await cl.one(f"{tag}-pop-{i}-L{L}", prompt(seed, L), case="populate", L=L, max_tokens=1)
+        await settle(); env.mark("populated")
+        n = 0
+        for rate in RATES:
+            for rep in range(REPS):
+                name = f"r{rate:g}-p{rep}"; await flush(cl, name)
+                rng = random.Random(1000 * rep + int(rate * 100)); order = list(range(NPOOL)); rng.shuffle(order)
+                reqs = []
+                for j, i in enumerate(order):
+                    seed, L = POOL[i]; n += 1
+                    reqs.append(dict(rid=f"{tag}-{name}-{j}-pool{i}-L{L}", tokens=prompt(seed, L) + prompt(3_000_000 + n, SUF), case="hit", L=L, rep=rep, grp=name, max_tokens=OUT, extra={"rate": rate, "pool": i}))
+                env.mark("pass_start", f"rate={rate:g} rep={rep} n={len(reqs)}")
+                await cl.open_loop(reqs, rate, seed=7 + rep)
+                env.mark("pass_end", f"rate={rate:g} rep={rep}")
+                print(f"[{time.strftime('%H:%M:%S')}] rate {rate:g} pass {rep} done", flush=True)
+        env.mark("bench_end")
+
+try: asyncio.run(main())
+finally: time.sleep(2); env.stop()

@@ -9,6 +9,17 @@ Tiers (cfg.tier):  dram  L1 = pinned host DRAM of l1_gb GB
                          (default true) opens the files with O_DIRECT, otherwise the page cache (755 GiB of DRAM) serves the reads
                    dax   L1 on /dev/dax1.0 (CXL devdax, l1_gb GB) -- BLOCKED since 2026-10-18 (root 0600), kept for the record
                    none  no LMCache at all (vLLM alone: recompute-only reference)
+  2026-11-12 (CXL-vs-NVMe study; dax0.0 / dax1.0 accessible again, group kmem):
+                   hyb   hybrid L1: l1_gb GiB DRAM first, overflow into the Device-DAX arenas of dax_devs (the first device through
+                         LMCache's own hybrid configuration, the others through DevDaxL1MemoryManager.add_device() called by the
+                         kvtier hook); the arenas are registered with CUDA, so the GPU reads CXL memory without a host copy
+                   daxl2 L1 = l1_gb GiB DRAM + "dax" L2 adapter over dax_devs (fixed slots of slot_bytes; a store is a memmove
+                         L1 -> DAX slot, a load a memmove DAX slot -> L1 object, then the usual GPU transfer from pinned DRAM)
+                   ssdn  L1 = l1_gb GiB DRAM + "fs_native" L2 adapter (C++ I/O threads, O_DIRECT, max_capacity_gb = l2_gb) on ssd_path
+                         (tier ssd = the Python "fs" adapter, which has no capacity limit and therefore no L2 eviction)
+                   L2 tiers: l2_policy = default (write-through: every key goes to L2 and stays in L1) | skip_l1 (the key leaves L1
+                         after the L2 store: every later host hit is an L2 read); l2_prefetch = default (a prefetched key is
+                         temporary in L1) | retain (promotion: it stays in L1); l2_evict adds the per-adapter LRU eviction.
 Files written to <out>/<tag>-*: lmcache.log, server.log (vLLM), kvevents.jsonl (LMCache event bus), vllmevt.req.<pid>.jsonl /
 vllmevt.step.<pid>.jsonl (vLLM hooks), gpu.txt (gpu_sampler), cpu.txt (cpu_sampler), status.txt (LMCache /status every 5 s),
 meta.txt (M <name> <mono_ns> wall=<s> ...).
@@ -65,6 +76,20 @@ class Cfg:
     vport: int = 8100; mpport: int = 5555; hport: int = 8200
     extra_vllm: str = ""            # extra vllm serve args, space separated
     extra_lm: str = ""              # extra lmcache server args
+    # 2026-11-12, CXL-vs-NVMe study
+    dax_devs: str = "/dev/dax1.0:269.5,/dev/dax0.0:242.5"   # tier hyb / daxl2: DAX devices and the GiB mapped of each, in fill order
+    slot_bytes: int = 9437184       # DAX L2 slot = one 256-token chunk of Qwen2.5-3B (36 KiB per token)
+    l2_gb: float = 0.0              # tier ssdn: max_capacity_gb of the file adapter (0 = no limit, no eviction)
+    l2_policy: str = ""             # --l2-store-policy; "" = skip_l1 for tier ssd (as in 2026-11-04), default (write-through) otherwise
+    l2_prefetch: str = ""           # --l2-prefetch-policy default | retain; "" = LMCache default
+    l2_evict: bool = True           # per-adapter L2 eviction (LRU, l2_watermark, l2_evict_ratio) on daxl2 / ssdn
+    l2_watermark: float = 0.8
+    l2_evict_ratio: float = 0.2
+    evict_ratio: float = 0.2        # L1 --eviction-ratio (LMCache default)
+    l2_workers: int = 4             # load workers of the DAX adapter / I/O threads of the native file adapter
+    l2_store_workers: int = 1       # store workers of the DAX adapter
+    lm_hook: str = "kvevt"          # LMCache-side hook: kvevt (2026-11-04 event mirror) | kvtier (2026-11-12: all events, media copies, memory / disk sampler)
+    lm_env: str = ""                # extra environment of the LMCache process, "K=V;K=V" (KVTIER_*)
 
 def parse_kv(args, cfg):
     for a in args:
@@ -91,6 +116,22 @@ class ServingEnv:
         raise RuntimeError(f"{name} not healthy after {timeout} s")
 
     def start(self):
+        """2026-11-12: a failed start stops what it had started (a vLLM that fails to come up used to leave the LMCache server
+        running: it kept the ports, the pinned memory and its GPU memory, and the next run's health check then passed against it),
+        and a start refuses to run while something already answers on one of the ports."""
+        for port in (self.c.vport, self.c.hport, self.c.mpport):
+            import socket
+            with socket.socket() as sk:
+                sk.settimeout(1)
+                if sk.connect_ex(("127.0.0.1", port)) == 0: raise RuntimeError(f"port {port} is already in use (a previous server is still running?)")
+        try: return self._start()
+        except BaseException:
+            self.mark("start_failed")
+            try: self.stop()
+            except Exception: pass
+            raise
+
+    def _start(self):
         c = self.c; env = dict(os.environ, **BASE_ENV)
         self.mark("config", json.dumps(dataclasses.asdict(c)))
         if c.tier != "none":
@@ -98,15 +139,39 @@ class ServingEnv:
                    "--chunk-size", str(c.chunk), "--eviction-policy", "LRU", "--eviction-trigger-watermark", f"{c.watermark:g}",
                    "--max-gpu-workers", str(c.gpu_workers), "--max-cpu-workers", str(c.cpu_workers), "--supported-transfer-mode", c.transfer_mode,
                    "--l2-prefetch-max-in-flight", str(c.l2_prefetch_max_in_flight), "--l1-size-gb", f"{c.l1_gb:g}"]
-            if c.tier == "dax": srv += ["--l1-devdax-path", c.dax_path, "--no-l1-use-lazy", "--shm-name", ""]
-            elif c.tier == "ssd":
-                # one directory per run: the fs L2 is persistent, and a second run with the same prompts would otherwise find them on disk
-                self.ssd_dir = os.path.join(c.ssd_path, c.tag); os.makedirs(self.ssd_dir, exist_ok=True)
-                srv += ["--l2-adapter", json.dumps({"type": "fs", "base_path": self.ssd_dir, "use_odirect": bool(c.ssd_odirect)}), "--l2-store-policy", "skip_l1"]
-            elif c.tier != "dram": raise ValueError(c.tier)
-            if c.extra_lm: srv += c.extra_lm.split()
+            if c.evict_ratio != 0.2: srv += ["--eviction-ratio", f"{c.evict_ratio:g}"]
             lm_env = dict(env)
-            if c.hooks and c.hooks_lm: lm_env.update(PYTHONPATH=f"{REPO}/benchmarks/agent/kvevt", KVEVT_OUT=self.f("kvevents.jsonl"))
+            devs = [(d.rsplit(":", 1)[0], float(d.rsplit(":", 1)[1])) for d in c.dax_devs.split(",") if d]
+            evict = {"eviction": {"eviction_policy": "LRU", "trigger_watermark": c.l2_watermark, "eviction_ratio": c.l2_evict_ratio}} if c.l2_evict else {}
+            l2_policy = c.l2_policy or ("skip_l1" if c.tier == "ssd" else "default")
+            if c.tier == "dax": srv += ["--l1-devdax-path", c.dax_path, "--no-l1-use-lazy", "--shm-name", ""]
+            elif c.tier == "hyb":
+                # LMCache turns "--l1-devdax-path X" + a dax adapter that names X into a hybrid L1 (l1_gb of DRAM first, then X) and
+                # drops X from the adapter; with X as its only device the adapter disappears, i.e. there is no L2 at all
+                srv += ["--l1-devdax-path", devs[0][0], "--no-l1-use-lazy", "--shm-name", "",
+                        "--l2-adapter", json.dumps({"type": "dax", "slot_bytes": c.slot_bytes, "devices": [{"device_path": devs[0][0], "max_dax_size_gb": devs[0][1]}]})]
+                if len(devs) > 1: lm_env["KVTIER_L1_EXTRA_DAX"] = ",".join(f"{d}:{g:g}" for d, g in devs[1:])
+            elif c.tier == "daxl2":
+                srv += ["--l2-adapter", json.dumps(dict({"type": "dax", "slot_bytes": c.slot_bytes, "devices": [{"device_path": d, "max_dax_size_gb": g} for d, g in devs],
+                                                         "num_load_workers": c.l2_workers, "num_store_workers": c.l2_store_workers}, **evict)),
+                        "--l2-store-policy", l2_policy]
+            elif c.tier in ("ssd", "ssdn"):
+                # one directory per run: the file L2 is persistent, and a second run with the same prompts would otherwise find them on disk
+                self.ssd_dir = os.path.join(c.ssd_path, c.tag); os.makedirs(self.ssd_dir, exist_ok=True)
+                if c.tier == "ssd": ad = {"type": "fs", "base_path": self.ssd_dir, "use_odirect": bool(c.ssd_odirect)}
+                else:
+                    ad = dict({"type": "fs_native", "base_path": self.ssd_dir, "use_odirect": bool(c.ssd_odirect), "num_workers": c.l2_workers}, **({"max_capacity_gb": c.l2_gb} if c.l2_gb else {}))
+                    if c.l2_gb: ad.update(evict)
+                srv += ["--l2-adapter", json.dumps(ad), "--l2-store-policy", l2_policy]
+            elif c.tier != "dram": raise ValueError(c.tier)
+            if c.l2_prefetch and c.tier in ("daxl2", "ssd", "ssdn"): srv += ["--l2-prefetch-policy", c.l2_prefetch]
+            if c.extra_lm: srv += c.extra_lm.split()
+            if c.hooks and c.hooks_lm:
+                lm_env.update(PYTHONPATH=f"{HERE}/kvtier" if c.lm_hook == "kvtier" else f"{REPO}/benchmarks/agent/kvevt", KVEVT_OUT=self.f("kvevents.jsonl"))
+            elif c.tier == "hyb" and len(devs) > 1: raise ValueError("tier=hyb with more than one device needs the kvtier hook (hooks_lm=true lm_hook=kvtier)")
+            for kvp in filter(None, c.lm_env.split(";")):
+                k_, v_ = kvp.split("=", 1); lm_env[k_] = v_
+            self.mark("lmcache_cmd", json.dumps(srv))
             self.p["lmcache"] = subprocess.Popen(["taskset", "-c", c.lm_cpus] + srv, stdout=open(self.f("lmcache.log"), "w"), stderr=subprocess.STDOUT, env=lm_env, start_new_session=True)
             self._wait(f"http://127.0.0.1:{c.hport}/healthcheck", self.p["lmcache"], "lmcache server", 600); self.mark("lmcache_ready")
         vl = _PYPREFIX + [f"{ENV_BIN}/vllm", "serve", c.model, "--port", str(c.vport), "--max-model-len", str(c.max_model_len), "--max-num-seqs", str(c.max_num_seqs),
