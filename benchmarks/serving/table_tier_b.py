@@ -31,6 +31,22 @@ def reqs(g, c):
     return out
 def q(v, p):
     v = sorted(v); return v[min(len(v) - 1, int(round(p * (len(v) - 1))))] if v else None
+def joined(g, c):
+    """per request index: the tier split (tier-requests.csv) joined with the time line (requests.csv of analyze_b.py)"""
+    R = {r["rid"].rsplit("-", 1)[1]: r for r in reqs(g, c)}; p = f"{B}/b-{g}-{c}-requests.csv"
+    if os.path.exists(p):
+        for r in csv.DictReader(open(p)):
+            i = r["rid"].rsplit("-", 1)[1]
+            if i in R:
+                for k in ("queue_to_sched_ms", "kv_load_wait_ms", "ready_to_sched_ms", "retrieve_ms", "prefill_ms", "kv_end_to_sched_ms"):
+                    try: R[i][k] = float(r[k])
+                    except Exception: R[i][k] = None
+    for r in R.values():
+        n = r["prompt_tokens"] or 1; r["ext"] = (r["tok_cxl_l1"] or 0) + (r["tok_l2"] or 0); r["host"] = r["ext"] + (r["tok_dram"] or 0) + (r["tok_unknown"] or 0)
+        r["cls"] = "ext" if r["ext"] >= 0.5 * n else "dram" if (r["tok_dram"] or 0) >= 0.5 * n else "gpu" if max(0, (r["cached_tokens"] or 0) - r["host"]) >= 0.5 * n else "miss" if (r["cached_tokens"] or 0) < 0.1 * n else "part"
+    return R
+BINS = [(0, 4096, "< 4K"), (4096, 8192, "4K–8K"), (8192, 16384, "8K–16K"), (16384, 10**9, "≥ 16K")]
+PAIRS = [("hyb", "ssdn"), ("daxl2", "ssdn"), ("hyb", "daxl2"), ("hyb", "dram80"), ("ssdn", "dram80"), ("dram80", "none")]
 def f(v, d=1, s=1.0): return "-" if v is None or v == "" else f"{v * s:.{d}f}"
 D = {g: {c: load(g, c) for c, _ in CONFIGS} for g in groups}; D = {g: {c: s for c, s in d.items() if s} for g, d in D.items()}; D = {g: d for g, d in D.items() if d}
 lab = dict(CONFIGS); flat = lambda c: lab[c].replace("\n", " ")
@@ -71,6 +87,33 @@ for g, d in D.items():
             elif (r["cached_tokens"] or 0) < 0.1 * n: cls["miss"].append(r["ttft_ms"])
         cell = lambda v: f"{q(v, .5) / 1000:.2f} ({len(v)})" if v else "- (0)"
         T.append(f"| {flat(c)} | {cell(cls['ext'])} | {cell(cls['dram'])} | {cell(cls['gpu'])} | {cell(cls['miss'])} | {f(q(lk, .5))} / {f(q(lk, .95))} |")
+    J = {c: joined(g, c) for c, _ in CONFIGS if c in d and c != "none"}
+    if "none" in d: J["none"] = joined(g, "none")
+    T += ["", "Requests served mainly from the extension tier (at least half of the prompt from CXL L1 objects or from the L2): parts of the TTFT, p50 ms (n):", "",
+          "| configuration | n | TTFT | lookup (with the L2 load) | GPU transfer | queued → scheduled | KV ready → scheduled | scheduled → first token |", "|---|---|---|---|---|---|---|---|"]
+    for c, _ in CONFIGS:
+        if c not in J or c == "none": continue
+        e = [r for r in J[c].values() if r["cls"] == "ext"]
+        if not e: continue
+        m = lambda k: f(q([r[k] for r in e if r.get(k) not in ("", None)], .5), 0)
+        T.append(f"| {flat(c)} | {len(e)} | {m('ttft_ms')} | {m('lookup_ms')} | {m('retrieve_ms')} | {m('queue_to_sched_ms')} | {m('ready_to_sched_ms')} | {m('prefill_ms')} |")
+    T += ["", "The same requests by the length of the prefix that came from the extension tier — lookup p50 / TTFT p50 in ms (n):", "", "| configuration | " + " | ".join(b[2] for b in BINS) + " |", "|---|" + "---|" * len(BINS)]
+    for c, _ in CONFIGS:
+        if c not in J or c == "none": continue
+        cells = []
+        for lo, hi, _ in BINS:
+            e = [r for r in J[c].values() if r["cls"] == "ext" and lo <= r["ext"] < hi]
+            cells.append(f"{f(q([r['lookup_ms'] for r in e if r.get('lookup_ms') not in ('', None)], .5), 0)} / {f(q([r['ttft_ms'] for r in e], .5), 0)} ({len(e)})" if e else "–")
+        if any(x != "–" for x in cells): T.append(f"| {flat(c)} | " + " | ".join(cells) + " |")
+    T += ["", "Paired comparison, the same request of the trace in two configurations (first minus second; negative = the first is faster):", "",
+          "| pair | requests | mean TTFT difference s | median difference s | share of requests faster in the first | requests that are extension-tier hits in both | their median TTFT difference ms | their median lookup difference ms |", "|---|---|---|---|---|---|---|---|"]
+    for a, b in PAIRS:
+        if a not in J or b not in J: continue
+        ks = [k for k in J[a] if k in J[b]]
+        if not ks: continue
+        dd = [J[a][k]["ttft_ms"] - J[b][k]["ttft_ms"] for k in ks]; both = [k for k in ks if J[a][k]["cls"] == "ext" and J[b][k]["cls"] == "ext"]
+        de = [J[a][k]["ttft_ms"] - J[b][k]["ttft_ms"] for k in both]; dl = [J[a][k]["lookup_ms"] - J[b][k]["lookup_ms"] for k in both if J[a][k].get("lookup_ms") not in ("", None) and J[b][k].get("lookup_ms") not in ("", None)]
+        T.append(f"| {flat(a)} − {flat(b)} | {len(ks)} | {sum(dd) / len(dd) / 1000:+.2f} | {q(dd, .5) / 1000:+.2f} | {sum(1 for x in dd if x < 0) / len(dd):.2f} | {len(both)} | {f(q(de, .5), 0)} | {f(q(dl, .5), 0)} |")
     T.append("")
     E += [f"## {GROUPS.get(g, g)}", "",
           "| configuration | medium | read GiB | write GiB | read busy s | write busy s | read GiB/s while busy | write GiB/s while busy | peak read GiB in 1 s | peak write GiB in 1 s | seconds with both | read-write overlap s | H2D GiB | D2H GiB | H2D-D2H overlap s | replay s |", "|" + "---|" * 16]
