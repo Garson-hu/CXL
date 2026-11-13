@@ -15,7 +15,10 @@ kvtier hook's records (<tag>-kvevents.jsonl), the /status poll and the samplers 
       memory             LMCache RSS (anon / shmem / file) maximum, system MemAvailable minimum, page cache growth, NVMe sectors
       CPU                CPU seconds of the LMCache and vLLM processes, busy share of their CPU sets
   <out>/<tag>-traffic.csv    per second of the replay: bytes read / written per medium, H2D / D2H bytes, L1 and L2 occupancy
-  <out>/<tag>-tier-requests.csv   per request: tokens retrieved from DRAM / Device-DAX L1 / the L2 adapter, lookup-level hits, lookup time
+  <out>/<tag>-tier-requests.csv   per request: tokens retrieved from DRAM / Device-DAX L1 / the L2 adapter, lookup-level hits,
+                         lookup_ms (lookup submitted -> the poll of vLLM's scheduler that finds it complete; it INCLUDES the wait for
+                         that poll, which under overload is tens of seconds and has nothing to do with the cache), l2_ms (the L2
+                         prefetch of that lookup inside the cache server: submitted -> its loads completed) and the chunks it loaded
 and adds the run to <out>/tier-summary.csv.
 Copy intervals: DAX L2 = the memmove of every chunk (dax.r / dax.w lines); Python file adapter = every O_DIRECT read / write (fs.r /
 fs.w); native file adapter = its store / load tasks (submitted -> completed: includes queueing in the adapter) and, independently,
@@ -65,7 +68,7 @@ def tier_summary(out, tag):
     tok = dict(dram=0, cxl_l1=0, l2=0, unknown=0); lk = dict(l1=0, l2=0, hit=0, n=0)
     by = dict(l1w_D=0, l1w_X=0, l1ev_D=0, l1ev_X=0, l2_store=0, l2_load=0, l2_evicted_keys=0, l2_store_tasks=0, l2_load_tasks=0, l2_store_failed=0)
     last_write_bk = ""; store_bk = {}; ret_frac = {}; samples = []; mono_off = None; l2name = ""; store_open = {}; load_open = {}
-    mem = []; arenas = []; cpu_first = cpu_last = None; l2_busy_store = []; l2_busy_load = []
+    mem = []; arenas = []; cpu_first = cpu_last = None; l2_busy_store = []; l2_busy_load = []; fifo = []; pf_sid = {}; pf_join = dict(exact=0, skipped=0, fallback=0, failed=0)
     if os.path.exists(p):
         for line in open(p):
             try: d = json.loads(line)
@@ -79,14 +82,37 @@ def tier_summary(out, tag):
             if mono_off is None and "t" in d and "tm" in d: mono_off = d["t"] - d["tm"] / 1e9
             if e in ("l1dax.arena", "l1dax.add"): arenas.append(d); continue
             sid = d.get("sid") or ""
-            if e == "mp.lookup": look.setdefault(sid, {})["hashes"] = [h[:16] for h in d.get("hashes") or []]
+            if e == "mp.lookup":
+                hs = [h[:16] for h in d.get("hashes") or []]; look.setdefault(sid, {})["hashes"] = hs; fifo.append(dict(sid=sid, hs=hs, l1=0, t=d["t"]))
+                if len(fifo) > 512: del fifo[:256]
+            elif e == "l2.prefetch.lookup.submitted":
+                # The L2 prefetch of a lookup is submitted asynchronously (a few ms later, other lookups may be logged in between), in
+                # the order of the lookups, for the keys behind the L1 prefix hit: key_count = hashes - L1 prefix. A lookup whose
+                # prefix is completely in L1 submits nothing. Join = first waiting lookup with that key count (pf_join counts how).
+                kc = d.get("key_count") or 0; hit = None
+                for i, c in enumerate(fifo[:32]):
+                    if len(c["hs"]) - c["l1"] == kc and d["t"] >= c["t"]: hit = i; how = "exact" if all(len(x["hs"]) - x["l1"] <= 0 for x in fifo[:i]) else "skipped"; break
+                if hit is None:
+                    for i, c in enumerate(fifo[:32]):
+                        if kc <= len(c["hs"]) and d["t"] >= c["t"]: hit = i; how = "fallback"; break
+                if hit is None: pf_join["failed"] += 1
+                else:
+                    c = fifo[hit]; del fifo[:hit + 1]; pf_join[how] += 1; pf_sid[d.get("request_id")] = c["sid"]; look[c["sid"]].update(pf_sub=d["t"], pf_keys=kc)
+            elif e == "l2.prefetch.lookup.completed":
+                s_ = pf_sid.get(d.get("request_id"))
+                if s_ is not None: look[s_]["pf_hit"] = d.get("prefix_hit_count") or 0
+            elif e == "l2.prefetch.load.completed":
+                s_ = pf_sid.get(d.get("request_id"))
+                if s_ is not None: look[s_].update(pf_done=d["t"], pf_loaded=d.get("loaded_count") or 0)
             elif e == "mp.lookup_prefetch.start": look.setdefault(sid, {})["ls"] = d["t"]
             elif e == "mp.lookup_prefetch.end":
                 L = look.setdefault(sid, {}); L.update(hit=d.get("hit_tokens") or 0, l1=d.get("l1_hit_tokens") or 0, l2=d.get("l2_hit_tokens") or 0, le=d["t"])
                 if w0 <= d["t"] <= w1: lk["n"] += 1; lk["hit"] += L["hit"]; lk["l1"] += L["l1"]; lk["l2"] += L["l2"]
             elif e == "l1.read.reserved":
-                for k, ch in zip(d.get("keys") or [], d.get("bk") or ""):
-                    if ch in "DX": medium[k[:16]] = ch
+                ks = [k[:16] for k in d.get("keys") or []]
+                for k, ch in zip(ks, d.get("bk") or ""):
+                    if ch in "DX": medium[k] = ch
+                if fifo and not fifo[-1].get("res") and ks == fifo[-1]["hs"][:len(ks)]: fifo[-1]["l1"] = len(ks); fifo[-1]["res"] = True    # the read reservation of the last lookup: its L1 prefix
             elif e == "l1.write_finished_and_read_reserved":
                 for k in d.get("keys") or []: medium[k[:16]] = "L"
             elif e == "l1.write.finished":
@@ -144,6 +170,11 @@ def tier_summary(out, tag):
         for t0, t1, n in l2_busy_store: add("nvme_w", t0, t1, n)
         for t0, t1, n in l2_busy_load: add("nvme_r", t0, t1, n)
     S["l2_name"] = l2name
+    # per-request L2 prefetch (inside the cache server: submitted -> loads completed), joined to the lookups by order and key count
+    pfl = [L for L in look.values() if L.get("pf_loaded")]; pms = sorted((L["pf_done"] - L["pf_sub"]) * 1000 for L in pfl if "pf_done" in L)
+    S.update(l2_join_exact=pf_join["exact"], l2_join_skipped=pf_join["skipped"], l2_join_fallback=pf_join["fallback"], l2_join_failed=pf_join["failed"],
+             l2_join_consistent=sum(1 for L in look.values() if "pf_hit" in L and "l2" in L and L["pf_hit"] * CHUNK_TOK == L["l2"]), l2_join_checked=sum(1 for L in look.values() if "pf_hit" in L and "l2" in L),
+             l2_requests_loaded=len(pfl), l2_ms_p50=(q(pms, .5) if pms else None), l2_ms_p95=(q(pms, .95) if pms else None), l2_ms_max=(pms[-1] if pms else None))
     prompt = S["prompt_tokens"]; cached = S["cached_share"] * prompt; host = tok["dram"] + tok["cxl_l1"] + tok["l2"] + tok["unknown"]
     S.update(tok_gpu_prefix=cached - host, tok_dram=tok["dram"], tok_cxl_l1=tok["cxl_l1"], tok_l2=tok["l2"], tok_unknown=tok["unknown"], tok_recomputed=prompt - cached,
              share_gpu_prefix=(cached - host) / prompt, share_dram=tok["dram"] / prompt, share_cxl_l1=tok["cxl_l1"] / prompt, share_l2=tok["l2"] / prompt, share_unknown=tok["unknown"] / prompt,
@@ -217,11 +248,12 @@ def tier_summary(out, tag):
     for sid, L in look.items():
         if sid.startswith("cmpl-"): by_rid[sid[5:].rsplit("-", 2)[0]] = L
     with open(f"{out}/{tag}-tier-requests.csv", "w", newline="") as f:
-        w = csv.writer(f); w.writerow(["rid", "send_s", "prompt_tokens", "cached_tokens", "out_tokens", "ttft_ms", "total_ms", "tok_dram", "tok_cxl_l1", "tok_l2", "tok_unknown", "lookup_hit_tokens", "lookup_l1_tokens", "lookup_l2_tokens", "lookup_ms", "retrieve_bytes"])
+        w = csv.writer(f); w.writerow(["rid", "send_s", "prompt_tokens", "cached_tokens", "out_tokens", "ttft_ms", "total_ms", "tok_dram", "tok_cxl_l1", "tok_l2", "tok_unknown", "lookup_hit_tokens", "lookup_l1_tokens", "lookup_l2_tokens", "lookup_ms", "retrieve_bytes", "l2_ms", "l2_loaded_chunks", "l2_prefix_hit_chunks"])
         for c in tr:
             L = by_rid.get(c["rid"], {})
             w.writerow([c["rid"], round(c["send_wall"] - w0, 3), c["prompt_tokens"], c["cached_tokens"], c["out_tokens"], round(c["ttft_ms"], 2), round(c["total_ms"], 2), L.get("D", 0) * CHUNK_TOK, L.get("X", 0) * CHUNK_TOK, L.get("L", 0) * CHUNK_TOK,
-                        L.get("U", 0) * CHUNK_TOK, L.get("hit", ""), L.get("l1", ""), L.get("l2", ""), (round((L["le"] - L["ls"]) * 1000, 2) if "le" in L and "ls" in L else ""), L.get("ret_bytes", 0)])
+                        L.get("U", 0) * CHUNK_TOK, L.get("hit", ""), L.get("l1", ""), L.get("l2", ""), (round((L["le"] - L["ls"]) * 1000, 2) if "le" in L and "ls" in L else ""), L.get("ret_bytes", 0),
+                        (round((L["pf_done"] - L["pf_sub"]) * 1000, 2) if "pf_done" in L and "pf_sub" in L else ""), L.get("pf_loaded", ""), L.get("pf_hit", "")])
     json.dump(S, open(f"{out}/{tag}-tier.json", "w"), indent=1)
     return S
 
