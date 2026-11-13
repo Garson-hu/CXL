@@ -214,10 +214,14 @@ if ng:
         ax.set_xlabel("replay time (s)"); ax.set_title(GROUPS.get(g, g), fontsize=9); ax.grid(True, alpha=0.3); ax.legend(frameon=False, fontsize=6.5, loc="upper left")
         if j == 0: ax.set_ylabel("KV held (GiB)")
         ax = axs[1][j]; cs = [c for c, _ in CONFIGS if c in d and c != "none"]; W = 0.27
-        for i, (name, fn) in enumerate((("L1 objects on DRAM", lambda s_: s_["l1_evict_dram_GiB"]), ("L1 objects on CXL", lambda s_: s_["l1_evict_cxl_GiB"]), ("L2 (CXL slots or NVMe files)", lambda s_: s_["l2_evicted_keys"] * 9 / 1024))):
-            ax.bar([x + (i - 1) * W for x in range(len(cs))], [fn(d[c]) for c in cs], width=W, label=name)
+        MED = (("L1 objects on DRAM", lambda s_: s_["l1_evict_dram_GiB"], ""), ("L1 objects on CXL", lambda s_: s_["l1_evict_cxl_GiB"], "////"), ("L2 (CXL slots or NVMe files)", lambda s_: s_["l2_evicted_keys"] * 9 / 1024, "xxxx"))
+        for i, (name, fn, hatch) in enumerate(MED):        # the colour is the configuration's, the hatch the medium's
+            ax.bar([x + (i - 1) * W for x in range(len(cs))], [fn(d[c]) for c in cs], width=W, color=[COL[c] for c in cs], hatch=hatch, edgecolor="white", linewidth=0.5)
         ax.set_xticks(range(len(cs))); ax.set_xticklabels([lab[c] for c in cs], fontsize=6.5); ax.grid(True, axis="y", alpha=0.3)
-        if j == 0: ax.set_ylabel("KV evicted over the replay (GiB)"); ax.legend(frameon=False, fontsize=7.5)
+        if j == 0:
+            from matplotlib.patches import Patch
+            ax.set_ylabel("KV evicted over the replay (GiB)")
+            ax.legend(handles=[Patch(facecolor="0.6", hatch=h, edgecolor="white", label=n) for n, _, h in MED], frameon=False, fontsize=7.5, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3)
     fig.suptitle("B5  Cache occupancy and evictions"); fig.tight_layout(); fig.savefig(f"{FIGS}/figB5-occupancy.png", dpi=150, bbox_inches="tight"); plt.close(fig)
     ext = [c for c in ("hyb", "daxl2", "ssdn") if any(c in d for d in D.values())]
     if ext:

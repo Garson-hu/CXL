@@ -22,6 +22,11 @@ can be contention for the transfer thread; the rest is not explained by transfer
 or running while a store was open, and the seconds with both kinds open. This is overlap at the level of the application's
 operations; whether the copies themselves overlap on the medium is in tables-e.md (copy intervals of the transfer thread).
 
+Third table, L2 tiers only: the load tasks of the L2 adapter (l2.load_task.submitted -> completed: the read of a request's
+chunks from the NVMe files or the DAX slots into DRAM L1 objects) split by whether a store task of the same adapter
+(l2.store.submitted -> completed) was open during the load, with the rate of each group. The L2's loads and stores run on
+different worker threads, so - unlike the copies of the GPU transfer thread - they can overlap on the medium.
+
 Output: <B dir>/tables-writes.md, <B dir>/writes-summary.csv.
 """
 import csv, glob, json, os, sys
@@ -55,6 +60,7 @@ def intersect(A, B):
 def one(d, tag):
     sub = {"store": {}, "retrieve": {}}; op = {"store": [], "retrieve": []}; open_ = {}
     first = {}; nstore = 0; look = {}; found = {}; retr = {}; n_ret_chunks = 0; n_found_chunks = 0; evicted = set(); lost = 0
+    l2sub = {}; l2load = []; l2store = []
     for l in open(f"{d}/{tag}-kvevents.jsonl"):
         if '"ev": "mem"' in l or "phase_samples" in l: continue
         try: e = json.loads(l)
@@ -68,6 +74,14 @@ def one(d, tag):
             elif what == "end":
                 o = open_.pop((kind, e.get("transfer_key")), None)
                 if o: op[kind].append((o[0], o[1], e["t"], e.get("total_bytes") or 0))
+        if ev == "l2.load_task.submitted": l2sub[("l", e.get("task_id"))] = (e["t"], e.get("total_bytes") or 0, e.get("key_count") or 0)
+        elif ev == "l2.load_task.completed":
+            o = l2sub.pop(("l", e.get("task_id")), None)
+            if o and e["t"] > o[0]: l2load.append((o[0], e["t"], o[1], o[2]))
+        elif ev == "l2.store.submitted": l2sub[("s", e.get("task_id"))] = (e["t"], e.get("total_bytes") or 0)
+        elif ev == "l2.store.completed":
+            o = l2sub.pop(("s", e.get("task_id")), None)
+            if o and e["t"] > o[0]: l2store.append((o[0], e["t"], o[1]))
         if ev == "l1.write.finished":
             for k in e.get("keys") or []:
                 k = k[:16]; nstore += 1
@@ -111,6 +125,17 @@ def one(d, tag):
              store_wait_ms_p50=q([(a - s_) * 1e3 for s_, a, b, _ in op["store"]], .5), store_wait_ms_p95=q([(a - s_) * 1e3 for s_, a, b, _ in op["store"]], .95),
              retrieve_wait_s=cov["retrieve"][0], retrieve_wait_other_op_open_s=cov["retrieve"][1], store_wait_s=cov["store"][0], store_wait_other_op_open_s=cov["store"][1],
              retrieves_with_open_store=with_store, store_open_s=sum(b - a for a, b in us), retrieve_open_s=sum(b - a for a, b in ur), both_open_s=intersect(us, ur))
+    ul2 = union([(a, b) for a, b, _ in l2store]); L2 = dict(l2_store_tasks=len(l2store), l2_store_GiB=sum(x for _, _, x in l2store) / G,
+              l2_store_task_ms_p50=q([(b - a) * 1e3 for a, b, _ in l2store], .5), l2_store_task_GiBps_p50=q([x / G / (b - a) for a, b, x in l2store], .5),
+              l2_store_open_s=sum(b - a for a, b in ul2), l2_load_tasks=len(l2load), l2_load_GiB=sum(x[2] for x in l2load) / G)
+    for name, sel in (("alone", [x for x in l2load if intersect([[x[0], x[1]]], ul2) == 0]), ("with_store", [x for x in l2load if intersect([[x[0], x[1]]], ul2) > 0])):
+        for lab, f in (("", lambda n: True), ("_32", lambda n: n >= 32)):       # all loads; loads of at least 32 chunks (288 MiB)
+            s2 = [x for x in sel if f(x[3])]; dur = sum(x[1] - x[0] for x in s2)
+            L2[f"l2_load_{name}{lab}_n"] = len(s2); L2[f"l2_load_{name}{lab}_GiB"] = sum(x[2] for x in s2) / G
+            L2[f"l2_load_{name}{lab}_GiBps"] = sum(x[2] for x in s2) / G / dur if dur else None
+            L2[f"l2_load_{name}{lab}_GiBps_p50"] = q([x[2] / G / (x[1] - x[0]) for x in s2], .5); L2[f"l2_load_{name}{lab}_GiBps_p10"] = q([x[2] / G / (x[1] - x[0]) for x in s2], .1)
+    L2["l2_load_store_overlap_s"] = intersect(union([(a, b) for a, b, _, _ in l2load]), ul2); L2["l2_load_open_s"] = sum(b - a for a, b in union([(a, b) for a, b, _, _ in l2load]))
+    O.update(L2)
     S = len(first); F = sum(1 for k in found if k in first); R = sum(1 for k in retr if k in first)
     delay = [found[k] - first[k] for k in found if k in first and found[k] >= first[k]]
     return dict(tag=tag, stored_chunks=S, stores=nstore, written_GiB=nstore * CB / G, distinct_GiB=S * CB / G,
@@ -142,6 +167,15 @@ def main():
                  f"{f1(r['retrieve_wait_ms_p50'])} / {f1(r['retrieve_wait_ms_p95'])} / {f1(r['retrieve_wait_ms_max'])} | {r['retrieve_wait_s']:.1f} ({r['retrieve_wait_other_op_open_s']:.1f}) | "
                  f"{f1(r['store_wait_ms_p50'], 0)} / {f1(r['store_wait_ms_p95'], 0)} | {r['store_wait_s']:.0f} ({r['store_wait_other_op_open_s']:.0f}) | "
                  f"{r['retrieves_with_open_store']} ({f1(sh, 2)}) | {r['store_open_s']:.1f} | {r['retrieve_open_s']:.1f} | {r['both_open_s']:.2f} |")
+    l2rows = [r for r in rows if r["l2_store_tasks"] or r["l2_load_tasks"]]
+    if l2rows:
+        T += ["", "L2 adapter tasks (loads and stores run on different worker threads and can overlap on the medium). Rate of a group = its bytes / the sum of its task durations; in brackets the median and the 10th percentile of the per-task rates:", "",
+              "| run | L2 store tasks | stored GiB | store task p50 ms | store task GiB/s p50 | s with a store open | L2 load tasks | loaded GiB | s with a load open | of which a store was open | loads with no store open: n, GiB, GiB/s (p50, p10) | loads with a store open: n, GiB, GiB/s (p50, p10) | the same for loads >= 32 chunks, no store open | >= 32 chunks, a store open |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+        g = lambda r, k: f"{r[k + '_n']}, {r[k + '_GiB']:.1f}, {f1(r[k + '_GiBps'], 2)} ({f1(r[k + '_GiBps_p50'], 2)}, {f1(r[k + '_GiBps_p10'], 2)})"
+        for r in l2rows:
+            T.append(f"| {r['tag']} | {r['l2_store_tasks']} | {r['l2_store_GiB']:.1f} | {f1(r['l2_store_task_ms_p50'])} | {f1(r['l2_store_task_GiBps_p50'], 2)} | {r['l2_store_open_s']:.1f} | {r['l2_load_tasks']} | {r['l2_load_GiB']:.1f} | "
+                     f"{r['l2_load_open_s']:.1f} | {r['l2_load_store_overlap_s']:.1f} | {g(r, 'l2_load_alone')} | {g(r, 'l2_load_with_store')} | {g(r, 'l2_load_alone_32')} | {g(r, 'l2_load_with_store_32')} |")
     open(f"{d}/tables-writes.md", "w").write("\n".join(T) + "\n"); print("\n".join(T))
 
 
