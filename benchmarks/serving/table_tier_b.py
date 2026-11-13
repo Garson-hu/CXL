@@ -155,7 +155,9 @@ if ng:
             m, mt = model(g)
             if m: ax.plot([GPU_GIB + x if x > GPU_GIB else x for x, _ in m], [mval(sh, mt) for _, sh in m], color="gray", linestyle="--", linewidth=1, label="offline LRU model of the window (not a measurement)")
             for c, _ in CONFIGS:
-                if c in d and c in CAP: ax.plot([CAP[c]], [val(d[c])], marker="o" if not c.startswith("ssd") else "s", markersize=8, linestyle="", color=COL[c], label=flat(c))
+                # the two L2 configurations have the same capacity and often the same value: the CXL L2 is drawn as an open ring around the NVMe square
+                if c in d and c in CAP: ax.plot([CAP[c]], [val(d[c])], marker="o" if not c.startswith("ssd") else "s", markersize=13 if c == "daxl2" else 7 if c.startswith("ssd") else 8, linestyle="", color=COL[c],
+                                                markerfacecolor="none" if c == "daxl2" else COL[c], markeredgewidth=2 if c == "daxl2" else 1, label=flat(c))
             ax.set_xscale("log", base=2); ax.set_xlabel("KV capacity: GPU pool + host tiers at their eviction trigger (GiB)"); ax.set_title(GROUPS.get(g, g), fontsize=9); ax.grid(True, which="both", alpha=0.3); ax.set_ylim(bottom=0)
         axes[0].set_ylabel(ylab); h, l = axes[0].get_legend_handles_labels()
         for ax in axes[1:]:
@@ -233,9 +235,11 @@ if ng:
                     rows = list(csv.DictReader(open(p))); m = "nvme" if c.startswith("ssd") else "cxl"; bw = 10
                     t = list(range(0, len(rows), bw)); agg = lambda k: [sum(float(r[k]) for r in rows[a:a + bw]) / bw / 2**20 for a in t]
                     ax.plot(t, agg(f"{m}_write_bytes"), label="written", linewidth=0.9); ax.plot(t, agg(f"{m}_read_bytes"), label="read", linewidth=0.9)
+                else:                                   # this configuration was not run for this window
+                    ax.set_xticks([]); ax.set_yticks([]); ax.text(0.5, 0.5, "not run", transform=ax.transAxes, ha="center", va="center", color="0.5", fontsize=9)
                 ax.grid(True, alpha=0.3)
                 if j == 0: ax.set_ylabel(f"{flat(c)}\nMiB/s (10 s mean)", fontsize=8)
                 if i == 0: ax.set_title(GROUPS.get(g, g), fontsize=9)
                 if i == len(ext) - 1: ax.set_xlabel("replay time (s)")
-        axs[0][-1].legend(frameon=False, fontsize=8); fig.suptitle("E1  KV traffic of the extension tier over the replay"); fig.tight_layout(); fig.savefig(f"{FIGS}/figE1-traffic.png", dpi=150, bbox_inches="tight"); plt.close(fig)
+        axs[0][0].legend(frameon=False, fontsize=8, loc="upper left"); fig.suptitle("E1  KV traffic of the extension tier over the replay"); fig.tight_layout(); fig.savefig(f"{FIGS}/figE1-traffic.png", dpi=150, bbox_inches="tight"); plt.close(fig)
 print("\n".join(T)[:5000])
