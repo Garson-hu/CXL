@@ -1,0 +1,3 @@
+device /dev/dax0.0: 170 records checked ({'dax.w': 170}), 1.49 GiB read from the device mapping, match 170, mismatch 0
+device /dev/dax1.0: 170 records checked ({'dax.w': 170}), 1.49 GiB read from the device mapping, match 170, mismatch 0
+RESULT dax_match=340 dax_mismatch=0

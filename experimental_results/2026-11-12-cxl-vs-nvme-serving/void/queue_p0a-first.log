@@ -1,0 +1,46 @@
+[2026-11-12 15:22:04] p0-dax-v start
+[2026-11-12 15:22:58] p0-dax-v rc=0
+RESULT dax_match=85 dax_mismatch=0
+[2026-11-12 15:22:58] p0-hyb2-v start
+[2026-11-12 15:24:26] p0-hyb2-v rc=0
+RESULT dax_match=155 dax_mismatch=0
+[2026-11-12 15:24:27] p0-daxl2-v start
+[2026-11-12 15:25:20] p0-daxl2-v rc=0
+RESULT dax_match=340 dax_mismatch=0
+[2026-11-12 15:25:22] p0-ssd-v start
+[2026-11-12 15:26:20] p0-ssd-v rc=0
+files /mnt/local/ghu4/kvl2/p0-ssd-v: 340 files, 2.99 GiB; sampled 340: 2.99 GiB read back with O_DIRECT; page-cache residency of the sampled files: 0 of 783360 pages (0.00 %)
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 15:26:21] p0-ssdn-v start
+[2026-11-12 15:27:18] p0-ssdn-v rc=0
+files /mnt/local/ghu4/kvl2/p0-ssdn-v: 340 files, 2.99 GiB; sampled 340: 2.99 GiB read back with O_DIRECT; page-cache residency of the sampled files: 0 of 783360 pages (0.00 %)
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 15:27:20] p0-ssdn-buf start
+[2026-11-12 15:28:14] p0-ssdn-buf rc=0
+files /mnt/local/ghu4/kvl2/p0-ssdn-buf: 340 files, 2.99 GiB; sampled 340: 2.99 GiB read back with O_DIRECT; page-cache residency of the sampled files: 783360 of 783360 pages (100.00 %)
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 15:28:18] p0-hyb-full start
+[2026-11-12 15:29:03] p0-hyb-full rc=0
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 15:29:03] p0-daxl2-full start
+[2026-11-12 15:29:21] p0-daxl2-full rc=0
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 15:29:21] a-dram start
+[2026-11-12 15:29:39] a-dram rc=0
+[2026-11-12 15:29:39] a-dax start
+[2026-11-12 15:29:57] a-dax rc=0
+[2026-11-12 15:29:57] a-hyb start
+[2026-11-12 15:30:22] a-hyb rc=0
+[2026-11-12 15:30:22] a-daxl2 start
+[2026-11-12 15:30:40] a-daxl2 rc=0
+[2026-11-12 15:30:40] a-ssd start
+[2026-11-12 15:30:59] a-ssd rc=0
+[2026-11-12 15:30:59] a-ssdn start
+[2026-11-12 15:31:17] a-ssdn rc=0
+[2026-11-12 15:31:17] a-ssdn16 start
+[2026-11-12 15:31:35] a-ssdn16 rc=0
+[2026-11-12 15:31:35] a-ssdn-buf start
+[2026-11-12 15:31:53] a-ssdn-buf rc=0
+[2026-11-12 15:31:53] a-none start
+[2026-11-12 15:32:10] a-none rc=0
+[2026-11-12 15:32:10] queue done: p0 a

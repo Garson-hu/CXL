@@ -1,0 +1,3 @@
+blocks 7456 enforce_eager false gpu_util 0.85: GPU used 6536 MiB ; per process: 6526 MiB 
+blocks 7456 enforce_eager true gpu_util 0.85: GPU used 6448 MiB ; per process: 6438 MiB 
+blocks 6400 enforce_eager false gpu_util 0.85: GPU used 5942 MiB ; per process: 5932 MiB 

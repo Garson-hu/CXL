@@ -1,0 +1,14 @@
+M config 1989867530854246 wall=1794514295.825824 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/P0", "tag": "p0-ssd-s", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "ssd", "l1_gb": 8.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": true, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3072, "gpu_util": 0.85, "enforce_eager": true, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": "KVTIER_VERIFY=1"}
+M lmcache_cmd 1989867531382155 wall=1794514295.826352 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "8", "--l2-adapter", "{\"type\": \"fs\", \"base_path\": \"/mnt/local/ghu4/kvl2/p0-ssd-s\", \"use_odirect\": true}", "--l2-store-policy", "skip_l1"]
+M lmcache_ready 1989872538847416 wall=1794514300.833817 
+M vllm_ready 1989892544836434 wall=1794514320.839807 
+M env_ready 1989892567498608 wall=1794514320.862468 
+M warmup_start 1989892567820927 wall=1794514320.862790 
+M fill_store_start 1989893208684674 wall=1794514321.503654 
+M case 1989906929604081 wall=1794514335.224573 rep=0 L=2048 start
+M case 1989909523304917 wall=1794514337.818274 rep=0 L=8192 start
+M case 1989913417657757 wall=1794514341.712627 rep=1 L=2048 start
+M case 1989916016793052 wall=1794514344.311762 rep=1 L=8192 start
+M bench_end 1989919929096096 wall=1794514348.224066 
+M stop 1989921929548567 wall=1794514350.224518 
+M stopped 1989925737798826 wall=1794514354.032769 

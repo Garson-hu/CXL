@@ -1,0 +1,1 @@
+b0-daxl2: n 114/114 cached 0.266 = gpu 0.210 + dram 0.036 + cxl-L1 0.000 + L2 0.019 (+ unknown 0.000); TTFT p50/p95/p99/mean 12934/43315/45322/16765 ms; 0.426 req/s; L1 max 1.7 GiB, L2 max 6.5 GiB; CXL r/w 2.4/24.5 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 2.9 GiB

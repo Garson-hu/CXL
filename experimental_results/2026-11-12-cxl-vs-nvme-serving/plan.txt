@@ -1,0 +1,87 @@
+# CXL-vs-NVMe serving study, run plan (queue_tier.sh). Common: 6,400 GPU blocks, store-counter fix, kvtier hook.
+# ---- B0: small-scale functional replays (tool-agent trace seconds 0-20 at 0.08x, about 34 GiB of KV) with tiers scaled down so that
+#      BOTH levels fill and evict within minutes: the eviction / load / delete paths of the extension tiers, which the long runs
+#      below do not reach (their extension tiers never fill). Functional checks, not performance results.
+b0-hyb    B0 tool:20:0.08 tier=hyb   l1_gb=2 dax_devs=/dev/dax1.0:8,/dev/dax0.0:8 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b0-ssdn   B0 tool:20:0.08 tier=ssdn  l1_gb=2 l2_gb=8 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b0-daxl2  B0 tool:20:0.08 tier=daxl2 l1_gb=2 dax_devs=/dev/dax1.0:4,/dev/dax0.0:4 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# ---- C: equal-hit comparison (same pre-populated prefixes, same request sequence; skip_l1 = every hit is read from the L2 tier)
+c-dram   C c tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+c-hyb    C c tier=hyb   l1_gb=4 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+c-daxl2  C c tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 l2_policy=skip_l1 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+c-ssdn   C c tier=ssdn  l1_gb=80 l2_gb=512 l2_policy=skip_l1 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+c-ssd    C c tier=ssd   l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+c-none   C c tier=none  rates=0.5,2 reps=1 gpu_blocks=6400 gpu_util=0.8 adm=true
+# ---- D: concurrent retrieval (k simultaneous host hits of distinct prefixes, k = 1 ... 16)
+d-dram   D e tier=dram  l1_gb=80 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+d-hyb    D e tier=hyb   l1_gb=4 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 fill_first=true scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+d-daxl2  D e tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 l2_policy=skip_l1 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+d-ssdn   D e tier=ssdn  l1_gb=80 l2_gb=512 l2_policy=skip_l1 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+d-ssdn16 D e tier=ssdn  l1_gb=80 l2_gb=512 l2_policy=skip_l1 l2_workers=16 l2_prefetch_max_in_flight=16 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+d-ssd    D e tier=ssd   l1_gb=80 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# ---- B: end-to-end cache expansion, trace replays. 80 GiB DRAM KV budget in every LMCache configuration.
+#   dram80 = DRAM-only L1 80 GiB | hyb = hybrid L1: 80 GiB DRAM + 512 GiB Device-DAX (CUDA-registered) | ssdn = L1 80 GiB + fs_native L2 512 GiB, O_DIRECT, NVMe
+#   daxl2 = L1 80 GiB + DAX L2 512 GiB (same software path as ssdn, CXL as the medium) | none = vLLM alone (recompute-only)
+#   L2 tiers: LMCache's default policies (write-through store, prefetched keys temporary in L1), LRU eviction at 0.8 on L1 and on L2.
+# round 1: overload, long window (trace seconds 0-400 at 0.08x = 5,000 wall s), conversation, the three core configurations
+b-conv08-dram80 B conv:400:0.08 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-hyb    B conv:400:0.08 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-ssdn   B conv:400:0.08 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# round 2: the same for the tool-agent trace
+b-tool08-dram80 B tool:400:0.08 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool08-hyb    B tool:400:0.08 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool08-ssdn   B tool:400:0.08 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# round 3: CXL as an L2 (media isolated from the software path) and recompute-only, both traces
+b-conv08-daxl2  B conv:400:0.08 tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool08-daxl2  B tool:400:0.08 tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-none   B conv:400:0.08 tier=none  gpu_blocks=6400 gpu_util=0.8 adm=true
+b-tool08-none   B tool:400:0.08 tier=none  gpu_blocks=6400 gpu_util=0.8 adm=true
+# round 4: sustainable load (trace seconds 0-200 at 0.04x = 5,000 wall s)
+b-conv04-dram80 B conv:200:0.04 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv04-hyb    B conv:200:0.04 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv04-ssdn   B conv:200:0.04 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool04-dram80 B tool:200:0.04 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool04-hyb    B tool:200:0.04 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-tool04-ssdn   B tool:200:0.04 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# round 5 (added 2026-11-12 20:25): LONG window, conversation trace seconds 0-900 at 0.08x = 11,250 wall s, 2,728 requests, about 1,043 GiB of KV
+#   produced, i.e. more than either extension holds: the extension tiers fill, evict, and serve reuse at distances of hundreds of GiB.
+b-conv08L-hyb    B conv:900:0.08 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08L-ssdn   B conv:900:0.08 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08L-dram80 B conv:900:0.08 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# round 7 (added 2026-11-12 21:51): sustained OVERLOAD, conversation trace seconds 0-400 at 0.16x = 2,500 wall s of arrivals (offered prefill
+#   about twice what the GPU computes at 0.08x, where it was busy 0.81-0.88 of the time and completed everything): throughput is GPU-bound here
+b-conv16-dram80 B conv:400:0.16 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv16-hyb    B conv:400:0.16 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# 2026-11-14 03:35: b-conv16-dram80 is VOID (422 of 1177 requests; vLLM engine died 03:05:34: read lock of looked-up chunks expired after 300 s of
+#   queueing, the DRAM tier evicted two of them, kv_load_failure_policy=fail (vLLM default) + assertion in _update_from_kv_xfer_finished).
+#   b-conv16-ssdn with the default settings removed before it started; the round is repeated as b-conv16r-* with the same two
+#   settings in all three configurations: read_ttl=7200 (LMCache --l1-read-ttl-seconds) and kv_fail=recompute (vLLM kv_load_failure_policy).
+#   b-conv16-hyb (default settings, started 03:32) is kept as the default-settings point of the hybrid and as a repeat of b-conv16r-hyb.
+# 2026-11-14 04:17 CORRECTION: b-conv16-hyb died the same way (same request, 314 s after its lookup) although the hybrid evicted nothing: the chunks were
+#   still in L1 ("The specified key exists but cannot be read") - an expired read lock makes a looked-up chunk unreadable; eviction is not
+#   involved. b-conv16-hyb is VOID as well (moved to void/). The two settings of b-conv16r-* address exactly this.
+b-conv16r-dram80 B conv:400:0.16 tier=dram  l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+b-conv16r-ssdn   B conv:400:0.16 tier=ssdn  l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+b-conv16r-hyb    B conv:400:0.16 tier=hyb   l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+
+# added 2026-11-13 23:41: long window with the CXL L2 adapter - the equal-capacity partner of b-conv08L-ssdn (512 GiB inclusive L2, same watermark);
+# b-conv08L-hyb has 473.6 GiB of effective capacity against 409.6 GiB and reached a higher cached share (0.309 vs 0.302)
+# round 6 (added 2026-11-12 20:25): references and DRAM-budget sensitivity on the 0-400 s conversation window
+#   dram592 = one DRAM L1 of 592 GiB (the capacity of the hybrid, all of it DRAM); *20 = 20 GiB DRAM budget
+# order of the remaining runs changed 2026-11-12 21:50 (before any of them started): the long window (round 5) first, then the
+#   DRAM-budget sensitivity, the all-DRAM reference, and the 0.04x runs of the recompute-only and DAX-L2 configurations
+b-conv08-hyb20   B conv:400:0.08 tier=hyb   l1_gb=20 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-ssdn20  B conv:400:0.08 tier=ssdn  l1_gb=20 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# order changed 2026-11-14 06:40 (while b-conv16r-hyb runs; none of the lines below had started): the two 20 GiB-DRAM runs first (85 min each),
+#   then the long window with the CXL L2 adapter (3 h 10), the all-DRAM reference, the 20 GiB DRAM-only baseline; the 0.04x runs last.
+#   The study has to be collected, committed and pushed before the allocation ends (2026-11-14 19:53): lines still open then are removed.
+b-conv08L-daxl2  B conv:900:0.08 tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-dram592 B conv:400:0.08 tier=dram  l1_gb=592 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+b-conv08-dram20  B conv:400:0.08 tier=dram  l1_gb=20 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+# 2026-11-14 13:41: the four 0.04x runs of the recompute-only and DAX-L2 configurations (b-conv04-none, b-tool04-none, b-conv04-daxl2,
+#   b-tool04-daxl2) are REMOVED before any of them started: the allocation ends 2026-11-14 19:53 and the study is collected after
+#   b-conv08-dram20. Their lines:
+#   b-conv04-none   B conv:200:0.04 tier=none  gpu_blocks=6400 gpu_util=0.8 adm=true
+#   b-tool04-none   B tool:200:0.04 tier=none  gpu_blocks=6400 gpu_util=0.8 adm=true
+#   b-conv04-daxl2  B conv:200:0.04 tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+#   b-tool04-daxl2  B tool:200:0.04 tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier

@@ -1,0 +1,28 @@
+M config 2000600510060799 wall=1794525028.805031 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/C", "tag": "c-ssdn", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "ssdn", "l1_gb": 80.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 512.0, "l2_policy": "skip_l1", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": ""}
+M lmcache_cmd 2000600510350348 wall=1794525028.805320 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "80", "--l2-adapter", "{\"type\": \"fs_native\", \"base_path\": \"/mnt/local/ghu4/kvl2/c-ssdn\", \"use_odirect\": true, \"num_workers\": 4, \"max_capacity_gb\": 512.0, \"eviction\": {\"eviction_policy\": \"LRU\", \"trigger_watermark\": 0.8, \"eviction_ratio\": 0.2}}", "--l2-store-policy", "skip_l1"]
+M lmcache_ready 2000606519487937 wall=1794525034.814458 
+M vllm_ready 2000630526940909 wall=1794525058.821911 
+M env_ready 2000630549166799 wall=1794525058.844136 
+M warmup 2000630549515569 wall=1794525058.844485 
+M fill_store 2000631167442533 wall=1794525059.462412 
+M populate 2000658517539321 wall=1794525086.812509 
+M populated 2000729311902508 wall=1794525157.606872 
+M pass_start 2000732588721331 wall=1794525160.883691 rate=0.5 rep=0 n=48
+M pass_end 2000800384431922 wall=1794525228.679401 rate=0.5 rep=0
+M pass_start 2000803598619706 wall=1794525231.893589 rate=0.5 rep=1 n=48
+M pass_end 2000905039195452 wall=1794525333.334165 rate=0.5 rep=1
+M pass_start 2000908250511064 wall=1794525336.545481 rate=2 rep=0 n=48
+M pass_end 2000926201366321 wall=1794525354.496336 rate=2 rep=0
+M pass_start 2000929408767609 wall=1794525357.703737 rate=2 rep=1 n=48
+M pass_end 2000956239424688 wall=1794525384.534394 rate=2 rep=1
+M pass_start 2000959474557604 wall=1794525387.769527 rate=4 rep=0 n=48
+M pass_end 2000970087445642 wall=1794525398.382415 rate=4 rep=0
+M pass_start 2000973320569568 wall=1794525401.615539 rate=4 rep=1 n=48
+M pass_end 2000987664132937 wall=1794525415.959102 rate=4 rep=1
+M pass_start 2000990894407627 wall=1794525419.189377 rate=8 rep=0 n=48
+M pass_end 2001000548216373 wall=1794525428.843186 rate=8 rep=0
+M pass_start 2001003762435956 wall=1794525432.057405 rate=8 rep=1 n=48
+M pass_end 2001014343952371 wall=1794525442.638922 rate=8 rep=1
+M bench_end 2001014343972291 wall=1794525442.638942 
+M stop 2001016346241923 wall=1794525444.641212 
+M stopped 2001022173631294 wall=1794525450.468602 

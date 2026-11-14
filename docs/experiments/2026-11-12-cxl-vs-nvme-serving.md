@@ -1,6 +1,6 @@
 # 2026-11-12 — CXL vs. NVMe memory expansion for LLM serving (KV cache; exploratory)
 
-**STATUS: PENDING-STATUS (started 2026-11-12; branch `explore/cxl-vs-nvme-serving`, from `explore/gpu-kv-admission`, whose
+**STATUS: CLOSED 2026-11-14 (started 2026-11-12; branch `explore/cxl-vs-nvme-serving`, from `explore/gpu-kv-admission`, whose
 store-counter fix every LMCache configuration uses; not merged anywhere).** This study does not change the research charter
 or the conclusions of the 2026-11-04 and 2026-11-10 studies; it is the first of the three that runs on the real CXL devices.
 Raw data: `experimental_results/2026-11-12-cxl-vs-nvme-serving/` (`README.md` there lists every file; `SUMMARY.md` is the
@@ -70,7 +70,9 @@ replayed traces.
    stores into CXL memory and the other still into DRAM (+0.81 %, nine requests of ten). With all 592 GiB as DRAM
    (a reference run: no CXL memory, no NVMe) the cached tokens of every request are the same; outside that run's start-up
    period the hybrid is 0.09 s (0.7 %) and the NVMe configuration 0.02 s (0.1 %) behind it at the mean, with a cache server
-   of 81 GiB instead of 593 GiB of resident DRAM. PENDING-SENS-SUM
+   of 81 GiB instead of 593 GiB of resident DRAM. 20 GiB of DRAM alone is nearly no host cache (cached share 0.048 against
+   0.045 without one; TTFT p50 22.66 s); from that base the extension removes 20 % of the recomputed tokens and 62 % of the
+   TTFT median (from the 80 GiB base: 16 % and 48 %).
 9. **Costs of the CXL configuration.** Registering 592 GiB of host memory with CUDA takes 1.2 GiB of the 8 GiB card (every
    configuration therefore runs with a 14 % smaller GPU KV pool than in the previous study), and the store direction is 3.1×
    slower than into DRAM.
@@ -222,6 +224,10 @@ Configurations (names as used in tables and file names):
 | `ssd` | L1 80 GiB DRAM + Python `fs` L2, O_DIRECT (no capacity limit) | 80 GiB | NVMe | LMCache's other file adapter (A, C, D only) |
 | `dax` | pure Device-DAX L1 on `dax1.0` | 0 | 80 GiB CXL | Experiment A only |
 
+Sensitivity configurations, run on the conversation window at 0.08× only (C.4.6): `dram20`, `hyb20`, `ssdn20` are `dram80`, `hyb`
+and `ssdn` with a DRAM part of 20 GiB instead of 80 GiB (the hybrid's unique capacity is then 532 GiB); `dram592` is one DRAM L1
+of 592 GiB without an extension — the all-DRAM reference, which exceeds the 80 GiB budget by construction.
+
 L2 policies. In the single-request, equal-hit and concurrency experiments (A, C, D) the L2 tiers run with `--l2-store-policy skip_l1`
 (a chunk leaves L1 once it is in the L2), which forces every host hit to be read from the L2 — the point of those experiments. In the
 replays (B) they run with LMCache's defaults: write-through (`default`: every chunk is written to the L2 and stays in L1 until the L1's
@@ -235,7 +241,7 @@ LRU evicts it) and no promotion (`default` prefetch: a chunk loaded from the L2 
 | B0 functional replays | 3 | `hyb`, `ssdn`, `daxl2` scaled down (2 GiB DRAM, 8–16 GiB extension) so that both levels fill and evict | tool-agent trace seconds 0–20 at 0.08× (114 requests, 34 GiB of KV) | `B0/` |
 | C equal-hit comparison | 6 | DRAM, hybrid (pool on CXL), DAX L2, `fs_native`, Python `fs`, vLLM alone | 48 pre-populated prefixes (2K–16K), Poisson arrivals at 0.5 / 2 / 4 / 8 req/s, two passes each | `C/` |
 | D concurrent retrieval | 6 | DRAM, hybrid, DAX L2, `fs_native` (4 threads; 16 threads with 16 prefetches in flight), Python `fs` | k = 1, 2, 4, 8, 16 simultaneous hits of 4K and 8K prefixes, 4 bursts each | `D/` |
-| B end-to-end replays | PENDING-COUNT | per window (✓ = run): see the table below | conversation and tool-agent traces: seconds 0–400 at 0.08× (high load) and 0–200 at 0.04× (half that rate), 5,000 wall-seconds each; conversation 0–900 at 0.08× (long window, 11,250 s: the extensions fill and evict); conversation 0–400 at 0.16× (sustained overload, arrivals in 2,500 s) | `B/` |
+| B end-to-end replays | 27 (+ 2 void) | per window (✓ = run): see the table below | conversation and tool-agent traces: seconds 0–400 at 0.08× (high load) and 0–200 at 0.04× (half that rate), 5,000 wall-seconds each; conversation 0–900 at 0.08× (long window, 11,250 s: the extensions fill and evict); conversation 0–400 at 0.16× (sustained overload, arrivals in 2,500 s) | `B/` |
 | E traffic | – | from the B runs: per-second KV bytes read / written per medium, copy intervals, overlap | – | `B/*-traffic.csv`, `B/tables-e.md` |
 | trace model | – | offline LRU over the replayed and longer windows at the capacities of the study (**not a measurement**) | 0–200 s … 0–3,600 s | `trace-model/` |
 
@@ -243,7 +249,7 @@ Replays of Experiment B, by window and configuration (every completed configurat
 
 | window | `none` | `dram80` | `hyb` | `daxl2` | `ssdn` | sensitivity |
 |---|---|---|---|---|---|---|
-| conversation 0–400 s, 0.08× (`conv08`) | ✓ | ✓ | ✓ | ✓ | ✓ | PENDING-SENS-CELLS |
+| conversation 0–400 s, 0.08× (`conv08`) | ✓ | ✓ | ✓ | ✓ | ✓ | `dram20`, `hyb20`, `ssdn20`, `dram592` |
 | tool-agent 0–400 s, 0.08× (`tool08`) | ✓ | ✓ | ✓ | ✓ | ✓ | – |
 | conversation 0–200 s, 0.04× (`conv04`) | – | ✓ | ✓ | – | ✓ | – |
 | tool-agent 0–200 s, 0.04× (`tool04`) | – | ✓ | ✓ | – | ✓ | – |
@@ -962,13 +968,14 @@ there. And with *all* of the hybrid's 592 GiB as DRAM the configuration is the o
 512 of the 592 GiB CXL?
 
 **How.** The conversation window 0–400 s at 0.08× (C.4.1; the same 1,177 requests at the same instants) with: 20 GiB of DRAM +
-512 GiB of CXL as one hybrid L1 (`b-conv08-hyb20`), 20 GiB of DRAM + 512 GiB NVMe L2 (`b-conv08-ssdn20`), PENDING-DRAM20-HOW
+512 GiB of CXL as one hybrid L1 (`b-conv08-hyb20`), 20 GiB of DRAM + 512 GiB NVMe L2 (`b-conv08-ssdn20`), 20 GiB of DRAM alone (`b-conv08-dram20`),
 and one DRAM L1 of 592 GiB (`b-conv08-dram592`, the all-DRAM reference: no CXL, no L2; it exceeds the 80 GiB budget by
 construction and is a reference, not a candidate). Runs of 2026-11-14, default settings; every request with status 200 and
 output, no error line in any log.
 
 | configuration | cached share | GPU prefix | DRAM | CXL L1 | L2 (NVMe) | recomputed Mtok | TTFT p50 s | p95 | p99 | mean | request p50 s | req/s | computed prompt tok/s | GPU busy | backlog max |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| DRAM only, 20 GiB | 0.048 | 0.045 | 0.003 | – | – | 12.81 | 22.66 | 70.00 | 91.09 | 27.59 | 42.10 | 0.235 | 2,555 | 0.90 | 35 |
 | 20 GiB DRAM + 512 GiB CXL (hybrid L1) | 0.238 | 0.045 | 0.021 | 0.173 | – | 10.25 | 8.69 | 41.93 | 56.52 | 13.35 | 24.01 | 0.235 | 2,047 | 0.81 | 25 |
 | 20 GiB DRAM + 512 GiB NVMe (`fs_native` L2) | 0.238 | 0.045 | 0.004 | – | 0.190 | 10.25 | 8.62 | 41.25 | 56.30 | 13.25 | 23.82 | 0.235 | 2,047 | 0.81 | 25 |
 | DRAM only, 80 GiB (C.4.1) | 0.096 | 0.045 | 0.051 | – | – | 12.17 | 16.71 | 61.94 | 82.90 | 22.42 | 33.87 | 0.235 | 2,430 | 0.88 | 34 |
@@ -978,6 +985,7 @@ output, no error line in any log.
 
 | configuration | L1 max GiB | L2 max GiB | evicted from L1 GiB | written to DRAM / CXL / NVMe GiB | GPU ← host GiB (of it from CXL / NVMe) | host → GPU copies busy s | GPU → host copies busy s | cache server RSS max GiB | page-cache growth GiB | NVMe device read / written GiB |
 |---|---|---|---|---|---|---|---|---|---|---|
+| DRAM only, 20 GiB | 16.2 of 20 | – | 433.3 | 447.6 / – / – | 1.5 (– / –) | 0.12 | 36.9 | 20.9 | 0.13 | 0.0 / 0.2 |
 | 20 GiB DRAM + 512 GiB CXL (hybrid L1) | 359.5 of 532 | – | 0.0 | 20.0 / 339.6 / – | 89.5 (79.7 / –) | 7.24 | 89.0 | 21.0 | 0.13 | 0.0 / 0.2 |
 | 20 GiB DRAM + 512 GiB NVMe (`fs_native` L2) | 17.1 of 20 | 359.5 | 434.7 | 359.6 / – / 359.5 | 89.5 (– / 87.7) | 7.23 | 29.6 | 21.0 | 0.14 | 87.7 / 360.4 |
 | DRAM only, 80 GiB (C.4.1) | 64.1 of 80 | – | 370.7 | 425.5 / – / – | 23.5 (– / –) | 1.90 | 35.1 | 81.0 | 0.21 | 0.0 / 0.2 |
@@ -1077,7 +1085,28 @@ through the store direction. Putting the 512 GiB on the NVMe instead costs 0.02 
 all-DRAM reference's cached share with a cache server of 81 GiB of resident memory instead of 593 GiB (the reference takes
 79 % of the node's DRAM; the node's available memory stayed above 124 GiB, and no swap is configured).
 
-PENDING-SENS-REST
+**Result 6 — 20 GiB of DRAM alone is nearly no host cache, and the extension is worth more from that base.**
+`b-conv08-dram20` has a cached share of 0.048: 0.045 from the GPU's own prefix cache and 0.003 from the DRAM level (1.5 GiB
+moved to the GPU in the whole run). Against the run without a host cache (C.4.1, 0.045) two requests have more cached tokens
+(+44,032 tokens), and the paired TTFT differs by −0.31 s at the mean and +0.22 s at the median, of 27.9 s. The level evicts at
+16 GiB, which is the KV this replay writes in about three minutes (447.6 GiB in 5,007 s); the first request that finds more in
+a larger cache was sent at 601 s. The 80 GiB level (64 GiB, about 12.5 minutes of writes) reaches 0.096: without an
+extension the 60 GiB of DRAM between the two budgets are worth 4.8 points of cached tokens, 5.0 % of the recomputed tokens
+(12.81 → 12.17 M) and 5.2 s of mean TTFT (paired; 1.9 s at the median, 79 % of the requests faster).
+
+With the extension both budgets end at the same place (Results 1 and 3), so its gain is larger from the smaller base:
+
+| DRAM budget | cached share, DRAM only → + 512 GiB | recomputed prompt tokens | TTFT p50, DRAM only → CXL hybrid / NVMe | TTFT mean, DRAM only → CXL hybrid / NVMe | paired TTFT difference to DRAM only, mean / median: CXL hybrid; NVMe | requests faster: CXL hybrid; NVMe |
+|---|---|---|---|---|---|---|
+| 20 GiB | 0.048 → 0.238 | 12.81 → 10.25 M (−20.0 %) | 22.66 → 8.69 / 8.62 s (−62 %) | 27.59 → 13.35 / 13.25 s (−52 %) | −14.24 / −7.29 s; −14.34 / −7.54 s | 79 %; 87 % |
+| 80 GiB (C.4.1) | 0.096 → 0.238 | 12.17 → 10.25 M (−15.8 %) | 16.71 → 8.67 / 8.62 s (−48 %) | 22.42 → 13.32 / 13.25 s (−41 %) | −9.10 / −2.47 s; −9.17 / −2.53 s | 76 %; 79 % |
+
+From the 20 GiB base 264 requests gain cached tokens (2.56 M tokens; 191 requests and 1.92 M tokens from the 80 GiB base), and
+the 913 requests whose cached tokens do not change are 12.7 s faster at the mean (5.0 s at the median; NVMe 12.8 and 4.9 s) because the queue in
+front of them is shorter (GPU busy 0.90 → 0.81, largest backlog 35 → 25 requests). In this window the DRAM budget decides what
+a configuration without an extension reaches, and nothing once 512 GiB stand behind it: the cached tokens, the TTFT and the
+comparison of the two media are those of the 80 GiB configurations (Results 1, 3 and 4). The run's output has the same length
+as the 80 GiB runs' for all 1,177 requests and the identical text for 1,148 (hybrid), 1,149 (NVMe) and 1,158 (DRAM only).
 
 **The sensitivity axes of the brief (its section 14), and where each was varied.**
 
@@ -1086,7 +1115,7 @@ PENDING-SENS-REST
 | conversation vs. tool-agent | both traces at 0.04× and 0.08× (C.4.1 – C.4.3) | the trace's reuse (DRAM only: 0.10 against 0.40 of the prompt tokens) and where it sits: the extension adds 14 points to the conversation trace and 10 to the tool-agent trace at 0.08×, 9 and 6 at 0.04× | equal in both traces (same tokens recomputed; TTFT within 1 %) |
 | short vs. long prefixes | 512 – 16,384 tokens on an idle server (C.1); the hits of the replays by prefix length (`B/tables-b.md`) | the NVMe's load: 37 / 72 / 146 / 325 ms at the median for prefixes < 4K / 4–8K / 8–16K / ≥ 16K tokens in the conversation window, against 5 / 9 / 16 / 46 ms from the CXL L2 and no load stage in the hybrid | idle server: NVMe 1.2× (512 tokens) to 3.1× (16K) the TTFT of CXL; in the replays not visible at any length (the hit waits for the GPU) |
 | low vs. high reuse | every request a hit (C.2, C.3) against traces with 0.18 – 0.50 of the prompt tokens cached (C.4) | whether retrieval is on the critical path | all hits, GPU not saturated: NVMe +55–71 % TTFT at the median, 2.2–2.9× in bursts; traces: within 1 % |
-| small vs. large effective capacity | 3.5 GiB (GPU pool) → 64 GiB (DRAM tier at its trigger) → 410 / 474 GiB (extensions); windows of 200, 400 and 900 trace seconds; offline model up to 3,600 s (C.6); the DRAM part at 20 instead of 80 GiB (this section) | the cached share: 0.045 → 0.096 → 0.238 (conversation), 0.274 → 0.396 → 0.495 (tool-agent); the extension's gain grows with the window (9, 14, 21 points) | equal capacity gives equal hits; the hybrid's 64 GiB of additional unique capacity are worth 0.7 points once the tiers fill (C.4.4) |
+| small vs. large effective capacity | 3.5 GiB (GPU pool) → 16 / 64 GiB (DRAM tier of 20 / 80 GiB at its trigger) → 410 / 474 GiB (extensions); windows of 200, 400 and 900 trace seconds; offline model up to 3,600 s (C.6); the DRAM part at 20 instead of 80 GiB (this section) | the cached share: 0.045 → 0.048 / 0.096 → 0.238 (conversation), 0.274 → 0.396 → 0.495 (tool-agent); the extension's gain grows with the window (9, 14, 21 points) | equal capacity gives equal hits; the hybrid's 64 GiB of additional unique capacity are worth 0.7 points once the tiers fill (C.4.4) |
 | sustainable vs. overloaded | 0.04×, 0.08×, 0.16× (GPU busy 0.5, 0.8–0.9, 1.0) | what removed prefill becomes: idle GPU time and a few percent of the tail; half of the TTFT; throughput (+6 %) | within 1 % at every load |
 | burst patterns | bursts of 1–16 simultaneous hits (C.3); the traces' own bursts (largest backlog 25–103 requests at 0.08×); lookups that arrive in bursts under overload (85 loads in 15 s) | which stage limits a burst: the transfer thread and the GPU link (DRAM, CXL L1), the L2 workers (CXL L2), the device (NVMe) | bursts of hits: NVMe 2.2–2.9×; under overload its median load is 301 instead of 106 ms and no request waits for it |
 | model and GPU | not varied: one 3B model on one RTX 4060 Ti (8 GiB, PCIe 4.0 ×8) | – | – (G) |
@@ -1663,7 +1692,9 @@ Stated without qualification; each is a measured outcome of this study.
 Two findings, of different kinds. For *expansion*: with the DRAM KV budget fixed at 80 GiB, 512 GiB more cache removes
 16–24 % of the GPU's prefill work in the windows replayed at high load (a tenth at half the rate and under overload), roughly
 halves TTFT there (p50 −48 % to −57 %, mean −41 % to −54 %) and raises completed work by 6 % once the GPU is saturated — the
-largest effect on the longest window. For *CXL as
+largest effect on the longest window. In the window in which an all-DRAM reference was run (one DRAM level of 592 GiB), the
+80 GiB + 512 GiB configurations have its cached tokens on every request and a mean TTFT within 0.7 % (CXL hybrid) and 0.1 %
+(NVMe) of it: 512 of the 592 GiB do not have to be DRAM. For *CXL as
 the medium of that expansion*: a KV hit served from CXL memory is indistinguishable from one served from DRAM — 93–94 ms for
 a 16K-token prefix, every quantile within 1–2 % under load and in bursts of 16 — with the bytes verified to be on the
 device and nowhere else. No other extension medium in this study has that property; the NVMe tier's hits are 1.2–3.1× slower
@@ -1677,7 +1708,8 @@ free, 45–116 ms faster from CXL at the median. CXL is also ahead when the cach
 integration adds (0.309 against 0.302 of the prompt tokens in the long window; the same memory used as a second level: 0.302). It is **not** better at high load with queues
 (all statistics within 1 %), and under sustained overload the NVMe configuration is ahead by 0.3 %. A DRAM budget of 20 GiB instead of 80 GiB moves more
 hits to the extension and changes none of this: the unqueued hits are then 6.2 % instead of 4.7 % of the requests of the
-conversation window, 71 ms later from the NVMe at the median, and all-request statistics stay within 1 % (C.4.6).
+conversation window, 71 ms later from the NVMe at the median, and all-request statistics stay within 1 % (C.4.6). Measured
+against the all-DRAM reference of that window the CXL hybrid is 0.09 s and the NVMe configuration 0.02 s behind at the mean.
 
 **3. What accounts for that difference?**
 One extra stage and its rate: an SSD hit must be read into DRAM at 2.9 GiB/s (this device, on two of its four lanes) before
@@ -1760,3 +1792,5 @@ before the measurements: a failed start left the cache server running (the harne
 ## Change history
 
 - 2026-11-14: draft committed while the last replays of Experiment B were still running (marked PENDING in the text).
+- 2026-11-14: report completed after the last replay (86 runs, 58 of them results): C.4.6 with the 20 GiB DRAM budget, its
+  DRAM-only baseline and the all-DRAM reference; figures, tables and the experiment matrix rebuilt from all runs; status CLOSED.

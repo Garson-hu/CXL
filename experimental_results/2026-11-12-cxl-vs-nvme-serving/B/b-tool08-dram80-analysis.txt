@@ -1,0 +1,1 @@
+b-tool08-dram80: n 2332/2332 cached 0.396 = gpu 0.255 + dram 0.141 + cxl-L1 0.000 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 12403/60314/83175/19783 ms; 0.466 req/s; L1 max 64.1 GiB, L2 max 0.0 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 81.0 GiB

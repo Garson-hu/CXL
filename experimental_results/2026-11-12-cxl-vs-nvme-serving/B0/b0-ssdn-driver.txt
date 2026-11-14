@@ -1,0 +1,5 @@
+114 requests, trace window 0.0-20.0 s at 0.08x = 250 wall s, prompt tokens 998673
+[17:40:50] 10142 bytes of records; elapsed 59 s
+[17:41:50] 23872 bytes of records; elapsed 119 s
+[17:42:50] 41117 bytes of records; elapsed 179 s
+[17:43:50] 46449 bytes of records; elapsed 239 s

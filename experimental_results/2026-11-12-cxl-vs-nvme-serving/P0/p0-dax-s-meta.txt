@@ -1,0 +1,14 @@
+M config 1989982429541594 wall=1794514410.724511 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/P0", "tag": "p0-dax-s", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dax", "l1_gb": 8.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 3072, "gpu_util": 0.85, "enforce_eager": true, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": "KVTIER_VERIFY=1"}
+M lmcache_cmd 1989982429594034 wall=1794514410.724563 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "8", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", ""]
+M lmcache_ready 1989986437528671 wall=1794514414.732499 
+M vllm_ready 1990006443375351 wall=1794514434.738345 
+M env_ready 1990006465988226 wall=1794514434.760958 
+M warmup_start 1990006466313916 wall=1794514434.761283 
+M fill_store_start 1990007091881919 wall=1794514435.386851 
+M case 1990020864047465 wall=1794514449.159017 rep=0 L=2048 start
+M case 1990022571616469 wall=1794514450.866586 rep=0 L=8192 start
+M case 1990025429279908 wall=1794514453.724249 rep=1 L=2048 start
+M case 1990027138203509 wall=1794514455.433173 rep=1 L=8192 start
+M bench_end 1990029994840660 wall=1794514458.289810 
+M stop 1990031995300894 wall=1794514460.290271 
+M stopped 1990035603205340 wall=1794514463.898176 

@@ -1,0 +1,70 @@
+M config 1996706931512408 wall=1794521135.226482 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/A", "tag": "a-hyb-nopin", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "hyb", "l1_gb": 4.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": true, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": "KVTIER_NO_PIN=1"}
+M lmcache_cmd 1996706931574548 wall=1794521135.226544 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "4", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", "", "--l2-adapter", "{\"type\": \"dax\", \"slot_bytes\": 9437184, \"devices\": [{\"device_path\": \"/dev/dax1.0\", \"max_dax_size_gb\": 269.5}]}"]
+M lmcache_ready 1996710938996218 wall=1794521139.233966 
+M vllm_ready 1996731946959174 wall=1794521160.241930 
+M env_ready 1996731970309480 wall=1794521160.265280 
+M warmup_start 1996731970707589 wall=1794521160.265677 
+M fill_store_start 1996732657975782 wall=1794521160.952945 
+M case 1996760126586300 wall=1794521188.421556 rep=0 L=512 start
+M settled 1996760274336139 wall=1794521188.569306 rep=0 L=512
+M case 1996762452036609 wall=1794521190.747006 rep=0 L=1024 start
+M settled 1996762673211708 wall=1794521190.968181 rep=0 L=1024
+M case 1996764865074456 wall=1794521193.160044 rep=0 L=2048 start
+M settled 1996765242610674 wall=1794521193.537580 rep=0 L=2048
+M case 1996767426705800 wall=1794521195.721675 rep=0 L=4096 start
+M settled 1996768144990041 wall=1794521196.439960 rep=0 L=4096
+M case 1996770333232087 wall=1794521198.628201 rep=0 L=8192 start
+M settled 1996771830769998 wall=1794521200.125740 rep=0 L=8192
+M case 1996774035773485 wall=1794521202.330743 rep=0 L=16384 start
+M settled 1996777498648447 wall=1794521205.793618 rep=0 L=16384
+M case 1996779755262866 wall=1794521208.050232 rep=1 L=512 start
+M settled 1996779902021097 wall=1794521208.196991 rep=1 L=512
+M case 1996782070164839 wall=1794521210.365134 rep=1 L=1024 start
+M settled 1996782290599890 wall=1794521210.585569 rep=1 L=1024
+M case 1996784460448495 wall=1794521212.755418 rep=1 L=2048 start
+M settled 1996784837248749 wall=1794521213.132218 rep=1 L=2048
+M case 1996787009943955 wall=1794521215.304913 rep=1 L=4096 start
+M settled 1996787727720115 wall=1794521216.022690 rep=1 L=4096
+M case 1996789910445998 wall=1794521218.205415 rep=1 L=8192 start
+M settled 1996791406045211 wall=1794521219.701015 rep=1 L=8192
+M case 1996793613060059 wall=1794521221.908030 rep=1 L=16384 start
+M settled 1996797074230899 wall=1794521225.369201 rep=1 L=16384
+M case 1996799325435277 wall=1794521227.620404 rep=2 L=512 start
+M settled 1996799472208883 wall=1794521227.767178 rep=2 L=512
+M case 1996801630722882 wall=1794521229.925692 rep=2 L=1024 start
+M settled 1996801851138021 wall=1794521230.146108 rep=2 L=1024
+M case 1996804010298248 wall=1794521232.305268 rep=2 L=2048 start
+M settled 1996804387254032 wall=1794521232.682224 rep=2 L=2048
+M case 1996806555381108 wall=1794521234.850351 rep=2 L=4096 start
+M settled 1996807271634991 wall=1794521235.566605 rep=2 L=4096
+M case 1996809446096173 wall=1794521237.741066 rep=2 L=8192 start
+M settled 1996810943707052 wall=1794521239.238677 rep=2 L=8192
+M case 1996813146616250 wall=1794521241.441585 rep=2 L=16384 start
+M settled 1996816608084149 wall=1794521244.903054 rep=2 L=16384
+M case 1996818862607409 wall=1794521247.157577 rep=3 L=512 start
+M settled 1996819009841074 wall=1794521247.304811 rep=3 L=512
+M case 1996821172923052 wall=1794521249.467892 rep=3 L=1024 start
+M settled 1996821393686181 wall=1794521249.688656 rep=3 L=1024
+M case 1996823560356190 wall=1794521251.855325 rep=3 L=2048 start
+M settled 1996823937661654 wall=1794521252.232631 rep=3 L=2048
+M case 1996826107971865 wall=1794521254.402941 rep=3 L=4096 start
+M settled 1996826825311776 wall=1794521255.120281 rep=3 L=4096
+M case 1996829003333100 wall=1794521257.298302 rep=3 L=8192 start
+M settled 1996830501922826 wall=1794521258.796892 rep=3 L=8192
+M case 1996832705827261 wall=1794521261.000797 rep=3 L=16384 start
+M settled 1996836168777357 wall=1794521264.463747 rep=3 L=16384
+M case 1996838422565649 wall=1794521266.717535 rep=4 L=512 start
+M settled 1996838569711825 wall=1794521266.864681 rep=4 L=512
+M case 1996840732802733 wall=1794521269.027772 rep=4 L=1024 start
+M settled 1996840953704731 wall=1794521269.248674 rep=4 L=1024
+M case 1996843118376985 wall=1794521271.413346 rep=4 L=2048 start
+M settled 1996843495554118 wall=1794521271.790524 rep=4 L=2048
+M case 1996845664673132 wall=1794521273.959642 rep=4 L=4096 start
+M settled 1996846381734274 wall=1794521274.676704 rep=4 L=4096
+M case 1996848563356105 wall=1794521276.858325 rep=4 L=8192 start
+M settled 1996850061490173 wall=1794521278.356460 rep=4 L=8192
+M case 1996852266069902 wall=1794521280.561039 rep=4 L=16384 start
+M settled 1996855727835872 wall=1794521284.022805 rep=4 L=16384
+M bench_end 1996857986316092 wall=1794521286.281285 
+M stop 1996859987246397 wall=1794521288.282216 
+M stopped 1996863992119958 wall=1794521292.287091 

@@ -1,0 +1,28 @@
+M config 1999761056856209 wall=1794524189.351826 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/C", "tag": "c-hyb", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "hyb", "l1_gb": 4.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": ""}
+M lmcache_cmd 1999761056915049 wall=1794524189.351884 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "4", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", "", "--l2-adapter", "{\"type\": \"dax\", \"slot_bytes\": 9437184, \"devices\": [{\"device_path\": \"/dev/dax1.0\", \"max_dax_size_gb\": 269.5}]}"]
+M lmcache_ready 1999776067719628 wall=1794524204.362690 
+M vllm_ready 1999800074769988 wall=1794524228.369740 
+M env_ready 1999800098085173 wall=1794524228.393055 
+M warmup 1999800098424833 wall=1794524228.393394 
+M fill_store 1999800673762926 wall=1794524228.968732 
+M populate 1999827712200089 wall=1794524256.007170 
+M populated 1999897704461322 wall=1794524325.999431 
+M pass_start 1999899374726213 wall=1794524327.669696 rate=0.5 rep=0 n=48
+M pass_end 1999966973956598 wall=1794524395.268926 rate=0.5 rep=0
+M pass_start 1999968643848799 wall=1794524396.938818 rate=0.5 rep=1 n=48
+M pass_end 2000070018374466 wall=1794524498.313344 rate=0.5 rep=1
+M pass_start 2000071687779120 wall=1794524499.982749 rate=2 rep=0 n=48
+M pass_end 2000089544651201 wall=1794524517.839621 rate=2 rep=0
+M pass_start 2000091215321634 wall=1794524519.510291 rate=2 rep=1 n=48
+M pass_end 2000117761674656 wall=1794524546.056644 rate=2 rep=1
+M pass_start 2000119448295187 wall=1794524547.743265 rate=4 rep=0 n=48
+M pass_end 2000129890570925 wall=1794524558.185540 rate=4 rep=0
+M pass_start 2000131576860014 wall=1794524559.871830 rate=4 rep=1 n=48
+M pass_end 2000145716519428 wall=1794524574.011489 rate=4 rep=1
+M pass_start 2000147403311365 wall=1794524575.698281 rate=8 rep=0 n=48
+M pass_end 2000156601023254 wall=1794524584.895993 rate=8 rep=0
+M pass_start 2000158290239512 wall=1794524586.585209 rate=8 rep=1 n=48
+M pass_end 2000168580954811 wall=1794524596.875924 rate=8 rep=1
+M bench_end 2000168580975580 wall=1794524596.875945 
+M stop 2000170583243952 wall=1794524598.878214 
+M stopped 2000182553690094 wall=1794524610.848662 

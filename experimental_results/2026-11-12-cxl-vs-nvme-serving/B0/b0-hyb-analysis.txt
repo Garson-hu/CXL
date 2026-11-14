@@ -1,0 +1,1 @@
+b0-hyb: n 114/114 cached 0.289 = gpu 0.203 + dram 0.087 + cxl-L1 0.000 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 12441/43228/45369/16082 ms; 0.428 req/s; L1 max 14.4 GiB, L2 max 0.0 GiB; CXL r/w 0.0/21.0 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 2.9 GiB

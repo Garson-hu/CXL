@@ -1,0 +1,1 @@
+b-conv08-daxl2: n 1177/1177 cached 0.238 = gpu 0.045 + dram 0.044 + cxl-L1 0.000 + L2 0.149 (+ unknown 0.000); TTFT p50/p95/p99/mean 8621/41241/55353/13227 ms; 0.235 req/s; L1 max 64.1 GiB, L2 max 359.5 GiB; CXL r/w 69.0/359.6 GiB (overlap 0.22 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 81.0 GiB

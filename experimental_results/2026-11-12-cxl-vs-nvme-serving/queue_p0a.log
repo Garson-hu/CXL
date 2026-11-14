@@ -1,0 +1,30 @@
+[2026-11-12 16:52:47] p0-hyb-full2 start
+[2026-11-12 16:54:17] p0-hyb-full2 rc=0
+RESULT dax_match=35 dax_mismatch=0
+[2026-11-12 16:54:18] p0-hyb-full80 start
+[2026-11-12 16:56:05] p0-hyb-full80 rc=0
+RESULT dax_match=0 dax_mismatch=0
+[2026-11-12 16:56:05] p0-daxl2-full2 start
+[2026-11-12 16:57:19] p0-daxl2-full2 rc=0
+RESULT dax_match=592 dax_mismatch=0
+[2026-11-12 16:57:22] a-dram start
+[2026-11-12 17:00:02] a-dram rc=0
+[2026-11-12 17:00:02] a-dax start
+[2026-11-12 17:02:40] a-dax rc=0
+[2026-11-12 17:02:40] a-hyb start
+[2026-11-12 17:05:35] a-hyb rc=0
+[2026-11-12 17:05:35] a-hyb-nopin start
+[2026-11-12 17:08:12] a-hyb-nopin rc=0
+[2026-11-12 17:08:12] a-daxl2 start
+[2026-11-12 17:10:56] a-daxl2 rc=0
+[2026-11-12 17:10:56] a-ssd start
+[2026-11-12 17:14:33] a-ssd rc=0
+[2026-11-12 17:14:33] a-ssdn start
+[2026-11-12 17:18:03] a-ssdn rc=0
+[2026-11-12 17:18:03] a-ssdn16 start
+[2026-11-12 17:21:34] a-ssdn16 rc=0
+[2026-11-12 17:21:34] a-ssdn-buf start
+[2026-11-12 17:24:20] a-ssdn-buf rc=0
+[2026-11-12 17:24:20] a-none start
+[2026-11-12 17:34:06] a-none rc=0
+[2026-11-12 17:34:06] queue done: p0full a

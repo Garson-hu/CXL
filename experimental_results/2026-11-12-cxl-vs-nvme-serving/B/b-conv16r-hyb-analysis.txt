@@ -1,0 +1,1 @@
+b-conv16r-hyb: n 1177/1177 cached 0.208 = gpu 0.045 + dram 0.078 + cxl-L1 0.085 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 792933/1328174/1343592/755456 ms; 0.305 req/s; L1 max 359.3 GiB, L2 max 0.0 GiB; CXL r/w 39.4/279.3 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 81.2 GiB

@@ -1,0 +1,5 @@
+arena {"ev": "l1dax.arena", "t": 1794520377.2268243, "dev": "/dev/dax1.0", "size": 289373421568, "pinned": true, "base": 140349563469824}
+arena {"ev": "l1dax.arena", "t": 1794520382.224934, "dev": "/dev/dax0.0", "size": 260382392320, "pinned": true, "base": 140089178980352}
+arena {"ev": "l1dax.add", "t": 1794520382.225018, "dev": "/dev/dax0.0", "gib": 242.5, "status": "DevDaxArenaStatus(device_path='/dev/dax0.0', size_in_bytes=260382392320, used_bytes=0, free_bytes=260382392320, active_allocations=0, state=<DevDaxArenaState.ACTIVE: 'active'>, is_primary=False)"}
+device /dev/dax1.0: 35 records checked ({'l1dax.obj': 35}), 0.31 GiB read from the device mapping, match 35, mismatch 0
+RESULT dax_match=35 dax_mismatch=0

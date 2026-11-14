@@ -1,0 +1,2 @@
+[18:28:33] rate 0.5 pass 0 done
+[18:30:22] rate 2 pass 0 done

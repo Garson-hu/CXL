@@ -1,0 +1,1 @@
+b-conv16r-ssdn: n 1177/1177 cached 0.209 = gpu 0.045 + dram 0.094 + cxl-L1 0.000 + L2 0.070 (+ unknown 0.000); TTFT p50/p95/p99/mean 790715/1321175/1336662/753024 ms; 0.306 req/s; L1 max 64.6 GiB, L2 max 359.3 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 34.0/359.3 GiB; LMCache RSS max 81.1 GiB

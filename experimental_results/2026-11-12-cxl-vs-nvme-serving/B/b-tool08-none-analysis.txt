@@ -1,0 +1,1 @@
+b-tool08-none: n 2332/2332 cached 0.274 = gpu 0.274 + dram 0.000 + cxl-L1 0.000 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 32858/102584/123198/40704 ms; 0.465 req/s; L1 max 0.0 GiB, L2 max 0.0 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 0.0 GiB

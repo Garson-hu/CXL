@@ -1,0 +1,70 @@
+M config 1996374331475069 wall=1794520802.626445 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/A", "tag": "a-dax", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "dax", "l1_gb": 80.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": true, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": ""}
+M lmcache_cmd 1996374331521859 wall=1794520802.626491 ["/mnt/local/ghu4/envs/lmcache/bin/lmcache", "server", "--host", "127.0.0.1", "--port", "5555", "--http-host", "127.0.0.1", "--http-port", "8200", "--chunk-size", "256", "--eviction-policy", "LRU", "--eviction-trigger-watermark", "0.8", "--max-gpu-workers", "1", "--max-cpu-workers", "1", "--supported-transfer-mode", "lmcache_driven", "--l2-prefetch-max-in-flight", "8", "--l1-size-gb", "80", "--l1-devdax-path", "/dev/dax1.0", "--no-l1-use-lazy", "--shm-name", ""]
+M lmcache_ready 1996379339859037 wall=1794520807.634829 
+M vllm_ready 1996399345807013 wall=1794520827.640777 
+M env_ready 1996399368849851 wall=1794520827.663820 
+M warmup_start 1996399369169400 wall=1794520827.664139 
+M fill_store_start 1996400035206722 wall=1794520828.330176 
+M case 1996427593523816 wall=1794520855.888493 rep=0 L=512 start
+M settled 1996427742058826 wall=1794520856.037028 rep=0 L=512
+M case 1996429896843976 wall=1794520858.191813 rep=0 L=1024 start
+M settled 1996430121059823 wall=1794520858.416029 rep=0 L=1024
+M case 1996432274996634 wall=1794520860.569966 rep=0 L=2048 start
+M settled 1996432659417780 wall=1794520860.954387 rep=0 L=2048
+M case 1996434816390836 wall=1794520863.111360 rep=0 L=4096 start
+M settled 1996435541319580 wall=1794520863.836289 rep=0 L=4096
+M case 1996437711183481 wall=1794520866.006153 rep=0 L=8192 start
+M settled 1996439217451903 wall=1794520867.512421 rep=0 L=8192
+M case 1996441412552876 wall=1794520869.707522 rep=0 L=16384 start
+M settled 1996444888173127 wall=1794520873.183143 rep=0 L=16384
+M case 1996447133766195 wall=1794520875.428735 rep=1 L=512 start
+M settled 1996447282390035 wall=1794520875.577359 rep=1 L=512
+M case 1996449434602360 wall=1794520877.729572 rep=1 L=1024 start
+M settled 1996449657576010 wall=1794520877.952546 rep=1 L=1024
+M case 1996451812805218 wall=1794520880.107774 rep=1 L=2048 start
+M settled 1996452197630193 wall=1794520880.492600 rep=1 L=2048
+M case 1996454367930614 wall=1794520882.662900 rep=1 L=4096 start
+M settled 1996455092865928 wall=1794520883.387836 rep=1 L=4096
+M case 1996457271356643 wall=1794520885.566326 rep=1 L=8192 start
+M settled 1996458780370579 wall=1794520887.075340 rep=1 L=8192
+M case 1996460984162610 wall=1794520889.279132 rep=1 L=16384 start
+M settled 1996464462767212 wall=1794520892.757737 rep=1 L=16384
+M case 1996466722985714 wall=1794520895.017955 rep=2 L=512 start
+M settled 1996466871901622 wall=1794520895.166871 rep=2 L=512
+M case 1996469028522536 wall=1794520897.323492 rep=2 L=1024 start
+M settled 1996469252990334 wall=1794520897.547960 rep=2 L=1024
+M case 1996471410394447 wall=1794520899.705364 rep=2 L=2048 start
+M settled 1996471794964348 wall=1794520900.089934 rep=2 L=2048
+M case 1996473953837507 wall=1794520902.248807 rep=2 L=4096 start
+M settled 1996474678569328 wall=1794520902.973539 rep=2 L=4096
+M case 1996476847842134 wall=1794520905.142811 rep=2 L=8192 start
+M settled 1996478354376339 wall=1794520906.649346 rep=2 L=8192
+M case 1996480552888810 wall=1794520908.847858 rep=2 L=16384 start
+M settled 1996484029753475 wall=1794520912.324723 rep=2 L=16384
+M case 1996486275168241 wall=1794520914.570138 rep=3 L=512 start
+M settled 1996486423915368 wall=1794520914.718885 rep=3 L=512
+M case 1996488575273814 wall=1794520916.870243 rep=3 L=1024 start
+M settled 1996488799530253 wall=1794520917.094500 rep=3 L=1024
+M case 1996490959418940 wall=1794520919.254388 rep=3 L=2048 start
+M settled 1996491344034671 wall=1794520919.639004 rep=3 L=2048
+M case 1996493507277440 wall=1794520921.802247 rep=3 L=4096 start
+M settled 1996494232466631 wall=1794520922.527436 rep=3 L=4096
+M case 1996496407583573 wall=1794520924.702553 rep=3 L=8192 start
+M settled 1996497912045423 wall=1794520926.207015 rep=3 L=8192
+M case 1996500109368606 wall=1794520928.404338 rep=3 L=16384 start
+M settled 1996503577754701 wall=1794520931.872724 rep=3 L=16384
+M case 1996505827719336 wall=1794520934.122689 rep=4 L=512 start
+M settled 1996505976575404 wall=1794520934.271545 rep=4 L=512
+M case 1996508144846991 wall=1794520936.439816 rep=4 L=1024 start
+M settled 1996508368627222 wall=1794520936.663597 rep=4 L=1024
+M case 1996510538528586 wall=1794520938.833498 rep=4 L=2048 start
+M settled 1996510923441766 wall=1794520939.218411 rep=4 L=2048
+M case 1996513098706029 wall=1794520941.393675 rep=4 L=4096 start
+M settled 1996513824340838 wall=1794520942.119310 rep=4 L=4096
+M case 1996516008592680 wall=1794520944.303562 rep=4 L=8192 start
+M settled 1996517515457515 wall=1794520945.810427 rep=4 L=8192
+M case 1996519726991286 wall=1794520948.021961 rep=4 L=16384 start
+M settled 1996523204753040 wall=1794520951.499722 rep=4 L=16384
+M bench_end 1996525467177193 wall=1794520953.762146 
+M stop 1996527468051319 wall=1794520955.763021 
+M stopped 1996532176936169 wall=1794520960.471908 

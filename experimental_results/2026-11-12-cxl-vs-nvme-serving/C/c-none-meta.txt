@@ -1,0 +1,14 @@
+M config 2001455092330900 wall=1794525883.387300 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/C", "tag": "c-none", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "none", "l1_gb": 80.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": false, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvevt", "lm_env": ""}
+M vllm_ready 2001478105564734 wall=1794525906.400536 
+M env_ready 2001478129076083 wall=1794525906.424046 
+M warmup 2001478129443532 wall=1794525906.424413 
+M fill_store 2001478684624617 wall=1794525906.979594 
+M populate 2001505616788830 wall=1794525933.911758 
+M populated 2001575002188600 wall=1794526003.297158 
+M pass_start 2001602512581886 wall=1794526030.807551 rate=0.5 rep=0 n=48
+M pass_end 2001684726911666 wall=1794526113.021881 rate=0.5 rep=0
+M pass_start 2001712243885168 wall=1794526140.538855 rate=2 rep=0 n=48
+M pass_end 2001793997998601 wall=1794526222.292968 rate=2 rep=0
+M bench_end 2001793998032671 wall=1794526222.293002 
+M stop 2001796000721538 wall=1794526224.295691 
+M stopped 2001796487323791 wall=1794526224.782294 

@@ -1,0 +1,44 @@
+M config 1997831917535045 wall=1794522260.212505 {"out": "/mnt/local/ghu4/results/2026-11-12-cxl-vs-nvme-serving/A", "tag": "a-none", "model": "Qwen/Qwen2.5-3B-Instruct-AWQ", "tier": "none", "l1_gb": 20.0, "ssd_path": "/mnt/local/ghu4/kvl2", "keep_ssd": false, "ssd_odirect": true, "dax_path": "/dev/dax1.0", "chunk": 256, "gpu_workers": 1, "cpu_workers": 1, "transfer_mode": "lmcache_driven", "eager_prefetch": false, "l2_prefetch_max_in_flight": 8, "watermark": 0.8, "max_model_len": 32768, "max_num_seqs": 16, "max_batched": 0, "long_prefill_threshold": 0, "gpu_blocks": 6400, "gpu_util": 0.8, "enforce_eager": true, "sched_policy": "fcfs", "async_sched": "", "vllm_cpus": "96-119", "lm_cpus": "120-127", "gpu_sampler_cpu": "95", "cpu_sampler_cpu": "94", "hooks": true, "hooks_vllm": true, "hooks_lm": true, "samplers": true, "adm": true, "adm_env": "KVADM_POLICY=storefix", "vport": 8100, "mpport": 5555, "hport": 8200, "extra_vllm": "", "extra_lm": "", "dax_devs": "/dev/dax1.0:269.5,/dev/dax0.0:242.5", "slot_bytes": 9437184, "l2_gb": 0.0, "l2_policy": "", "l2_prefetch": "", "l2_evict": true, "l2_watermark": 0.8, "l2_evict_ratio": 0.2, "evict_ratio": 0.2, "l2_workers": 4, "l2_store_workers": 1, "lm_hook": "kvtier", "lm_env": ""}
+M vllm_ready 1997850928603242 wall=1794522279.223574 
+M env_ready 1997850953155697 wall=1794522279.248126 
+M warmup_start 1997850953488676 wall=1794522279.248458 
+M fill_store_start 1997851605041112 wall=1794522279.900011 
+M case 1997878884223343 wall=1794522307.179193 rep=0 L=512 start
+M settled 1997879025177897 wall=1794522307.320147 rep=0 L=512
+M case 1997906873090031 wall=1794522335.168059 rep=0 L=1024 start
+M settled 1997907087297622 wall=1794522335.382267 rep=0 L=1024
+M case 1997935010814344 wall=1794522363.305784 rep=0 L=2048 start
+M settled 1997935380825147 wall=1794522363.675794 rep=0 L=2048
+M case 1997963460081848 wall=1794522391.755051 rep=0 L=4096 start
+M settled 1997964167013959 wall=1794522392.461983 rep=0 L=4096
+M case 1997992584782597 wall=1794522420.879752 rep=0 L=8192 start
+M settled 1997994068282886 wall=1794522422.363252 rep=0 L=8192
+M case 1998023274544045 wall=1794522451.569514 rep=0 L=16384 start
+M settled 1998026701079686 wall=1794522454.996049 rep=0 L=16384
+M case 1998057814029822 wall=1794522486.108999 rep=1 L=512 start
+M settled 1998057954747475 wall=1794522486.249717 rep=1 L=512
+M case 1998085804444764 wall=1794522514.099414 rep=1 L=1024 start
+M settled 1998086018521747 wall=1794522514.313491 rep=1 L=1024
+M case 1998113941044080 wall=1794522542.236013 rep=1 L=2048 start
+M settled 1998114310941592 wall=1794522542.605911 rep=1 L=2048
+M case 1998142390169389 wall=1794522570.685139 rep=1 L=4096 start
+M settled 1998143096953542 wall=1794522571.391923 rep=1 L=4096
+M case 1998171516814032 wall=1794522599.811783 rep=1 L=8192 start
+M settled 1998173000499805 wall=1794522601.295469 rep=1 L=8192
+M case 1998202208871178 wall=1794522630.503840 rep=1 L=16384 start
+M settled 1998205635057680 wall=1794522633.930027 rep=1 L=16384
+M case 1998236723603008 wall=1794522665.018572 rep=2 L=512 start
+M settled 1998236864568148 wall=1794522665.159537 rep=2 L=512
+M case 1998264714840521 wall=1794522693.009810 rep=2 L=1024 start
+M settled 1998264928922767 wall=1794522693.223892 rep=2 L=1024
+M case 1998292853036320 wall=1794522721.148006 rep=2 L=2048 start
+M settled 1998293222875943 wall=1794522721.517845 rep=2 L=2048
+M case 1998321302433899 wall=1794522749.597403 rep=2 L=4096 start
+M settled 1998322010673796 wall=1794522750.305643 rep=2 L=4096
+M case 1998350434737793 wall=1794522778.729707 rep=2 L=8192 start
+M settled 1998351914282682 wall=1794522780.209252 rep=2 L=8192
+M case 1998381120062477 wall=1794522809.415032 rep=2 L=16384 start
+M settled 1998384557615668 wall=1794522812.852585 rep=2 L=16384
+M bench_end 1998415739689104 wall=1794522844.034659 
+M stop 1998417740630859 wall=1794522846.035601 
+M stopped 1998418227174741 wall=1794522846.522146 

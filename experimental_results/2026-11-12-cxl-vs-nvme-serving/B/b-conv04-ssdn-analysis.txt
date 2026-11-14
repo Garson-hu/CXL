@@ -1,0 +1,1 @@
+b-conv04-ssdn: n 599/599 cached 0.182 = gpu 0.044 + dram 0.051 + cxl-L1 0.000 + L2 0.086 (+ unknown 0.000); TTFT p50/p95/p99/mean 3191/26314/35798/6360 ms; 0.120 req/s; L1 max 64.1 GiB, L2 max 197.6 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 20.4/197.6 GiB; LMCache RSS max 81.0 GiB

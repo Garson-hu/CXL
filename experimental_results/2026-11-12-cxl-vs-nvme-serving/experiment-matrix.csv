@@ -1,0 +1,87 @@
+phase,tag,start,minutes,tier,dram_for_kv_GiB,extension,extension_size,l2_policy,cuda_registered_dax,gpu_kv_blocks,store_fix,workload,other_settings,requests,errors,status_200_without_output,filler_requests,filler_errors,driver_finished,exit_code,used_as
+A,a-dax,2026-11-12 17:00,3,dax,-,CXL Device-DAX as L1 (no DRAM),dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-daxl2,2026-11-12 17:08,3,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-dram,2026-11-12 16:57,3,dram,80.0,-,,-,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-hyb,2026-11-12 17:02,3,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-hyb-nopin,2026-11-12 17:05,3,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,no,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-none,2026-11-12 17:24,10,none,-,-,,-,-,6400,-,"single-request retrieval (run_a.py), 18 cases",-,54,0,0,155,0,yes,0,result
+A,a-ssd,2026-11-12 17:10,4,ssd,80.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-ssdn-buf,2026-11-12 17:21,3,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, BUFFERED (control)",skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-ssdn,2026-11-12 17:14,3,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+A,a-ssdn16,2026-11-12 17:18,4,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 30 cases",-,90,0,0,251,0,yes,0,result
+B,b-conv04-dram80,2026-11-13 08:57,84,dram,80.0,-,,-,-,6400,yes,conversation trace 0-200 s at 0.04x,-,599,0,0,0,0,yes,0,result
+B,b-conv04-hyb,2026-11-13 10:21,84,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-200 s at 0.04x,-,599,0,0,0,0,yes,0,result
+B,b-conv04-ssdn,2026-11-13 11:45,84,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,conversation trace 0-200 s at 0.04x,-,599,0,0,0,0,yes,0,result
+B,b-conv08-daxl2,2026-11-13 03:20,84,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,write-through,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-dram20,2026-11-14 14:57,84,dram,20.0,-,,-,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-dram592,2026-11-14 13:33,84,dram,592.0,-,,-,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-dram80,2026-11-12 18:54,84,dram,80.0,-,,-,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-hyb,2026-11-12 20:18,85,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-hyb20,2026-11-14 07:35,84,hyb,20.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-none,2026-11-13 06:09,84,none,-,-,,-,-,6400,-,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-ssdn,2026-11-12 21:43,84,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08-ssdn20,2026-11-14 08:59,84,ssdn,20.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,conversation trace 0-400 s at 0.08x,-,1177,0,0,0,0,yes,0,result
+B,b-conv08L-daxl2,2026-11-14 10:24,189,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,write-through,-,6400,yes,conversation trace 0-900 s at 0.08x,-,2728,0,0,0,0,yes,0,result
+B,b-conv08L-dram80,2026-11-13 23:40,189,dram,80.0,-,,-,-,6400,yes,conversation trace 0-900 s at 0.08x,-,2728,0,0,0,0,yes,0,result
+B,b-conv08L-hyb,2026-11-13 17:21,189,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-900 s at 0.08x,-,2728,0,0,0,0,yes,0,result
+B,b-conv08L-ssdn,2026-11-13 20:31,189,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,conversation trace 0-900 s at 0.08x,-,2728,0,0,0,0,yes,0,result
+B,b-conv16r-dram80,2026-11-14 04:15,69,dram,80.0,-,,-,-,6400,yes,conversation trace 0-400 s at 0.16x,read-lock TTL 7200 s; kv_load_failure_policy=recompute,1177,0,0,0,0,yes,0,result
+B,b-conv16r-hyb,2026-11-14 06:29,65,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-400 s at 0.16x,read-lock TTL 7200 s; kv_load_failure_policy=recompute,1177,0,0,0,0,yes,0,result
+B,b-conv16r-ssdn,2026-11-14 05:24,65,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,conversation trace 0-400 s at 0.16x,read-lock TTL 7200 s; kv_load_failure_policy=recompute,1177,0,0,0,0,yes,0,result
+B,b-tool04-dram80,2026-11-13 13:09,84,dram,80.0,-,,-,-,6400,yes,toolagent trace 0-200 s at 0.04x,-,1159,0,0,0,0,yes,0,result
+B,b-tool04-hyb,2026-11-13 14:33,84,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,toolagent trace 0-200 s at 0.04x,-,1159,0,0,0,0,yes,0,result
+B,b-tool04-ssdn,2026-11-13 15:58,84,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,toolagent trace 0-200 s at 0.04x,-,1159,0,0,0,0,yes,0,result
+B,b-tool08-daxl2,2026-11-13 04:45,84,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,write-through,-,6400,yes,toolagent trace 0-400 s at 0.08x,-,2332,0,0,0,0,yes,0,result
+B,b-tool08-dram80,2026-11-12 23:07,84,dram,80.0,-,,-,-,6400,yes,toolagent trace 0-400 s at 0.08x,-,2332,0,0,0,0,yes,0,result
+B,b-tool08-hyb,2026-11-13 00:32,85,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,toolagent trace 0-400 s at 0.08x,-,2332,0,0,0,0,yes,0,result
+B,b-tool08-none,2026-11-13 07:33,84,none,-,-,,-,-,6400,-,toolagent trace 0-400 s at 0.08x,-,2332,0,0,0,0,yes,0,result
+B,b-tool08-ssdn,2026-11-13 01:56,84,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",write-through,-,6400,yes,toolagent trace 0-400 s at 0.08x,-,2332,0,0,0,0,yes,0,result
+B0,b0-daxl2,2026-11-12 17:44,5,daxl2,2.0,"CXL Device-DAX, L2 adapter",dax1.0 4 GiB + dax0.0 4 GiB,write-through,-,6400,yes,toolagent trace 0-20 s at 0.08x,-,114,0,0,0,0,yes,0,functional check
+B0,b0-hyb,2026-11-12 17:34,5,hyb,2.0,"CXL Device-DAX, hybrid L1",dax1.0 8 GiB + dax0.0 8 GiB,-,yes,6400,yes,toolagent trace 0-20 s at 0.08x,-,114,0,0,0,0,yes,0,functional check
+B0,b0-ssdn,2026-11-12 17:39,5,ssdn,2.0,"NVMe, fs_native L2","8 GiB limit, O_DIRECT",write-through,-,6400,yes,toolagent trace 0-20 s at 0.08x,-,114,0,0,0,0,yes,0,functional check
+C,c-daxl2,2026-11-12 18:03,7,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,6400,yes,"equal-hit comparison (run_eqhit.py), 8 passes",-,384,0,0,123,0,yes,0,result
+C,c-dram,2026-11-12 17:49,7,dram,80.0,-,,-,-,6400,yes,"equal-hit comparison (run_eqhit.py), 8 passes",-,384,0,0,123,0,yes,0,result
+C,c-hyb,2026-11-12 17:56,7,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"equal-hit comparison (run_eqhit.py), 8 passes",-,384,0,0,123,0,yes,0,result
+C,c-none,2026-11-12 18:24,6,none,-,-,,-,-,6400,-,"equal-hit comparison (run_eqhit.py), 2 passes",-,96,0,0,75,0,yes,0,result
+C,c-ssd,2026-11-12 18:17,7,ssd,80.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,6400,yes,"equal-hit comparison (run_eqhit.py), 8 passes",-,384,0,0,123,0,yes,0,result
+C,c-ssdn,2026-11-12 18:10,7,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,6400,yes,"equal-hit comparison (run_eqhit.py), 8 passes",-,384,0,0,123,0,yes,0,result
+D,d-daxl2,2026-11-12 18:37,3,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,355,0,yes,0,result
+D,d-dram,2026-11-12 18:30,3,dram,80.0,-,,-,-,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,355,0,yes,0,result
+D,d-hyb,2026-11-12 18:33,3,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,363,0,yes,0,result
+D,d-ssd,2026-11-12 18:49,5,ssd,80.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,355,0,yes,0,result
+D,d-ssdn,2026-11-12 18:40,4,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,355,0,yes,0,result
+D,d-ssdn16,2026-11-12 18:45,4,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,6400,yes,"concurrent retrieval (run_e.py e1), 10 points",-,248,0,0,355,0,yes,0,result
+P0,p0-dax-s,2026-11-12 15:13,1,dax,-,CXL Device-DAX as L1 (no DRAM),dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-dax-v,2026-11-12 15:22,1,dax,-,CXL Device-DAX as L1 (no DRAM),dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,result
+P0,p0-daxl2-full2,2026-11-12 16:56,1,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,6400,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,43,0,yes,0,result
+P0,p0-daxl2-s,2026-11-12 15:10,1,daxl2,8.0,"CXL Device-DAX, L2 adapter",dax1.0 8 GiB + dax0.0 8 GiB,skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-daxl2-v,2026-11-12 15:24,1,daxl2,8.0,"CXL Device-DAX, L2 adapter",dax1.0 8 GiB + dax0.0 8 GiB,skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,result
+P0,p0-daxl2wt-s,2026-11-12 15:16,1,daxl2,8.0,"CXL Device-DAX, L2 adapter",dax1.0 8 GiB + dax0.0 8 GiB,write-through,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-dram-s,2026-11-12 15:14,1,dram,8.0,-,,-,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-hyb-full2,2026-11-12 16:52,2,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,43,0,yes,0,result
+P0,p0-hyb-full80,2026-11-12 16:54,2,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,43,0,yes,0,result
+P0,p0-hyb-s,2026-11-12 15:09,1,hyb,2.0,"CXL Device-DAX, hybrid L1",dax1.0 8 GiB,-,yes,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-hyb2-s,2026-11-12 15:15,1,hyb,2.0,"CXL Device-DAX, hybrid L1",dax1.0 4 GiB + dax0.0 4 GiB,-,yes,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,63,0,yes,,superseded smoke run
+P0,p0-hyb2-v,2026-11-12 15:22,1,hyb,2.0,"CXL Device-DAX, hybrid L1",dax1.0 4 GiB + dax0.0 4 GiB,-,yes,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,63,0,yes,,result
+P0,p0-ssd-s,2026-11-12 15:11,1,ssd,8.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-ssd-v,2026-11-12 15:25,1,ssd,8.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,result
+P0,p0-ssdn-buf,2026-11-12 15:27,1,ssdn,8.0,"NVMe, fs_native L2","16 GiB limit, BUFFERED (control)",skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,result
+P0,p0-ssdn-s,2026-11-12 15:12,1,ssdn,8.0,"NVMe, fs_native L2","16 GiB limit, O_DIRECT",skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,superseded smoke run
+P0,p0-ssdn-v,2026-11-12 15:26,1,ssdn,8.0,"NVMe, fs_native L2","16 GiB limit, O_DIRECT",skip_l1,-,3072,yes,"single-request retrieval (run_a.py), 4 cases",-,12,0,0,23,0,yes,,result
+env/vram,fit-hyb-b6400,2026-11-12 16:49,2,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,stress: 16 concurrent 16K requests (GPU memory fit of the full hybrid),-,16,0,0,35,0,yes,,GPU-memory record
+env/vram,vram-b6400-eagerfalse,2026-11-12 16:48,,none,-,-,,-,-,6400,-,start and stop only (GPU memory of the configuration),-,0,0,0,0,0,-,,GPU-memory record
+env/vram,vram-b7456-eagerfalse,2026-11-12 16:47,,none,-,-,,-,-,7456,-,start and stop only (GPU memory of the configuration),-,0,0,0,0,0,-,,GPU-memory record
+env/vram,vram-b7456-eagertrue,2026-11-12 16:48,,none,-,-,,-,-,7456,-,start and stop only (GPU memory of the configuration),-,0,0,0,0,0,-,,GPU-memory record
+void,a-dax,2026-11-12 15:29,,dax,-,CXL Device-DAX as L1 (no DRAM),dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-daxl2,2026-11-12 15:30,,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-dram,2026-11-12 15:29,,dram,80.0,-,,-,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-hyb,2026-11-12 15:29,,hyb,4.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-none,2026-11-12 15:31,,none,-,-,,-,-,7456,-,?,-,0,0,0,0,0,NO,,void
+void,a-ssd,2026-11-12 15:30,,ssd,80.0,"NVMe, Python fs L2","no limit, O_DIRECT",skip_l1,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-ssdn-buf,2026-11-12 15:31,,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, BUFFERED (control)",skip_l1,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-ssdn,2026-11-12 15:30,,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,a-ssdn16,2026-11-12 15:31,,ssdn,80.0,"NVMe, fs_native L2","512 GiB limit, O_DIRECT",skip_l1,-,7456,yes,?,-,0,0,0,0,0,NO,,void
+void,b-conv16-dram80,2026-11-14 02:49,42,dram,80.0,-,,-,-,6400,yes,conversation trace 0-400 s at 0.16x,-,1177,755,179,0,0,yes,,void
+void,b-conv16-hyb,2026-11-14 03:32,43,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,6400,yes,conversation trace 0-400 s at 0.16x,-,1177,755,179,0,0,yes,,void
+void,p0-daxl2-full,2026-11-12 15:29,,daxl2,80.0,"CXL Device-DAX, L2 adapter",dax1.0 269.5 GiB + dax0.0 242.5 GiB,skip_l1,-,3072,yes,?,-,0,0,0,0,0,NO,,void
+void,p0-hyb-full,2026-11-12 15:28,,hyb,80.0,"CXL Device-DAX, hybrid L1",dax1.0 269.5 GiB + dax0.0 242.5 GiB,-,yes,3072,yes,?,-,0,0,0,0,0,NO,,void

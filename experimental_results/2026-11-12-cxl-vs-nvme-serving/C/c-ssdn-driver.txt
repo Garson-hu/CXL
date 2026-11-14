@@ -1,0 +1,8 @@
+[18:13:48] rate 0.5 pass 0 done
+[18:15:33] rate 0.5 pass 1 done
+[18:15:54] rate 2 pass 0 done
+[18:16:24] rate 2 pass 1 done
+[18:16:38] rate 4 pass 0 done
+[18:16:55] rate 4 pass 1 done
+[18:17:08] rate 8 pass 0 done
+[18:17:22] rate 8 pass 1 done

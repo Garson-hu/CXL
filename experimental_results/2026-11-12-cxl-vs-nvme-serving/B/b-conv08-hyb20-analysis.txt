@@ -1,0 +1,1 @@
+b-conv08-hyb20: n 1177/1177 cached 0.238 = gpu 0.045 + dram 0.021 + cxl-L1 0.173 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 8690/41933/56525/13351 ms; 0.235 req/s; L1 max 359.5 GiB, L2 max 0.0 GiB; CXL r/w 79.7/339.6 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 21.0 GiB

@@ -1,0 +1,4 @@
+arena {"ev": "l1dax.arena", "t": 1794515320.9000602, "dev": "/dev/dax1.0", "size": 289373421568, "pinned": true, "base": 140175415967744}
+arena {"ev": "l1dax.arena", "t": 1794515326.1928303, "dev": "/dev/dax0.0", "size": 260382392320, "pinned": true, "base": 139915031478272}
+arena {"ev": "l1dax.add", "t": 1794515326.1929214, "dev": "/dev/dax0.0", "gib": 242.5, "status": "DevDaxArenaStatus(device_path='/dev/dax0.0', size_in_bytes=260382392320, used_bytes=0, free_bytes=260382392320, active_allocations=0, state=<DevDaxArenaState.ACTIVE: 'active'>, is_primary=False)"}
+RESULT dax_match=0 dax_mismatch=0

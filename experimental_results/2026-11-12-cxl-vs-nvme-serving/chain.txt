@@ -1,0 +1,89 @@
+[2026-11-12T17:34:14-05:00] start b0-hyb (B0, tool:20:0.08) tier=hyb l1_gb=2 dax_devs=/dev/dax1.0:8,/dev/dax0.0:8 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T17:39:16-05:00] end b0-hyb rc=0
+[2026-11-12T17:39:21-05:00] start b0-ssdn (B0, tool:20:0.08) tier=ssdn l1_gb=2 l2_gb=8 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T17:44:23-05:00] end b0-ssdn rc=0
+[2026-11-12T17:44:28-05:00] start b0-daxl2 (B0, tool:20:0.08) tier=daxl2 l1_gb=2 dax_devs=/dev/dax1.0:4,/dev/dax0.0:4 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T17:49:31-05:00] end b0-daxl2 rc=0
+[2026-11-12T17:49:36-05:00] start c-dram (C, c) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T17:56:24-05:00] end c-dram rc=0
+[2026-11-12T17:56:29-05:00] start c-hyb (C, c) tier=hyb l1_gb=4 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:03:30-05:00] end c-hyb rc=0
+[2026-11-12T18:03:35-05:00] start c-daxl2 (C, c) tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 l2_policy=skip_l1 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:10:23-05:00] end c-daxl2 rc=0
+[2026-11-12T18:10:28-05:00] start c-ssdn (C, c) tier=ssdn l1_gb=80 l2_gb=512 l2_policy=skip_l1 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:17:30-05:00] end c-ssdn rc=0
+[2026-11-12T18:17:35-05:00] start c-ssd (C, c) tier=ssd l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:24:38-05:00] end c-ssd rc=0
+[2026-11-12T18:24:43-05:00] start c-none (C, c) tier=none rates=0.5,2 reps=1 gpu_blocks=6400 gpu_util=0.8 adm=true
+[2026-11-12T18:30:24-05:00] end c-none rc=0
+[2026-11-12T18:30:29-05:00] start d-dram (D, e) tier=dram l1_gb=80 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:33:43-05:00] end d-dram rc=0
+[2026-11-12T18:33:48-05:00] start d-hyb (D, e) tier=hyb l1_gb=4 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 fill_first=true scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:37:17-05:00] end d-hyb rc=0
+[2026-11-12T18:37:22-05:00] start d-daxl2 (D, e) tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 l2_policy=skip_l1 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:40:40-05:00] end d-daxl2 rc=0
+[2026-11-12T18:40:45-05:00] start d-ssdn (D, e) tier=ssdn l1_gb=80 l2_gb=512 l2_policy=skip_l1 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:45:09-05:00] end d-ssdn rc=0
+[2026-11-12T18:45:14-05:00] start d-ssdn16 (D, e) tier=ssdn l1_gb=80 l2_gb=512 l2_policy=skip_l1 l2_workers=16 l2_prefetch_max_in_flight=16 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:49:39-05:00] end d-ssdn16 rc=0
+[2026-11-12T18:49:44-05:00] start d-ssd (D, e) tier=ssd l1_gb=80 scenarios=e1 ks=1,2,4,8,16 Ls=4096,8192 reps=4 max_num_seqs=16 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T18:54:19-05:00] end d-ssd rc=0
+[2026-11-12T18:54:24-05:00] start b-conv08-dram80 (B, conv:400:0.08) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T20:18:35-05:00] end b-conv08-dram80 rc=0
+[2026-11-12T20:18:40-05:00] start b-conv08-hyb (B, conv:400:0.08) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T21:43:24-05:00] end b-conv08-hyb rc=0
+[2026-11-12T21:43:29-05:00] start b-conv08-ssdn (B, conv:400:0.08) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-12T23:07:39-05:00] end b-conv08-ssdn rc=0
+[2026-11-12T23:07:44-05:00] start b-tool08-dram80 (B, tool:400:0.08) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T00:31:55-05:00] end b-tool08-dram80 rc=0
+[2026-11-13T00:32:00-05:00] start b-tool08-hyb (B, tool:400:0.08) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T01:56:40-05:00] end b-tool08-hyb rc=0
+[2026-11-13T01:56:45-05:00] start b-tool08-ssdn (B, tool:400:0.08) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T03:20:50-05:00] end b-tool08-ssdn rc=0
+[2026-11-13T03:20:55-05:00] start b-conv08-daxl2 (B, conv:400:0.08) tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T04:45:05-05:00] end b-conv08-daxl2 rc=0
+[2026-11-13T04:45:10-05:00] start b-tool08-daxl2 (B, tool:400:0.08) tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T06:09:15-05:00] end b-tool08-daxl2 rc=0
+[2026-11-13T06:09:21-05:00] start b-conv08-none (B, conv:400:0.08) tier=none gpu_blocks=6400 gpu_util=0.8 adm=true
+[2026-11-13T07:33:25-05:00] end b-conv08-none rc=0
+[2026-11-13T07:33:30-05:00] start b-tool08-none (B, tool:400:0.08) tier=none gpu_blocks=6400 gpu_util=0.8 adm=true
+[2026-11-13T08:57:31-05:00] end b-tool08-none rc=0
+[2026-11-13T08:57:36-05:00] start b-conv04-dram80 (B, conv:200:0.04) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T10:21:25-05:00] end b-conv04-dram80 rc=0
+[2026-11-13T10:21:30-05:00] start b-conv04-hyb (B, conv:200:0.04) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T11:45:48-05:00] end b-conv04-hyb rc=0
+[2026-11-13T11:45:53-05:00] start b-conv04-ssdn (B, conv:200:0.04) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T13:09:38-05:00] end b-conv04-ssdn rc=0
+[2026-11-13T13:09:43-05:00] start b-tool04-dram80 (B, tool:200:0.04) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T14:33:29-05:00] end b-tool04-dram80 rc=0
+[2026-11-13T14:33:34-05:00] start b-tool04-hyb (B, tool:200:0.04) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T15:57:53-05:00] end b-tool04-hyb rc=0
+[2026-11-13T15:57:58-05:00] start b-tool04-ssdn (B, tool:200:0.04) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T17:21:44-05:00] end b-tool04-ssdn rc=0
+[2026-11-13T17:21:49-05:00] start b-conv08L-hyb (B, conv:900:0.08) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T20:31:19-05:00] end b-conv08L-hyb rc=0
+[2026-11-13T20:31:24-05:00] start b-conv08L-ssdn (B, conv:900:0.08) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-13T23:40:22-05:00] end b-conv08L-ssdn rc=0
+[2026-11-13T23:40:27-05:00] start b-conv08L-dram80 (B, conv:900:0.08) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T02:49:44-05:00] end b-conv08L-dram80 rc=0
+[2026-11-14T02:49:49-05:00] start b-conv16-dram80 (B, conv:400:0.16) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T03:32:12-05:00] end b-conv16-dram80 rc=0
+[2026-11-14T03:32:17-05:00] start b-conv16-hyb (B, conv:400:0.16) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T04:15:13-05:00] end b-conv16-hyb rc=0
+[2026-11-14T04:15:18-05:00] start b-conv16r-dram80 (B, conv:400:0.16) tier=dram l1_gb=80 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+[2026-11-14T05:24:17-05:00] end b-conv16r-dram80 rc=0
+[2026-11-14T05:24:22-05:00] start b-conv16r-ssdn (B, conv:400:0.16) tier=ssdn l1_gb=80 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+[2026-11-14T06:29:25-05:00] end b-conv16r-ssdn rc=0
+[2026-11-14T06:29:30-05:00] start b-conv16r-hyb (B, conv:400:0.16) tier=hyb l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier read_ttl=7200 kv_fail=recompute
+[2026-11-14T07:35:03-05:00] end b-conv16r-hyb rc=0
+[2026-11-14T07:35:08-05:00] start b-conv08-hyb20 (B, conv:400:0.08) tier=hyb l1_gb=20 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T08:59:37-05:00] end b-conv08-hyb20 rc=0
+[2026-11-14T08:59:42-05:00] start b-conv08-ssdn20 (B, conv:400:0.08) tier=ssdn l1_gb=20 l2_gb=512 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T10:23:50-05:00] end b-conv08-ssdn20 rc=0
+[2026-11-14T10:23:55-05:00] start b-conv08L-daxl2 (B, conv:900:0.08) tier=daxl2 l1_gb=80 dax_devs=/dev/dax1.0:269.5,/dev/dax0.0:242.5 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T13:32:53-05:00] end b-conv08L-daxl2 rc=0
+[2026-11-14T13:32:58-05:00] start b-conv08-dram592 (B, conv:400:0.08) tier=dram l1_gb=592 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T14:57:28-05:00] end b-conv08-dram592 rc=0
+[2026-11-14T14:57:33-05:00] start b-conv08-dram20 (B, conv:400:0.08) tier=dram l1_gb=20 gpu_blocks=6400 gpu_util=0.8 adm=true adm_env=KVADM_POLICY=storefix lm_hook=kvtier
+[2026-11-14T16:21:48-05:00] end b-conv08-dram20 rc=0
+[2026-11-14T16:21:53-05:00] queue empty

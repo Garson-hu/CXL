@@ -1,0 +1,1 @@
+b-conv04-dram80: n 599/599 cached 0.093 = gpu 0.044 + dram 0.048 + cxl-L1 0.000 + L2 0.000 (+ unknown 0.000); TTFT p50/p95/p99/mean 3922/27444/37334/7041 ms; 0.120 req/s; L1 max 64.0 GiB, L2 max 0.0 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 80.9 GiB

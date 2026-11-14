@@ -1,0 +1,1 @@
+b-tool08-ssdn: n 2332/2332 cached 0.495 = gpu 0.278 + dram 0.115 + cxl-L1 0.000 + L2 0.102 (+ unknown 0.000); TTFT p50/p95/p99/mean 6307/39357/58377/11469 ms; 0.466 req/s; L1 max 64.0 GiB, L2 max 340.9 GiB; CXL r/w 0.0/0.0 GiB (overlap 0.00 s), NVMe r/w 67.9/341.0 GiB; LMCache RSS max 81.0 GiB

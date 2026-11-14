@@ -1,0 +1,2 @@
+files /mnt/local/ghu4/kvl2/p0-ssd-v: 340 files, 2.99 GiB; sampled 340: 2.99 GiB read back with O_DIRECT; page-cache residency of the sampled files: 0 of 783360 pages (0.00 %)
+RESULT dax_match=0 dax_mismatch=0

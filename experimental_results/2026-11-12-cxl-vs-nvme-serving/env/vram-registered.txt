@@ -1,0 +1,9 @@
+# 2026-11-12T16:43:42-05:00 c28 GPU NVIDIA GeForce RTX 4060 Ti, 8188 MiB
+DRAM L1 8 GiB | GPU used before 2 MiB, with the server 146 MiB (process entry 120 MiB) | start-up 4.052 s | RSS 8992 MiB
+DRAM L1 80 GiB | GPU used before 2 MiB, with the server 206 MiB (process entry 120 MiB) | start-up 5.562 s | RSS 39654 MiB
+DRAM L1 160 GiB | GPU used before 2 MiB, with the server 206 MiB (process entry 120 MiB) | start-up 5.559 s | RSS 39712 MiB
+DRAM L1 320 GiB | GPU used before 2 MiB, with the server 206 MiB (process entry 120 MiB) | start-up 5.565 s | RSS 39760 MiB
+Device-DAX L1 80 GiB (dax1.0) | GPU used before 2 MiB, with the server 290 MiB (process entry 120 MiB) | start-up 5.058 s | RSS 800 MiB
+Device-DAX L1 269.5 GiB (dax1.0) | GPU used before 2 MiB, with the server 670 MiB (process entry 120 MiB) | start-up 8.600 s | RSS 798 MiB
+hybrid: DRAM 80 GiB + dax1.0 269.5 GiB | GPU used before 2 MiB, with the server 830 MiB (process entry 120 MiB) | start-up 22.72 s | RSS 82718 MiB
+DRAM L1 80 GiB + DAX L2 512 GiB (not registered) | GPU used before 2 MiB, with the server 206 MiB (process entry 120 MiB) | start-up 5.568 s | RSS 39735 MiB

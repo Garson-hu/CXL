@@ -1,0 +1,1 @@
+b-tool08-daxl2: n 2332/2332 cached 0.495 = gpu 0.277 + dram 0.116 + cxl-L1 0.000 + L2 0.102 (+ unknown 0.000); TTFT p50/p95/p99/mean 6285/39489/58368/11469 ms; 0.466 req/s; L1 max 64.1 GiB, L2 max 340.9 GiB; CXL r/w 67.9/340.9 GiB (overlap 0.22 s), NVMe r/w 0.0/0.0 GiB; LMCache RSS max 81.0 GiB

@@ -1,0 +1,260 @@
+
+===== node / time =====
+c28
+2026-11-12T15:08:30-05:00
+6.14.11+
+
+===== slurm allocation =====
+JOBID PARTITION NAME STATE TIME TIME_LIMIT END_TIME NODELIST(REASON)
+340154 all cxl PENDING 0:00 3-00:00:00 2026-11-17T19:53:24 (Resources)
+340153 all cxl RUNNING 19:15:06 3-00:00:00 2026-11-14T19:53:24 c28
+
+===== CPU =====
+CPU(s):              256
+Thread(s) per core:  2
+Core(s) per socket:  128
+Socket(s):           1
+NUMA node(s):        1
+Model name:          AMD EPYC 9745 128-Core Processor
+CPU MHz:             1890.000
+CPU max MHz:         3709.0000
+CPU min MHz:         1200.0000
+L3 cache:            32768K
+NUMA node0 CPU(s):   0-255
+
+===== memory =====
+              total        used        free      shared  buff/cache   available
+Mem:            755          17         727           2          10         729
+available: 1 nodes (0)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255
+node 0 size: 773129 MB
+node 0 free: 744923 MB
+node distances:
+node   0 
+  0:  10 
+MemTotal:       791684976 kB
+MemFree:        762801680 kB
+MemAvailable:   764628060 kB
+Cached:          8881816 kB
+SwapCached:            0 kB
+Shmem:           3098152 kB
+HugePages_Total:       0
+Hugepagesize:       2048 kB
+
+===== kernel command line =====
+BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.14.11+ root=UUID=25fd6d13-5a3b-4aee-a34e-21f9f58d62a5 ro console=tty0 console=ttyS1,115200 net.ifnames=1 biosdevname=1 namespace.unpriv_enable=1 intel_pstate=disable rd.driver.blacklist=nouveau rd.driver.blacklist=nova-core memhp_default_state=offline initcall_blacklist=algif_aead_init
+
+===== GPU =====
+name, driver_version, memory.total [MiB], memory.used [MiB], pcie.link.gen.current, pcie.link.gen.max, pcie.link.width.current, pcie.link.width.max
+NVIDIA GeForce RTX 4060 Ti, 580.65.06, 8188 MiB, 2 MiB, 1, 4, 8, 8
+GPU PCI address: 0000:61:00.0
+
+===== NVMe =====
+NAME        MODEL                                     SIZE TYPE MOUNTPOINT FSTYPE SCHED ROTA
+nvme1n1     SOLIDIGM SBFPFABU038T                     3.5T disk                   none     0
+└─nvme1n1p1                                           3.5T part /mnt/local ext4   none     0
+/dev/nvme1n1p1 ext4   rw,relatime
+/dev/nvme1n1p1  3.5T   61G  3.3T   2% /mnt/local
+nvme1n1/queue/scheduler: [none] mq-deadline kyber bfq 
+nvme1n1/queue/nr_requests: 1023
+nvme1n1/queue/read_ahead_kb: 128
+nvme1n1/queue/max_sectors_kb: 128
+nvme1n1/queue/logical_block_size: 512
+nvme1n1/queue/physical_block_size: 512
+nvme1n1/queue/write_cache: write through
+SOLIDIGM SBFPFABU038T                   
+6CV10110
+NVMe PCIe link: current 16.0 GT/s PCIe x2, max 16.0 GT/s PCIe x4
+
+===== DAX devices: permissions =====
+crw-rw---- 1 root kmem 252, 0 Oct 20 15:32 /dev/dax0.0
+crw-rw---- 1 root kmem 252, 1 Oct 20 15:32 /dev/dax1.0
+crw------- 1 root root 252, 2 Oct 20 15:32 /dev/dax2.0
+uid=412504(ghu4) gid=108(ncsu) groups=108(ncsu),9(kmem)
+
+===== daxctl list -RDM =====
+[
+  {
+    "path":"\/platform\/hmem.1",
+    "id":1,
+    "size":289373421568,
+    "devices":[
+      {
+        "chardev":"dax1.0",
+        "size":289373421568,
+        "target_node":1,
+        "align":2097152,
+        "mode":"devdax"
+      }
+    ]
+  },
+  {
+    "path":"\/platform\/hmem.2",
+    "id":2,
+    "size":549755813888,
+    "devices":[
+      {
+        "chardev":"dax2.0",
+        "size":549755813888,
+        "target_node":1,
+        "align":2097152,
+        "mode":"devdax"
+      }
+    ]
+  },
+  {
+    "path":"\/platform\/hmem.0",
+    "id":0,
+    "size":260382392320,
+    "devices":[
+      {
+        "chardev":"dax0.0",
+        "size":260382392320,
+        "target_node":1,
+        "align":2097152,
+        "mode":"devdax"
+      }
+    ]
+  }
+]
+
+===== cxl list -MRDu (memdevs, regions, decoders) =====
+[
+  {
+    "memdev":"mem1",
+    "ram_size":"256.00 GiB (274.88 GB)",
+    "serial":"0x92ac5bad204e000",
+    "numa_node":0,
+    "host":"0000:02:00.0",
+    "firmware_version":"AA1035B1030123"
+  },
+  {
+    "memdev":"mem3",
+    "ram_size":"256.00 GiB (274.88 GB)",
+    "serial":"0x9f75af9da404e000",
+    "numa_node":0,
+    "host":"0000:01:00.0",
+    "firmware_version":"AA1035B1030123"
+  }
+]
+libcxl: cxl_decoder_get_region: failed to read region name: No such file or directory
+libcxl: cxl_decoder_get_region: failed to read region name: No such file or directory
+libcxl: cxl_decoder_get_region: failed to read region name: No such file or directory
+[
+  {
+    "root decoders":[
+      {
+        "decoder":"decoder0.0",
+        "size":"242.50 GiB (260.38 GB)",
+        "interleave_ways":2,
+        "interleave_granularity":256,
+        "volatile_capable":true,
+        "qos_class":1,
+        "nr_targets":2
+      },
+      {
+        "decoder":"decoder0.1",
+        "size":"269.50 GiB (289.37 GB)",
+        "interleave_ways":2,
+        "interleave_granularity":256,
+        "volatile_capable":true,
+        "qos_class":2,
+        "nr_targets":2
+      },
+      {
+        "decoder":"decoder0.2",
+        "size":"512.00 GiB (549.76 GB)",
+        "interleave_ways":1,
+        "volatile_capable":true,
+        "qos_class":3,
+        "nr_targets":1
+      }
+    ]
+  },
+  {
+    "port decoders":[
+      {
+        "decoder":"decoder3.0",
+        "size":"512.00 GiB (549.76 GB)",
+        "interleave_ways":2,
+        "interleave_granularity":256,
+        "nr_targets":2
+      }
+    ]
+  },
+  {
+    "endpoint decoders":[
+      {
+        "decoder":"decoder5.0",
+        "size":"256.00 GiB (274.88 GB)",
+        "interleave_ways":1,
+        "dpa_resource":"0",
+        "dpa_size":"256.00 GiB (274.88 GB)",
+        "mode":"ram"
+      },
+      {
+        "decoder":"decoder6.0",
+        "size":"256.00 GiB (274.88 GB)",
+        "interleave_ways":1,
+        "dpa_resource":"0",
+        "dpa_size":"256.00 GiB (274.88 GB)",
+        "mode":"ram"
+      }
+    ]
+  }
+]
+
+===== sysfs: DAX devices =====
+dax0.0 size=260382392320 align=2097152 target_node=1 resource= driver=device_dax parent=hmem.0
+dax1.0 size=289373421568 align=2097152 target_node=1 resource= driver=device_dax parent=hmem.1
+dax2.0 size=549755813888 align=2097152 target_node=1 resource= driver=device_dax parent=hmem.2
+
+===== sysfs: CXL decoders (interleave) =====
+decoder0.0 ways=2 gran=256 start= size=0x3ca0000000 targets=7,6 mode= region=
+decoder0.1 ways=2 gran=256 start= size=0x4360000000 targets=7,6 mode= region=
+decoder0.2 ways=1 gran=256 start= size=0x8000000000 targets=0 mode= region=
+decoder3.0 ways=2 gran=256 start= size=0x8000000000 targets=0,1 mode= region=
+decoder5.0 ways=1 gran=256 start= size=0x4000000000 targets= mode=ram region=
+decoder5.1 ways=1 gran=256 start= size=0x0 targets= mode=none region=
+decoder6.0 ways=1 gran=256 start= size=0x4000000000 targets= mode=ram region=
+decoder6.1 ways=1 gran=256 start= size=0x0 targets= mode=none region=
+
+===== CXL memdevs (PCI) =====
+mem0 -> 0000:e1:00.0 serial=0x17531b945b04e000 ram=0x4000000000 numa=0
+mem1 -> 0000:02:00.0 serial=0x92ac5bad204e000 ram=0x4000000000 numa=0
+mem2 -> 0000:c1:00.0 serial=0x7835c1908304e000 ram=0x4000000000 numa=0
+mem3 -> 0000:01:00.0 serial=0x9f75af9da404e000 ram=0x4000000000 numa=0
+01:00.0 CXL: Micron Technology Inc Device 6400 (rev 02)
+02:00.0 CXL: Micron Technology Inc Device 6400 (rev 02)
+c1:00.0 CXL: Micron Technology Inc Device 6400 (rev 02)
+e1:00.0 CXL: Micron Technology Inc Device 6400 (rev 02)
+
+===== /proc/iomem (CXL / dax ranges; needs root for addresses) =====
+00000000-00000000 : CXL Window 0
+  00000000-00000000 : Soft Reserved
+    00000000-00000000 : dax0.0
+00000000-00000000 : Soft Reserved
+  00000000-00000000 : CXL Window 1
+    00000000-00000000 : dax1.0
+  00000000-00000000 : CXL Window 2
+    00000000-00000000 : dax2.0
+
+===== mounts that involve dax / famfs (not touched by this study) =====
+/dev/dax2.0 /mnt/famfs/dax2.0 fuse rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other,shadow=/tmp/famfs_shadow_xxmUOj 0 0
+
+===== current users of the DAX devices (own processes visible only) =====
+dax0.0: 
+dax1.0: 
+dax2.0: 
+
+===== software =====
+python 3.12.15
+vllm 0.31.0
+lmcache 0.5.5
+torch 2.13.0
+transformers 5.17.0
+aiofiles 25.1.0
+numpy 2.2.6
+torch cuda 13.0 cudnn 92000
+11116f9 GPU KV admission study closed (2026-11-11): final report (181 runs; summary, C2.1-C2.6 with the last runs: P4 at the sustainable load on c28 -34 %, shortest-prompt-first + token mechanisms -41 % on two nodes, shortest-prompt-first with aging -30 % at the longest wait of stock; completion and correctness records; change history), raw data of the study (small artifacts of all runs on c28 and the 16 GB nodes, configuration matrix, figures, README, SUMMARY.md, job scripts), table script with the final families
+explore/cxl-vs-nvme-serving
