@@ -90,6 +90,12 @@ class Cfg:
     l2_store_workers: int = 1       # store workers of the DAX adapter
     lm_hook: str = "kvevt"          # LMCache-side hook: kvevt (2026-11-04 event mirror) | kvtier (2026-11-12: all events, media copies, memory / disk sampler)
     lm_env: str = ""                # extra environment of the LMCache process, "K=V;K=V" (KVTIER_*)
+    # 2026-11-14, sustained-overload round (b-conv16-dram80 and b-conv16-hyb lost vLLM's engine: a request waited > 300 s between its
+    # lookup and its retrieve, the read lock of its chunks expired, LMCache refused to read two of them although they were still in L1
+    # (KEY_NOT_READABLE; no eviction involved), vLLM's default policy failed the request and hit an assertion).
+    # Both default to "leave the command line as it was".
+    read_ttl: int = 0               # LMCache --l1-read-ttl-seconds; 0 = LMCache's default (300 s)
+    kv_fail: str = ""               # vLLM kv_load_failure_policy in --kv-transfer-config: recompute | fail; "" = vLLM's default (fail in 0.31.0)
 
 def parse_kv(args, cfg):
     for a in args:
@@ -140,6 +146,7 @@ class ServingEnv:
                    "--max-gpu-workers", str(c.gpu_workers), "--max-cpu-workers", str(c.cpu_workers), "--supported-transfer-mode", c.transfer_mode,
                    "--l2-prefetch-max-in-flight", str(c.l2_prefetch_max_in_flight), "--l1-size-gb", f"{c.l1_gb:g}"]
             if c.evict_ratio != 0.2: srv += ["--eviction-ratio", f"{c.evict_ratio:g}"]
+            if c.read_ttl: srv += ["--l1-read-ttl-seconds", str(c.read_ttl)]
             lm_env = dict(env)
             devs = [(d.rsplit(":", 1)[0], float(d.rsplit(":", 1)[1])) for d in c.dax_devs.split(",") if d]
             evict = {"eviction": {"eviction_policy": "LRU", "trigger_watermark": c.l2_watermark, "eviction_ratio": c.l2_evict_ratio}} if c.l2_evict else {}
@@ -186,6 +193,7 @@ class ServingEnv:
         if c.tier != "none":
             kv = {"kv_connector": "LMCacheMPConnector", "kv_connector_module_path": "lmcache.integration.vllm.lmcache_mp_connector", "kv_role": "kv_both",
                   "kv_connector_extra_config": {"lmcache.mp.host": "tcp://127.0.0.1", "lmcache.mp.port": c.mpport, "lmcache.mp.eager_prefetch": bool(c.eager_prefetch)}}
+            if c.kv_fail: kv["kv_load_failure_policy"] = c.kv_fail
             vl += ["--kv-transfer-config", json.dumps(kv)]
         if c.extra_vllm: vl += c.extra_vllm.split()
         v_env = dict(env)

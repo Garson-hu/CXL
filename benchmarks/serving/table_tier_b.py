@@ -13,7 +13,7 @@ Reads <B>/<tag>-tier.json, <tag>-tier-requests.csv, <tag>-traffic.csv (analyze_t
   <figs>/figE1-traffic.png         per-second KV bytes read from / written to the extension tier
 KV capacity of a configuration = GPU pool (3.52 GiB) + what the host tiers hold at their 0.8 eviction trigger: 64 GiB (80 GiB DRAM),
 473.6 GiB (592 GiB hybrid L1 or DRAM), 409.6 GiB (512 GiB L2; write-through, so the L2 holds a superset of L1).
-usage: table_tier_b.py <B dir> <figs dir> [group ...]      (default groups: conv08 tool08 conv04 tool04 conv08L conv16)"""
+usage: table_tier_b.py <B dir> <figs dir> [group ...]      (default groups: conv08 tool08 conv04 tool04 conv08L conv16r)"""
 import csv, json, os, sys
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -21,14 +21,14 @@ import matplotlib.pyplot as plt
 B, FIGS = sys.argv[1:3]; os.makedirs(FIGS, exist_ok=True)
 GROUPS = {"conv08": "conversation, trace 0–400 s at 0.08× (high load)", "tool08": "tool-agent, trace 0–400 s at 0.08× (high load)",
           "conv04": "conversation, trace 0–200 s at 0.04× (half that rate)", "tool04": "tool-agent, trace 0–200 s at 0.04× (half that rate)",
-          "conv08L": "conversation, LONG window: trace 0–900 s at 0.08× (high load; 1,043 GiB of KV produced, the extension tiers fill and evict)",
-          "conv16": "conversation, trace 0–400 s at 0.16× (sustained overload: the arrivals take 2,500 s)"}
+          "conv08L": "conversation, LONG window: trace 0–900 s at 0.08× (high load; 735 GiB of distinct KV stored, the extension tiers fill and evict)",
+          "conv16r": "conversation, trace 0–400 s at 0.16× (sustained overload: the arrivals take 2,500 s; read-lock TTL 7,200 s, kv_load_failure_policy=recompute)"}
 CONFIGS = [("none", "recompute only\n(vLLM alone)"), ("dram80", "DRAM only\n80 GiB"), ("hyb", "DRAM + CXL\nhybrid L1"), ("daxl2", "DRAM + CXL\nL2 adapter"), ("ssdn", "DRAM + NVMe\nL2 adapter"),
            ("dram592", "DRAM only\n592 GiB (ref.)"), ("dram20", "DRAM only\n20 GiB"), ("hyb20", "20 GiB DRAM + CXL\nhybrid L1"), ("ssdn20", "20 GiB DRAM + NVMe\nL2 adapter")]
 COL = {c: f"C{i}" for i, (c, _) in enumerate(CONFIGS)}        # one colour per configuration in every panel and figure
 GPU_GIB = 3.52
 CAP = {"none": GPU_GIB, "dram20": GPU_GIB + 16, "dram80": GPU_GIB + 64, "dram592": GPU_GIB + 473.6, "hyb": GPU_GIB + 473.6, "hyb20": GPU_GIB + 0.8 * 532, "daxl2": GPU_GIB + 409.6, "ssdn": GPU_GIB + 409.6, "ssdn20": GPU_GIB + 409.6}
-WINDOW = {"conv08": ("conv", 400), "tool08": ("tool", 400), "conv04": ("conv", 200), "tool04": ("tool", 200), "conv08L": ("conv", 900), "conv16": ("conv", 400)}
+WINDOW = {"conv08": ("conv", 400), "tool08": ("tool", 400), "conv04": ("conv", 200), "tool04": ("tool", 200), "conv08L": ("conv", 900), "conv16r": ("conv", 400)}
 def model(g):
     """offline LRU model of the group's trace window: [(capacity GiB, share)], and the prompt tokens of the window"""
     p = os.path.join(os.path.dirname(os.path.abspath(B.rstrip("/"))), "trace-model", "trace-capacity.csv")
@@ -67,7 +67,9 @@ D = {g: {c: load(g, c) for c, _ in CONFIGS} for g in groups}; D = {g: {c: s for 
 lab = dict(CONFIGS); flat = lambda c: lab[c].replace("\n", " ")
 
 T = ["# Experiment B — end-to-end cache expansion (trace replays; one run per cell)", ""]
-E = ["# Experiment E — KV read / write traffic per medium during the replays of Experiment B", ""]
+E = ["# Experiment E — KV read / write traffic per medium during the replays of Experiment B", "",
+     "CXL traffic is the sum of the individually timed chunk copies into and out of the device mapping. For the `fs_native` NVMe L2 the bytes of each load / store task are spread evenly over the task's interval, "
+     "so its \"peak GiB in 1 s\" is an estimate that can exceed the device's rate when several tasks end in the same second; its busy seconds and its rate while busy are not affected.", ""]
 for g, d in D.items():
     T += [f"## {GROUPS.get(g, g)}", "",
           "| configuration | requests ok / all | cached share | GPU prefix | DRAM | CXL L1 | L2 | recomputed Mtok | TTFT p50 s | p95 | p99 | mean | request p50 s | p95 | req/s | out tok/s | computed tok/s | GPU busy | backlog max |", "|" + "---|" * 19]

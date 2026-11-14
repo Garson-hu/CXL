@@ -12,7 +12,15 @@ from analyze_b import analyze, load_gpu, q
 
 def summarize(out, tag):
     rows, summ, steps = analyze(out, tag)
-    R = [r for r in rows if r["case"] == "trace"]; ok = [r for r in R if r["status"] == 200]
+    # 2026-11-14: a request is completed only with status 200 AND at least one output token - a stream that was open when the engine
+    # died keeps its status 200 (b-conv16-dram80: 179 such requests). The output tokens are in the client records, not in the rows.
+    outtok = {}
+    try:
+        for l in open(f"{out}/{tag}-client.jsonl"):
+            try: c = json.loads(l); outtok[c.get("rid")] = c.get("out_tokens") or 0
+            except Exception: pass
+    except OSError: pass
+    R = [r for r in rows if r["case"] == "trace"]; ok = [r for r in R if r["status"] == 200 and outtok.get(r["rid"], 1) > 0]
     if not ok: return None
     t0 = min(r["send_mono"] for r in ok); t1 = max(r["end_mono"] for r in ok); W = t1 - t0
     prompt = sum(r["prompt_tokens"] for r in ok); cached = sum(max(0, r["cached_tokens"] or 0) for r in ok); host = sum(r.get("retrieve_tokens") or 0 for r in ok)
