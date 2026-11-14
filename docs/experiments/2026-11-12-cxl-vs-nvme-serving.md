@@ -50,15 +50,17 @@ replayed traces.
    cache server) runs while the request waits for the GPU; it shows only on hits that find the GPU free (+45 to +116 ms).
 5. **Where the two extensions differ (C.4.4, C.4.5).** In the long window, the only one that fills them, the CXL hybrid
    keeps more (0.309 against 0.302; 28 of 2,728 requests) because it is one exclusive cache level of 592 GiB while a file tier
-   is an inclusive second level of 512 GiB — a difference of tier structure, not of speed. PENDING-DAXL2-SUM Wherever the hit
+   is an inclusive second level of 512 GiB — a difference of tier structure, not of speed: the same CXL memory used as a
+   second level has the NVMe's cached tokens to within one request (0.302). That run also exposes a defect of LMCache's DAX
+   adapter (its eviction holds a lock for 5–10 s; 14 requests were 2–10 s later because of it). Wherever the hit
    rates are equal the hybrid is the slower of the two by 0.3–1 % of the mean TTFT (its stores into CXL memory are slow).
 6. **Sustained overload (C.4.5).** With default settings the engine died in both attempts: LMCache's read lock on looked-up
    chunks lasts 300 s, requests waited longer, and vLLM's default failure policy plus an assertion end the engine. With the
    lock at 7,200 s all three configurations complete; throughput then follows the cache (+6.3 % / +6.5 %) and the two media
    are equal again. The lookup runs a median 377–418 s ahead of the service there, which costs the extensions 3 points of
    cached share.
-7. **Traffic on the CXL memory (C.5).** 2–18 MiB/s of reads and 22–74 MiB/s of writes on average; the busiest second moves
-   2.1 GiB (< 5 % of the pair's bandwidth); reads and writes never overlap on the hybrid's path (one transfer thread); 79–86 %
+7. **Traffic on the CXL memory (C.5).** 2–20 MiB/s of reads and 22–74 MiB/s of writes on average; the busiest second moves
+   2.1–2.9 GiB (5–6 % of the pair's bandwidth); reads and writes never overlap on the hybrid's path (one transfer thread); 79–86 %
    of the KV written to an extension is not read again within the window.
 8. **A smaller DRAM budget (C.4.6).** With 20 GiB of DRAM instead of 80 GiB both extensions do the same work as before
    (cached share 0.238, the same tokens recomputed; TTFT p50 8.69 s CXL hybrid, 8.62 s NVMe). The extension then serves nearly
@@ -242,7 +244,7 @@ Replays of Experiment B, by window and configuration (every completed configurat
 | tool-agent 0–400 s, 0.08× (`tool08`) | ✓ | ✓ | ✓ | ✓ | ✓ | – |
 | conversation 0–200 s, 0.04× (`conv04`) | – | ✓ | ✓ | – | ✓ | – |
 | tool-agent 0–200 s, 0.04× (`tool04`) | – | ✓ | ✓ | – | ✓ | – |
-| conversation 0–900 s, 0.08× (`conv08L`) | – | ✓ | ✓ | PENDING-DAXL2-CELL | ✓ | – |
+| conversation 0–900 s, 0.08× (`conv08L`) | – | ✓ | ✓ | ✓ | ✓ | – |
 | conversation 0–400 s, 0.16× (`conv16r`) ¹ | – | ✓ | ✓ | – | ✓ | – |
 
 ¹ With LMCache `--l1-read-ttl-seconds 7200` and vLLM `kv_load_failure_policy=recompute` in all three configurations (C.4.5);
@@ -719,7 +721,7 @@ behind it.
 #### C.4.4 Conversation trace, long window: 0–900 s at 0.08× — the extensions fill and evict
 
 Runs `b-conv08L-hyb` (2026-11-13 17:22–20:31), `b-conv08L-ssdn` (20:31–23:40), `b-conv08L-dram80` (23:40–02:49 on 2026-11-14), `b-conv08L-daxl2`
-(TODO; added 2026-11-13 23:41 as the equal-capacity partner of the NVMe run). 11,250 s of replay each, 2,728 requests,
+(2026-11-14 10:24–13:33; added 2026-11-13 23:41 as the equal-capacity partner of the NVMe run). 11,250 s of replay each, 2,728 requests,
 30.54 M prompt tokens; all requests HTTP 200, no error line in any log. The window produces 734.9 GiB of distinct KV
 (83,600 chunks) — more than any configuration can hold.
 
@@ -727,7 +729,7 @@ Runs `b-conv08L-hyb` (2026-11-13 17:22–20:31), `b-conv08L-ssdn` (20:31–23:40
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | DRAM only, 80 GiB | 64 | 0.097 | 0.047 | 0.051 | – | – | 27.57 | 14.46 | 63.07 | 85.06 | 21.42 | 32.76 | 91.57 | 0.241 | 83 | 2,438 | 0.88 | 39 |
 | + 512 GiB CXL, hybrid L1 | 473.6 | **0.309** | 0.047 | 0.073 | 0.190 | – | 21.09 | 6.15 | 33.38 | 49.40 | 9.72 | 20.77 | 58.76 | 0.242 | 83 | 1,868 | 0.78 | 25 |
-| + 512 GiB CXL, L2 adapter | 409.6 | TODO |
+| + 512 GiB CXL, L2 adapter | 409.6 | **0.302** | 0.047 | 0.044 | – | 0.211 | 21.31 | 6.32 | 33.27 | 49.38 | 9.88 | 20.86 | 59.72 | 0.242 | 83 | 1,888 | 0.78 | 25 |
 | + 512 GiB NVMe, `fs_native` L2 | 409.6 | **0.302** | 0.047 | 0.045 | – | 0.211 | 21.31 | 6.24 | 33.29 | 49.42 | 9.85 | 20.93 | 59.19 | 0.242 | 83 | 1,887 | 0.78 | 25 |
 
 ¹ 0.8 × the tier's size, the point at which LMCache's eviction starts: the hybrid is one L1 of 592 GiB (80 DRAM + 512 CXL)
@@ -739,6 +741,7 @@ unlimited capacity (reached at 592 GiB).
 |---|---|---|---|---|---|---|---|---|---|---|
 | DRAM only | 64.1 of 80 | – | 907.6 / – | – | 964.8 / – / – | – | 81.0 | 0.30 | 0.0 / 0.4 | 115 |
 | DRAM + CXL hybrid | 473.6 of 592 | – | 68.7 / 215.4 | – | 148.7 / 593.6 / – | 199.1 | 81.1 (80.0 shared memory) | 0.29 | 0.0 / 0.4 | 149 |
+| DRAM + CXL L2 | 64.1 of 80 | 409.5 of 512 | 913.2 / – | 46,608 keys = 409.6 GiB | 750.2 / 750.2 / – | 222.2 | 81.0 | 0.33 | 0.0 / 0.4 | 401 |
 | DRAM + NVMe L2 | 64.8 of 80 | 409.6 of 512 | 912.6 / – | 46,612 keys = 409.7 GiB | 750.1 / – / 749.8 | 221.9 | 81.0 | 0.39 | 221.9 / 751.9 | 142 |
 
 **Result 1 — when the extensions fill, the larger effective capacity wins by a little, and it is the CXL hybrid that has
@@ -786,6 +789,35 @@ with an extension (longest 9,447–9,639 s); DRAM only reuses within 553 / 2,474
 of written KV that is ever read back from 19 to 21 %: 79 % of what the extension stores (580 GiB of 735 GiB) is not found
 again within 11,250 s.
 
+**Result 6 — CXL memory behind the second-level interface gets the NVMe's result, not the hybrid's.** `b-conv08L-daxl2` is
+the equal-capacity partner of the NVMe run: an 80 GiB DRAM L1 and the same 512 GiB of CXL memory as an inclusive L2 with the
+same watermark. Its cached share is 0.302. 2,727 of its 2,728 requests have exactly the cached tokens of the NVMe run (one has
+3,584 fewer), it evicts the same five batches (46,608 keys against 46,612), and against it the hybrid keeps a hit for the same
+28 requests (223,488 tokens more; none the other way). With the medium held constant the 0.7 points between the hybrid and
+the NVMe configuration remain: they belong to the tier's structure.
+
+TTFT of the CXL L2 against the NVMe L2: p50 6.32 against 6.24 s, p95 33.27 / 33.29 s, p99 49.38 / 49.42 s, mean 9.88 / 9.85 s;
+paired per request, median −5 ms and mean +30 ms. Until 6,000 s, 68 % of the requests are faster from the CXL L2, by 5 ms at
+the mean and at the median: its load takes 13 ms at the median instead of 104 ms (p95 94 against 406 ms; 47 against 315 ms
+for prefixes of 16K tokens and more), behind the same wait for the GPU. The 171 requests that load from the L2 and find the
+GPU free (6.3 % of the window) are 90 ms faster from CXL memory at the median (337 against 450 ms).
+
+**Result 7 — the CXL L2's mean is on the wrong side because LMCache's DAX adapter stalls when it evicts; the medium is not
+involved.** When the L2 reaches its watermark the adapter deletes a batch of ≈ 9,320 keys (82 GiB). `DaxL2Adapter.delete()`
+holds the adapter's device lock for the whole batch — the lock its lookups and stores take — and inside it removes
+duplicates from the list of deleted keys with a list membership test, which is quadratic in the batch size: that loop alone,
+reproduced outside the server with 9,322 keys of the same type, takes 4.9 s on an idle core. In the run, two of the five
+batches met requests. At 5,972–5,978 s seven L2 lookups waited 3.0–5.4 s, and the six requests behind them have a TTFT
+1.9–2.5 s later than in the NVMe run; at 11,105–11,114 s eight lookups waited 5.1–9.7 s, and their eight requests are 7.5–9.7 s
+later (8.3 s at the mean), with the requests queued behind them following (the 60 requests sent after 11,100 s: +1.14 s at
+the mean). Without those eight requests the paired mean difference to the NVMe run is +5 ms. The stores wait on the same lock
+in all five batches: the five largest write seconds of the run (0.4–1.1 GiB, against 0.25 GiB otherwise) are the seconds in
+which a batch ends. The file adapter deletes its 9,320 files per batch without delaying a lookup (slowest L2 lookup of the
+NVMe run: 0.72 s, during loads). The hybrid's L1 eviction (three batches of 94.5 GiB, each within one second) delays nothing either: the requests sent
+around them are not later than in the NVMe run. This is a
+defect of the DAX adapter in LMCache 0.5.5 that only a filled L2 exposes — the two 5,000-s windows never evict — and it was
+not repaired here (I).
+
 **Explanation.**
 
 1. *Why the hybrid caches more: it is the tier's structure, not the medium.* CXL memory is byte-addressable, so LMCache
@@ -797,7 +829,8 @@ again within 11,250 s.
    gives 0.309 and 0.312 at the two watermarks — 0.003 and 0.006 above the runs; read at the average occupancies instead it
    gives 0.309 for 424 GiB and 0.302 for 369 GiB (linear interpolation between its points), the measured values. The
    55 GiB between the two tiers are worth 0.7 points of cached share at this point of the trace's capacity curve. The CXL L2
-   run (TODO) puts the CXL memory behind the same second-level interface, capacity and eviction as the NVMe.
+   run (Result 6) puts the CXL memory behind the same second-level interface, capacity and eviction as the NVMe, and gets the
+   NVMe's cached tokens to within one request.
 2. *Why 28 requests move the mean by 0.13 s.* Each of them loses a hit of 7,850 tokens on average with the smaller
    capacity — ≈ 1.7 s of prefill at this GPU's rate (a 16K miss costs 3.4 s) — and at a utilisation of 0.78 the requests queued behind it wait for that
    prefill too: the requests with equal cached tokens are 0.2–0.4 s faster on average in the segments where the 28 occur,
@@ -808,8 +841,6 @@ again within 11,250 s.
    visible on the 175 hits that find the GPU free (+103 ms at the median). An extension hit still waits 3.5–3.6 s (p50)
    between queueing and scheduling; summed over the window the NVMe's retrieval is 617 × 185 ms ÷ 2,728 = 42 ms of the mean,
    against 9.8 s.
-
-TODO: CXL L2 at equal capacity (cached share equal to the NVMe's? does the medium show?).
 
 #### C.4.5 Sustained overload: conversation trace, 0–400 s at 0.16×
 
@@ -1034,7 +1065,7 @@ No synthetic burst pattern was replayed in Experiment B: the replays keep the tr
 4. *How much slower is NVMe retrieval?* On an idle server the media stage of a 16K hit takes 197 ms from the NVMe (2.9 GiB/s)
    and does not exist for CXL L1 (the GPU copies from the device mapping; lookup 1.2 ms). In the replays the load inside the
    cache server takes 78–106 ms at the median and 328–410 ms at p95 (1,044 ms at most; 301 / 712 ms under overload), against
-   12–13 ms / 74–79 ms for the same loads from the CXL L2.
+   12–13 ms / 74–94 ms for the same loads from the CXL L2.
 5. *Does that latency affect TTFT?* For the hits that find the GPU free, yes: +45 to +116 ms at the median, 2.5–6.4 % of the
    requests of a window. For the window as a whole, no: every all-request statistic is within 1 % of the CXL configurations,
    and the paired per-request difference has a median of 0.00–0.02 s.
@@ -1087,10 +1118,14 @@ It is not the cards' view: hardware counters of the memory controllers are not a
 | conversation 0.04× | hybrid L1 | 10.3 | 117.6 | 2 / 24 | 0.9 | 30.2 | 12.4 ¹ / 3.89 | 1.16 / 0.23 |
 | tool-agent 0.04× | hybrid L1 | 9.1 | 108.7 | 2 / 22 | 0.8 | 28.0 | 12.4 ¹ / 3.89 | 1.16 / 0.25 |
 | conversation 0.08×, long window (11,250 s) | hybrid L1 | 199.1 | 593.6 | 18 / 54 | 18.4 | 152.7 | 12.4 ¹ / 3.89 | 1.71 / 0.25 |
+| conversation 0.08×, long window (11,250 s) | L2 adapter | 222.2 | 749.7 | 20 / 68 | 10.0 | 34.5 | 22.3 / 21.8 | 2.91 / 1.12 ² |
 | conversation 0.16×, overload (3,855 s) | hybrid L1 | 39.4 | 279.3 | 10 / 74 | 3.7 | 71.8 | 12.4 ¹ / 3.89 | 2.14 / 0.22 |
 | conversation 0.08×, 20 GiB DRAM part (C.4.6) | hybrid L1 | 79.7 | 339.6 | 16 / 69 | 6.7 | 87.3 | 12.4 ¹ / 3.89 | 1.32 / 0.25 |
 | conversation 0.08× | L2 adapter (CPU copies CXL ↔ DRAM) | 69.0 | 359.6 | 14 / 74 | 3.2 | 16.8 | 21.8 / 21.5 | 1.76 / 0.25 |
 | tool-agent 0.08× | L2 adapter | 67.9 | 340.9 | 14 / 70 | 3.2 | 15.7 | 21.4 / 21.7 | 2.14 / 0.25 |
+
+² the five largest write seconds of this run (0.4–1.1 GiB) are stores released when an eviction batch of the DAX adapter ends
+(C.4.4, Result 7); every other second of it has at most 0.25 GiB.
 
 ¹ per-copy rate of the staging copies (C.1); the table's own "read GiB/s while busy" for the hybrid (11.1–11.4) is a lower
 bound, because a retrieve that mixes DRAM and CXL chunks is counted with its whole interval.
@@ -1102,8 +1137,10 @@ read at 2.81 GiB/s (31.2 s), written at 0.91 GiB/s (396.6 s), largest second 2.0
 
 The extension is idle almost all of the time. In the busiest replays the CXL memory is being read for 3–7 s and written for
 16–87 s out of 5,000; the average traffic is 11–16 MiB/s of reads and 53–74 MiB/s of writes. The largest second moves 2.1 GiB
-of reads — 17 % of what the GPU's link can take (12.4 GiB/s) and under 5 % of the pair's measured bandwidth (≈ 46 GiB/s) — and
-0.25 GiB of writes in every configuration and on every medium: stores are produced by prefill, and 0.25 GiB is the KV of
+of reads on the GPU's path — 17 % of what the GPU's link can take (12.4 GiB/s) and under 5 % of the pair's measured bandwidth
+(≈ 46 GiB/s); the L2 adapter, whose CPU copies are not bound by the GPU link, reaches 2.9 GiB in one second of the long window (6 %
+of the pair's bandwidth; the NVMe L2 run has the same largest second: the same loads) — and
+0.25 GiB of writes in every configuration and on every medium (apart from the released stores of ²): stores are produced by prefill, and 0.25 GiB is the KV of
 ≈ 7,300 prompt tokens (36 KiB each) — about the most this GPU prefills in a second.
 
 **Result 2 — overlap of retrieval and persistence.**
@@ -1125,18 +1162,19 @@ of reads — 17 % of what the GPU's link can take (12.4 GiB/s) and under 5 % of 
 | tool-agent 0.04× | NVMe L2 | 4,040 | 229 | 73 (32 %) | 61.2 / 22.2 / 0.00 | 40 | 1.82 |
 | conversation 0.08×, long window | DRAM only | 18,730 | 154 | 79 (51 %) | 307.2 / 36.8 / 0.00 | – | – |
 | conversation 0.08×, long window | CXL hybrid L1 | 15,454 | 810 | 349 (43 %) | 377.8 / 118.8 / 0.00 | 471 | 0.00 |
+| conversation 0.08×, long window | CXL L2 adapter | 15,577 | 784 | 299 (38 %) | 244.8 / 121.0 / 0.00 | 481 | 0.55 |
 | conversation 0.08×, long window | NVMe L2 | 15,563 | 784 | 303 (39 %) | 241.8 / 118.6 / 0.00 | 464 | 44.27 |
 | conversation 0.16×, overload | DRAM only | 8,023 | 122 | 68 (56 %) | 128.0 / 40.3 / 0.00 | – | – |
 | conversation 0.16×, overload | CXL hybrid L1 | 7,519 | 217 | 101 (47 %) | 181.0 / 63.1 / 0.00 | 118 | 0.00 |
 | conversation 0.16×, overload | NVMe L2 | 7,514 | 219 | 99 (45 %) | 117.7 / 64.8 / 0.00 | 15 | 7.43 |
 
-At the level of the application the two directions meet often — with an extension, 39–46 % of the retrieves at 0.08×,
+At the level of the application the two directions meet often — with an extension, 38–46 % of the retrieves at 0.08×,
 45–47 % at 0.16× and 29–37 % at 0.04× are submitted or run while a store operation is pending, and 147–205 seconds of a high-load replay contain
 both a read and a write on the extension. At the
 level of the copies they never meet on the GPU path: LMCache moves KV between the GPU and the host on one transfer thread,
 store and retrieve operations are served one after the other, and the time with both kinds open is 0.00 s in every run.
 In the hybrid L1 that is the only path to the CXL memory, so its read and write intervals do not overlap at all. Only the L2
-adapters have their own worker threads: on the CXL L2 the copies overlap for 0.22 s of a replay, on the NVMe for 14.5–19.0 s (its
+adapters have their own worker threads: on the CXL L2 the copies overlap for 0.22 s of a 5,000-s replay (0.55 s of the long window), on the NVMe for 14.5–19.0 s (its
 writes are slow enough to be in progress 8 % of the time).
 
 What a retrieve waits for is mostly not the other direction either: between submission and start a retrieve waits 0.1–36 ms
@@ -1156,10 +1194,12 @@ time):
 | conversation 0.08×, 20 GiB DRAM part | NVMe files | 38, 2.88 | 75, 2.56 (1.98) |
 | conversation 0.04× | NVMe files | 16, 2.90 | 13, 2.89 (2.86) |
 | tool-agent 0.04× | NVMe files | 18, 2.89 | 9, 2.77 (2.11) |
+| conversation 0.08×, long window | CXL, DAX slots | 163, 29.0 | 118, **11.5** (7.3) |
 | conversation 0.08×, long window | NVMe files | 98, 2.88 | 182, 2.55 (1.99) |
 | conversation 0.16×, overload | NVMe files | 6, 2.05 | 38, 2.09 (1.04) |
 
-A load from the CXL L2 runs at half its rate when a store to the CXL L2 is in progress during part of it (30 → 15.5 GiB/s;
+A load from the CXL L2 runs at half its rate or less when a store to the CXL L2 is in progress during part of it (30 → 15.5 GiB/s,
+29 → 11.5 GiB/s in the long window;
 the median load takes 49 ms instead of 15 ms). On the NVMe the loss is 0–11 % (largest in the long window, where the device is being written 7 % of the time), with a tail for small loads (10th percentile
 0.9 GiB/s over all loads against 2.7 GiB/s without a store). Under overload the lookups — and with them the loads — come in
 bursts as the scheduler works through its queue: the 85 loads of that run fall into 15 seconds of the wall clock (193 loads in 164 seconds at 0.08×), run at 2.05–2.09 GiB/s with or
@@ -1187,7 +1227,7 @@ chunk (`tables-writes.md`):
 | tool-agent 0.04× | DRAM only | 188.7 (2,422) | 0.052 | 178.8 | 28.9 | 963 / 2,417 |
 | tool-agent 0.04× | any extension | 188.7 | 0.153 | 159.9 | 49.8 | 1,715 / 2,894 |
 | conversation 0.08×, long window | DRAM only | 734.8 (26,171) | 0.041 | 704.7 | 53.1 | 553 / 2,474 |
-| conversation 0.08×, long window | CXL hybrid L1 / NVMe L2 (both evict) | 734.9 | 0.211 / 0.208 | 579.8 / 581.9 | 275.6 / 268.0 | 1,271 / 4,056 |
+| conversation 0.08×, long window | CXL hybrid L1 / NVMe L2 (both evict; the CXL L2 has the NVMe's values) | 734.9 | 0.211 / 0.208 | 579.8 / 581.9 | 275.6 / 268.0 | 1,271 / 4,056 |
 | conversation 0.16×, overload | DRAM only | 359.2 (4,654) | 0.082 | 329.6 | 39.6 | 370 / 633 |
 | conversation 0.16×, overload | CXL hybrid L1 / NVMe L2 | 359.3 | 0.155 / 0.156 | 303.6 / 303.2 | 75.3 / 75.7 | 700 / 1,586 |
 
@@ -1199,12 +1239,12 @@ place where the CXL path costs time.
 
 **The brief's five questions.**
 
-1. *How frequently do retrieval and persistence overlap?* As operations, constantly under load (39–46 % of retrieves meet a
+1. *How frequently do retrieval and persistence overlap?* As operations, constantly under load (38–46 % of retrieves meet a
    pending store at 0.08×, 29–37 % at 0.04×); as copies on the medium, never in the hybrid L1 (one transfer thread) and for 0.2 s per 5,000 s in the CXL
    L2 adapter.
-2. *What is the instantaneous traffic?* Reads: bursts at the rate of the GPU link, up to 2.1 GiB in a second; writes: at most
-   0.25 GiB in a second, set by the GPU's prefill rate; averages 11–18 and 53–74 MiB/s.
-3. *Does it approach the CXL bandwidth?* No: the largest second is under 5 % of the pair's ≈ 46 GiB/s, the average three
+2. *What is the instantaneous traffic?* Reads: bursts at the rate of the GPU link, up to 2.1 GiB in a second (2.9 GiB through the L2 adapter's CPU copies); writes: at most
+   0.25 GiB in a second, set by the GPU's prefill rate; averages 11–20 and 53–74 MiB/s.
+3. *Does it approach the CXL bandwidth?* No: the largest second is 5–6 % of the pair's ≈ 46 GiB/s, the average three
    orders of magnitude below it. The limits that are reached are the GPU link (12.4 GiB/s for reads) and the 3.89 GiB/s
    store path.
 4. *Is there evidence of read/write interference?* Where the two directions run on separate threads, yes: CXL L2 loads halve
@@ -1341,7 +1381,9 @@ load of 0.1–1 s inside that interval is free. Averaged over all requests the N
 *Explanation — unique capacity:* byte-addressable memory can extend the first level, where an object exists once (592 GiB,
 eviction from 473.6); a file tier sits behind the DRAM level and, with write-through, repeats its contents (512 GiB, eviction
 from 409.6). With batch eviction the tiers hold 424 and 369 GiB on average, and the offline model read at those values gives
-the two measured shares. PENDING-DAXL2-LONG
+the two measured shares. The control with the medium held constant confirms it: the same CXL memory as an inclusive L2
+(409.6 GiB effective) has the NVMe's cached tokens in 2,727 of 2,728 requests (0.302), and the hybrid keeps its 28 hits
+against it as well.
 
 **D.7 Capacity changes throughput only at saturation, and then equally for both media.**
 *Why:* the brief's question 6.
@@ -1373,8 +1415,8 @@ expired is refused at the retrieve although it is still in the cache; vLLM 0.31.
 an assertion. Under overload more than half of the requests wait longer than 300 s between lookup and service (C.4.5).
 
 **D.10 The traffic on the CXL memory is far from its limits, and its two directions never meet on the hybrid's path.**
-*Result:* averages of 11–18 MiB/s read and 53–74 MiB/s written; largest second 2.1 GiB read, 0.25 GiB written — under 5 % of
-the pair's bandwidth; copy-level overlap of reads and writes 0.00 s in every hybrid run.
+*Result:* averages of 11–20 MiB/s read and 53–74 MiB/s written; largest second 2.1 GiB read on the GPU's path (2.9 GiB through
+the L2 adapter), 0.25 GiB written — 5–6 % of the pair's bandwidth; copy-level overlap of reads and writes 0.00 s in every hybrid run.
 *Explanation — one GPU and one transfer thread:* writes are paced by this GPU's prefill (≈ 7,300 tokens/s at most), reads by
 its link, and LMCache serialises the two on a single thread. Whether the medium's duplex behaviour matters is decided by the
 number and speed of the GPUs in front of it, which this node cannot vary.
@@ -1389,7 +1431,7 @@ number and speed of the GPUs in front of it, which this node cannot vary.
 |---|---|---|---|---|---|
 | conversation 0–200 s, 0.04× | – | 0.093 | 0.182 (NVMe) | 0.182 | 0.100 / 0.183 / 0.183 |
 | conversation 0–400 s, 0.08× | 0.045 | 0.096 | 0.238 (NVMe, CXL) | 0.238 | 0.101 / 0.239 / 0.239 |
-| conversation 0–900 s, 0.08× | – | 0.097 | 0.302 (NVMe) PENDING-DAXL2-SHARE | 0.309 | 0.101 / 0.309 / 0.312 |
+| conversation 0–900 s, 0.08× | – | 0.097 | 0.302 (NVMe, CXL) | 0.309 | 0.101 / 0.309 / 0.312 |
 | tool-agent 0–200 s, 0.04× | – | 0.383 | 0.446 (NVMe) | 0.446 | 0.389 / 0.447 / 0.447 |
 | tool-agent 0–400 s, 0.08× | 0.274 | 0.396 | 0.495 (NVMe, CXL) | 0.495 | 0.400 / 0.496 / 0.496 |
 | conversation 0–400 s, 0.16× (overload) | – | 0.130 | 0.209 (NVMe) | 0.208 | 0.101 / 0.239 / 0.239 |
@@ -1478,10 +1520,12 @@ Stated without qualification; each is a measured outcome of this study.
    the mean. PENDING-DRAM592-F
 3. **The one case in which the CXL configuration has more hits is a capacity effect.** Long window: 0.309 against 0.302,
    28 requests of 2,728, −1.3 % mean TTFT, equal percentiles. It comes from the hybrid being one exclusive level of 592 GiB
-   against an inclusive second level of 512 GiB. PENDING-DAXL2-F
+   against an inclusive second level of 512 GiB: the same CXL memory used as a second level reaches 0.302, with the NVMe's
+   cached tokens in 2,727 of 2,728 requests.
 4. **Behind the same software path, CXL memory buys nothing over the NVMe in the replays.** As an L2, the CXL memory loads a
    prefix 8–9× faster than the files (12–13 ms against 104–106 ms at the median), and the two L2 configurations are
-   indistinguishable in both 0.08× windows (paired mean difference 0.00 and −0.03 s).
+   indistinguishable in both 0.08× windows (paired mean difference 0.00 and −0.03 s) and in the long window (median −5 ms;
+   mean +30 ms, 25 ms of it from the adapter's stalls of item 12).
 5. **Capacity does not raise throughput at sustainable load.** At 0.04× and 0.08× every configuration — including vLLM alone
    — completes the same requests and output tokens per second. Throughput follows the cache only at saturation (+6.3 % /
    +6.5 % at 0.16×).
@@ -1498,11 +1542,16 @@ Stated without qualification; each is a measured outcome of this study.
    pool of every configuration is 14 % smaller than in the previous study because of it. An unregistered arena avoids the cost
    and the slow store direction, at +1–3 ms per hit and a core of CPU during stores (A).
 10. **No evidence that concurrent read and write traffic on the CXL memory matters for this workload.** Copy-level overlap is
-    0.00 s on the hybrid's path in every run; the busiest second is under 5 % of the pair's bandwidth. The one interference
+    0.00 s on the hybrid's path in every run; the busiest second is 5–6 % of the pair's bandwidth. The one interference
     that was measured (CXL L2 loads at half their rate next to a store) affects about a second of loads per replay, and its
     cause was not separated from CPU contention.
 11. **At saturation with identical hits, the tiers converge** (Experiment C at 8 requests/s: 5.0–5.3 requests/s in every
     cached configuration, the NVMe 4 % behind).
+12. **Once it fills, the CXL L2 adapter is the configuration with the worst stalls of the study.** LMCache's DAX adapter
+    deletes an eviction batch (≈ 9,320 keys) under the lock its lookups and stores need, with a quadratic de-duplication
+    inside (4.9 s for that loop alone): in the long window 15 lookups waited 3–10 s and 14 requests were 2–10 s later than in
+    the NVMe run, whose file adapter deletes the same batches without delaying anything. A software defect, not the medium
+    (C.4.4, Result 7).
 
 ## G. Limitations
 
@@ -1545,6 +1594,10 @@ Stated without qualification; each is a measured outcome of this study.
   mapping (independent hashes), they are nowhere else (resident memory), and the copies that touch them are timed individually. The
   traffic numbers of Experiment E are therefore the application's copies into and out of the device mapping, with their exact
   intervals — not the cards' own view of the load.
+- **The CXL L2 run of the long window carries a software stall.** LMCache's DAX adapter blocks its lookups for 3–10 s while it
+  deletes an eviction batch (C.4.4, Result 7); 14 requests of `b-conv08L-daxl2` are 2–10 s later because of it. The adapter was
+  used as shipped; the run's cached tokens and its median are unaffected, its mean TTFT is 25 ms higher than without the eight
+  worst requests.
 - **LMCache 0.5.5's tiers as they are.** No admission policy, no demotion or promotion between DRAM and CXL in the hybrid L1, no
   replacement algorithm was added (the brief excludes it). The L2 tiers ran with the default write-through and no promotion; the
   `retain` prefetch policy was not part of the main matrix.
@@ -1568,7 +1621,7 @@ Where a hit is not queued behind the GPU. With identical hits and a GPU that is 
 higher at the median (Experiment C, 0.5–4 requests/s) and 2.2–2.9× in bursts of simultaneous hits (D); the gap grows with the
 prefix (+197 ms at 16K tokens). In the trace replays this regime is 2.5–6.4 % of the requests — the hits that find the GPU
 free, 45–116 ms faster from CXL at the median. CXL is also ahead when the cache fills, by the capacity that its first-level
-integration adds (0.309 against 0.302 of the prompt tokens in the long window). It is **not** better at high load with queues
+integration adds (0.309 against 0.302 of the prompt tokens in the long window; the same memory used as a second level: 0.302). It is **not** better at high load with queues
 (all statistics within 1 %), and under sustained overload the NVMe configuration is ahead by 0.3 %. A DRAM budget of 20 GiB instead of 80 GiB moves more
 hits to the extension and changes none of this: the unqueued hits are then 6.2 % instead of 4.7 % of the requests of the
 conversation window, 71 ms later from the NVMe at the median, and all-request statistics stay within 1 % (C.4.6).
@@ -1599,9 +1652,9 @@ are added: the lookup runs minutes ahead of the service and misses what is store
 read-lock lifetime ends the engine.
 
 **6. Does CXL read/write concurrency appear relevant?**
-Not on this evidence. Retrieval and persistence meet as operations all the time (39–47 % of the retrieves at 0.08× and 0.16×
-find a store pending) but never as copies on the hybrid's path, which one thread serialises; the traffic averages 2–18 MiB/s
-of reads and 22–74 MiB/s of writes, and the busiest second is under 5 % of the pair's bandwidth. One GPU of this size cannot
+Not on this evidence. Retrieval and persistence meet as operations all the time (38–47 % of the retrieves at 0.08× and 0.16×
+find a store pending) but never as copies on the hybrid's path, which one thread serialises; the traffic averages 2–20 MiB/s
+of reads and 22–74 MiB/s of writes, and the busiest second is 5–6 % of the pair's bandwidth. One GPU of this size cannot
 generate the traffic at which the medium's duplex behaviour would be tested.
 
 **7. What concrete systems research problem remains after the comparison?**
@@ -1642,7 +1695,9 @@ end to end on these traces. What the measurements leave open, without implying a
 
 Invalid or void runs, kept and excluded: `void/` (full hybrid with 7,456 GPU blocks: vLLM could not start; the nine runs behind it
 ran against a left-over server; the two sustained-overload replays with default settings, `b-conv16-dram80` and `b-conv16-hyb`, in
-which vLLM's engine died — diagnosis in C.4.5) and the first hour's smoke runs `P0/p0-*-s` (residency checked too late). Problems found and fixed
+which vLLM's engine died — diagnosis in C.4.5) and the first hour's smoke runs `P0/p0-*-s` (residency checked too late). A problem found and **not** fixed: the DAX L2 adapter of LMCache 0.5.5 stalls its
+lookups for 3–10 s at an eviction batch (quadratic de-duplication under the device lock; C.4.4, Result 7); it affects 14
+requests of `b-conv08L-daxl2`, the only run in which a DAX L2 evicts at full size, and is disclosed with that run. Problems found and fixed
 before the measurements: a failed start left the cache server running (the harness now cleans up and refuses busy ports); with
 `skip_l1`, repeating a prompt before its L2 store has finished leaves chunks in L1 (the drivers now wait for the store controller).
 
