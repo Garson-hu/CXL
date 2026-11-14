@@ -17,6 +17,10 @@ usage: pairs_tier.py <B dir> <command> ...
   overload <tag> [<tag at 0.08x>]     a saturated replay: completions during the arrival phase and after it, TTFT by quarter of the arrivals,
                                       cached share by source; against the same requests in the second run: who has more / fewer cached tokens
   lookups <tag> ...                   when the lookup of a request starts: send -> lookup, lookup -> first token (from the mp.lookup events)
+  since <t> <ref tag> <tag> ...       the requests sent at or after t seconds: TTFT statistics per run and, per request, against the reference
+                                      run (mean, median, share later than the reference, prefill of the requests with equal cached tokens)
+  startup <tag> ...                   is the cache server's memory pool ready when the replay starts? resident set of the cache server against
+                                      the replay clock (the hook's mem samples), and the store calls started before / after it stops growing
   timed <tag> <host GiB> [pin=0] [lookup=send]
                                       a cache MODEL (not a measurement) driven by the measured times of a replay of the conversation window
                                       0-400 s: every request looks up at its measured lookup time (longest prefix of 512-token trace blocks in
@@ -176,5 +180,38 @@ elif CMD == "timed":
                     if h not in pins: del host[h]
     meas = sum(float(r["cached_tokens"]) for r in R.values()) / sum(float(r["prompt_tokens"]) for r in R.values())
     print(f"{tag}, host tier {cap_gib} GiB, pin={int(pin)}, lookup at {'send' if at_send else 'its measured time'}: MODEL cached share {hit / tot:.3f} (found in the host tier at lookup {hit_host / tot:.3f}); measured cached share {meas:.3f}")
+elif CMD == "since":
+    t0 = float(ARGS[0]); ref = full(ARGS[1])
+    ks = [k for k in ref if ref[k]["send_s"] >= t0 and f(ref[k], "ttft_client_ms") is not None]
+    print(f"requests sent at or after {t0:.0f} s: {len(ks)} of {len(ref)}; reference {ARGS[1]}")
+    for tag in ARGS[1:]:
+        a = full(tag); kk = [k for k in ks if k in a and f(a[k], "ttft_client_ms") is not None]
+        v = [f(a[k], "ttft_client_ms") / 1e3 for k in kk]; dv = [f(a[k], "ttft_client_ms") - f(ref[k], "ttft_client_ms") for k in kk]
+        same = [k for k in kk if a[k]["cached_tokens"] == ref[k]["cached_tokens"] and f(a[k], "prefill_ms") is not None and f(ref[k], "prefill_ms") is not None]
+        dp = sum(f(a[k], "prefill_ms") - f(ref[k], "prefill_ms") for k in same); bp = sum(f(ref[k], "prefill_ms") for k in same)
+        print(f"  {tag}: n {len(kk)}, TTFT p50 / p95 / p99 / mean {q(v, .5):.2f} / {q(v, .95):.2f} / {q(v, .99):.2f} / {st.mean(v):.2f} s; - reference: mean {st.mean(dv):+.0f} ms, "
+              f"median {st.median(dv):+.0f} ms, later than the reference {sum(x > 0 for x in dv) / len(dv):.2f}; prefill of the {len(same)} requests with equal cached tokens "
+              f"{100 * dp / bp:+.2f} %")
+elif CMD == "startup":
+    for tag in ARGS:
+        w0 = None
+        for line in open(f"{B}/{tag}-meta.txt"):
+            if line.startswith("M replay_start"): w0 = float(line.split()[3].split("=")[1])
+        rss = []; start = {}; calls = []
+        for line in open(f"{B}/{tag}-kvevents.jsonl"):
+            if '"ev": "mem"' not in line and '"mp.store.' not in line: continue
+            d = json.loads(line); ts = d["t"] - w0
+            if ts > 1000: break
+            if d["ev"] == "mem": rss.append((ts, d["VmRSS"] / 2**20))
+            elif d["ev"] == "mp.store.start": start[d["transfer_key"]] = ts
+            elif d["ev"] == "mp.store.end" and d.get("transfer_key") in start: calls.append((start.pop(d["transfer_key"]), ts, d.get("total_bytes", 0)))
+        top = max(r for _, r in rss); t_full = next(t for t, r in rss if r >= 0.99 * top); r0 = min(rss, key=lambda x: abs(x[0]))[1]
+        print(f"{tag}: resident set of the cache server {r0:.1f} GiB when the replay starts, {top:.1f} GiB in the first 1,000 s, within 1 % of that at t = {t_full:.0f} s"
+              + (f" (growing by {(0.99 * top - r0) / t_full:.1f} GiB/s until then)" if t_full > 1 else " (ready before the replay)"))
+        for name, sel in (("before that", [c for c in calls if c[0] < t_full]), ("after it, until 1,000 s", [c for c in calls if c[0] >= t_full])):
+            if sel:
+                tot = sum(c[1] - c[0] for c in sel)
+                print(f"   store calls started {name}: n {len(sel)}, {sum(c[2] for c in sel) / 2**30:.1f} GiB, call time {tot:.1f} s in total "
+                      f"({1e3 * tot / len(sel):.0f} ms per call, longest {max(c[1] - c[0] for c in sel):.2f} s)")
 else:
     sys.exit(__doc__)
