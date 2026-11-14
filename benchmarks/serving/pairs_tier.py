@@ -11,6 +11,7 @@ usage: pairs_tier.py <B dir> <command> ...
                                       the TTFT difference of the requests with equal cached tokens
   l2pair <group> [other ...]          requests that loaded from the NVMe L2 (b-<group>-ssdn) and have the same cached tokens in the other
                                       configuration (default: hyb daxl2): NVMe load time, TTFT difference; the subset served without a queue
+  l2tags <NVMe tag> <other tag>       the same comparison for two arbitrary runs (e.g. the pair with a 20 GiB DRAM part)
   l2direct <tag> ...                  L2 load time inside the cache server of EVERY prefetch that loaded a chunk (submitted -> load completed,
                                       keyed by the prefetch's own id: independent of the join of prefetches to lookups)
   overload <tag> [<tag at 0.08x>]     a saturated replay: completions during the arrival phase and after it, TTFT by quarter of the arrivals,
@@ -78,16 +79,18 @@ elif CMD == "cached":
         if same: s += f"; equal: {len(same)}, TTFT A-B mean {st.mean(dt[k] for k in same):+.0f} ms, median {q([dt[k] for k in same], .5):+.0f}"
         print(s)
 
-elif CMD == "l2pair":
-    g = ARGS[0]; a = tier(f"b-{g}-ssdn")
-    for other in (ARGS[1:] or ["hyb", "daxl2"]):
-        try: b = tier(f"b-{g}-{other}")
+elif CMD in ("l2pair", "l2tags"):
+    if CMD == "l2tags": g = ARGS[0]; a = tier(ARGS[0]); others = [(ARGS[1], ARGS[1])]
+    else: g = ARGS[0]; a = tier(f"b-{g}-ssdn"); others = [(o, f"b-{g}-{o}") for o in (ARGS[1:] or ["hyb", "daxl2"])]
+    for other, otag in others:
+        try: b = tier(otag)
         except FileNotFoundError: continue
         ks = [k for k in a if k in b and float(a[k]["tok_l2"] or 0) > 0 and a[k]["cached_tokens"] == b[k]["cached_tokens"]]
         d = [float(a[k]["ttft_ms"]) - float(b[k]["ttft_ms"]) for k in ks]; l2 = [float(a[k]["l2_ms"]) for k in ks if a[k]["l2_ms"]]; tt = [float(b[k]["ttft_ms"]) for k in ks]
         print(f"{g}: requests that loaded from the NVMe L2 (same cached tokens in {other}): n={len(ks)}; NVMe load ms p50/p95/max {q(l2, .5):.0f}/{q(l2, .95):.0f}/{max(l2) if l2 else 0:.0f}; TTFT ssdn-{other} ms: median {q(d, .5):+.0f}, mean {st.mean(d):+.0f}, p10 {q(d, .1):+.0f}, p90 {q(d, .9):+.0f}; share slower on NVMe {sum(1 for x in d if x > 0) / len(d):.2f}; TTFT in {other} p50 {q(tt, .5):.0f} ms")
         sq = [k for k in ks if float(b[k]["ttft_ms"]) < 1000]
         if sq:
+            print(f"     ({len(sq)} of the {len(a)} requests of the window: {len(sq) / len(a):.3f})")
             d2 = [float(a[k]["ttft_ms"]) - float(b[k]["ttft_ms"]) for k in sq]; l22 = [float(a[k]["l2_ms"]) for k in sq if a[k]["l2_ms"]]
             print(f"     of these, TTFT < 1 s in {other}: n={len(sq)}; NVMe load p50 {q(l22, .5):.0f} ms; TTFT diff median {q(d2, .5):+.0f}, mean {st.mean(d2):+.0f} ms; TTFT {other} p50 {q([float(b[k]['ttft_ms']) for k in sq], .5):.0f} vs ssdn p50 {q([float(a[k]['ttft_ms']) for k in sq], .5):.0f}")
 
