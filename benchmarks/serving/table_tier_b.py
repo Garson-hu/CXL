@@ -187,9 +187,11 @@ if ng:
             m, mt = model(real(g))
             if m: ax.plot([GPU_GIB + x if x > GPU_GIB else x for x, _ in m], [mval(sh, mt) for _, sh in m], color="gray", linestyle="--", linewidth=1, label="offline LRU model of the window (not a measurement)")
             for c in d:
-                # the two L2 configurations have the same capacity and often the same value: the CXL L2 is drawn as an open ring around the NVMe square
-                if c in CAP: ax.plot([CAP[c]], [val(d[c])], marker="o" if not c.startswith("ssd") else "s", markersize=13 if c == "daxl2" else 7 if c.startswith("ssd") else 8, linestyle="", color=COL[c],
-                                                markerfacecolor="none" if c == "daxl2" else COL[c], markeredgewidth=2 if c == "daxl2" else 1, label=flat(c))
+                # configurations with the same capacity often have the same value: the CXL L2 is drawn as an open ring around the NVMe square, and
+                # the sensitivity configurations as open markers of their own shape and size around the 80 GiB ones (marker, size, open)
+                mk, ms, op = {"daxl2": ("o", 13, True), "ssdn": ("s", 7, False), "ssdn20": ("s", 12, True), "hyb20": ("o", 16, True), "dram592": ("D", 14, True)}.get(c, ("o", 8, False))
+                if c in CAP: ax.plot([CAP[c]], [val(d[c])], marker=mk, markersize=ms, linestyle="", color=COL[c],
+                                                markerfacecolor="none" if op else COL[c], markeredgewidth=2 if op else 1, label=flat(c))
             ax.set_xscale("log", base=2); ax.set_xlabel("KV capacity: GPU pool + host tiers at their eviction trigger (GiB)"); ax.set_title(ttl(g), fontsize=9); ax.grid(True, which="both", alpha=0.3); ax.set_ylim(bottom=0)
         [a.set_ylabel(ylab) for a in axes[::NC]]; h, l = axes[0].get_legend_handles_labels()
         for ax in axes[1:]:
