@@ -4,6 +4,15 @@
 benchmarks/memory/membench
 benchmarks/memory/cxlprobe
 benchmarks/memory/kvreplay
+benchmarks/memory/gpuread
+benchmarks/memory/kvemu
+benchmarks/memory/kvemu2
+benchmarks/memory/kvemu3
+benchmarks/memory/readcost
+benchmarks/memory/topo
+benchmarks/lmcache/ckpt_cxl
+hardware/scripts/gpu-cxl-access/gpu_cxl
+hardware/scripts/gpu-cxl-access/cxl_cpu
 system/placement/bwbench
 system/placement/gnnbench
 system/placement/sensbench
