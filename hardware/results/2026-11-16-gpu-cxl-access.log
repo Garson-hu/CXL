@@ -1,0 +1,73 @@
+# 2026-11-16 15:01:06 c28  dev=/dev/dax0.0 offset=245760MiB len=256MiB
+== 0  facts
+    GPU NVIDIA GeForce RTX 4060 Ti at 0000:61:00.0, CUDA driver 13000 runtime 13040
+    pageableMemoryAccess=0  (0: the GPU cannot touch host memory that CUDA has not registered or allocated)
+    hostRegisterSupported=1
+    p = mmap(/dev/dax0.0, offset 245760 MiB, 256 MiB, MAP_SHARED) = 0x7fbd75e00000, backed by:
+    7fbd75e00000-7fbd85e00000 rw-s 3c00000000 00:06 1690                     /dev/dax0.0
+
+== the API: cudaHostRegister + cudaHostGetDevicePointer
+    cudaPointerGetAttributes(p, before 0x7fbd75e00000): cudaMemoryTypeUnregistered (CUDA does not know this memory), devicePointer=(nil)
+    cudaHostRegister(p, 256 MiB, cudaHostRegisterMapped) = cudaSuccess
+    cudaHostGetDevicePointer(&dp, p, 0)               = cudaSuccess, dp = 0x7fbd75e00000
+    cudaPointerGetAttributes(p, after  0x7fbd75e00000): cudaMemoryTypeHost (registered/pinned host memory), devicePointer=0x7fbd75e00000
+
+== 1  GPU kernel READS CXL (zero-copy loads through dp)
+      [cxl_cpu pid 476761, no CUDA] wrote pattern 0xa1 into /dev/dax0.0 [245760 MiB, +256 MiB), flushed CPU caches
+    GPU kernel: 0 of 33554432 words differ from pattern 0xa1
+PASS  the GPU kernel read the bytes a CPU-only process had written into CXL
+PASS  control: the same kernel flags every word when checked against pattern B (not written)
+
+== 2  GPU kernel WRITES CXL (zero-copy stores through dp)
+      [cxl_cpu pid 476762, no CUDA] flushed CPU caches, read /dev/dax0.0 [245760 MiB, +256 MiB): 33554432 of 33554432 words differ from pattern 0xb2
+PASS  control: before the GPU writes, cxl_cpu does not find pattern B in CXL
+      [cxl_cpu pid 476763, no CUDA] flushed CPU caches, read /dev/dax0.0 [245760 MiB, +256 MiB): 0 of 33554432 words differ from pattern 0xb2
+PASS  a CPU-only process reads from CXL the bytes the GPU kernel stored
+
+== 3  GPU copy engine READS CXL: cudaMemcpy(vram, p, H2D)
+      [cxl_cpu pid 476764, no CUDA] wrote pattern 0xc3 into /dev/dax0.0 [245760 MiB, +256 MiB), flushed CPU caches
+PASS  VRAM holds the bytes a CPU-only process had written into CXL
+
+== 4  GPU copy engine WRITES CXL: cudaMemcpy(p, vram, D2H)
+      [cxl_cpu pid 476765, no CUDA] flushed CPU caches, read /dev/dax0.0 [245760 MiB, +256 MiB): 33554432 of 33554432 words differ from pattern 0xd4
+PASS  control: before the copy, cxl_cpu does not find pattern D in CXL
+      [cxl_cpu pid 476766, no CUDA] flushed CPU caches, read /dev/dax0.0 [245760 MiB, +256 MiB): 0 of 33554432 words differ from pattern 0xd4
+PASS  a CPU-only process reads from CXL the bytes the copy engine wrote
+
+== 5  speed, 256 MiB per transfer, median of 5            CXL (dax, registered)   DRAM (cudaHostAlloc)
+    cudaMemcpy H2D   (copy engine reads host)            12.48 GiB/s             12.48 GiB/s
+    cudaMemcpy D2H   (copy engine writes host)            3.91 GiB/s             12.31 GiB/s
+    kernel loads     (SMs read host, zero-copy)          12.47 GiB/s             12.52 GiB/s
+    kernel stores    (SMs write host, zero-copy)          3.96 GiB/s             12.31 GiB/s
+
+ALL CHECKS PASSED (0 failed checks)
+# exit 0
+
+== 0  facts
+    GPU NVIDIA GeForce RTX 4060 Ti at 0000:61:00.0, CUDA driver 13000 runtime 13040
+    pageableMemoryAccess=0  (0: the GPU cannot touch host memory that CUDA has not registered or allocated)
+    hostRegisterSupported=1
+    p = mmap(/dev/dax0.0, offset 245760 MiB, 256 MiB, MAP_SHARED) = 0x7fd3dcc00000, backed by:
+    7fd3dcc00000-7fd3ecc00000 rw-s 3c00000000 00:06 1690                     /dev/dax0.0
+
+== --noreg: cudaHostRegister is NOT called
+    cudaPointerGetAttributes(p 0x7fd3dcc00000): cudaMemoryTypeUnregistered (CUDA does not know this memory), devicePointer=(nil)
+
+== 3'  cudaMemcpy(vram, p, H2D) on the unregistered CXL pointer
+      [cxl_cpu pid 476784, no CUDA] wrote pattern 0xc3 into /dev/dax0.0 [245760 MiB, +256 MiB), flushed CPU caches
+PASS  data arrives -- through the driver's pinned DRAM staging buffer, copied by the CPU
+
+== 4'  cudaMemcpy(p, vram, D2H) on the unregistered CXL pointer
+      [cxl_cpu pid 476785, no CUDA] flushed CPU caches, read /dev/dax0.0 [245760 MiB, +256 MiB): 0 of 33554432 words differ from pattern 0xd4
+PASS  data arrives -- through the driver's pinned DRAM staging buffer, copied by the CPU
+
+== 5'  speed of the staged path, 256 MiB per transfer, median of 5
+    cudaMemcpy H2D (CXL -> CPU copy -> DRAM -> GPU)   12.26 GiB/s
+    cudaMemcpy D2H (GPU -> DRAM -> CPU copy -> CXL)   12.13 GiB/s
+
+== 1'  GPU kernel dereferences the unregistered CXL pointer p (expected to fail; the CUDA context is unusable after it)
+    cudaDeviceSynchronize() -> an illegal memory access was encountered
+PASS  without cudaHostRegister the GPU cannot address the CXL mapping
+
+ALL CHECKS PASSED (0 failed checks)
+# exit 0
