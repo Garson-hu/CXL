@@ -9,6 +9,8 @@
 |---|---|---|
 | `PAPER.md` | Thesis, claims, positioning — the paper skeleton | Living; every change appended to its Change History |
 | `DESIGN.md` | CURRENT system design + API | Living; every change appended to its Change History |
+| `research/RESEARCH-PLAN.md` | ACTIVE research plan since 2026-11-10: direction, why CXL, research questions, priorities, open points | Living; every change appended to its Change History |
+| `research/CHARTER.md`, `research/<kind>-YYYY-MM-DD.md` | Charter of 2026-10-17 (superseded as the active direction 2026-11-10) and the dated decision / consolidation reports of that line | Charter: change-history lines only; reports frozen |
 | `experiments/INDEX.md` | One-row-per-experiment lookup: date, question, verdict, link | Living (table only) |
 | `experiments/METHODOLOGY.md` | Measurement invariants that apply to every experiment | Living; append when a new invariant is learned |
 | `experiments/YYYY-MM-DD-<content>.md` | One experiment (or campaign): question, setup, commands, numbers, verdict | ONE active at a time; **frozen** once its verdict lands in INDEX |

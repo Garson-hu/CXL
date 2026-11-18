@@ -9,6 +9,79 @@ new findings go here in WORKLOG, not into new scattered files.
 
 ## Current Status (2026-08-25; hardware/phase lines updated 2026-09-14)
 
+**2026-11-14 addendum — CXL vs. NVMe KV-CACHE EXPANSION STUDY CLOSED (branch `explore/cxl-vs-nvme-serving`, not merged): UNDER A
+FIXED 80 GiB DRAM KV BUDGET, 512 GiB MORE CACHE IS WORTH HAVING, AND ON c28 IT IS WORTH THE SAME ON CXL MEMORY AND ON A PROPERLY
+CONFIGURED NVMe TIER.** Report `docs/experiments/2026-11-12-cxl-vs-nvme-serving.md`, summary
+`experimental_results/2026-11-12-cxl-vs-nvme-serving/SUMMARY.md` (86 runs on c28, 2026-11-12 … 2026-11-14; the first study
+on the real CXL devices: `/dev/dax1.0` + `/dev/dax0.0`, 512 GiB over one pair of CZ120 cards, KV residency verified by content;
+NVMe with O_DIRECT, page cache verified empty; `/dev/dax2.0` never opened; one RTX 4060 Ti 8 GiB, Qwen2.5-3B-AWQ, vLLM 0.31.0 +
+LMCache 0.5.5).
+One hit (MEASURED, 16K-token prefix, idle server): DRAM 94 ms, CXL as first-level memory 93–94 ms (the GPU reads it at its
+link's 12.4 GiB/s), CXL as L2 114 ms, NVMe 290 ms (2.9 GiB/s, device on two of four lanes), recompute 3,385 ms. Identical hits
+under load: CXL = DRAM at every rate; NVMe TTFT +55–71 % at the median until the GPU saturates, 2.2–2.9× in bursts of
+simultaneous hits.
+Trace replays (same requests in every configuration; Mooncake conversation and tool-agent traces at 0.08×): cached share
+0.096 → 0.238 (conversation), 0.396 → 0.495 (tool-agent), 0.097 → 0.302 / 0.309 (long window of 11,250 s in which the
+extensions fill and evict); 16–24 % fewer recomputed prompt tokens, TTFT p50 −48 % to −57 %; throughput changes only at
+saturation (0.16×: +6 %). **CXL and NVMe are within 1 % of each other in every replay**: the NVMe load (≈ 100 ms p50, ≈ 400 ms
+p95) starts at the lookup and overlaps the 5–10 s the request waits for the GPU; it shows only on the 2.5–6.4 % of requests
+that find the GPU free (+45 to +116 ms at the median).
+Where the two differ: (a) capacity structure — the hybrid first level (exclusive, 592 GiB) keeps 0.7 points more cached
+tokens than an inclusive second level in the long window; the same CXL memory used as a second level has the NVMe's cached
+tokens; (b) store direction — the GPU writes CUDA-registered CXL memory at 3.89 GiB/s against 12.14 GiB/s into DRAM, which
+puts the hybrid 0.07–0.13 s behind the NVMe configuration at the mean (isolated by two hybrid runs with 20 and 80 GiB DRAM
+parts and by an all-DRAM 592 GiB reference: hybrid +0.09 s, NVMe +0.02 s behind all-DRAM).
+Sensitivity: a 20 GiB DRAM budget gives the same hits and the same comparison (the extension then serves nearly every host
+hit). 20 GiB of DRAM alone is nearly no host cache (cached share 0.048 against 0.045 without LMCache); from that base the
+extension removes 20 % of the recomputed tokens and 62 % of the TTFT median.
+Stack findings: with default settings sustained overload ends vLLM's engine (LMCache's 300-s read lock on looked-up chunks
+expires while the request waits; vLLM's default failure policy); LMCache's DAX L2 adapter stalls lookups for 3–10 s at an
+eviction batch (quadratic de-duplication under the device lock; not fixed); registering 592 GiB of host memory with CUDA takes
+1.2 GiB of the 8 GiB card (GPU KV pool 6,400 blocks in every run); the harness does not wait for a 592 GiB DRAM pool to be
+touched (first 150 s of the all-DRAM reference excluded).
+CXL traffic: 2–20 MiB/s read and 22–74 MiB/s written on average, busiest second 5–6 % of the pair's bandwidth, reads and
+writes never overlap on the hybrid's path (one transfer thread); 79–86 % of the KV written to an extension is not read again
+within a window. Not established: anything beyond one small GPU and a 3B model, independent CXL devices, run-to-run variation
+(one run per cell).
+
+**2026-11-11 addendum — RQ2 VALIDATION CLOSED (branch `explore/gpu-kv-admission`, not merged): THE DELAY OF CACHED REQUESTS IS
+AN ORDERING PROBLEM OF THE SCHEDULER, NOT A GPU KV RESERVATION PROBLEM; AN EXISTING vLLM OPTION RECOVERS MOST OF IT.** Report
+`docs/experiments/2026-11-10-gpu-kv-admission.md`, summary `experimental_results/2026-11-10-gpu-kv-admission/SUMMARY.md`
+(181 server runs on c28 and five 16 GB RTX 4060 Ti nodes, host tier = pinned DRAM; CXL DAX still root-only, nothing here is a CXL
+result).
+Cause (MEASURED per engine step + SOURCE): a cached request waits because the waiting queue is served only from the token
+budget that running requests leave (54–68 % of the waiting time, on every pool size) and, when the GPU KV pool is nearly full,
+behind a request that does not fit (10–35 %); the whole-prefix reservation blamed on 2026-11-05 refuses 17 of 4,924 attempts.
+Side finding: under overload stock LMCache loses 31–33 % of the KV it computed (a counter advanced at every retry; one-line
+fix). Flag-gated prototype (`benchmarks/serving/kvadm/kvadm_policy.py`): token reserve + short steps, bounded head-of-line
+bypass with bounded reservation, store fix. Tool-agent replays: token mechanisms −17 to −26 % mean TTFT at the sustainable load
+(four server configurations; misses +6 to +11 %), +9 % under overload (+29 % on a 2.67× pool); bypass alone with a 30 s bound
+−16 % / −25 % / −28 % at 0.04× / 0.06× / 0.08× with no class slower and the longest wait within about 6 s of stock; both
+together −33 % / −32 % / −28 %. **Strong baseline: vLLM priority scheduling with the prompt length as priority
+(shortest-prompt-first, no cache knowledge) gives −28 % / −43 % / −49 %, misses faster every time; in its plain form it lets
+the largest prompts wait 4–5 minutes under overload (stock 53 s); with an aging term (send time + 1 ms per prompt token) it
+gives −30 % at the longest wait of stock — the bypass's result without a prototype.** What the prototype adds to it: the
+token reserve at the sustainable load (shortest-prompt-first + token mechanisms: −41 %). Oracle hits-first −20 % / −32 % /
+−33 %; oracle shortest-compute-first −52 % (cache knowledge adds 3 points). No configuration changes throughput. The brief's criteria: 1–3 met (the bottleneck under a different name), 4 and 6
+partly, 5 depends on the mechanism. Left open by the data (report F.7): the mean / worst-case dial under overload, what
+cache knowledge adds to ordering, starting cheap requests during a prefill, overload without memory pressure, the store path.
+Next step = the user's decision.
+
+**2026-11-10 addendum — DIRECTION CHANGE (the user's decision): CXL-ENABLED LLM SERVING WITH EFFICIENT KV CACHE REUSE.**
+The project pivots away from the 2026-10-17 charter (reuse- and interference-aware unified DRAM/CXL memory management);
+every result of that line stays valid, the negative ones included (H2 not supported, Gate 3 not met). Active plan:
+`docs/research/RESEARCH-PLAN.md` — goal (use CXL-expanded memory to improve cross-request KV reuse and end-to-end serving
+performance; multi-turn and agentic serving), why CXL (capacity; concurrent read/write bandwidth as a supporting,
+unverified motivation), three provisional questions (RQ1 CXL capacity and KV reuse, RQ2 GPU KV admission, RQ3 concurrent
+data movement), five immediate priorities (admission / reservation prototype → its effect on TTFT, tails, throughput and
+misses → real CXL → concurrent KV reads and writes on real serving paths → larger GPU and model), with the source of
+every number and the points the record leaves open. `docs/research/CHARTER.md` is left unchanged (the user's RQ2 brief of
+2026-11-10: do not modify the original charter); its questions are written "charter RQ1–RQ3" from now on. Not decided: success criteria, the branch of the new main line (the
+plan and the serving study sit on `explore/cxl-serving-scheduling-gap`), `docs/PAPER.md` / `docs/DESIGN.md` (still the
+previous thesis). State on c28 on 2026-11-10: `/dev/dax0.0` / `dax1.0` still root 0600 (`dax2.0` is the root-owned famfs
+mount reserved for the user's other project); `/home` back under its quota after the user's clean-up of `~/hvac`
+(40,450 → 26,645 MB of 39,936 MB soft).
+
 **2026-11-05 addendum — EXPLORATORY SERVING STUDY CLOSED (branch `explore/cxl-serving-scheduling-gap`, not merged):
 CXL-SCALE CAPACITY PAYS AT A SUSTAINABLE LOAD; THE SCHEDULER'S WEAK POINT IS ADMISSION, NOT RETRIEVAL.** vLLM 0.31 +
 LMCache 0.5.5 on c28's 4060 Ti with a 2–320 GB pinned-DRAM tier standing in for CXL (DAX still root 0600; GPU data path
@@ -265,6 +338,8 @@ LULESH version. Each step needs explicit user approval before execution.
 - `WORKLOG.md` (this file) — status + history. **Start here.**
 - `docs/PAPER.md` — thesis, claims, positioning (living; append-only Change history).
 - `docs/DESIGN.md` — CURRENT system design + API (living; append-only Change history).
+- `docs/research/RESEARCH-PLAN.md` — ACTIVE research plan since 2026-11-10 (living; append-only Change history).
+  `docs/research/CHARTER.md` = the 2026-10-17 charter, superseded as the active direction; dated reports beside it.
 - `docs/experiments/INDEX.md` — one row per experiment: date, question, verdict, link.
 - `docs/experiments/YYYY-MM-DD-<content>.md` — one file per experiment; ONE active,
   frozen once closed. `METHODOLOGY.md` holds the shared invariants.
@@ -278,6 +353,57 @@ LULESH version. Each step needs explicit user approval before execution.
 ---
 
 ## Session Log
+
+### 2026-11-10 → 2026-11-11 (session 36 continued, exploratory branch `explore/gpu-kv-admission`: RQ2 validation — GPU KV memory admission of external KV hits)
+- **Brief** (user, 2026-11-10): prove the root cause of the external-hit delay of the 2026-11-04 study (A), build minimal
+  flag-gated prototypes (B), evaluate them in controlled workloads (C) and trace replays (D), beyond the 8 GB GPU (E), on real
+  CXL if accessible (it is not), with correctness checks and a full report. Also delivered on 2026-11-10: a 6-slide progress
+  deck (`docs/slides/SLIDES_2026-11-10-kv-admission-progress.pptx`, local-only; revised 2026-11-11 with the final results)
+  including the CosmoFlow reuse-distance question.
+- **Method.** Logging-only admission instrumentation (`kvadm/sitecustomize.py`: every poll, admission attempt with gate and
+  block counts, preemption, one line per engine step; 6 µs per scheduler call), per-step attribution of every waiting interval
+  (`analyze_adm.py`), controlled trials with pressure set by holders and read from the allocator (`run_adm.py`), a policy module
+  that acts through three existing scheduler interfaces without patching vLLM or LMCache (`kvadm/kvadm_policy.py`, v1 → v1.4,
+  mock tests), the 2026-11-04 replay framework with paired request classes. c28 for the 320 GB replays; 16 GB RTX 4060 Ti nodes
+  (c60, c61, c66, c73, c74; pool pinned to c28's 7,456 blocks, each family with its own stock run) for everything else; no table
+  compares runs across nodes.
+- **Results:** see the Current Status addendum and the report's summary. Details worth keeping: the full-sequence gate
+  (`scheduler_reserve_full_isl`, default on) makes hits and misses symmetric at the block gate; waiting requests do not pin
+  their GPU prefix; the token reserve needs `resvall` (honour the in-flight reservation) and `blkfirst` (do not pass a
+  memory-blocked request by the token rule) to be safe; the bypass bound chosen from a controlled scenario (3 s) was too short
+  — 30 s is where the overloaded replays gain; the block reservation for passed hits is a small net cost in the replay; on a
+  large pool under overload the saturated token budget is the only admission control and removing it hurts (+29 %).
+- **How the conclusion changed during the study.** 2026-11-10 evening: "the token mechanisms help at the sustainable load and
+  only redistribute under overload; oracle priority is better". 2026-11-11 03:00–05:30: the bypass bound sweep (−28 % at 30 s,
+  no loser), then the shortest-prompt-first baseline (−49 % under overload, −28 % at the sustainable load; with aging −30 %
+  at the longest wait of stock) showed that the whole effect is one of ordering and that an existing option captures most of
+  it; the last runs showed what the prototype adds to that option (the token reserve at the sustainable load: −41 % together).
+- **Process notes.** A job that starts in the second in which the previous job on the node ends was killed once (334506): jobs
+  are now chained with `submit_after.sh`. The client lost two measured requests to a keep-alive race before it was made to
+  retry once (fb95dcb). `/home` quota was not a problem (27 of 40 GB).
+- **State.** Branch pushed, not merged. This WORKLOG entry and the 2026-11-10 direction-change edits (WORKLOG.md,
+  docs/README.md, docs/research/RESEARCH-PLAN.md, the 2026-11-04 SUMMARY.md) are in the working tree, not committed, awaiting
+  the user's review.
+
+### 2026-11-10 (session 36, branch `explore/cxl-serving-scheduling-gap`: direction change recorded)
+
+- The user's "Research State" of 2026-11-10 (pivot to CXL-enabled LLM serving with efficient KV cache reuse; three
+  provisional research questions; five immediate priorities; principles, including the role split Claude = code, data,
+  experiments, figures / ChatGPT = direction, experimental reasoning, analysis) written into the new living document
+  `docs/research/RESEARCH-PLAN.md` in the user's wording, with "On record" paragraphs that attach the repository's
+  measurements. Checked against the record: every number of the state document matches; the three bandwidth figures are
+  the 2026-08-25 duplex gate on the `dax0.0` + `dax1.0` pair (read 45.6; joint 59.4 = 26.0 read + 33.4 NT write at
+  12 : 4 threads, i.e. each direction below its solo rate) and the pair's NT-write capacity (43.9, 2026-09-08 / 09-22).
+- Open points recorded in the plan's section 8: no gates yet; branch of the new main line; PAPER.md / DESIGN.md not
+  updated; the only CXL node has the 8 GiB GPU on a 12.5 GiB/s link while the large GPUs have no CXL; no serving
+  measurement so far in which CXL-side bandwidth limited anything, and admission shrinks the persistence stream 88–91 %
+  (SIM); whether the charter-RQ1 admission policy enters the serving loop.
+- `docs/research/CHARTER.md`: unchanged (a status line added in the afternoon was taken out again the same day, after
+  the user's RQ2 brief said not to modify the original charter). `docs/README.md` map: rows for `research/`. Doc Map
+  below: line for `docs/research/`.
+- Correction in `experimental_results/2026-11-04-cxl-serving-scheduling-gap/SUMMARY.md`: the 121,792-token GPU KV cache
+  is 4.18 GiB (4.5 GB), not 4.25 GiB (that is the eager-mode 123,840-token figure of the report's §1).
+- Left uncommitted on 2026-11-10 for the user's review.
 
 ### 2026-11-04 → 2026-11-05 (session 35, exploratory branch `explore/cxl-serving-scheduling-gap`: CXL-enabled LLM serving — end-to-end scheduling and KV retrieval study)
 
